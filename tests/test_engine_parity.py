@@ -74,3 +74,36 @@ def test_append_is_exact_through_heads(myna):
                     assert max(abs(full[name][key][l] - streamed[name][key][l]) for l in full[name][key]) < 2e-3
                 else:
                     assert abs(full[name][key] - streamed[name][key]) < 2e-3
+
+
+def test_save_restore_state_round_trip(myna, tmp_path):
+    """A snapshot must answer exactly like the live observation it came from,
+    and stay fixed-size no matter how long the observation grew."""
+    rng = random.Random(6)
+    e = generate(3, "support", rng)[0]
+    questions = {
+        q.name: {"type": q.type, "instructions": q.instruction, "criteria": q.options}
+        for q in WORKFLOWS["support"][0]
+    }
+    obs = myna.observe(e.state)
+    p = tmp_path / "obs.pt"
+    obs.save_state(p)
+    assert p.stat().st_size / 1024 < 64  # small model: sub-64KB state
+    restored = myna.restore(p)
+    assert len(restored.ids) == len(obs.ids)
+    a = obs.ask(questions)["answers"]
+    b = restored.ask(questions)["answers"]
+    for name in a:
+        if "probabilities" in a[name]:
+            d = max(abs(a[name]["probabilities"][k] - b[name]["probabilities"][k]) for k in a[name]["probabilities"])
+            assert d < 1e-6, (name, d)
+        else:
+            assert abs(a[name]["noul"] - b[name]["noul"]) < 1e-6
+    # a 4x longer observation may only grow the snapshot by its token list —
+    # never by a per-layer hidden-state stack (the fixed-size claim, E2E)
+    long_obs = myna.observe(" ".join([e.state] * 4))
+    pl = tmp_path / "obs_long.pt"
+    long_obs.save_state(pl)
+    growth_kb = (pl.stat().st_size - p.stat().st_size) / 1024
+    hidden_stack_growth_kb = (3 * 4 * len(long_obs.ids) * 64 * 4) / 1024  # what an h-cache would add
+    assert growth_kb < hidden_stack_growth_kb / 2, (growth_kb, hidden_stack_growth_kb)

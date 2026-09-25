@@ -41,6 +41,7 @@ def build_batch(exs, tok, wf, device):
 def evaluate(model, tok, splits, device, temperature=1.0):
     model.eval()
     rows = {}
+    ece_bin = {}  # key -> (sum_conf, sum_correct, count) aggregated in 10 bins
     with torch.no_grad():
         for wf, data in splits.items():
             questions = WORKFLOWS[wf][0]
@@ -56,12 +57,27 @@ def evaluate(model, tok, splits, device, temperature=1.0):
                     key = f"{wf}/{q.name}"
                     acc, tot = rows.get(key, (0.0, 0))
                     rows[key] = (acc + float(hit.sum()), tot + len(exs))
+                    conf = probs[:, n].max(-1).values
+                    bins = (conf * 10).clamp(max=9).long()
+                    for bi in range(10):
+                        sel = bins == bi
+                        if not bool(sel.any()):
+                            continue
+                        c, s, m = ece_bin.get(key, (0.0, 0.0, 0))
+                        ece_bin[key] = (
+                            c + float(conf[sel].sum()),
+                            s + float(hit[sel].sum()),
+                            m + int(sel.sum()),
+                        )
                     if q.type == "noul":
                         p = probs[:, n, 1]
                         g = b["gold"][:, n].float()
                         bk, bt = rows.get(key + ":brier", (0.0, 0))
                         rows[key + ":brier"] = (bk + float(((p - g) ** 2).sum()), bt + len(exs))
-    return {k: v[0] / max(v[1], 1) for k, v in rows.items()}
+    out = {k: v[0] / max(v[1], 1) for k, v in rows.items()}
+    for key, (c, s, m) in ece_bin.items():
+        out[f"{key}:ece"] = abs(c - s) / max(m, 1)  # single-bin-per-example ECE (M-norm, 10 bins)
+    return out
 
 
 def fit_temperature(model, tok, splits, device):
@@ -94,6 +110,8 @@ def main():
     ap.add_argument("--n-eval", type=int, default=700)
     ap.add_argument("--out", default="runs/myna-v0")
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--eval-every", type=int, default=250)
+    ap.add_argument("--eval-n", type=int, default=192)
     args = ap.parse_args()
 
     rng = random.Random(args.seed)
@@ -116,6 +134,8 @@ def main():
     sched = torch.optim.lr_scheduler.CosineAnnealingLR(opt, args.steps)
 
     wfs = list(data["train"])
+    dev_probe = {wf: data["dev"][wf][: args.eval_n] for wf in wfs}
+    ema = None
     step_t0 = time.time()
     for step in range(args.steps):
         model.train()
@@ -131,9 +151,15 @@ def main():
         torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
         opt.step()
         sched.step()
+        ema = loss.item() if ema is None else 0.95 * ema + 0.05 * loss.item()
         if step % 200 == 0 or step == args.steps - 1:
             el = time.time() - step_t0
-            print(f"step {step:5d}  loss {loss.item():.3f}  {el:.0f}s", flush=True)
+            print(f"step {step:5d}  loss {loss.item():.3f}  ema {ema:.3f}  {el:.0f}s", flush=True)
+        if args.eval_every and step and step % args.eval_every == 0 and step != args.steps - 1:
+            m = evaluate(model, tok, dev_probe, device)
+            names = [k for k in m if not k.endswith((":brier", ":ece"))]
+            acc = sum(m[k] for k in names) / len(names)
+            print(f"step {step:5d}  dev-mid acc {acc:.4f}", flush=True)
 
     temperature = fit_temperature(model, tok, data["dev"], device)
     print(f"temperature: {temperature}")

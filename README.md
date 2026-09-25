@@ -1,4 +1,4 @@
-# Myna ⚡
+# Myna
 
 **The decision engine that never re-reads.** Typed `choice` / `score` / `noul`
 decisions over growing observations — tickets, threads, page states,
@@ -21,7 +21,9 @@ short. Myna is an architecture built for that shape from the ground up.
 2. **Persistent state = the cache.** Appending to the observation continues
    the scan from the cached `S`. Nothing below the append point is ever
    re-read, and the result is bit-exact versus a full pass — not approximate,
-   not distilled, *identical*.
+   not distilled, *identical*. The only thing retained per observation is the
+   stack of `S` matrices: 576 KiB at production width, for a 128-token state
+   or a 16,384-token one.
 3. **Questions are branches, not prompt tokens.** Each question resumes every
    layer from the cached state-end, so a question reads the whole observation
    and — by architecture, not masking — nothing of any other question.
@@ -80,7 +82,24 @@ answers = obs.ask({
 
 # the thread continues — only the new message is encoded
 obs2 = obs.append("And the second charge is still showing on my card this morning.")
+
+# the observation itself is portable: ~0.6 MB, resume it tomorrow
+obs2.save_state("session.pt")  # ... myna.restore("session.pt")
 ```
+
+### Serve API
+
+```bash
+uv run --extra serve python -m myna.serve --ckpt runs/myna-v0 --port 8080
+```
+
+| | |
+|---|---|
+| `POST /v1/predict` | `{state, questions}` → answers (laya `Router.predict` contract) |
+| `POST /v1/sessions` | `{state}` → `session_id` — the state is scanned once, here |
+| `POST /v1/sessions/{id}/append` | `{text}` → only the delta is scanned |
+| `POST /v1/sessions/{id}/ask` | `{questions}` → answers; flat cost as the session grows |
+| `DELETE /v1/sessions/{id}` | release the 576 KiB and be done |
 
 ## What v0 is and isn't
 

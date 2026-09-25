@@ -44,6 +44,14 @@ class Observation:
         new_S = self.m.trunk.append_state(ids_t, self.S_cache, len(self.ids), chunk=INFER_CHUNK)[1]
         return Observation(self.m, self.ids + delta, new_S)
 
+    def save_state(self, path: str | Path) -> None:
+        """Persist the whole observation: it is only the token list plus the
+        fixed-size S stack, so a session snapshot is ~0.6 MB."""
+        torch.save(
+            {"ids": self.ids, "S": [s.detach().cpu() for s in self.S_cache]},
+            str(path),
+        )
+
     def ask(self, questions: dict) -> dict:
         t0 = time.perf_counter()
         specs = [(name, spec) for name, spec in questions.items()]
@@ -107,6 +115,12 @@ class Myna:
 
     def predict(self, state: str, questions: dict) -> dict:
         return self.observe(state).ask(questions)
+
+    def restore(self, path: str | Path) -> Observation:
+        """Reopen an observation saved by Observation.save_state — the scan
+        that produced it is never repeated."""
+        blob = torch.load(str(path), map_location=self.device, weights_only=True)
+        return Observation(self, list(blob["ids"]), [s.to(self.device) for s in blob["S"]])
 
     def _options(self, spec: dict) -> list[str]:
         qtype = spec["type"]
