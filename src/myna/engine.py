@@ -90,6 +90,10 @@ class Myna:
     def trunk(self):
         return self.model.trunk
 
+    @property
+    def n_params(self) -> int:
+        return sum(p.numel() for p in self.model.parameters())
+
     @torch.no_grad()
     def observe(self, text: str) -> Observation:
         ids = encode_text(self.tok, text)
