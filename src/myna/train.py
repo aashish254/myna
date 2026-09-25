@@ -160,6 +160,14 @@ def main():
             names = [k for k in m if not k.endswith((":brier", ":ece"))]
             acc = sum(m[k] for k in names) / len(names)
             print(f"step {step:5d}  dev-mid acc {acc:.4f}", flush=True)
+            # rolling snapshot so a long run can be evaluated or stopped early
+            out = Path(args.out)
+            out.mkdir(parents=True, exist_ok=True)
+            tok.save(str(out / "tokenizer.json"))
+            torch.save(
+                {"state_dict": model.state_dict(), "cfg": vars(cfg), "temperature": 1.0, "step": step},
+                out / "model_last.pt",
+            )
 
     temperature = fit_temperature(model, tok, data["dev"], device)
     print(f"temperature: {temperature}")
