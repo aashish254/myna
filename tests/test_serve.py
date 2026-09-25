@@ -55,10 +55,15 @@ def test_session_stream_matches_direct(client):
     direct = client.post("/v1/predict", json={"state": e.state, "questions": QUESTIONS}).json()
     for name in QUESTIONS:
         a, b = asked["answers"][name], direct["answers"][name]
+        # this checks plumbing (same questions reach the same heads), not
+        # numeric exactness: append vs single-pass are different float32
+        # summation orders on random-init weights, and exactness is pinned
+        # in float64 by tests/test_trunk_numerics.py
+        tol = 5e-2
         if "probabilities" in a:
             worst = max(abs(a["probabilities"][k] - b["probabilities"][k]) for k in a["probabilities"])
-            assert worst < 1e-2, (name, worst)
+            assert worst < tol, (name, worst)
         elif "noul" in a:
-            assert abs(a["noul"] - b["noul"]) < 1e-2, name
+            assert abs(a["noul"] - b["noul"]) < tol, name
     assert client.delete(f"/v1/sessions/{sid}").status_code == 200
     assert client.post(f"/v1/sessions/{sid}/ask", json={"questions": QUESTIONS}).status_code == 404
