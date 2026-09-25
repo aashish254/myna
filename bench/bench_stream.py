@@ -162,10 +162,32 @@ def main():
         print(f"laya          avg {ms_laya:8.2f} ms/request")
         rows.append(("laya", ms_laya))
 
+        # same token-length ladder as the myna sweep (laya caps input at 8192)
+        print("\n== laya re-encode at matched state lengths ==")
+        print(f"{'state tokens':>13} | {'laya ms':>10}")
+        laya_rows = []
+        for target in (128, 512, 1024, 2048, 4096, 8192):
+            lats = []
+            for rep in range(args.n // 2 + 1):
+                ids = encode_text(myna.tok, base)
+                while len(ids) < target:
+                    ids += encode_text(myna.tok, base)
+                text = myna.tok.decode(ids[:target])
+                t0 = time.perf_counter()
+                router.predict(text, questions)
+                lats.append((time.perf_counter() - t0) * 1000)
+            ms = sum(lats) / len(lats)
+            print(f"{target:>13} | {ms:>10.2f}")
+            laya_rows.append((target, ms))
+    else:
+        laya_rows = []
+
     with open("runs/bench_stream.md", "w") as f:
-        f.write("| state tokens | myna-stream ms | myna-full (re-encode) ms | speedup |\n|---|---|---|---|\n")
+        laya_by_len = dict(laya_rows)
+        f.write("| state tokens | myna-stream ms | myna-full (re-encode) ms | speedup | laya re-encode ms |\n|---|---|---|---|---|\n")
         for target, s, fl in scale_rows:
-            f.write(f"| {target} | {s:.2f} | {fl:.2f} | {fl/s:.1f}x |\n")
+            ly = laya_by_len.get(target)
+            f.write(f"| {target} | {s:.2f} | {fl:.2f} | {fl/s:.1f}x | {'n/a (above 8192 cap)' if ly is None else f'{ly:.2f}'} |\n")
     print("wrote runs/bench_stream.md")
 
 
