@@ -230,15 +230,49 @@ WORKFLOWS = {
     ),
 }
 
-# disjoint nouns per split: dev/test use nouns the model never saw in training
+# disjoint nouns per split: dev/test use nouns the model never saw in training.
+# The pool is deliberately large (~50/split) so any single (template, noun)
+# pair is rare — keying on noun identity stops paying off relative to keying
+# on the shared template words.
 SPLIT_NOUNS = {
-    "train": ["laptop", "router", "invoice", "app", "subscription", "charger", "portal", "headset",
-              "account", "billing page", "checkout", "mobile site", "database", "smartwatch"],
-    "dev": ["tablet", "modem", "receipt", "widget", "membership", "cable", "dashboard", "earbuds",
-            "profile", "pricing page", "cart", "desktop app", "cache", "keyboard"],
-    "test": ["monitor", "switch", "statement", "gadget", "plan", "adapter", "console", "speakers",
-             "workspace", "settings page", "gateway", "browser build", "queue", " stylus"],
+    "train": [
+        "laptop", "router", "invoice", "app", "subscription", "charger", "portal", "headset",
+        "account", "billing page", "checkout", "mobile site", "database", "smartwatch",
+        "keyboard", "monitor stand", "warranty", "delivery slot", "loyalty card", "gift card",
+        "wifi plan", "phone line", "browser tab", "desktop", "mouse", "webcam", "microphone",
+        "standing desk", "office chair", "printer", "scanner", "sim card", "data plan",
+        "cloud storage", "backup drive", "sd card", "power bank", "dock", "ethernet cable",
+        "service ticket", "support chat", "refund request", "order summary", "shipping label",
+        "courier bag", "store pickup", "return slip", "trade-in", "installment plan", "promo code",
+    ],
+    "dev": [
+        "tablet", "modem", "receipt", "widget", "membership", "cable", "dashboard", "earbuds",
+        "profile", "pricing page", "cart", "desktop app", "cache", "keyboard case",
+        "laptop sleeve", "screen protector", "adapter plug", "surge protector", "server rack",
+        "cooling fan", "battery pack", "memory stick", "network switch", "wireless tag",
+        "tracking link", "shipping box", "pickup locker", "store credit", "annual plan",
+        "trial period", "renewal notice", "support pin", "service plan", "care package",
+        "device list", "pairing code", "sync folder", "upload queue", "download link",
+        "preview build", "stable release", "nightly image", "test channel", "beta program",
+        "feedback form", "rating star", "review page", "wishlist", "price alert", "coupon",
+    ],
+    "test": [
+        "monitor", "switch", "statement", "gadget", "plan", "adapter", "console", "speakers",
+        "workspace", "settings page", "gateway", "browser build", "queue", "stylus",
+        "e-reader", "drawing pad", "voltage regulator", "extension cord", "label printer",
+        "barcode gun", "pos terminal", "card reader", "nfc tag", "kiosk screen", "handheld",
+        "wearable band", "home hub", "smart plug", "video doorbell", "motion sensor",
+        "service contract", "maintenance plan", "trade counter", "repair shop", "loaner device",
+        "courier note", "cargo bin", "pallet jack", "stock room", "pick list", "scan form",
+        "delivery van", "route map", "drop point", "signature pad", "claim number",
+        "policy doc", "terms page", "status feed", "incident log",
+    ],
 }
+
+# generic noun dropout: with small probability every {item} in an example is
+# replaced by a content-free placeholder, forcing template-only solutions
+# templates embed nouns as "the {item}", so placeholders stay article-free
+GENERIC_NOUNS = ["item", "thing", "product", "order", "package"]
 
 SUBJECTS = [
     "Hello, I", "Hi team, I", "Hey, we", "Please help, I", "URGENT, we", "Again, I",
@@ -274,9 +308,10 @@ def _sentence(rng, cue_pools, key, nouns):
 
 def generate(n, workflow, rng, split="train"):
     questions, cues = WORKFLOWS[workflow]
-    nouns = SPLIT_NOUNS[split]
+    split_nouns = SPLIT_NOUNS[split]
     out = []
     for _ in range(n):
+        nouns = GENERIC_NOUNS if rng.random() < 0.15 else split_nouns
         labels = [rng.randrange(len(q.options)) for q in questions]
         parts = []
         for q, lab in zip(questions, labels):
