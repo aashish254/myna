@@ -132,6 +132,14 @@ class GLA(nn.Module):
         self.h, self.dk, self.dv = n_heads, d_k, d_v
         self.qkv = nn.Linear(d_model, n_heads * (2 * d_k + d_v), bias=False)
         self.gate = nn.Linear(d_model, n_heads * d_k, bias=True)
+        # Forget-gate init matters enormously: with the default bias 0 the
+        # gate is sigmoid(0)=0.5, so a token's memory decays to 1e-6 within
+        # 20 steps and the model literally cannot read its observation at
+        # init (measured; training then never escapes chance). Start at
+        # a=sigmoid(4.6)~0.99 with no input dependence: long memory is the
+        # prior, input-dependent forgetting is learned.
+        nn.init.zeros_(self.gate.weight)
+        nn.init.constant_(self.gate.bias, 4.6)
         self.out_proj = nn.Linear(n_heads * d_v, d_model, bias=False)
 
     def _split(self, x, pos):
