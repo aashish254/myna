@@ -271,8 +271,9 @@ SPLIT_NOUNS = {
 
 # generic noun dropout: with small probability every {item} in an example is
 # replaced by a content-free placeholder, forcing template-only solutions
-# templates embed nouns as "the {item}", so placeholders stay article-free
-GENERIC_NOUNS = ["item", "thing", "product", "order", "package"]
+# templates embed nouns as "the {item}", so placeholders stay article-free,
+# and none of them is a word inside any split's noun list
+GENERIC_NOUNS = ["item", "thing", "product", "purchase", "unit"]
 
 SUBJECTS = [
     "Hello, I", "Hi team, I", "Hey, we", "Please help, I", "URGENT, we", "Again, I",
