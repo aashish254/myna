@@ -16,12 +16,13 @@ from myna.train import build_batch
 
 
 def test_proper_score_closed_forms():
-    p = torch.tensor([0.7, 0.2, 0.1])
-    g = torch.tensor([1])
-    onehot = F.one_hot(g, 3).float()
-    assert abs(float(proper_score(p[None], g[None], "log")) - torch.log(torch.tensor(0.2)).item()) < 1e-6
-    brier = 1.0 - ((p - onehot) ** 2).sum()
-    assert abs(float(proper_score(p[None], g[None], "brier")) - float(brier)) < 1e-6
+    p = torch.tensor([[0.7, 0.2, 0.1]])  # [B=1, O]
+    g = torch.tensor([[1]])              # [B=1, N=1]
+    probs, gold = p[:, None, :], g       # [1, 1, O] and [1, 1]
+    onehot = F.one_hot(gold, 3).float()
+    assert abs(float(proper_score(probs, gold, "log")) - float(torch.log(torch.tensor(0.2)))) < 1e-6
+    brier = 1.0 - ((probs - onehot) ** 2).sum(-1)
+    assert abs(float(proper_score(probs, gold, "brier")) - float(brier)) < 1e-6
 
 
 @pytest.fixture(scope="module")
