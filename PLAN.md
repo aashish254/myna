@@ -55,6 +55,10 @@ exactly, with zero drift.
    architecture. laya/kev can only offer stateless `/predict`. Gotcha:
    `from __future__ import annotations` makes FastAPI treat body models as
    query params (422); serve.py deliberately omits it.
+9. **Long memory is the prior; forgetting is learned.** The GLA forget gate
+   initializes at weight 0, bias sigmoid⁻¹(0.99). With the default bias 0 the
+   gate sits at 0.5 and erases a token's trace to 1e-6 within 20 steps —
+   training from that regime never escaped chance on the full corpus.
 
 ## Benchmarks
 
@@ -64,7 +68,31 @@ tables. Probe-checkpoint sweep on M5, idle machine: myna-stream flat
 16x at 4k, 31.5x at 8k, 58x at 16k. To be re-measured on the v0 checkpoint
 and against laya.)
 
+## The plateau post-mortem (2026-09-25/26)
+
+The first 6000-step run sat at chance (dev acc 0.335, EMA loss 1.15 = the
+label-prior entropy) through 1000 steps and was stopped. Two findings:
+
+1. **Gate init.** With `sigmoid(0)=0.5` forget gates, a token's memory decayed
+   to ~1e-6 within 20 steps — long observations were unreadable at init.
+   Fixed by zeroing the gate weight and biasing to a≈0.99 (decision 9 below).
+2. **Epoch budget, not capacity.** A fit-ladder diagnostic (bench/diag_*.py)
+   showed: 192 examples fit to 0.97 in 10 epochs; 768 examples are still
+   memorizing at 8 epochs (fit 0.45). The 6000-step plan over 18k examples
+   is only ~30 epochs — the old run was stopped at 5 epochs, mid-noise, and
+   the "plateau" was slow learning, not a dead end. Lesson: judge a run by
+   fit-accuracy per EPOCH, not loss per step.
+
+Open question that matters more now: gen(dev) stayed ~0.375 while fit rose —
+if generalization stays far behind memorization at scale, the disjoint-noun
+design is the suspect (the model keys on noun tokens inside templates), and
+the fix is data-side: more nouns per split, more template paraphrases, or
+noun-position randomization.
+
 ## Open questions / next
+
+- Gate init fix: keep a≈0.99 or try a floor parameterization
+  `a = exp(-softplus(x))` like Mamba's dt? Measure both.
 
 - Chunk size 16 is arbitrary; sweep 8–64 for MPS throughput.
 - `torch.compile` the chunked scan; or a custom Metal kernel.

@@ -21,9 +21,10 @@ LR = float(sys.argv[2]) if len(sys.argv) > 2 else 6e-4
 
 rng = random.Random(42)
 device = "mps" if torch.backends.mps.is_available() else "cpu"
+train_pool = {wf: generate(2000, wf, rng, "train") for wf in WORKFLOWS}
 data = {
-    "train": {wf: generate(2000, wf, rng, "train") for wf in WORKFLOWS},
-    "probe_train": {wf: data[:200] for wf, data in data["train"].items()},
+    "train": train_pool,
+    "probe_train": {wf: exs[:200] for wf, exs in train_pool.items()},
     "dev": {wf: generate(200, wf, random.Random(99), "dev") for wf in WORKFLOWS},
 }
 tok = train_tokenizer([e.state for wf in data["train"].values() for e in wf], vocab_size=4096)
