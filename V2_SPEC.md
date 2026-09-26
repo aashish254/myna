@@ -1,5 +1,12 @@
 # Myna v2 — Spec: the state is the database
 
+> **Superseded on numbers by [SPEC.md](SPEC.md)**, which is the authoritative master spec: goals,
+> acceptance gates, plan phases, baselines and the corrections log. This file remains the
+> long-range *research* program (Pillars 1–6: state algebra, O(window) edits, two-timescale
+> memory, utility heads, on-device learning). Where a figure here disagrees with SPEC.md, SPEC.md
+> wins — notably 14.4M → **15.35M measured**, and the 239× figure, which is an internal ablation
+> and not a competitor comparison.
+
 v0 proved the engine: a 14.4M-param persistent-state decision model that
 answers typed questions in ~30 ms flat from 128→16k tokens, 239x faster than
 re-reading, calibrated to ECE ≤ 0.04, on a MacBook.
