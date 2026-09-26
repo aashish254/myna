@@ -195,6 +195,11 @@ def main():
                          "chases a different task every step and never fits any (interference).")
     ap.add_argument("--warmup", type=int, default=0,
                     help="linear LR warmup over this many updates before cosine decay")
+    ap.add_argument("--group-sample", choices=["uniform", "pool", "sqrt"], default="pool",
+                    help="how to pick question-sets per mini-batch. Measured on decision-v2, "
+                         "uniform sends only ~1.4% of updates to the 16 data-rich sets (12.5% for "
+                         "sqrt) and they measured below chance; pool sends 65%. Pool weighting "
+                         "was harmless before gradient accumulation removed the interference.")
     ap.add_argument("--min-train-pool", type=int, default=0,
                     help="drop train question-sets with fewer than this many examples "
                          "(isolates the data-rich tasks; 0 keeps the whole suite)")
@@ -258,16 +263,22 @@ def main():
 
     wfs = list(data["train"])
 
-    def group_cycle(keys):
-        """Uniform without replacement: every question-set is visited exactly once per pass.
-        Pool-weighted sampling starved the ~1000 one-example sets and drowned the trunk in
-        whichever large set was drawn."""
+    def group_cycle(keys, mode):
+        """uniform = every set once per pass (full coverage, but on this suite 98.6% of
+        updates then train sets that cannot be learned from one example, and the rich sets
+        measured below chance at the same update count). pool = weight by example count.
+        sqrt = geometric compromise between the two."""
+        if mode == "uniform":
+            while True:
+                ks = list(keys)
+                rng.shuffle(ks)
+                yield from ks
+        pw = {"pool": 1.0, "sqrt": 0.5}[mode]
+        weights = [len(data["train"][k][1]) ** pw for k in keys]
         while True:
-            ks = list(keys)
-            rng.shuffle(ks)
-            yield from ks
+            yield rng.choices(keys, weights=weights, k=1)[0]
 
-    cycle = group_cycle(wfs)
+    cycle = group_cycle(wfs, args.group_sample)
     dev_probe = {
         wf: (q, exs[: args.eval_n]) for wf, (q, exs) in data["dev"].items()
     } if data["dev"] else {
