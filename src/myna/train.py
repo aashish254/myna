@@ -17,7 +17,7 @@ from tokenizers import Tokenizer
 
 from .data import WORKFLOWS, generate
 from .model import MynaConfig, MynaModel, typed_loss
-from .tokenizer import question_tensors, train_tokenizer, encode_text
+from .tokenizer import question_tensors, batch_question_tensors, train_tokenizer, encode_text
 
 
 def draw_batch(pool, batch, rng):
@@ -31,9 +31,8 @@ def draw_batch(pool, batch, rng):
 
 
 def build_batch(exs, tok, questions, device):
-    """questions: list[Question] fixed for the batch (the v0 contract: one
-    question set shared across rows; real-corpus batches group by question
-    signature, see myna.real_data)."""
+    """questions: list[Question] fixed for the batch (one question set shared
+    across rows; for per-row sets use build_row_batch)."""
     qt = question_tensors(tok, [(q.instruction, q.options) for q in questions])
     texts = [e.state for e in exs]
     ids = [encode_text(tok, t) for t in texts]
@@ -47,8 +46,88 @@ def build_batch(exs, tok, questions, device):
         "state_ids": state.to(device),
         "state_len": lens.to(device),
         "gold": gold.to(device),
+        "has_gold": torch.ones_like(gold, dtype=torch.bool).to(device),
         **{k: v.to(device) for k, v in qt.items()},
     }
+
+
+def build_row_batch(items, tok, device):
+    """items: list[(questions, Example)] — one question set PER ROW.
+
+    Rows may differ in question count and option count; both pad to the batch
+    maximum, and `has_gold` marks the cells that belong to a real question so a
+    mixed batch trains on the union of its cells. This is what lets 32 boolq
+    rows — 32 different instructions, one question each — share one forward
+    pass instead of running 32 batches of one.
+    """
+    qt = batch_question_tensors(tok, [[(q.instruction, q.options) for q in qs] for qs, _ in items])
+    n_q = max(len(qs) for qs, _ in items)
+    ids = [encode_text(tok, ex.state) for _qs, ex in items]
+    ls = max(len(x) for x in ids)
+    state = torch.zeros(len(ids), ls, dtype=torch.int64)
+    lens = torch.tensor([len(x) for x in ids], dtype=torch.int64)
+    for i, x in enumerate(ids):
+        state[i, : len(x)] = torch.tensor(x)
+    gold = torch.zeros(len(items), n_q, dtype=torch.int64)
+    has_gold = torch.zeros(len(items), n_q, dtype=torch.bool)
+    for i, (qs, ex) in enumerate(items):
+        gold[i, : len(qs)] = torch.tensor(ex.gold[: len(qs)], dtype=torch.int64)
+        has_gold[i, : len(qs)] = True
+    return {
+        "state_ids": state.to(device),
+        "state_len": lens.to(device),
+        "gold": gold.to(device),
+        "has_gold": has_gold.to(device),
+        **{k: v.to(device) for k, v in qt.items()},
+    }
+
+
+def question_tokens(tok, questions, cache=None):
+    """The row's longest question, in tokens — the width its batch row pads to.
+
+    Measured with the tokenizer the batch will actually use: a chars/4 rule is
+    off by 2-4x on a small BPE, and this number is what the memory budget is
+    made of. Memoized on the question set, which a suite reuses across
+    thousands of rows, so the whole corpus pays it once per schema.
+    """
+    key = id(questions)
+    if cache is not None and key in cache:
+        return cache[key]
+    lq = max(len(encode_text(tok, q.instruction))
+             + sum(len(encode_text(tok, o)) + 1 for o in q.options) + 1  # +1 [OPT] each, +1 [DECIDE]
+             for q in questions)
+    if cache is not None:
+        cache[key] = lq
+    return lq
+
+
+def draw_row_batch(items, batch, max_q_cells, rng, tok, cache=None):
+    """`batch` distinct rows whose padded question branch stays under
+    `max_q_cells` = rows x questions x question-tokens.
+
+    That product is the axis the machine dies on, and it is *not* the option
+    axis: bench/mem_profile.py measures 1.6 MiB of retained activations per
+    question-token position against 3 KiB per option cell — a factor of five
+    hundred (a 77-option question adds 2.7 MiB to a 24-slot batch). Both
+    questions and question tokens pad to the batch maximum, so one long
+    instruction mixed in with two short ones charges the whole batch for the
+    long one. The first picked row always goes in, so a batch is never empty.
+    """
+    out, seen, n_max, lq_max = [], set(), 0, 0
+    for _ in range(batch * 40):
+        if len(out) == batch:
+            break
+        i = rng.randrange(len(items))
+        if i in seen:
+            continue
+        qs = items[i][0]
+        n, lq = len(qs), question_tokens(tok, qs, cache)
+        if out and (len(out) + 1) * max(n, n_max) * max(lq, lq_max) > max_q_cells:
+            continue
+        seen.add(i)
+        n_max, lq_max = max(n, n_max), max(lq, lq_max)
+        out.append(items[i])
+    return out
 
 
 def evaluate(model, tok, splits, device, temperature=1.0):
@@ -213,6 +292,16 @@ def main():
     ap.add_argument("--min-train-pool", type=int, default=0,
                     help="drop train question-sets with fewer than this many examples "
                          "(isolates the data-rich tasks; 0 keeps the whole suite)")
+    ap.add_argument("--row-batch", action="store_true",
+                    help="draw each mini-batch across the whole train split with one question set "
+                         "per row, instead of one shared set per mini-batch. Unblocks boolq/mnli "
+                         "(whose instruction text IS the row) and decouples batch size from "
+                         "question-set pool size; makes --group-sample inert.")
+    ap.add_argument("--max-q-cells", type=int, default=2048,
+                    help="with --row-batch: rows x questions x question-tokens per forward. "
+                         "Measured at 1.6 MiB of retained activations per cell "
+                         "(bench/mem_profile.py), so 2048 is a ~3.2 GB question branch. The "
+                         "option axis costs ~3 KiB per cell and is not what filled the M5.")
     ap.add_argument("--long-context", type=int, default=0,
                     help="train needle-in-long-context recall at this state token length (V1-D); "
                          "uses truncated backprop and ignores --suite/--synthetic")
@@ -298,6 +387,17 @@ def main():
             yield rng.choices(keys, weights=weights, k=1)[0]
 
     cycle = group_cycle(wfs, args.group_sample)
+    row_items = None
+    if args.row_batch:
+        from .real_data import flatten_groups
+
+        row_items = flatten_groups(data["train"])
+        q_len_cache: dict[int, int] = {}
+        widest = max((len(qs), question_tokens(tok, qs, q_len_cache)) for qs, _ in row_items)
+        print(f"row-batch: {len(row_items)} rows in one pool, {len(q_len_cache)} question sets, "
+              f"widest row {widest[0]} questions x {widest[1]} tokens; budget "
+              f"{args.max_q_cells} cells/forward (~{args.max_q_cells * 1.6 / 1024:.1f} GB branch)",
+              flush=True)
     dev_probe = {
         wf: (q, exs[: args.eval_n]) for wf, (q, exs) in data["dev"].items()
     } if data["dev"] else {
@@ -312,13 +412,17 @@ def main():
         opt.zero_grad(set_to_none=True)
         run_loss = 0.0
         for _ in range(K):
-            wf = next(cycle)
-            questions, pool = data["train"][wf]
-            exs = draw_batch(pool, args.batch, rng)
-            b = build_batch(exs, tok, questions, device)
+            if row_items is None:
+                wf = next(cycle)
+                questions, pool = data["train"][wf]
+                b = build_batch(draw_batch(pool, args.batch, rng), tok, questions, device)
+            else:
+                items = draw_row_batch(row_items, args.batch, args.max_q_cells, rng, tok,
+                                    q_len_cache)
+                b = build_row_batch(items, tok, device)
             logits = model(b["state_ids"], b["state_len"], b["q_ids"], b["q_mask"],
                            b["span_mat"], b["opt_valid"], b["decide_idx"])
-            loss = typed_loss(logits, b["gold"], torch.ones_like(b["gold"], dtype=torch.bool)) / K
+            loss = typed_loss(logits, b["gold"], b["has_gold"]) / K
             loss.backward()
             run_loss += loss.item()
         torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)

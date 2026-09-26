@@ -7,9 +7,11 @@ ship:
       "instructions": "...", "criteria": {opt: desc|null} | [legend] | null,
       "label": key | bool | int}}, "_meta": {...}}
 
-myna's batch contract is one shared question tensor set per batch (v0), so
-rows are grouped by question-set signature and each group behaves like a
-synthetic workflow. Labels become option indices: choice -> position of the
+Rows that share a question set are grouped by question-set signature, so a
+group behaves like a synthetic workflow and one shared tensor set serves its
+whole batch. Rows whose instructions differ from each other (boolq, mnli) each
+form a group of one; `flatten_groups` hands those rows to the per-row batch
+contract instead. Labels become option indices: choice -> position of the
 label key among criteria keys, noul -> 0/1 on ["no", "yes"], score -> the
 level index. Options with no description fall back to the key humanized.
 """
@@ -103,6 +105,18 @@ def load_suite(root, train="train.jsonl", dev="development.jsonl", test="test.js
         p = root / fname
         out[name] = load_split(p) if p.exists() else {}
     return out
+
+
+def flatten_groups(groups):
+    """{group_key: (questions, examples)} -> [(questions, Example), ...] one entry
+    per row.
+
+    Lossless: a group is keyed on the *exact* question JSON, so every row in it
+    genuinely shares its question set. Flattening therefore loses nothing while
+    giving the per-row batch contract (P2) a source-blind row list to draw from
+    -- which is what boolq and mnli need, their 300 singleton groups each being
+    one row deep."""
+    return [(q, ex) for q, exs in groups.values() for ex in exs]
 
 
 def suite_texts(groups):

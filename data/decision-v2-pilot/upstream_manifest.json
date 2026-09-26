@@ -1,0 +1,296 @@
+{
+  "derived_from": "/Users/aashish/github contribution /GIT/kev/evals/decision-v2",
+  "seed": 20260919,
+  "converters": "kev.data.build + kev.contrastive.generate at the pinned suite above",
+  "dataset_revisions": {
+    "legacy-datasets/banking77": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "google/boolq": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "fancyzhx/ag_news": "eb185aade064a813bc0b7f42de02595523103ca4",
+    "nyu-mll/multi_nli": "da70db2af9d09693783c3320c4249840212ee221",
+    "SetFit/sst5": "e51bdcd8cd3a30da231967c1a249ba59361279a3",
+    "Yelp/yelp_review_full": "c1f9ee939b7d05667af864ee1cb066393154bf85",
+    "CogComp/trec": "65752bf53af25bc935a0dce92fb5b6c930728450",
+    "fancyzhx/dbpedia_14": "9abd46cf7fc8b4c64290f26993c540b92aa145ac",
+    "SetFit/amazon_reviews_multi_en": "ec73b665e4be0f567b69d39425355401cfe0d29b",
+    "stanfordnlp/imdb": "e6281661ce1c48d982bc483cf8a173c1bbeb5d31"
+  },
+  "base_revisions": {
+    "Qwen/Qwen2.5-0.5B": "060db6499f32faf8b98477b0a26969ef7d8b9987",
+    "Qwen/Qwen3-0.6B-Base": "da87bfb608c14b7cf20ba1ce41287e8de496c0cd"
+  },
+  "admission": {
+    "max_branch": 960,
+    "context": {
+      "max_state": 384,
+      "max_branch": 1024,
+      "max_packed": 2048,
+      "truncate": false
+    }
+  },
+  "per_source_target": 5000,
+  "contrastive_pairs_per_family": 600,
+  "includes_frozen_suite_train": true,
+  "dedup_key": "blocked on BOTH: sha256 of the casefolded, whitespace-collapsed rendered state (state_digest) and the suite's own _meta.text_sha256 upstream-field hash",
+  "records": {
+    "train": 57904,
+    "upstream": 54472,
+    "frozen_suite_train": 3432,
+    "questions": 73804
+  },
+  "state_tokens_under_first_base": {
+    "n": 57904,
+    "median": 49,
+    "p95": 263,
+    "max": 402,
+    "sum": 4246106
+  },
+  "dedup": {
+    "excluded_against": [
+      "development",
+      "test",
+      "calibration"
+    ],
+    "eval_states": 2368,
+    "eval_texts": 2368,
+    "frozen_train_states": 3431,
+    "frozen_train_texts": 3430
+  },
+  "verification": {
+    "rows_re_read": 57904,
+    "eval_matches": 0,
+    "frozen_train_matches": 0,
+    "repeated_states_within_pull": 0,
+    "round_trip_exact": true
+  },
+  "reports": {
+    "banking77": {
+      "source": "banking77",
+      "pool": 10003,
+      "considered": 9659,
+      "eval_collision": 40,
+      "in_frozen_train": 300,
+      "duplicate_state": 4,
+      "context_rejected": 0,
+      "admitted": 5000,
+      "shortfall": 0,
+      "admission_report": {
+        "considered": 5000,
+        "accepted": 5000
+      },
+      "state_counts": {
+        "in_frozen_train": 300,
+        "eval_collision": 40,
+        "duplicate_state": 4
+      }
+    },
+    "boolq": {
+      "source": "boolq",
+      "pool": 9427,
+      "considered": 8054,
+      "eval_collision": 150,
+      "in_frozen_train": 497,
+      "duplicate_state": 726,
+      "context_rejected": 38,
+      "admitted": 5000,
+      "shortfall": 0,
+      "admission_report": {
+        "considered": 5272,
+        "accepted": 5000,
+        "context_rejected": 38,
+        "duplicate_state": 234
+      },
+      "state_counts": {
+        "eval_collision": 150,
+        "in_frozen_train": 497,
+        "duplicate_state": 726
+      }
+    },
+    "agnews": {
+      "source": "agnews",
+      "pool": 15000,
+      "considered": 14658,
+      "eval_collision": 40,
+      "in_frozen_train": 301,
+      "duplicate_state": 1,
+      "context_rejected": 0,
+      "admitted": 5000,
+      "shortfall": 0,
+      "admission_report": {
+        "considered": 5001,
+        "accepted": 5000,
+        "duplicate_state": 1
+      },
+      "state_counts": {
+        "in_frozen_train": 301,
+        "eval_collision": 40,
+        "duplicate_state": 1
+      }
+    },
+    "mnli": {
+      "source": "mnli",
+      "pool": 15000,
+      "considered": 14305,
+      "eval_collision": 44,
+      "in_frozen_train": 322,
+      "duplicate_state": 329,
+      "context_rejected": 0,
+      "admitted": 5000,
+      "shortfall": 0,
+      "admission_report": {
+        "considered": 5025,
+        "accepted": 5000,
+        "duplicate_state": 25
+      },
+      "state_counts": {
+        "in_frozen_train": 322,
+        "eval_collision": 44,
+        "duplicate_state": 329
+      }
+    },
+    "sst5": {
+      "source": "sst5",
+      "pool": 8544,
+      "considered": 8199,
+      "eval_collision": 42,
+      "in_frozen_train": 300,
+      "duplicate_state": 3,
+      "context_rejected": 0,
+      "admitted": 5000,
+      "shortfall": 0,
+      "admission_report": {
+        "considered": 5005,
+        "accepted": 5000,
+        "duplicate_state": 5
+      },
+      "state_counts": {
+        "in_frozen_train": 300,
+        "eval_collision": 42,
+        "duplicate_state": 3
+      }
+    },
+    "yelp": {
+      "source": "yelp",
+      "pool": 15000,
+      "considered": 14660,
+      "eval_collision": 40,
+      "in_frozen_train": 300,
+      "duplicate_state": 0,
+      "context_rejected": 13,
+      "admitted": 5000,
+      "shortfall": 0,
+      "admission_report": {
+        "considered": 5013,
+        "accepted": 5000,
+        "context_rejected": 13
+      },
+      "state_counts": {
+        "in_frozen_train": 300,
+        "eval_collision": 40
+      }
+    },
+    "trec": {
+      "source": "trec",
+      "pool": 5452,
+      "considered": 5076,
+      "eval_collision": 43,
+      "in_frozen_train": 307,
+      "duplicate_state": 26,
+      "context_rejected": 0,
+      "admitted": 5000,
+      "shortfall": 0,
+      "admission_report": {
+        "considered": 5039,
+        "accepted": 5000,
+        "duplicate_state": 39
+      },
+      "state_counts": {
+        "in_frozen_train": 307,
+        "eval_collision": 43,
+        "duplicate_state": 26
+      }
+    },
+    "dbpedia14": {
+      "source": "dbpedia14",
+      "pool": 15000,
+      "considered": 14660,
+      "eval_collision": 40,
+      "in_frozen_train": 300,
+      "duplicate_state": 0,
+      "context_rejected": 0,
+      "admitted": 5000,
+      "shortfall": 0,
+      "admission_report": {
+        "considered": 5000,
+        "accepted": 5000
+      },
+      "state_counts": {
+        "in_frozen_train": 300,
+        "eval_collision": 40
+      }
+    },
+    "amazon": {
+      "source": "amazon",
+      "pool": 15000,
+      "considered": 14650,
+      "eval_collision": 40,
+      "in_frozen_train": 300,
+      "duplicate_state": 10,
+      "context_rejected": 0,
+      "admitted": 5000,
+      "shortfall": 0,
+      "admission_report": {
+        "considered": 5000,
+        "accepted": 5000
+      },
+      "state_counts": {
+        "in_frozen_train": 300,
+        "eval_collision": 40,
+        "duplicate_state": 10
+      }
+    },
+    "imdb": {
+      "source": "imdb",
+      "pool": 15000,
+      "considered": 14645,
+      "eval_collision": 42,
+      "in_frozen_train": 297,
+      "duplicate_state": 16,
+      "context_rejected": 0,
+      "admitted": 5000,
+      "shortfall": 0,
+      "admission_report": {
+        "considered": 5006,
+        "accepted": 5000,
+        "duplicate_state": 6
+      },
+      "state_counts": {
+        "in_frozen_train": 297,
+        "eval_collision": 42,
+        "duplicate_state": 16
+      }
+    },
+    "contrastive": {
+      "source": "contrastive",
+      "pool": 4800,
+      "considered": 4800,
+      "eval_collision": 39,
+      "in_frozen_train": 52,
+      "duplicate_state": 73,
+      "context_rejected": 0,
+      "admitted": 4472,
+      "shortfall": 0,
+      "admission_report": {
+        "pairs_generated": 2400,
+        "pairs_rejected_by_checks": 0,
+        "rows_admitted": 4472
+      },
+      "state_counts": {
+        "eval_collision": 39,
+        "in_frozen_train": 52,
+        "duplicate_state": 73
+      },
+      "pairs_rejected_by_checks": 0
+    }
+  },
+  "sha256_train": "5f5f93ff7ca03e4522dbe5bdff50e0a92cd5467d613d32d6a5988b8a00870a64"
+}

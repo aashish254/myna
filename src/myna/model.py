@@ -5,8 +5,11 @@ option spans against a DECIDE probe. `choice` reads the argmax, `score` the
 ordinal expectation, `noul` the probability on the implicit "Yes" option.
 No vocabulary readout, no generation, no parsing.
 
-Question templates are fixed per workflow, so the whole batch shares the
-question segment tensors — only the state varies per row.
+Question segments come in two shapes: one set shared by the whole batch (a
+fixed workflow) or one set per row, which is what the real suites need — boolq
+and mnli put the example itself in the instruction text, so every row has a
+different question. Only the state varies per row in the first case; the second
+pads questions, options and question tokens to the batch maximum.
 """
 
 from __future__ import annotations
@@ -45,33 +48,46 @@ class MynaModel(nn.Module):
 
     def _question_head(self, S_layers, state_len, q_ids, q_mask, span_mat, opt_valid, decide_idx):
         """Pointer readout given per-layer state-ends S_layers and per-row state
-        lengths. Factored out so the state prefix can be scanned detached."""
+        lengths. Factored out so the state prefix can be scanned detached.
+
+        Question tensors may arrive per-batch-row ([B,N,...], so one batch mixes
+        question-sets) or shared across the batch ([N,...], the v0 contract);
+        the shared form is broadcast rather than duplicated.
+        """
         B = state_len.shape[0]
-        N, Lq = q_ids.shape
+        if q_ids.dim() == 2:
+            N, Lq = q_ids.shape
+            q_ids = q_ids.expand(B, N, Lq)
+            q_mask = q_mask.expand(B, N, Lq)
+            span_mat = span_mat.expand(B, N, *span_mat.shape[1:])
+            opt_valid = opt_valid.expand(B, *opt_valid.shape)
+            decide_idx = decide_idx.expand(B, N)
+        N, Lq = q_ids.shape[1], q_ids.shape[2]
         dev = q_ids.device
-        hq = self.trunk.tok(q_ids).expand(B, N, Lq, -1).reshape(B * N, Lq, -1)
-        qm = q_mask.float()[None].expand(B, N, Lq).reshape(B * N, Lq)[:, None, :, None]
+        hq = self.trunk.tok(q_ids).reshape(B * N, Lq, -1)
+        qm = q_mask.reshape(B * N, Lq)[:, None, :, None]
         pos_q = state_len.repeat_interleave(N, dim=0)[:, None] + torch.arange(Lq, device=dev)
         for layer, S in zip(self.trunk.layers, S_layers):
             hq = layer.scan_question(hq, pos_q, S.repeat_interleave(N, dim=0), parallel=True, mask=qm)
         hq = self.trunk.norm(hq).view(B, N, Lq, -1)
 
-        decide = hq[:, torch.arange(N, device=dev), decide_idx]  # [B,N,d]
-        pooled = torch.einsum("bnld,nol->bnod", hq, span_mat)
+        d = hq.shape[-1]
+        decide = hq.gather(2, decide_idx[..., None, None].expand(B, N, 1, d)).squeeze(2)  # [B,N,d]
+        pooled = torch.einsum("bnld,bnol->bnod", hq, span_mat)
         q = self.wq(decide)
         k = self.wk(pooled)
         logits = torch.einsum("bnd,bnod->bno", q, k) / (self.cfg.d_ptr**0.5)
-        return logits.masked_fill(~opt_valid[None], -1e9)
+        return logits.masked_fill(~opt_valid, -1e9)
 
     def forward(
         self,
         state_ids: torch.Tensor,  # [B, Ls]
         state_len: torch.Tensor,  # [B] true (pre-padding) lengths
-        q_ids: torch.Tensor,  # [N, Lq]
-        q_mask: torch.Tensor,  # [N, Lq] 1 for real question tokens
-        span_mat: torch.Tensor,  # [N, O, Lq] option-span pooling weights
-        opt_valid: torch.Tensor,  # [N, O]
-        decide_idx: torch.Tensor,  # [N] index of the DECIDE token
+        q_ids: torch.Tensor,  # [N, Lq] shared, or [B, N, Lq] per row
+        q_mask: torch.Tensor,  # matches q_ids; 1 for real question tokens
+        span_mat: torch.Tensor,  # [N, O, Lq] or [B, N, O, Lq] option-span pooling weights
+        opt_valid: torch.Tensor,  # [N, O] or [B, N, O]
+        decide_idx: torch.Tensor,  # [N] or [B, N] index of the DECIDE token
     ):
         B, Ls = state_ids.shape
         dev = state_ids.device
