@@ -189,6 +189,15 @@ def main():
                     help="frozen-suite dir (train/development/test.jsonl, laya/kev request shape); "
                          "overrides the synthetic corpus")
     ap.add_argument("--vocab", type=int, default=4096)
+    ap.add_argument("--accum-groups", type=int, default=1,
+                    help="question-sets averaged into each optimizer update. Real suites hold "
+                         "1000+ one-example question-sets; with 1 set per update the shared trunk "
+                         "chases a different task every step and never fits any (interference).")
+    ap.add_argument("--warmup", type=int, default=0,
+                    help="linear LR warmup over this many updates before cosine decay")
+    ap.add_argument("--min-train-pool", type=int, default=0,
+                    help="drop train question-sets with fewer than this many examples "
+                         "(isolates the data-rich tasks; 0 keeps the whole suite)")
     ap.add_argument("--long-context", type=int, default=0,
                     help="train needle-in-long-context recall at this state token length (V1-D); "
                          "uses truncated backprop and ignores --suite/--synthetic")
@@ -212,6 +221,11 @@ def main():
         from .real_data import load_suite, suite_texts
 
         data = load_suite(args.suite)
+        if args.min_train_pool:
+            data["train"] = {k: v for k, v in data["train"].items()
+                             if len(v[1]) >= args.min_train_pool}
+            print(f"train groups after pool>={args.min_train_pool}: {len(data['train'])}",
+                  flush=True)
         tok = train_tokenizer(suite_texts(data["train"]), vocab_size=args.vocab)
     else:
         data = {
@@ -232,35 +246,59 @@ def main():
     model = MynaModel(cfg).to(device)
     print("params:", sum(p.numel() for p in model.parameters()))
     opt = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=0.01)
-    sched = torch.optim.lr_scheduler.CosineAnnealingLR(opt, args.steps)
+    if args.warmup:
+        sched = torch.optim.lr_scheduler.SequentialLR(
+            opt,
+            [torch.optim.lr_scheduler.LinearLR(opt, start_factor=0.1, total_iters=args.warmup),
+             torch.optim.lr_scheduler.CosineAnnealingLR(opt, max(args.steps - args.warmup, 1))],
+            milestones=[args.warmup],
+        )
+    else:
+        sched = torch.optim.lr_scheduler.CosineAnnealingLR(opt, args.steps)
 
     wfs = list(data["train"])
-    group_weights = [len(data["train"][wf][1]) for wf in wfs]
+
+    def group_cycle(keys):
+        """Uniform without replacement: every question-set is visited exactly once per pass.
+        Pool-weighted sampling starved the ~1000 one-example sets and drowned the trunk in
+        whichever large set was drawn."""
+        while True:
+            ks = list(keys)
+            rng.shuffle(ks)
+            yield from ks
+
+    cycle = group_cycle(wfs)
     dev_probe = {
         wf: (q, exs[: args.eval_n]) for wf, (q, exs) in data["dev"].items()
     } if data["dev"] else {
         wf: (q, exs[: args.eval_n]) for wf, (q, exs) in data["train"].items()
     }
+    K = max(1, args.accum_groups)
+    log_every = max(1, min(200, args.steps // 60))
     ema = None
     step_t0 = time.time()
     for step in range(args.steps):
         model.train()
-        wf = rng.choices(wfs, weights=group_weights, k=1)[0]
-        questions, pool = data["train"][wf]
-        exs = rng.choices(pool, k=args.batch)
-        b = build_batch(exs, tok, questions, device)
-        logits = model(b["state_ids"], b["state_len"], b["q_ids"], b["q_mask"],
-                       b["span_mat"], b["opt_valid"], b["decide_idx"])
-        loss = typed_loss(logits, b["gold"], torch.ones_like(b["gold"], dtype=torch.bool))
         opt.zero_grad(set_to_none=True)
-        loss.backward()
+        run_loss = 0.0
+        for _ in range(K):
+            wf = next(cycle)
+            questions, pool = data["train"][wf]
+            exs = rng.choices(pool, k=args.batch)
+            b = build_batch(exs, tok, questions, device)
+            logits = model(b["state_ids"], b["state_len"], b["q_ids"], b["q_mask"],
+                           b["span_mat"], b["opt_valid"], b["decide_idx"])
+            loss = typed_loss(logits, b["gold"], torch.ones_like(b["gold"], dtype=torch.bool)) / K
+            loss.backward()
+            run_loss += loss.item()
         torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
         opt.step()
         sched.step()
-        ema = loss.item() if ema is None else 0.95 * ema + 0.05 * loss.item()
-        if step % 200 == 0 or step == args.steps - 1:
+        ema = run_loss if ema is None else 0.95 * ema + 0.05 * run_loss
+        if step % log_every == 0 or step == args.steps - 1:
             el = time.time() - step_t0
-            print(f"step {step:5d}  loss {loss.item():.3f}  ema {ema:.3f}  {el:.0f}s", flush=True)
+            print(f"step {step:5d}  loss {run_loss:.3f}  ema {ema:.3f}  "
+                  f"sets/update {K}  {el:.0f}s", flush=True)
         if args.eval_every and step and step % args.eval_every == 0 and step != args.steps - 1:
             m = evaluate(model, tok, dev_probe, device)
             names = [k for k in m if not k.endswith((":brier", ":ece"))]
