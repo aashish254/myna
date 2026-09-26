@@ -50,7 +50,8 @@ def test_rlcd_step_updates_params(myna):
 
     rng = random.Random(4)
     exs = generate(16, "support", rng)
-    b = build_batch(exs, myna.tok, "support", "cpu")
+    from myna.data import WORKFLOWS
+    b = build_batch(exs, myna.tok, WORKFLOWS["support"][0], "cpu")
     ref = copy.deepcopy(myna.model)
     before = [p.clone() for p in myna.model.parameters()]
     myna.model.train()

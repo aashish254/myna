@@ -21,13 +21,13 @@ LR = float(sys.argv[2]) if len(sys.argv) > 2 else 6e-4
 
 rng = random.Random(42)
 device = "mps" if torch.backends.mps.is_available() else "cpu"
-train_pool = {wf: generate(2000, wf, rng, "train") for wf in WORKFLOWS}
+train_pool = {wf: (WORKFLOWS[wf][0], generate(2000, wf, rng, "train")) for wf in WORKFLOWS}
 data = {
     "train": train_pool,
-    "probe_train": {wf: exs[:200] for wf, exs in train_pool.items()},
-    "dev": {wf: generate(200, wf, random.Random(99), "dev") for wf in WORKFLOWS},
+    "probe_train": {wf: (q, exs[:200]) for wf, (q, exs) in train_pool.items()},
+    "dev": {wf: (WORKFLOWS[wf][0], generate(200, wf, random.Random(99), "dev")) for wf in WORKFLOWS},
 }
-tok = train_tokenizer([e.state for wf in data["train"].values() for e in wf], vocab_size=4096)
+tok = train_tokenizer([e.state for _, exs in data["train"].values() for e in exs], vocab_size=4096)
 cfg = MynaConfig(vocab=tok.get_vocab_size())
 model = MynaModel(cfg).to(device)
 opt = torch.optim.AdamW(model.parameters(), lr=LR, weight_decay=0.01)
@@ -40,7 +40,8 @@ ema = None
 for step in range(STEPS):
     model.train()
     wf = wfs[step % len(wfs)]
-    b = build_batch(rng.sample(data["train"][wf], 32), tok, wf, device)
+    questions, exs = data["train"][wf]
+    b = build_batch(rng.sample(exs, 32), tok, questions, device)
     logits = model(b["state_ids"], b["state_len"], b["q_ids"], b["q_mask"],
                    b["span_mat"], b["opt_valid"], b["decide_idx"])
     loss = typed_loss(logits, b["gold"], torch.ones_like(b["gold"], dtype=torch.bool))

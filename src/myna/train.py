@@ -19,8 +19,10 @@ from .model import MynaConfig, MynaModel, typed_loss
 from .tokenizer import question_tensors, train_tokenizer, encode_text
 
 
-def build_batch(exs, tok, wf, device):
-    questions = WORKFLOWS[wf][0]
+def build_batch(exs, tok, questions, device):
+    """questions: list[Question] fixed for the batch (the v0 contract: one
+    question set shared across rows; real-corpus batches group by question
+    signature, see myna.real_data)."""
     qt = question_tensors(tok, [(q.instruction, q.options) for q in questions])
     texts = [e.state for e in exs]
     ids = [encode_text(tok, t) for t in texts]
@@ -39,15 +41,16 @@ def build_batch(exs, tok, wf, device):
 
 
 def evaluate(model, tok, splits, device, temperature=1.0):
+    """splits: {key: (questions, examples)} — synthetic workflows and real
+    suite groups both fit this shape."""
     model.eval()
     rows = {}
     ece_bin = {}  # key -> (sum_conf, sum_correct, count) aggregated in 10 bins
     with torch.no_grad():
-        for wf, data in splits.items():
-            questions = WORKFLOWS[wf][0]
+        for wf, (questions, data) in splits.items():
             for i in range(0, len(data), 64):
                 exs = data[i : i + 64]
-                b = build_batch(exs, tok, wf, device)
+                b = build_batch(exs, tok, questions, device)
                 logits = model(b["state_ids"], b["state_len"], b["q_ids"], b["q_mask"],
                                b["span_mat"], b["opt_valid"], b["decide_idx"]) / temperature
                 probs = F.softmax(logits, dim=-1)
@@ -87,9 +90,9 @@ def fit_temperature(model, tok, splits, device):
     with torch.no_grad():
         for t in [0.5, 0.7, 0.85, 1.0, 1.2, 1.5, 2.0, 3.0]:
             tot, cnt = 0.0, 0
-            for wf, data in splits.items():
+            for wf, (questions, data) in splits.items():
                 for i in range(0, min(len(data), 512), 64):
-                    b = build_batch(data[i : i + 64], tok, wf, device)
+                    b = build_batch(data[i : i + 64], tok, questions, device)
                     logits = model(b["state_ids"], b["state_len"], b["q_ids"], b["q_mask"],
                                    b["span_mat"], b["opt_valid"], b["decide_idx"]) / t
                     lp = F.log_softmax(logits, dim=-1)
@@ -112,6 +115,9 @@ def main():
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--eval-every", type=int, default=250)
     ap.add_argument("--eval-n", type=int, default=192)
+    ap.add_argument("--suite", default=None,
+                    help="frozen-suite dir (train/development/test.jsonl, laya/kev request shape); "
+                         "overrides the synthetic corpus")
     args = ap.parse_args()
 
     rng = random.Random(args.seed)
@@ -119,12 +125,24 @@ def main():
     if device == "auto":
         device = "mps" if torch.backends.mps.is_available() else "cpu"
 
-    data = {
-        "train": {wf: generate(args.n_train, wf, rng, "train") for wf in WORKFLOWS},
-        "dev": {wf: generate(args.n_eval, wf, rng, "dev") for wf in WORKFLOWS},
-        "test": {wf: generate(args.n_eval, wf, rng, "test") for wf in WORKFLOWS},
-    }
-    tok = train_tokenizer([e.state for wf in data["train"].values() for e in wf], vocab_size=4096)
+    if args.suite:
+        from .real_data import load_suite, suite_texts
+
+        data = load_suite(args.suite)
+        tok = train_tokenizer(suite_texts(data["train"]), vocab_size=4096)
+    else:
+        data = {
+            "train": {wf: generate(args.n_train, wf, rng, "train") for wf in WORKFLOWS},
+            "dev": {wf: generate(args.n_eval, wf, rng, "dev") for wf in WORKFLOWS},
+            "test": {wf: generate(args.n_eval, wf, rng, "test") for wf in WORKFLOWS},
+        }
+        tok = train_tokenizer([e.state for wf in data["train"].values() for e in wf], vocab_size=4096)
+    # uniform split shape: {split: {group_key: (questions, examples)}}
+    if not args.suite:
+        data = {
+            split: {wf: (WORKFLOWS[wf][0], exs) for wf, exs in groups.items()}
+            for split, groups in data.items()
+        }
     print("tokenizer trained:", tok.get_vocab_size())
 
     cfg = MynaConfig(vocab=tok.get_vocab_size())
@@ -134,15 +152,20 @@ def main():
     sched = torch.optim.lr_scheduler.CosineAnnealingLR(opt, args.steps)
 
     wfs = list(data["train"])
-    dev_probe = {wf: data["dev"][wf][: args.eval_n] for wf in wfs}
+    group_weights = [len(data["train"][wf][1]) for wf in wfs]
+    dev_probe = {
+        wf: (q, exs[: args.eval_n]) for wf, (q, exs) in data["dev"].items()
+    } if data["dev"] else {
+        wf: (q, exs[: args.eval_n]) for wf, (q, exs) in data["train"].items()
+    }
     ema = None
     step_t0 = time.time()
     for step in range(args.steps):
         model.train()
-        wf = wfs[step % len(wfs)]
-        pool = data["train"][wf]
-        exs = rng.sample(pool, args.batch)
-        b = build_batch(exs, tok, wf, device)
+        wf = rng.choices(wfs, weights=group_weights, k=1)[0]
+        questions, pool = data["train"][wf]
+        exs = rng.choices(pool, k=args.batch)
+        b = build_batch(exs, tok, questions, device)
         logits = model(b["state_ids"], b["state_len"], b["q_ids"], b["q_mask"],
                        b["span_mat"], b["opt_valid"], b["decide_idx"])
         loss = typed_loss(logits, b["gold"], torch.ones_like(b["gold"], dtype=torch.bool))

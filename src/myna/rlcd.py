@@ -102,8 +102,8 @@ def main():
         p.requires_grad_(False)
     temperature = myna.temperature
 
-    train = {wf: generate(1500, wf, rng, "train") for wf in WORKFLOWS}
-    dev = {wf: generate(args.n_eval, wf, rng, "dev") for wf in WORKFLOWS}
+    train = {wf: (WORKFLOWS[wf][0], generate(1500, wf, rng, "train")) for wf in WORKFLOWS}
+    dev = {wf: (WORKFLOWS[wf][0], generate(args.n_eval, wf, rng, "dev")) for wf in WORKFLOWS}
     print(f"reference temperature {temperature}")
     m_before = report(model, tok, dev, args.device, temperature, "before")
 
@@ -112,7 +112,8 @@ def main():
     for step in range(args.steps):
         model.train()
         wf = wfs[step % len(wfs)]
-        b = build_batch(rng.sample(train[wf], args.batch), tok, wf, args.device)
+        questions, pool = train[wf]
+        b = build_batch(rng.sample(pool, args.batch), tok, questions, args.device)
         loss, r = rlcd_step(model, ref, b, args)
         opt.zero_grad(set_to_none=True)
         loss.backward()
