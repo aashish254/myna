@@ -124,15 +124,18 @@ observation tokens  ──► embedding ──► bidirectional GLA trunk (6 lay
 ### 3.4 Code map
 `src/myna/`: `trunk.py` (GLA scans) · `model.py` (trunk + probe + `forward_truncated`) ·
 `tokenizer.py` (byte-level BPE + `question_tensors` / `batch_question_tensors`) · `data.py`
-(synthetic corpus) · `real_data.py` (kev suite JSONL adapter, `flatten_groups`) · `engine.py`
+(synthetic corpus) · `real_data.py` (kev suite JSONL adapter, `flatten_groups`) ·
+`paraphrase.py` (9 phrasings/core + the reserved held-out index) · `engine.py`
 (streaming sessions) · `rlcd.py` (strictly-proper scoring + KL leash) · `longctx.py` (needle
 generator) · `mlx_model.py` (Apple inference mirror) · `serve.py` (`/v1/sessions`, `/v1/predict`).
 `bench/`: streaming bench, laya witness runners, needle eval, MLX bench, result summarizer,
 `pull_upstream.py` (P1 data pipeline), `mem_profile.py` (per-axis step memory),
-`pilot_topology.py` (question-set topology + rows-per-forward under each contract).
-`tests/`: 61 passing + 1 KEV-gated parity test, including float64 scan equivalence, engine parity,
+`pilot_topology.py` (question-set topology + rows-per-forward under each contract),
+`mutation_paraphrase.py` (the P1 gate's mutation battery, 29/29).
+`tests/`: 96 passing + 1 KEV-gated parity test, including float64 scan equivalence, engine parity,
 adapter invariants, per-row batch equivalence, the calibration-split and device-resolution guards,
-and the batch-sampling regression guards.
+the batch-sampling regression guards, and the paraphrase table + trainer-wiring pairs (the table's
+own tests cannot see the loop that uses it).
 
 ---
 
@@ -205,7 +208,7 @@ does not advance, it goes in the corrections log (§9).
 - [ ] Push the repo. **No remote exists** — 30 commits and 45 tracked files live on one laptop.
       This is the largest unmanaged risk in the project. User-gated.
 
-### P1 — Data: the accuracy unlock *(task #14 done; #15 open)*
+### P1 — Data: the accuracy unlock *(tasks #14 and #15 done)*
 The suite froze **300 train rows per source** (contrastive 432, since its generator emits a fixed
 policy grid), 80–116 in each of dev/test and 40–48 in calibration — 500–872 rows per source across
 all four splits, **6,232 rows total** (counted directly on the pinned checkout; an earlier draft of
@@ -251,9 +254,31 @@ admits **4,472** of 4,800 (the 328 dropped are its collisions with eval + frozen
       row and an eval row (their states differ, so it is not a leak — but it is why deduping on
       that key alone would let a real leak through, and it is the number the `--per-source` gate
       would have printed 0 for).
-- [ ] Instruction paraphrase augmentation (≥ 8 phrasings/schema) with the **exact suite wordings
-      held out** for eval — this separates "learned the template" from "learned to read".
-      *(task #15)*
+- [x] Instruction paraphrase augmentation with the **exact suite wordings held out** for eval —
+      this separates "learned the template" from "learned to read". *(task #15, done)*
+      `src/myna/paraphrase.py` ships **9 phrasings for each of the 17 templated cores** (agnews 5,
+      contrastive 4, yelp 2, one each for amazon/banking77/dbpedia14/imdb/sst5/trec) plus 9 frames
+      each for the two per-row-content sources, where only the frame moves and the row's own
+      question/hypothesis is reproduced **verbatim** so no phrasing can shift a gold.
+      **Index 8 of 9 is reserved**: training draws 0..7, and dev is scored twice — on the suite's
+      exact strings and on that unseen one (`metrics.json:dev_unseen`).
+      Coverage, measured on the pilot through our own adapter: **17,112 sets / 19,596 question
+      shapes / 57,904 rows / 73,804 labelled slots** paraphrased, **84,936 distinct training
+      wordings, 0 of them a dev, test, calibration or train suite string**. The 10,629 distinct
+      instruction strings on disk are 10,600 boolq/mnli row content (5,300 + 5,300) and 17 cores.
+      An instruction with no table entry raises `UnknownSchema` rather than passing through: a
+      silent pass-through would train on the eval wording and void the gate.
+      Trainer wiring: `--paraphrase off|on` on **both** batch paths, variants pre-built so the
+      `id()`-keyed length cache stays valid, and `worst_case_tokens` pricing every set at its
+      **longest** phrasing so `--max-q-cells` remains an upper bound rather than a hope. The run
+      prints `paraphrase: N question sets re-worded …` *and* `paraphrase: D phrasing draws reached
+      the batches over S steps`, with both numbers in `metrics.json` — the warm-up line alone would
+      still print if the loop never consulted the table. `--long-context` refuses `--paraphrase on`
+      instead of claiming a gate the needle corpus cannot run.
+      Witness: `bench/mutation_paraphrase.py`, **29/29 caught** (§9.12 for the false-green first
+      pass, which is what found the two real holes: boolq rows whose question *ends* with one of
+      the suite's randomized suffixes were having that suffix edited, and content frames whose
+      nine variants all ended the same way).
 - [x] Pilot corpus target: ≥ 55,000 states ≈ **4.1M tokens**, vs 0.26M before — **57,904 states /
       4.25M tokens, measured** (§6 recomputed from it).
 
@@ -363,12 +388,15 @@ optimization.** boolq and mnli are the permanent half of it — their instructio
   affordable on latency and gets tested in P3 — after the data.
 - **M5 (32 GB, unified):** `--batch 32 --vocab 8192` thrashes swap; a pool+accum run projected
   2.81 s/update but **measured 4.93 s/update** before raising Metal
-  `kIOGPUCommandBufferCallbackErrorOutOfMemory` and rebooting the machine. Budget by *option
-  count*, not token count. Never run P4/P6/P7 concurrently with P3.
-- **Cloud (gated):** blockers are (1) no git remote, (2) `--device auto` never picks CUDA,
-  (3) `requires-python >=3.13` vs 3.11/3.12 images, (4) suite path is a local absolute path with a
-  trailing space in a parent directory name. Training can move; **measurement cannot** — MLX is
-  Apple-only and the on-device claim must be measured on the M5.
+  `kIOGPUCommandBufferCallbackErrorOutOfMemory` and rebooting the machine. Budget by the *token*
+  axes P2 measured (1.6 MiB per question-token position, 0.8 MiB per state-token position), not by
+  option count — §9.9. Never run P4/P6/P7 concurrently with P3.
+- **Training runs on Kaggle, not the M5** (user directive, 2026-09-26): the M5 does architecture
+  code, data, tests, inference/eval and every Apple-only measurement (MLX, MPS latency, browser
+  on-device) — those cannot move. Kaggle blockers as of now: (1) no git remote, so the code gets
+  there as an upload or a dataset, (2) `requires-python >=3.13` vs the image's 3.11/3.12,
+  (3) `--device auto` now picks CUDA (fixed in `59240e1`), (4) the suite path is a local absolute
+  path with a trailing space in a parent directory name — the pilot dir must ship as a dataset.
 
 ---
 
@@ -458,3 +486,22 @@ Kept permanently, because the value of this project's claims is that they surviv
     suite's `calibration.jsonl`; the v0 figures stand as measured but read dev as optimistic, and
     the RLCD "ECE halved" delta was measured the same in-sample way on both sides, so its *direction*
     is safe and its *level* is not quotable.
+12. **"29 mutations, all caught" — said of a battery that mutated nothing.** `bench/mutation_paraphrase.py`'s
+    first pass put a patched `src/` on `PYTHONPATH` and reported **0/29 caught**. The tests were not
+    weak: `pyproject.toml`'s `pytest pythonpath = ["src"]` is resolved against the rootdir and
+    *outranks* `PYTHONPATH`, so every run imported the unmutated tree. A gate whose harness is dead
+    reads exactly like a gate that is merely permissive, and the wrong conclusion from 0/29 would
+    have been "add more tests". The battery now runs pytest inside a copy of the repo, requires the
+    unmutated baseline to be green, and aborts if the *first* mutation survives. Fixed harness:
+    **29/29**. Two of the three initial survivors were real holes once the mutations actually landed
+    (boolq rows whose question *ends* with a suite suffix had that tail edited; boolq/mnli frames
+    whose nine variants all ended the same way), and one was an **equivalent mutant** — every
+    `SUITE_SUFFIXES` entry starts with a space, so deleting `.rstrip()` changes no output on this
+    data. Kept the call, logged why, and dropped the mutation.
+13. **`python -m myna.train --help` crashed.** Present since before P0, found only because the
+    paraphrase battery needed a CLI sweep: argparse formats every `help=` string through `%`, and
+    `--group-sample`'s measured "~1.4% of updates" is not a legal conversion — `TypeError: %o
+    format`. Written `%%`, so the number still prints. Same sweep found `myna.serve` importing
+    `uvicorn` *before* `parse_args()`, which made the optional `serve` extra a requirement for
+    reading the usage text. Both now pinned by `tests/test_cli_help.py`, since "one command per
+    result" (G7) is worth nothing if the command cannot be asked what it does.

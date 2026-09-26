@@ -86,14 +86,16 @@ def create_app(myna: Myna):
 
 
 def main():
-    import uvicorn
-
     ap = argparse.ArgumentParser()
     ap.add_argument("--ckpt", default="runs/myna-v0")
     ap.add_argument("--device", default="cpu")
     ap.add_argument("--host", default="127.0.0.1")
     ap.add_argument("--port", type=int, default=8080)
     args = ap.parse_args()
+
+    # imported after parse_args so `--help` works on a box without the `serve`
+    # extra: an optional dependency must not be what breaks the usage text
+    import uvicorn
 
     myna = Myna(args.ckpt, device=args.device)
     uvicorn.run(create_app(myna), host=args.host, port=args.port)

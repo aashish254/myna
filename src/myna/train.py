@@ -51,7 +51,7 @@ def build_batch(exs, tok, questions, device):
     }
 
 
-def build_row_batch(items, tok, device):
+def build_row_batch(items, tok, device, paraphraser=None, rng=None):
     """items: list[(questions, Example)] — one question set PER ROW.
 
     Rows may differ in question count and option count; both pad to the batch
@@ -59,7 +59,12 @@ def build_row_batch(items, tok, device):
     mixed batch trains on the union of its cells. This is what lets 32 boolq
     rows — 32 different instructions, one question each — share one forward
     pass instead of running 32 batches of one.
+
+    With `paraphraser`, each row's set is replaced by a drawn phrasing (SPEC §5
+    P1: the suite's own wording is never trained on).
     """
+    if paraphraser is not None:
+        items = [(paraphraser.draw(ex.workflow, qs, rng), ex) for qs, ex in items]
     qt = batch_question_tensors(tok, [[(q.instruction, q.options) for q in qs] for qs, _ in items])
     n_q = max(len(qs) for qs, _ in items)
     ids = [encode_text(tok, ex.state) for _qs, ex in items]
@@ -130,14 +135,51 @@ def draw_row_batch(items, batch, max_q_cells, rng, tok, cache=None):
     return out
 
 
-def evaluate(model, tok, splits, device, temperature=1.0):
+def worst_case_tokens(tok, paraphraser, items, cache):
+    """Pre-price every phrasing of every set at its *longest* variant.
+
+    `draw_row_batch` budgets `rows x questions x question-tokens`, and under
+    paraphrasing the token count is a random variable — so pricing the draw the
+    sampler happened to take would let one step silently exceed the memory the
+    run was sized for. Writing the max into the length cache for all eight
+    variant objects makes the budget an upper bound again, at the cost of a
+    slightly smaller batch.
+    """
+    by_key = {}
+    for qs, ex in items:
+        by_key.setdefault(ex.workflow, qs)
+    for key, qs in by_key.items():
+        sets = paraphraser.variant_set(key, qs)
+        lengths = [question_tokens(tok, v) for v in sets]
+        worst = max(lengths)
+        for v in sets:
+            cache[id(v)] = worst
+        cache[id(qs)] = worst
+    return len(by_key)
+
+
+def macro_acc(m):
+    """Unweighted mean over the per-(source, question) accuracies in an
+    `evaluate()` map — the brier/ece sidecars are excluded by design."""
+    names = [k for k in m if not k.endswith((":brier", ":ece"))]
+    return sum(m[k] for k in names) / max(len(names), 1)
+
+
+def evaluate(model, tok, splits, device, temperature=1.0, paraphrase_index=None):
     """splits: {key: (questions, examples)} — synthetic workflows and real
-    suite groups both fit this shape."""
+    suite groups both fit this shape.
+
+    `paraphrase_index`: score each group under that phrasing of its instruction
+    instead of the wording on disk — how the held-out wording is measured."""
+    from .paraphrase import paraphrase_questions, source_of
+
     model.eval()
     rows = {}
     ece_bin = {}  # key -> (sum_conf, sum_correct, count) aggregated in 10 bins
     with torch.no_grad():
         for wf, (questions, data) in splits.items():
+            if paraphrase_index is not None:
+                questions = paraphrase_questions(questions, source_of(wf), paraphrase_index)
             for i in range(0, len(data), 64):
                 exs = data[i : i + 64]
                 b = build_batch(exs, tok, questions, device)
@@ -191,6 +233,18 @@ def fit_temperature(model, tok, splits, device):
             if tot / cnt < best:
                 best, best_t = tot / cnt, t
     return best_t
+
+
+def held_out_eval(model, tok, split, device, temperature):
+    """Score a split on the reserved ninth phrasing — the only place it is read.
+
+    Kept as its own function so `EVAL_INDEX` has one call site a test can pin: a
+    `paraphrase_index=0` slipped in here would silently score the training
+    wording and call it a transfer result.
+    """
+    from .paraphrase import EVAL_INDEX
+
+    return evaluate(model, tok, split, device, temperature, paraphrase_index=EVAL_INDEX)
 
 
 def temperature_source(data):
@@ -310,9 +364,10 @@ def main():
     ap.add_argument("--warmup", type=int, default=0,
                     help="linear LR warmup over this many updates before cosine decay")
     ap.add_argument("--group-sample", choices=["uniform", "pool", "sqrt"], default="pool",
+                    # %% because argparse runs the help string through %-formatting
                     help="how to pick question-sets per mini-batch. Measured on decision-v2, "
-                         "uniform sends only ~1.4% of updates to the 16 data-rich sets (12.5% for "
-                         "sqrt) and they measured below chance; pool sends 65%. Pool weighting "
+                         "uniform sends only ~1.4%% of updates to the 16 data-rich sets (12.5%% for "
+                         "sqrt) and they measured below chance; pool sends 65%%. Pool weighting "
                          "was harmless before gradient accumulation removed the interference.")
     ap.add_argument("--min-train-pool", type=int, default=0,
                     help="drop train question-sets with fewer than this many examples "
@@ -327,6 +382,12 @@ def main():
                          "Measured at 1.6 MiB of retained activations per cell "
                          "(bench/mem_profile.py), so 2048 is a ~3.2 GB question branch. The "
                          "option axis costs ~3 KiB per cell and is not what filled the M5.")
+    ap.add_argument("--paraphrase", choices=["off", "on"], default="off",
+                    help="train on hand-written phrasings of every instruction and never on the "
+                         "suite's own wording (SPEC P1). Dev/test stay on the exact suite strings, "
+                         "and the reserved ninth phrasing is scored too, so 'it learned to read' is "
+                         "measured on two unseen wordings. Suite corpora only: an instruction with "
+                         "no table entry raises UnknownSchema rather than passing through.")
     ap.add_argument("--long-context", type=int, default=0,
                     help="train needle-in-long-context recall at this state token length (V1-D); "
                          "uses truncated backprop and ignores --suite/--synthetic")
@@ -341,6 +402,12 @@ def main():
     device = resolve_device(args.device)
 
     if args.long_context:
+        if args.paraphrase == "on":
+            # the needle corpus is synthetic text with synthetic instructions, so
+            # the table has no entries for it; silently ignoring the flag would
+            # print a run that claims a gate it never ran
+            raise SystemExit("--paraphrase on is not available with --long-context: the "
+                             "needle schemas are not in the phrasing table")
         train_long_context(args, rng, device)
         return
 
@@ -426,6 +493,19 @@ def main():
     } if data["dev"] else {
         wf: (q, exs[: args.eval_n]) for wf, (q, exs) in data["train"].items()
     }
+    paraphraser = None
+    n_sets = 0
+    if args.paraphrase == "on":
+        from .paraphrase import Paraphraser
+
+        paraphraser = Paraphraser()
+        n_sets = paraphraser.warm(data["train"])  # raises UnknownSchema on an untabelled set
+        priced = ""
+        if row_items is not None:
+            priced = f"; {worst_case_tokens(tok, paraphraser, row_items, q_len_cache)} sets " \
+                     f"budgeted at their longest phrasing"
+        print(f"paraphrase: {n_sets} question sets re-worded, suite wording held out{priced}",
+              flush=True)
     K = max(1, args.accum_groups)
     log_every = max(1, min(200, args.steps // 60))
     ema = None
@@ -438,11 +518,13 @@ def main():
             if row_items is None:
                 wf = next(cycle)
                 questions, pool = data["train"][wf]
+                if paraphraser is not None:
+                    questions = paraphraser.draw(wf, questions, rng)
                 b = build_batch(draw_batch(pool, args.batch, rng), tok, questions, device)
             else:
                 items = draw_row_batch(row_items, args.batch, args.max_q_cells, rng, tok,
                                     q_len_cache)
-                b = build_row_batch(items, tok, device)
+                b = build_row_batch(items, tok, device, paraphraser, rng)
             logits = model(b["state_ids"], b["state_len"], b["q_ids"], b["q_mask"],
                            b["span_mat"], b["opt_valid"], b["decide_idx"])
             loss = typed_loss(logits, b["gold"], b["has_gold"]) / K
@@ -458,9 +540,7 @@ def main():
                   f"sets/update {K}  {el:.0f}s", flush=True)
         if args.eval_every and step and step % args.eval_every == 0 and step != args.steps - 1:
             m = evaluate(model, tok, dev_probe, device)
-            names = [k for k in m if not k.endswith((":brier", ":ece"))]
-            acc = sum(m[k] for k in names) / len(names)
-            print(f"step {step:5d}  dev-mid acc {acc:.4f}", flush=True)
+            print(f"step {step:5d}  dev-mid acc {macro_acc(m):.4f}", flush=True)
             # rolling snapshot so a long run can be evaluated or stopped early
             out = Path(args.out)
             out.mkdir(parents=True, exist_ok=True)
@@ -486,6 +566,21 @@ def main():
     for k, v in sorted(test_m.items()):
         print(f"{k:32s} {v:.4f}")
 
+    # The gate P1 exists for: dev on the suite's own wording, and dev on the one
+    # phrasing that was neither trained nor shipped by the suite. A model that read
+    # the instruction holds; a model that matched a template falls.
+    dev_unseen = None
+    n_draws = 0
+    if paraphraser is not None:
+        dev_unseen = held_out_eval(model, tok, data["dev"], device, temperature)
+        print(f"=== dev, HELD-OUT phrasing === macro {macro_acc(dev_unseen):.4f}   "
+              f"(exact suite wording {macro_acc(dev_m):.4f})")
+        # the warm-up banner only proves the table loaded; this one proves the
+        # loop consulted it, which no earlier check did for the shared-set path
+        n_draws = paraphraser.draws
+        print(f"paraphrase: {n_draws} phrasing draws reached the batches over "
+              f"{args.steps} steps", flush=True)
+
     # machine-readable metrics + a key->type map so downstream tables can roll
     # up by source x question-type (apples-to-apples with the laya witness).
     qtypes = {}
@@ -499,7 +594,10 @@ def main():
     with open(out / "metrics.json", "w") as f:
         json.dump({"temperature": temperature, "temperature_fit_on": calib_name,
                    "temperature_fit_rows": n_fit_rows,
-                   "dev": dev_m, "test": test_m, "qtypes": qtypes}, f, indent=2)
+                   "paraphrase": args.paraphrase, "paraphrase_sets": n_sets,
+                   "paraphrase_draws": n_draws,
+                   "dev": dev_m, "test": test_m,
+                   "dev_unseen": dev_unseen, "qtypes": qtypes}, f, indent=2)
 
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)

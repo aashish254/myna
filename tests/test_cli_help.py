@@ -1,0 +1,63 @@
+"""The command surface itself: `--help` must render on the box a reader has.
+
+SPEC §2.3 G7 promises "one command per result", and a command whose usage text
+raises is worse than no command: the reader cannot tell whether the flags moved
+or the install is broken. Two real defects are pinned here.
+
+* argparse formats every `help=` string through `%`, so a literal percent sign —
+  "~1.4% of updates" in `--group-sample` — made `python -m myna.train --help`
+  die with `TypeError: %o format`. It has to be written `%%`.
+* `myna.serve` imported `uvicorn` before `parse_args()`, so `--help` required
+  the optional `serve` extra. An optional dependency must not gate the usage text.
+"""
+
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+import pytest
+
+import myna
+
+SRC = str(Path(myna.__file__).resolve().parent.parent)
+ROOT = Path.cwd()
+
+
+def _help(*argv):
+    r = subprocess.run([sys.executable, *argv, "--help"], capture_output=True, text=True,
+                       cwd=ROOT, env={"PYTHONPATH": SRC, "PATH": "/usr/bin:/bin",
+                                      "HOME": str(Path.home())})
+    return r
+
+
+@pytest.mark.parametrize("module,flag", [
+    ("myna.train", "--paraphrase"),
+    ("myna.train", "--max-q-cells"),
+    ("myna.rlcd", "--score"),
+    ("myna.serve", "--port"),
+])
+def test_module_help_renders(module, flag):
+    r = _help("-m", module)
+    assert r.returncode == 0, f"{module} --help died: {r.stderr[-400:]}"
+    assert flag in r.stdout, f"{module} --help does not list {flag}"
+
+
+def test_percent_in_a_help_string_survives_argparse_formatting():
+    """`%%` is how argparse prints one percent; a bare `%` raises instead."""
+    r = _help("-m", "myna.train")
+    assert r.returncode == 0, r.stderr[-600:]
+    assert "1.4%" in r.stdout and "65%" in r.stdout, "the measured rates must still print"
+
+
+def test_mutation_help_does_not_run_the_battery():
+    """Each run is ~30 pytest passes; `--help` must not be one of them."""
+    r = subprocess.run([sys.executable, "bench/mutation_paraphrase.py", "--help"],
+                       capture_output=True, text=True, cwd=ROOT,
+                       env={"PYTHONPATH": SRC, "PATH": "/usr/bin:/bin", "HOME": str(Path.home())})
+    assert r.returncode == 0, r.stderr[-400:]
+    assert "Mutation battery" in r.stdout
+    # the battery prints one progress line per mutation ("[ 3/29] caught …"); the
+    # docstring it prints for --help mentions the tallies, so match that shape
+    assert not re.search(r"^\[\s*\d+/\d+\]", r.stdout + r.stderr, re.M), \
+        "`--help` ran the battery"
