@@ -13,6 +13,7 @@ from pathlib import Path
 
 import torch
 import torch.nn.functional as F
+from tokenizers import Tokenizer
 
 from .data import WORKFLOWS, generate
 from .model import MynaConfig, MynaModel, typed_loss
@@ -103,6 +104,75 @@ def fit_temperature(model, tok, splits, device):
     return best_t
 
 
+def build_needle_batch(exs, tok, device, entity):
+    """One shared question (fixed entity) across the batch; the needle varies."""
+    from .longctx import DESKS
+    instr = f"Which desk owns {entity}?"
+    qt = question_tensors(tok, [(instr, list(DESKS))])
+    ids = [encode_text(tok, e.state) for e in exs]
+    lens = torch.tensor([len(x) for x in ids], dtype=torch.int64)
+    Lmax = max(len(x) for x in ids)
+    state = torch.zeros(len(ids), Lmax, dtype=torch.int64)
+    for i, x in enumerate(ids):
+        state[i, : len(x)] = torch.tensor(x)
+    gold = torch.tensor([[e.gold] for e in exs], dtype=torch.int64)
+    return {
+        "state_ids": state.to(device), "state_len": lens.to(device), "gold": gold.to(device),
+        "Lmax": Lmax,
+        **{k: v.to(device) for k, v in qt.items()},
+    }
+
+
+def train_long_context(args, rng, device):
+    """V1-D: fine-tune (or train) on needle-in-long-context recall, truncated
+    backprop so only the trailing grad window carries gradient."""
+    from .longctx import DESKS, ENTITIES, FILLER, Needle, make_needle
+
+    if args.init:
+        ip = Path(args.init)
+        tok = Tokenizer.from_file(str(ip / "tokenizer.json"))
+        ck = torch.load(ip / "model.pt", map_location=device, weights_only=False)
+        cfg = MynaConfig(**ck["cfg"])
+        model = MynaModel(cfg)
+        model.load_state_dict(ck["state_dict"])
+    else:
+        cfg = MynaConfig(vocab=args.vocab)
+        model = MynaModel(cfg)
+        tok = train_tokenizer([" ".join(FILLER), " ".join(DESKS), " ".join(ENTITIES)],
+                              vocab_size=args.vocab)
+    model.to(device)
+    print(f"long-context: state={args.long_context} grad={args.grad_tokens} "
+          f"params={sum(p.numel() for p in model.parameters())}", flush=True)
+
+    split = max(0, args.long_context - args.grad_tokens)
+    opt = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=0.01)
+    sched = torch.optim.lr_scheduler.CosineAnnealingLR(opt, args.steps)
+    ema, t0 = None, time.time()
+    for step in range(args.steps):
+        model.train()
+        entity = ENTITIES[rng.randrange(len(ENTITIES))]
+        exs = [make_needle(tok, args.long_context, rng, tail_cap=args.grad_tokens,
+                           entity=entity) for _ in range(args.batch)]
+        b = build_needle_batch(exs, tok, device, entity)
+        logits = model.forward_truncated(b["state_ids"], split, b["state_len"], b["q_ids"],
+                                         b["q_mask"], b["span_mat"], b["opt_valid"], b["decide_idx"])
+        loss = typed_loss(logits, b["gold"], torch.ones_like(b["gold"], dtype=torch.bool))
+        opt.zero_grad(set_to_none=True)
+        loss.backward()
+        torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+        opt.step(); sched.step()
+        acc = (logits.argmax(-1) == b["gold"]).float().mean().item()
+        ema = loss.item() if ema is None else 0.95 * ema + 0.05 * loss.item()
+        if step % 100 == 0 or step == args.steps - 1:
+            print(f"step {step:5d}  loss {loss.item():.3f}  ema {ema:.3f}  "
+                  f"batch-acc {acc:.3f}  {time.time()-t0:.0f}s", flush=True)
+        if args.eval_every and step and step % args.eval_every == 0 and step != args.steps - 1:
+            out = Path(args.out); out.mkdir(parents=True, exist_ok=True)
+            tok.save(str(out / "tokenizer.json"))
+            torch.save({"state_dict": model.state_dict(), "cfg": vars(cfg),
+                        "temperature": 1.0, "step": step}, out / "model_last.pt")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--steps", type=int, default=4000)
@@ -119,12 +189,24 @@ def main():
                     help="frozen-suite dir (train/development/test.jsonl, laya/kev request shape); "
                          "overrides the synthetic corpus")
     ap.add_argument("--vocab", type=int, default=4096)
+    ap.add_argument("--long-context", type=int, default=0,
+                    help="train needle-in-long-context recall at this state token length (V1-D); "
+                         "uses truncated backprop and ignores --suite/--synthetic")
+    ap.add_argument("--grad-tokens", type=int, default=768,
+                    help="with --long-context: keep the needle inside this trailing window so it "
+                         "receives gradient; everything before is scanned detached")
+    ap.add_argument("--init", default=None,
+                    help="with --long-context: checkpoint dir to warm-start weights + tokenizer from")
     args = ap.parse_args()
 
     rng = random.Random(args.seed)
     device = args.device
     if device == "auto":
         device = "mps" if torch.backends.mps.is_available() else "cpu"
+
+    if args.long_context:
+        train_long_context(args, rng, device)
+        return
 
     if args.suite:
         from .real_data import load_suite, suite_texts

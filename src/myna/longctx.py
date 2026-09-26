@@ -45,9 +45,18 @@ class Needle:
     target_tokens: int
 
 
-def make_needle(tok, target_tokens: int, rng: random.Random) -> Needle:
+def make_needle(tok, target_tokens: int, rng: random.Random, tail_cap: int | None = None,
+                entity: str | None = None) -> Needle:
+    """Build a long state with one decisive needle sentence.
+
+    tail_cap, when set, forces the needle into the last `tail_cap` tokens so a
+    truncated-backprop training step (which detaches everything before the split)
+    still gets gradient through the evidence. Ignored at eval, where the needle
+    is placed anywhere to test true long-range recall. `entity`, when set, fixes
+    the queried entity so a whole batch can share one question tensor.
+    """
     gold = rng.randrange(len(DESKS))
-    entity = rng.choice(ENTITIES)
+    entity = entity if entity is not None else rng.choice(ENTITIES)
     # needle carries the only evidence: which desk owns the entity
     needle = f"note that {entity} is owned by the {DESKS[gold]} desk".capitalize() + "."
     instruction = f"Which desk owns {entity}?"
@@ -56,12 +65,23 @@ def make_needle(tok, target_tokens: int, rng: random.Random) -> Needle:
     # random sentence boundary
     enc_needle = len(encode_text(tok, needle))
     sentences: list[str] = []
+    encs: list[int] = []
     ntok = enc_needle
     while ntok < target_tokens:
         s = rng.choice(FILLER).capitalize() + "."
+        e = len(encode_text(tok, s))
         sentences.append(s)
-        ntok += len(encode_text(tok, s))
-    pos = rng.randrange(len(sentences) + 1)
+        encs.append(e)
+        ntok += e
+    if tail_cap is None:
+        pos = rng.randrange(len(sentences) + 1)
+    else:
+        # last position whose trailing tokens stay within tail_cap (suffix keeps grad)
+        suffix = 0
+        pos = len(sentences)
+        while pos > 0 and suffix + encs[pos - 1] <= tail_cap:
+            suffix += encs[pos - 1]
+            pos -= 1
     sentences.insert(pos, needle)
     state = " ".join(sentences)
     return Needle(state, instruction, list(DESKS), gold, target_tokens)
