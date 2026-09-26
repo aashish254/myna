@@ -195,12 +195,27 @@ def main():
 
     temperature = fit_temperature(model, tok, data["dev"], device)
     print(f"temperature: {temperature}")
+    dev_m = evaluate(model, tok, data["dev"], device, temperature)
+    test_m = evaluate(model, tok, data["test"], device, temperature)
     print("=== dev ===")
-    for k, v in sorted(evaluate(model, tok, data["dev"], device, temperature).items()):
+    for k, v in sorted(dev_m.items()):
         print(f"{k:32s} {v:.4f}")
     print("=== test ===")
-    for k, v in sorted(evaluate(model, tok, data["test"], device, temperature).items()):
+    for k, v in sorted(test_m.items()):
         print(f"{k:32s} {v:.4f}")
+
+    # machine-readable metrics + a key->type map so downstream tables can roll
+    # up by source x question-type (apples-to-apples with the laya witness).
+    qtypes = {}
+    for split in ("dev", "test"):
+        for wf, (questions, _exs) in data[split].items():
+            for q in questions:
+                qtypes[f"{wf}/{q.name}"] = q.type
+
+    out = Path(args.out)
+    out.mkdir(parents=True, exist_ok=True)
+    with open(out / "metrics.json", "w") as f:
+        json.dump({"temperature": temperature, "dev": dev_m, "test": test_m, "qtypes": qtypes}, f, indent=2)
 
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
