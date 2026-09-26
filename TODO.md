@@ -154,12 +154,43 @@ So every "train" item below is split into *prepare/verify the Kaggle path locall
       Withdrawn: the ≥ 5× @ 50-questions target (§9.21) and the README's 33×–239× column (§9.20).
 
 ## P5 — Abstention and risk/coverage (G5, flagship)
-- [ ] **5a** Threshold + abstain reason emitted from the engine (no silent fast path)
-- [ ] **5b** Risk/coverage curve script over `calibration.jsonl` (448 rows / 568 questions)
-- [ ] **5c** Fallback seam to a stronger model with the chosen model labelled per decision
+- [x] **5a** Threshold + abstain reason emitted from the engine (no silent fast path)
+      — `Myna(ckpt, device, abstain_below=t)`, default `None` so the latency and parity paths
+      still answer everything. Under a floor the committed field is `None` and the answer
+      carries `confidence`, runner-up `margin`, `abstain` and a `reason` quoting the measured
+      numbers; `ask()` echoes `policy.{abstain_below,abstained}`; `myna.serve`
+      `--abstain-below` and `/v1/health` carry it across HTTP. noul's confidence is the
+      committed side `max(p,1-p)`, not `p(Yes)` — pinned by sharpening the real head
+      (`temperature=1e-3`) rather than a dictionary. Witness: `tests/test_abstain.py` (19) +
+      4 abstention tests in `tests/test_serve.py`
+- [x] **5b** Risk/coverage curve script over `calibration.jsonl` (448 rows / 568 questions)
+      — `bench/risk_coverage.py`, README table and `runs/risk_coverage.{md,json,log}`. Ranks on
+      the committed-side probability *recomputed* from each printed distribution and
+      cross-checked against the engine's own `confidence` field; the selected floor is then
+      re-run on the engine and must abstain on exactly the rows the curve withheld
+      (**227 = 227** at floor 0.693). v0: accuracy 0.349 at full coverage → 0.596 at 10%,
+      no rung reaching 0.95, so the table is labelled a harness witness and not a pass (§9.24).
+      Witness: `tests/test_risk_coverage.py` (21 synthetic-oracle tests, including G5's two
+      boundaries landed on exactly)
+- [x] **5c** Fallback seam to a stronger model with the chosen model labelled per decision
+      — `src/myna/fallback.py`: `Decider` seam, `DECIDERS` registry (`myna`, `laya`),
+      `Fallback.predict` re-asks the secondary **only** the abstained questions, labels every
+      answer with the engine that committed, and reports `routing.still_abstained` when both
+      refuse. `LayaDecider` goes through `Agent.system_one` with `laya_spec()` translating the
+      schema (noul without `criteria`, no gold label crossing) — the same translation
+      `bench/eval_laya_real.py` uses, and a test holds the two from drifting. Witness:
+      `tests/test_fallback.py` (15)
+- [x] **5d-gate** Harness provably correct against a synthetic oracle, mutation-checked second
+      — `bench/mutation_p5.py`: **49/49 caught**, exit 0, on a frozen repo
+      (`runs/mutation_p5.log`). The lies cluster three ways: a fast path going silent (the
+      answer keeps its label, the router never routes, the policy echo reports `None`), a
+      quantity read off the wrong side (noul confidence as `p(Yes)`, a routed answer labelled
+      with the fast engine), and a boundary flipping quietly (`<` vs `<=` at a floor that is
+      always read off a row sitting exactly on it).
 - [ ] **5d** G5 pass condition measured on banking77 + dbpedia14 + trec — needs a real-trained
-      checkpoint, so `KAGGLE`-gated; harness must be provably correct against a synthetic oracle
-      first (mutation-checked)
+      checkpoint, so `KAGGLE`-gated. v0's own numbers are `NOT MET` and are published as such:
+      the three gate sources sit at their guessing floors (0.000 / 0.025 / 0.150 at full
+      coverage), which abstention cannot raise
 
 ## P6 — Browser/on-device deployment (G3)
 - [ ] **6a** ONNX export of trunk+pointer head with torch-vs-ONNX parity ≤ 1e-4

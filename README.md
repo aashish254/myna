@@ -106,6 +106,84 @@ up to 0.9657**, every question improved or held. The policy here *is* the
 reported distribution, so the score is optimized differentiably, no REINFORCE
 (PLAN.md decision 10 has the post-mortem of trying it the generative way).
 
+## Knowing when not to answer — risk / coverage
+
+A System-1 decider that never says "not me" is not a fast model, it is an
+unauditable one. So the engine can be built with a floor under it, and the
+measurement that matters is the trade the floor buys:
+
+```python
+from myna.engine import Myna
+
+myna = Myna("runs/myna-v0", abstain_below=0.693)   # the floor the curve below picks
+out = myna.observe(
+    "China Invokes Deng to Send Tough Taiwan Message BEIJING (Reuters) - China invoked late "
+    "leader Deng Xiaoping on Saturday in its campaign to recover Taiwan, lauding his proposal "
+    "to recover the island by peaceful means, but warning against any move toward independence."
+).ask({"topic": {"type": "choice", "instructions": "What is the topic of this article?",
+                 "criteria": {"world": "world news", "sports": "games, athletes, teams",
+                              "business": "companies, markets, economy",
+                              "scitech": "research, gadgets, software, space"}}}})
+a = out["answers"]["topic"]
+```
+
+The gold label for this row of `calibration.jsonl` is `world`, at 0.001. The engine was
+about to answer `sports`, and the floor took the decision away:
+
+```
+a["choice"]  ->  None          out["policy"] -> {'abstain_below': 0.693, 'abstained': ['topic']}
+a["abstain"] ->  True
+a["reason"]  ->  'sports at p=0.602, 0.341 ahead of the runner-up, under the 0.693 floor'
+a["probabilities"]  ->  {'world': 0.001, 'sports': 0.602, 'business': 0.136, 'scitech': 0.261}
+```
+
+`probabilities` rides along *because* the answer was withheld: it is what a fallback re-ranks
+and what the curve below is sorted by. The withheld field is `None` on purpose — a caller
+that ignores `abstain` gets an error at the seam instead of a confident wrong label.
+
+Refusing costs the *decision*, not the numbers: `noul` keeps reporting raw
+`p(Yes)` (the Brier score needs it), every answer keeps its `confidence` and its
+runner-up `margin`, and `ask()` echoes the floor in force plus which questions it
+withdrew. `myna.serve --abstain-below 0.693` puts the same policy behind HTTP, and
+`/v1/health` names it.
+
+The curve below is every question in `calibration.jsonl` (448 rows, 568 questions),
+ranked by the probability of the side committed to. `floor` is the value you would
+hand the engine, and the run re-runs the engine at that floor to check it abstains
+on exactly the rows the curve withheld — 227 against 227 at the 0.693 floor.
+
+| coverage | questions answered | accuracy | risk | floor |
+|---|---|---|---|---|
+| 1.00 | 568 | 0.349 | 0.651 | 0.074 |
+| 0.90 | 511 | 0.376 | 0.624 | 0.444 |
+| 0.80 | 454 | 0.374 | 0.626 | 0.547 |
+| 0.70 | 398 | 0.392 | 0.608 | 0.622 |
+| 0.60 | 341 | 0.413 | 0.587 | 0.693 |
+| 0.50 | 284 | 0.426 | 0.574 | 0.772 |
+| 0.40 | 227 | 0.445 | 0.555 | 0.851 |
+| 0.30 | 170 | 0.465 | 0.535 | 0.935 |
+| 0.20 | 114 | 0.535 | 0.465 | 0.974 |
+| 0.10 | 57 | 0.596 | 0.404 | 0.994 |
+
+Read the shape, not the level. Accuracy climbs **+0.247** from full coverage to the
+top decile, so this model's confidence ranks its own answers — and it does that on
+`v0`, a checkpoint trained on synthetic data that scores near the guessing floor on
+this corpus (the agnews row above is one of them: `world` at 0.001 against a withheld
+`sports` at 0.602). That is the harness proving it measures something; it is not
+the gate. G5 wants ≥ 0.95 accuracy at ≥ 60% coverage on banking77 + dbpedia14 + trec,
+and on v0 **no rung reaches 0.95** (max 0.596, at 10% coverage) with those three sources
+at 0.000 / 0.025 / 0.150 — so the pass is gated on the real-trained checkpoint
+([SPEC.md](SPEC.md) §2.2, §9.24).
+
+`bench/risk_coverage.py` prints it, `tests/test_risk_coverage.py` checks it against
+a synthetic oracle whose answer the test knows in advance, and
+`bench/mutation_p5.py` (49 mutations, all caught) checks that each published figure
+moves when — and only when — the claim behind it stops holding. Reproduce:
+
+```bash
+uv run python -m bench.risk_coverage --ckpt runs/myna-v0 --out runs/risk_coverage.md
+```
+
 ## Quickstart
 
 ```bash
@@ -139,6 +217,8 @@ obs2.save_state("session.pt")  # ... myna.restore("session.pt")
 
 ```bash
 uv run --extra serve python -m myna.serve --ckpt runs/myna-v0 --port 8080
+# --abstain-below 0.693 runs the server with a floor under its answers; /v1/health
+# reports the value in force, so a deployment cannot forget its own policy
 ```
 
 | | |
@@ -154,20 +234,31 @@ uv run --extra serve python -m myna.serve --ckpt runs/myna-v0 --port 8080
 v0 trains and evaluates on a synthetic typed-decisions corpus (three
 workflows: ticket triage, incident triage, content moderation) with disjoint
 train/dev/test vocabulary. It proves the architecture learns and streams;
-it does **not** yet claim parity with laya/kev on their frozen suites — that
-comparison is the next milestone in [PLAN.md](PLAN.md), along with RLCD-style
-training, Metal kernels for the scan, and multilingual coverage. The full
-next-generation design — free-text questions, state algebra (merge/branch/diff
+it does **not** yet claim parity with laya/kev on their frozen suites —
+[SPEC.md](SPEC.md)'s gates split that into what is settled and what is not.
+Speed is measured on one box against laya's own engine and clears its gate
+(G2, §2.2); accuracy on the real `kev` decision-v2 corpus (G1) and the
+usable-confidence gate (G5, the section above) both wait on a checkpoint
+trained on that corpus, which runs on Kaggle rather than here. The full
+next-generation research design — free-text questions, state algebra (merge/branch/diff
 of cached states), O(window) mid-state edits, unbounded two-timescale memory,
 expected-utility decisions, 15 MB on-device model — is specified with
 acceptance criteria in [V2_SPEC.md](V2_SPEC.md).
 
+The uncertainty has somewhere to go: `myna.fallback` holds a `Decider` seam and a
+registry, so `Fallback(myna, laya)` re-asks the secondary **only** the questions the
+fast engine refused, and every answer carries the name of the engine that committed
+to it. No single model is load-bearing on that path, and the routing is auditable one
+decision at a time rather than reconstructed from logs.
+
 Honest limits: word-order-heavy tasks can be partly solved bag-of-cues style;
 mid-state edits (not appends) fall back to a full re-encode — linear in the
 state's length asymptotically, but with a quadratic factor inside each 256-token
-chunk, so short states are cheaper than long ones (§9.22); and the question
+chunk, so short states are cheaper than long ones (§9.22); the question
 branch's fixed cost (**10.1 ms** fitted, 14.7–17.4 ms to answer one question
-regardless of state length) is kernel work, not architecture work.
+regardless of state length) is kernel work, not architecture work; and
+abstention is a *routing* feature, not an accuracy one — it can decline to
+answer, it cannot answer a question the checkpoint never learned (§9.24).
 
 Apache-2.0 · research log in [PLAN.md](PLAN.md) · questions to
 [aashish254](https://github.com/aashish254)

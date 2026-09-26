@@ -1,0 +1,35 @@
+calibration: 448 rows / 568 questions over 168 question-sets
+checkpoint runs/myna-v0: 14.45M params, temperature 3.0, abstain_below=None (curve applies its own floor)
+
+risk / coverage — runs/myna-v0 on calibration (568 questions)
+
+  rung  realized      n   accuracy    risk   floor
+  1.00     1.000    568      0.349   0.651   0.074
+  0.90     0.900    511      0.376   0.624   0.444
+  0.80     0.799    454      0.374   0.626   0.547
+  0.70     0.701    398      0.392   0.608   0.622
+  0.60     0.600    341      0.413   0.587   0.693
+  0.50     0.500    284      0.426   0.574   0.772
+  0.40     0.400    227      0.445   0.555   0.851
+  0.30     0.299    170      0.465   0.535   0.935
+  0.20     0.201    114      0.535   0.465   0.974
+  0.10     0.100     57      0.596   0.404   0.994
+
+per source, whole split and then only the rows at or above the 0.693 floor:
+source           questions   acc@1.0  cov@floor  acc@floor
+agnews                 120     0.558      0.800      0.615
+amazon                  40     0.300      0.250      0.400
+banking77               40     0.000      0.175      0.000
+boolq                   40     0.525      0.725      0.552
+contrastive             48     0.562      0.688      0.545
+dbpedia14               40     0.025      0.925      0.027
+imdb                    40     0.525      0.775      0.484
+mnli                    40     0.300      0.475      0.368
+sst5                    40     0.125      0.450      0.111
+trec                    40     0.150      0.425      0.000
+yelp                    80     0.325      0.550      0.432
+
+G5 (§2.2): accuracy >= 0.95 at coverage >= 0.60: NOT MET — best coverage at target: None · max accuracy on this curve: 0.596
+  the curve never reaches 0.95 accuracy, so the floor below is the highest-coverage rung that exists on this checkpoint — a harness witness, not a G5 pass
+
+floor 0.693 re-run on the engine: it abstained on 227 of 568 questions, the curve puts 227 below that floor (coverage 0.600)

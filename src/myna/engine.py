@@ -6,6 +6,14 @@
     obs2.ask(other_questions)
 
 Question specs use laya's typed schema: choice / score / noul.
+
+Abstention (SPEC §5 P5, gate G5): construct with `Myna(ckpt, abstain_below=t)` and
+any decision whose top probability falls under `t` comes back with the answer field
+set to `None` and a `reason` naming the measured confidence and the runner-up
+margin. It is `None` rather than the argmax on purpose: a caller that ignores
+`abstain` then gets a type error at the seam, not a confident-looking wrong label.
+With no threshold the engine never abstains — the latency and parity paths ask a
+question that abstention cannot answer.
 """
 
 from __future__ import annotations
@@ -24,6 +32,35 @@ from .tokenizer import build_question, encode_text
 # and slashes Python-loop overhead vs the training chunk (16). All chunk sizes
 # are proven exactly equivalent in tests/test_trunk_numerics.py.
 INFER_CHUNK = 256
+
+
+def abstain_check(probs: list[float], threshold: float | None,
+                  labels: list[str]) -> dict:
+    """Decide whether a probability vector supports a commitment, and say why.
+
+    Pure and threshold-only: it never sees gold labels, so tuning the threshold
+    on `calibration.jsonl` cannot leak an answer through this function.
+
+    Confidence is the *top* probability, which for a two-way (noul) question is
+    the probability of whichever side is being committed to — reading noul's
+    confidence off `p_yes` instead would abstain on the model's surest "no"s.
+
+    `margin` is the distance to the runner-up, which is what actually separates
+    "the model has decided" from "the model picked the least bad of two".
+    """
+    if threshold is None:
+        return {"abstain": False, "confidence": None, "margin": None, "reason": None}
+    if not 0.0 < threshold <= 1.0:
+        raise ValueError(f"abstain threshold must be in (0, 1], got {threshold!r}")
+    if len(probs) != len(labels) or not probs:
+        raise ValueError(f"{len(probs)} probabilities for {len(labels)} labels")
+    ordered = sorted(probs, reverse=True)
+    margin = ordered[0] - (ordered[1] if len(ordered) > 1 else 0.0)
+    i = max(range(len(probs)), key=lambda k: probs[k])
+    conf = probs[i]
+    return {"abstain": conf < threshold, "confidence": conf, "margin": margin,
+            "reason": f"{labels[i]} at p={conf:.3f}, {margin:.3f} ahead of the runner-up, "
+                      f"under the {threshold:.3f} floor"}
 
 
 class Observation:
@@ -75,15 +112,30 @@ class Observation:
             _, spans, dec = built[i]
             answers[name] = self.m._readout(spec, opts, hn_q[i], dec, spans)
             usage += len(built[i][0])
+        # The policy and the count ride with every response: a caller that never
+        # reads the per-answer `abstain` flag still cannot miss that the engine
+        # was running with a floor under it, or how many questions it gave up.
+        abstained = sorted(k for k, a in answers.items() if a.get("abstain"))
         return {
             "answers": answers,
             "usage": {"state_tokens": len(self.ids), "question_tokens": usage},
+            "policy": {"abstain_below": self.m.abstain_below, "abstained": abstained},
             "latency_ms": round((time.perf_counter() - t0) * 1000, 2),
         }
 
 
 class Myna:
-    def __init__(self, ckpt_dir: str | Path, device: str = "cpu"):
+    def __init__(self, ckpt_dir: str | Path, device: str = "cpu",
+                 abstain_below: float | None = None):
+        """`abstain_below=None` (the default) never abstains: the latency and
+        parity paths must answer every question, and an engine that can quietly
+        stop answering would make those measurements mean nothing.
+
+        Validate at construction, not per answer: a threshold of 0 abstains
+        never and one of 1.1 abstains always, and both look like a working model
+        until the day the fallback bill arrives."""
+        if abstain_below is not None and not 0.0 < float(abstain_below) <= 1.0:
+            raise ValueError(f"--abstain-below must be in (0, 1], got {abstain_below!r}")
         ckpt_dir = Path(ckpt_dir)
         ck = torch.load(ckpt_dir / "model.pt", map_location=device, weights_only=False)
         self.cfg = MynaConfig(**ck["cfg"])
@@ -91,6 +143,7 @@ class Myna:
         self.model.load_state_dict(ck["state_dict"])
         self.model.to(device).eval()
         self.temperature = ck["temperature"]
+        self.abstain_below = None if abstain_below is None else float(abstain_below)
         self.device = device
         self.tok = Tokenizer.from_file(str(ckpt_dir / "tokenizer.json"))
 
@@ -150,14 +203,25 @@ class Myna:
         pooled = torch.stack([hq_row[s:e].mean(0) for s, e in spans])  # [O,d]
         logits = (self.model.wq(decide) @ self.model.wk(pooled).mT).squeeze(0) / (self.cfg.d_ptr**0.5)
         probs = F.softmax(logits / self.temperature, dim=-1)
+        pl = [float(p) for p in probs]
+        gate = abstain_check(pl, self.abstain_below, labels)
         if qtype == "choice":
             i = int(probs.argmax())
-            return {"type": "choice", "choice": labels[i], "confidence": float(probs[i]),
-                    "probabilities": {l: float(p) for l, p in zip(labels, probs)}}
+            return {"type": "choice", "choice": None if gate["abstain"] else labels[i],
+                    "confidence": pl[i], "abstain": gate["abstain"], "reason": gate["reason"],
+                    "margin": gate["margin"],
+                    "probabilities": {l: p for l, p in zip(labels, pl)}}
         if qtype == "score":
-            dist = {labels[i]: float(p) for i, p in enumerate(probs)}
-            expectation = sum(i * float(p) for i, p in enumerate(probs))
             i = int(probs.argmax())
-            return {"type": "score", "score": expectation, "level": labels[i],
-                    "probabilities": dist, "legend": {str(i): l for i, l in enumerate(labels)}}
-        return {"type": "noul", "noul": float(probs[1])}
+            return {"type": "score",
+                    "score": None if gate["abstain"] else sum(k * p for k, p in enumerate(pl)),
+                    "level": None if gate["abstain"] else labels[i],
+                    "confidence": gate["confidence"], "abstain": gate["abstain"],
+                    "reason": gate["reason"], "margin": gate["margin"],
+                    "probabilities": {labels[k]: p for k, p in enumerate(pl)},
+                    "legend": {str(k): l for k, l in enumerate(labels)}}
+        # noul keeps reporting the raw p(Yes): the Brier score is defined on it,
+        # and an abstention must not delete the number the gate is measured with.
+        return {"type": "noul", "noul": pl[1], "yes": None if gate["abstain"] else pl[1] >= 0.5,
+                "confidence": gate["confidence"], "abstain": gate["abstain"],
+                "reason": gate["reason"], "margin": gate["margin"]}

@@ -49,6 +49,7 @@ to clear, not a gap to reframe around. Where we lose, we print the loss.
 | input window | **512 tokens** english / **1024** typed-decisions (`max_len` 1024 + `head_max_len` 256, read from the checkpoint config by the 4a harness) | 16,384 measured; the *answer* path is length-independent, the scan is not (§9.22) | measured |
 | retained state | KV-free but re-encodes; window-bounded | **576 KiB fixed, independent of length** | measured |
 | calibration ECE | **0.081** after temperature fit (their measured) | **≤ 0.02**; 0.0076 on v0 **dev**, whose temperature was fit on those rows — read as optimistic (§9.11) | measured (v0), level disputed |
+| refusing a decision | nothing in the response shape refuses: `system_one` returns a choice for every question, and a caller can only threshold `confidence` itself | `Myna(abstain_below=t)` withholds the commitment with a measured `reason`; risk/coverage on `calibration.jsonl` runs 0.349 → 0.596 as coverage falls 1.00 → 0.10, and **no rung reaches G5's 0.95** on v0 (§9.24) | measured (5a/5b), gate not met |
 | browser artifact | ~1.7 GB fp32 / ~420 MB int8 (arithmetic) | **≤ 20 MB int8**, cold load ≤ 3 s | projected, gated on ONNX export |
 
 The latency cells are one process on one M5 laptop, `device=cpu`, both engines fp32. An absolute p50
@@ -66,7 +67,7 @@ Quote the ratio, never the millisecond figure.
 | **G2** | Latency claim survives equal-footing re-measurement | same box, same window, same question count, direct `Agent` call not `Router`; published ratio recomputed from that or withdrawn | **met** (4a/4c): one M5 process, both fp32, `Agent.system_one`, ladder capped inside laya's 1024 window — **3.04×/3.21×/4.12×/3.60×** at 1/5/10/50 questions end-to-end and **6.78×/4.67×/4.75×/3.65×** on the ask-only path, each the minimum of two committed runs, `runs/latency_matched*.md`. G1 is *not* implied: v0's accuracy still fails (§4.2) |
 | **G3** | Deployment works for real | ONNX browser build answers a live page's decisions; bytes + p50 + cold-load measured in Chrome | open |
 | **G4** | Long-context is *correct*, not just cheap | needle-style typed decision ≥ 0.90 at 4k and ≥ 0.85 at 16k state | open |
-| **G5** | Useful confidence, with abstention | risk/coverage curve on `calibration.jsonl`; ≥ 0.95 accuracy at ≥ 60% coverage on banking77 + dbpedia14 + trec | open |
+| **G5** | Useful confidence, with abstention | risk/coverage curve on `calibration.jsonl`; ≥ 0.95 accuracy at ≥ 60% coverage on banking77 + dbpedia14 + trec | **harness met, gate not met.** Abstention ships: `Myna(ckpt, abstain_below=t)` withholds the commitment and prints the measured reason, the fallback seam labels every answer with the engine that committed, and the curve is a committed artifact (`runs/risk_coverage.md`, 448 rows / 568 questions). Accuracy on v0 climbs **0.349 → 0.535** as coverage falls 1.00 → 0.20 — the confidence ranks the answers, on a checkpoint that cannot do the task — and setting the 0.693 floor on the engine abstains on **227** questions where the curve withheld **227**. But **no rung reaches 0.95** (max 0.596, at 10% coverage) and G5's own three sources sit at 0.000 / 0.025 / 0.150, so the pass needs the `KAGGLE` checkpoint (§9.24) |
 | **G6** | No regression on what already worked | synthetic v0 test ≥ 0.94 (was 0.951 measured) | open |
 | **G7** | Reproducibility | one command per result, seeds pinned, witness JSONs committed, `pytest` green | open |
 
@@ -134,7 +135,9 @@ observation tokens  ──► embedding ──► bidirectional GLA trunk (6 lay
 `tokenizer.py` (byte-level BPE + `question_tensors` / `batch_question_tensors`) · `data.py`
 (synthetic corpus) · `real_data.py` (kev suite JSONL adapter, `flatten_groups`) ·
 `paraphrase.py` (9 phrasings/core + the reserved held-out index) · `engine.py`
-(streaming sessions) · `rlcd.py` (strictly-proper scoring + KL leash) · `longctx.py` (needle
+(streaming sessions, and the abstention floor: `abstain_check`, `policy` echo) · `fallback.py`
+(the `Decider` seam, the `DECIDERS` registry, `laya_spec`, and the per-decision `model` label) ·
+`rlcd.py` (strictly-proper scoring + KL leash) · `longctx.py` (needle
 generator) · `mlx_model.py` (Apple inference mirror) · `serve.py` (`/v1/sessions`, `/v1/predict`) ·
 `report.py` (the 3g stratified table: per-(source, question) cells, both floors recomputed from the
 split, instruction-derived strata, laya's own accuracies joined by cell, G1 verdict).
@@ -147,13 +150,22 @@ split, instruction-derived strata, laya's own accuracies joined by cell, G1 verd
 `mutation_kaggle_bundle.py` (the entrypoint + packager gate), `check_python311.py` (the 3.11 witness
 that runs the package on a real 3.11 interpreter and exits 2 rather than skipping),
 `bench_latency_matched.py` (the 4a/4b harness: one process, both engines, matched inputs, `flock`ed
-output) and its gate `mutation_latency_matched.py` (34 mutations).
+output) and its gate `mutation_latency_matched.py` (34 mutations), `risk_coverage.py` (the 5b
+risk/coverage curve, its floor re-run and the G5 verdict) and its gate `mutation_p5.py`
+(49 mutations across the engine's commitment, the seam's labels, the transport and the curve).
 `kaggle/`: `run.py` (one-command entrypoint: corpus discovery, the measured flag set, `--resume` only
 when a snapshot exists, tee to `train.log`, `run.json`, non-zero propagation), `package_dataset.py`
 (stage the pilot corpus, verify every byte against the corpus, print the upload command, never run
 it), `requirements.txt`.
-`tests/`: **201 passing + 1 KEV-gated parity test** (skipped here, green wherever `kev` is
-installed). The P3 gate is `test_memory_plan.py` (sizing arithmetic, the refusal, the CUDA headroom
+`tests/`: **264 passing + 1 KEV-gated parity test** (skipped here, green wherever `kev` is
+installed). The P5 gate is `test_abstain.py` (the flag against the distribution the same answer
+prints, monotonicity in the floor, noul's confident "no", the reason's measured numbers, the
+policy echo), `test_fallback.py` (only the abstained questions reach the secondary, the label
+follows the decider rather than a literal, both-refused reported, the laya schema shim held equal
+to `bench/eval_laya_real.py`'s) and `test_risk_coverage.py` (a synthetic oracle whose curve the
+test knows in advance: informative, uninformative and anti-calibrated heads, both G5 boundaries
+landed on exactly, and the floor's own row belonging to the kept set on both sides of the
+comparison). The P3 gate is `test_memory_plan.py` (sizing arithmetic, the refusal, the CUDA headroom
 read through a monkeypatch, the stop rule both ways, snapshot round-trip, resume),
 `test_kaggle_bundle.py` (the entrypoint's refusals and composed command, a real 2-update run through
 it, the packager's hash discipline) and `test_report.py` (both floors from the cell's own rows, the
@@ -517,10 +529,52 @@ are counted, and if nothing is left the run refuses. See §9.14.
       Quote a shape, not a number.
 
 ### P5 — Abstention and risk/coverage *(task #16, gates G5 — the flagship scenario)*
-- [ ] Confidence threshold tuned on `calibration.jsonl`; emit `abstain` with the reason.
-- [ ] Risk-coverage curve in the README table, not just an accuracy number.
-- [ ] Fallback seam to a stronger model, with the chosen model labelled per decision. A fast path
-      that is uncertain must never be silently load-bearing.
+- [x] **5a** Confidence threshold tuned on `calibration.jsonl`; emit `abstain` with the reason.
+      `Myna(ckpt, device, abstain_below=t)`: the default is `None`, which never abstains — the latency
+      and parity paths must answer every question, because an engine that can quietly stop answering
+      would invalidate those measurements (§4.3, `bench_latency_matched.require_full_answers`). With a
+      floor set, the committed field goes `None` (`choice` / `level` + `score` / `yes`) and every
+      answer carries `confidence`, `margin` (the runner-up gap), `abstain` and a `reason` quoting the
+      measured numbers, so a caller that ignores the flag fails at the seam instead of shipping a
+      label the model refused to commit to. `ask()` echoes `policy.abstain_below` and
+      `policy.abstained`; `myna.serve --abstain-below` and `/v1/health` carry it, because the HTTP
+      surface is where a fast path could go silent on the way out. noul is the trap this caught in
+      draft: its `confidence` is the probability of the *side committed to*, `max(p, 1-p)`, not
+      `p(Yes)` — pricing it the other way abstains on the model's surest "no"s, and
+      `test_a_confident_no_is_not_an_abstention` pins it by sharpening the real head
+      (`temperature=1e-3`) rather than a dictionary. **Witness:** `tests/test_abstain.py` (19) +
+      `tests/test_serve.py` (6, four of them the abstention path over HTTP and the CLI flag
+      that feeds it).
+- [x] **5b** Risk/coverage curve in the README table, not just an accuracy number.
+      `bench/risk_coverage.py` — one pass over a labelled split, ranking each question by its
+      committed-side probability, with the per-source cut G5 is written against. Two things make the
+      table mean something rather than being a plot: the ranking quantity is **recomputed** from the
+      printed distribution and cross-checked against the engine's own `confidence` field per answer
+      (a divergence raises), and the chosen floor is **re-run on the engine**, which must abstain on
+      exactly the count the curve withheld. Measured on v0 / `calibration.jsonl` (448 rows, 568
+      questions): accuracy **0.349** at full coverage rising to **0.596** at 10% — the confidence
+      carries information on a checkpoint that cannot do the task — and the 0.693 floor re-run gives
+      **227 engine abstentions against 227 curve rows below the floor** (§2.2, §9.24). **Witness:**
+      `runs/risk_coverage.{md,json,log}`, `tests/test_risk_coverage.py` (21 tests against a synthetic
+      oracle, including both G5 boundaries landed on exactly).
+- [x] **5c** Fallback seam to a stronger model, with the chosen model labelled per decision. A fast
+      path that is uncertain must never be silently load-bearing. `src/myna/fallback.py`:
+      `Decider` is the seam, `DECIDERS` the registry (`myna`, `laya`), and `Fallback.predict` re-asks
+      the secondary **only** the abstained questions, labels every answer with the engine that
+      committed to it, and reports `routing.still_abstained` when both refuse rather than dropping the
+      row. `LayaDecider` wraps `Agent.system_one`, not `Router` — §9.1's equal-footing rule applies to
+      the fallback path too, since a router's label would name the router rather than the thing that
+      answered. **Witness:** `tests/test_fallback.py` (15).
+- [ ] **5d** G5's pass condition measured on banking77 + dbpedia14 + trec — needs the real-trained
+      checkpoint, so `KAGGLE`-gated. The harness is provably correct against a synthetic oracle first
+      and mutation-checked second: **49/49 mutations caught** (`bench/mutation_p5.py`,
+      `runs/mutation_p5.log`) across the engine's commitment, the seam's labels, the transport and
+      the curve's boundaries. v0's own numbers are in §2.2 and they are a `NOT MET`, not a pass: its
+      full-coverage accuracy on the gate's three sources is 0.000 / 0.025 / 0.150, which is *under*
+      both floors of those cells on this split (uniform 0.013 / 0.071 / 0.167, majority-class
+      0.075 / 0.125 / 0.300 — both recomputed from the shipped rows by `myna.report.cell_stats`, not
+      quoted from the class counts). Abstention cannot rescue accuracy that is below guessing, and
+      the artifact says so in the same breath as the curve.
 
 ### P6 — Browser/on-device deployment *(task #18, gates G3)*
 - [ ] Split ONNX export (trunk + pointer head) mirroring `laya-ts/scripts/export_onnx.py`, with
@@ -816,5 +870,40 @@ Kept permanently, because the value of this project's claims is that they surviv
     cores can hurt our number but never improve it. Not fixed, and stated plainly: this is a
     development laptop, not a benchmark box, and stable absolute latencies need dedicated hardware —
     G2 is gated on the ratio, so it does not depend on getting one.
+24. **A risk/coverage curve can be a correct measurement of a model that cannot do the task, and
+    the README must not let that read as a G5 pass.** 5b ran v0 over `calibration.jsonl` — 448 rows,
+    568 questions, 168 question-sets (`runs/risk_coverage.md`) — and the shape is real: accuracy
+    climbs **0.349 → 0.413 → 0.535 → 0.596** as coverage falls 1.00 → 0.60 → 0.20 → 0.10, so the
+    committed-side probability ranks the answers. What is *not* real is any claim of usable
+    confidence: the ceiling is 0.596 against a 0.95 target, the three sources G5 names measure
+    0.000 (banking77), 0.025 (dbpedia14) and 0.150 (trec) at full coverage — each at its own
+    guessing floor, because v0 never trained on this corpus (§4.2) — and raising a threshold on a
+    model that cannot answer is not the product G5 describes. So the artifact ships labelled
+    *harness witness, not a G5 pass*, `g5.pass` is `false` in `risk_coverage.json`, and the gate
+    stays open pending the `KAGGLE` checkpoint (5d). Two further things this run settled, both
+    against my own first draft of the sentence above:
+    * **The curve is not monotone.** Rung 0.90 reads 0.376 and rung 0.80 reads 0.374. That is 57
+      rows changing hands between two adjacent cuts of a 568-row sample — not a bug and not
+      smoothed: the published table prints every rung, so a later reading cannot quietly
+      interpolate the dip away.
+    * **"It agrees with the engine" has to be an executed check, not a property of the plot.**
+      The floor the 0.60 cut selects (0.693) is re-applied to `Myna(abstain_below=0.693)` in the
+      same run, and the engine abstains on **227** questions where the curve puts **227** below
+      that floor. The reason this is a test and not a footnote is the boundary: a floor is read
+      off one real answer's confidence, so that answer sits exactly on the line, and `<` versus
+      `<=` on either side of the comparison moves it — which is why both halves now go through
+      one predicate (`at_or_above`) and `test_the_floor_belongs_to_the_kept_set_and_to_nobody_else`
+      pins the same float against the engine's own `abstain_check`. The same class of boundary sits
+      one line further down in the readout: noul at `p(Yes) = 0.5` commits to *yes*
+      (`pl[1] >= 0.5`), so the harness scores the tie the same way and
+      `test_a_level_tie_is_broken_the_way_the_engine_breaks_it` holds it there — because a
+      coin-flip row is precisely the row the two sides of this pipeline must not disagree about.
+    * **The battery earned its keep once, on the test side.** 49 mutations were written against
+      49 claims; the first pass scored 48/49, and the survivor was `laya_spec`'s noul branch being
+      deleted — which changed nothing because the fixture's noul question carried no `criteria`,
+      the one field the branch exists to drop. The mutation was not wrong, the *sample* was: the
+      suites ship `yelp`/`imdb` noul rows with a criteria dict, so the fixture now uses that shape
+      and the deletion is caught. A battery's survivors are read as holes in the tests, and a hole
+      in a fixture is as load-bearing as one in an assertion.
 
 

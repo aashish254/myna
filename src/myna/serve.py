@@ -54,7 +54,8 @@ def create_app(myna: Myna):
 
     @app.get("/v1/health")
     def health():
-        return {"ok": True, "params": myna.n_params, "temperature": myna.temperature}
+        return {"ok": True, "params": myna.n_params, "temperature": myna.temperature,
+                "abstain_below": myna.abstain_below}
 
     @app.post("/v1/predict")
     def predict(req: PredictIn):
@@ -89,6 +90,9 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--ckpt", default="runs/myna-v0")
     ap.add_argument("--device", default="cpu")
+    ap.add_argument("--abstain-below", type=float, default=None, metavar="P",
+                    help="refuse any decision whose top probability is under P and say why "
+                         "(default: never abstain). /v1/health reports the value in force.")
     ap.add_argument("--host", default="127.0.0.1")
     ap.add_argument("--port", type=int, default=8080)
     args = ap.parse_args()
@@ -97,7 +101,7 @@ def main():
     # extra: an optional dependency must not be what breaks the usage text
     import uvicorn
 
-    myna = Myna(args.ckpt, device=args.device)
+    myna = Myna(args.ckpt, device=args.device, abstain_below=args.abstain_below)
     uvicorn.run(create_app(myna), host=args.host, port=args.port)
 
 

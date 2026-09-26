@@ -1,0 +1,102 @@
+baseline copy: green (4 test files)
+
+[ 1/49] caught      the default engine abstains on everything
+            FAILED tests/test_abstain.py::test_no_threshold_means_every_question_is_committed
+[ 2/49] caught      the floor becomes exclusive: a row exactly on it is refused
+            FAILED tests/test_abstain.py::test_a_confidence_sitting_exactly_on_the_floor_commits
+[ 3/49] caught      noul confidence read off p(Yes) instead of the committed side
+            FAILED tests/test_abstain.py::test_confidence_is_the_top_option_and_the_margin_the_runner_up_gap
+[ 4/49] caught      margin becomes the confidence minus nothing
+            FAILED tests/test_abstain.py::test_confidence_is_the_top_option_and_the_margin_the_runner_up_gap
+[ 5/49] caught      a zero floor is accepted, so the guard never fires
+            FAILED tests/test_abstain.py::test_a_floor_outside_the_unit_interval_is_refused[0.0]
+[ 6/49] caught      labels and probabilities no longer have to line up
+            FAILED tests/test_abstain.py::test_a_two_way_vector_needs_both_of_its_labels
+[ 7/49] caught      the reason names whichever option came first
+            FAILED tests/test_abstain.py::test_the_reason_quotes_the_option_that_would_have_been_chosen
+[ 8/49] caught      the engine ignores the threshold it was built with
+            FAILED tests/test_abstain.py::test_the_flag_and_the_printed_distribution_cannot_disagree
+[ 9/49] caught      an abstained choice keeps its label: the silent fast path
+            FAILED tests/test_abstain.py::test_an_abstained_choice_still_publishes_its_full_distribution
+[10/49] caught      an abstained score keeps its level
+            FAILED tests/test_abstain.py::test_a_score_abstains_on_its_level_and_withdraws_its_expectation
+[11/49] caught      an abstained score keeps its expectation
+            FAILED tests/test_abstain.py::test_a_score_abstains_on_its_level_and_withdraws_its_expectation
+[12/49] caught      an abstained noul still says which side it chose
+            FAILED tests/test_abstain.py::test_a_coin_flip_noul_does_abstain - assert False
+[13/49] caught      a withheld noul loses the probability the Brier score needs
+            FAILED tests/test_abstain.py::test_a_coin_flip_noul_does_abstain - TypeError:...
+[14/49] caught      the response stops echoing the policy
+            FAILED tests/test_abstain.py::test_the_policy_and_the_abstention_count_ride_with_the_response
+[15/49] caught      the abstention count is always zero
+            FAILED tests/test_abstain.py::test_the_policy_and_the_abstention_count_ride_with_the_response
+[16/49] caught      a construction-time floor skips validation
+            FAILED tests/test_abstain.py::test_a_floor_outside_the_unit_interval_is_refused[0.0]
+[17/49] caught      the router never routes: nothing is ever pending
+            FAILED tests/test_fallback.py::test_only_the_abstained_questions_reach_the_fallback
+[18/49] caught      the router re-asks everything, hiding what abstention costs
+            FAILED tests/test_fallback.py::test_only_the_abstained_questions_reach_the_fallback
+[19/49] caught      a routed answer is labelled with the fast engine
+            FAILED tests/test_fallback.py::test_every_answer_names_the_engine_that_committed_to_it
+[20/49] caught      the primary label overwrites the ones already routed
+            FAILED tests/test_fallback.py::test_every_answer_names_the_engine_that_committed_to_it
+[21/49] caught      a fallback that also refuses is reported as resolved
+            FAILED tests/test_fallback.py::test_a_fallback_that_also_refuses_is_reported_not_dropped
+[22/49] caught      the routed count is hardcoded to zero
+            FAILED tests/test_fallback.py::test_every_answer_names_the_engine_that_committed_to_it
+[23/49] caught      an engine can be its own fallback
+            FAILED tests/test_fallback.py::test_one_engine_cannot_be_its_own_fallback - F...
+[24/49] caught      a zero round budget is accepted
+            FAILED tests/test_fallback.py::test_a_round_budget_below_one_is_refused_at_construction
+[25/49] caught      the registry loses laya, leaving one load-bearing engine
+            FAILED tests/test_fallback.py::test_the_registry_holds_both_engines_by_name
+[26/49] caught      an unknown decider raises something no CLI reports
+            FAILED tests/test_fallback.py::test_an_unknown_decider_names_the_registry_instead_of_raising_keyerror
+[27/49] caught      the secondary gets a second round nobody asked for
+            FAILED tests/test_fallback.py::test_the_second_engine_is_asked_once_not_until_it_agrees
+[28/49] caught      the laya shim keeps noul's criteria, so the fallback raises mid-answer
+            FAILED tests/test_fallback.py::test_noul_reaches_laya_without_criteria - Asse...
+[29/49] caught      the laya shim hands noul myna's own shape
+            FAILED tests/test_fallback.py::test_noul_reaches_laya_without_criteria - Asse...
+[30/49] caught      a gold label crosses the seam into the fallback
+            FAILED tests/test_fallback.py::test_no_gold_label_crosses_the_seam_in_any_shape
+[31/49] caught      the laya side reaches the Router, which picks its own model
+            FAILED tests/test_fallback.py::test_the_laya_side_calls_system_one_and_not_the_router
+[32/49] caught      health stops reporting the floor in force
+            FAILED tests/test_serve.py::test_health_names_the_floor_in_force - assert Non...
+[33/49] caught      the --abstain-below flag never reaches the engine
+            FAILED tests/test_serve.py::test_the_cli_floor_reaches_the_engine_that_serves
+[34/49] caught      the curve ranks on the least likely option
+            FAILED tests/test_risk_coverage.py::test_confidence_is_the_top_of_the_printed_distribution
+[35/49] caught      an empty distribution ranks as zero confidence
+            FAILED tests/test_risk_coverage.py::test_an_answer_with_nothing_to_rank_on_is_an_error_not_a_zero
+[36/49] caught      noul ranked on p(Yes), so sure noes sink to the bottom
+            FAILED tests/test_risk_coverage.py::test_a_sure_no_ranks_as_high_as_a_sure_yes
+[37/49] caught      noul's coin flip commits to no
+            FAILED tests/test_risk_coverage.py::test_a_level_tie_is_broken_the_way_the_engine_breaks_it
+[38/49] caught      the curve ranks ascending: risk improves as coverage falls
+            FAILED tests/test_risk_coverage.py::test_a_perfectly_informative_confidence_clears_the_gate_it_was_designed_fo
+[39/49] caught      a rung below one row keeps none, and the cell averages nothing
+            FAILED tests/test_risk_coverage.py::test_realized_coverage_is_what_the_sample_supports_not_the_rung_asked
+[40/49] caught      accuracy computed over the whole sample, not the kept prefix
+            FAILED tests/test_risk_coverage.py::test_a_perfectly_informative_confidence_clears_the_gate_it_was_designed_fo
+[41/49] caught      the printed coverage is the rung that was asked for
+            FAILED tests/test_risk_coverage.py::test_realized_coverage_is_what_the_sample_supports_not_the_rung_asked
+[42/49] caught      the target becomes exclusive at exactly 0.95
+            FAILED tests/test_risk_coverage.py::test_the_gate_boundaries_are_inclusive_on_both_halves
+[43/49] caught      the coverage half of the gate is dropped
+            FAILED tests/test_risk_coverage.py::test_a_perfectly_ranked_confidence_still_fails_when_accuracy_is_only_two_t
+[44/49] caught      the floor's own row is excluded from the kept set
+            FAILED tests/test_risk_coverage.py::test_the_floor_belongs_to_the_kept_set_and_to_nobody_else
+[45/49] caught      below-floor counts the kept rows instead
+            FAILED tests/test_risk_coverage.py::test_the_floor_belongs_to_the_kept_set_and_to_nobody_else
+[46/49] caught      the engine/curve agreement inverts
+            FAILED tests/test_risk_coverage.py::test_the_floor_belongs_to_the_kept_set_and_to_nobody_else
+[47/49] caught      a question the engine skipped stops being an error
+            FAILED tests/test_risk_coverage.py::test_a_question_the_engine_skipped_is_an_error_not_a_missing_row
+[48/49] caught      the curve stops checking the engine's own confidence field
+            FAILED tests/test_risk_coverage.py::test_a_confidence_that_disagrees_with_its_own_distribution_is_an_error
+[49/49] caught      the gate's own coverage rung is not measured
+            FAILED tests/test_risk_coverage.py::test_an_uninformative_confidence_buys_nothing
+
+49/49 mutations caught
