@@ -47,7 +47,7 @@ to clear, not a gap to reframe around. Where we lose, we print the loss.
 | p50 latency, 50 questions, T4 | **771.3 ms** (their measured) | ≥ 5× faster, same box | projected, gated on cloud access |
 | input window | **512 tokens** english / **1024** typed-decisions | 16,384 measured; flat cost | measured |
 | retained state | KV-free but re-encodes; window-bounded | **576 KiB fixed, independent of length** | measured |
-| calibration ECE | **0.081** after temperature fit (their measured) | **≤ 0.02**; 0.0076 already measured on v0 | measured (v0) |
+| calibration ECE | **0.081** after temperature fit (their measured) | **≤ 0.02**; 0.0076 on v0 **dev**, whose temperature was fit on those rows — read as optimistic (§9.11) | measured (v0), level disputed |
 | browser artifact | ~1.7 GB fp32 / ~420 MB int8 (arithmetic) | **≤ 20 MB int8**, cold load ≤ 3 s | projected, gated on ONNX export |
 
 ### 2.2 Acceptance gates — the project is not finished until all pass
@@ -130,8 +130,9 @@ generator) · `mlx_model.py` (Apple inference mirror) · `serve.py` (`/v1/sessio
 `bench/`: streaming bench, laya witness runners, needle eval, MLX bench, result summarizer,
 `pull_upstream.py` (P1 data pipeline), `mem_profile.py` (per-axis step memory),
 `pilot_topology.py` (question-set topology + rows-per-forward under each contract).
-`tests/`: 53 passing + 1 KEV-gated parity test, including float64 scan equivalence, engine parity,
-adapter invariants, per-row batch equivalence, and the batch-sampling regression guards.
+`tests/`: 61 passing + 1 KEV-gated parity test, including float64 scan equivalence, engine parity,
+adapter invariants, per-row batch equivalence, the calibration-split and device-resolution guards,
+and the batch-sampling regression guards.
 
 ---
 
@@ -179,19 +180,39 @@ does not advance, it goes in the corrections log (§9).
       Mutation-checked: reverting it fails the regression test.
 - [x] Same fix in `rlcd.py`, which would have **crashed** on a short pool.
 - [x] Startup diagnostic printing median pool size and share of sets with pool < batch.
-- [ ] Fit temperature on the suite's own `calibration.jsonl` (448 records, 568 questions) instead
-      of `dev`. Currently we fit on dev, which quietly flatters the dev number — a methodological
-      defect on our side.
-- [ ] `--device auto` must consider CUDA (it resolves to mps/cpu only, so any cloud box would
-      silently train on CPU).
+- [x] Fit temperature on the suite's own `calibration.jsonl` (448 records, 568 questions) instead
+      of `dev`. We fit it on dev through v0, which quietly flatters the dev number — a
+      methodological defect on our side. The counts re-measured *through our adapter*:
+      **calibration 448 rows / 568 labelled questions**; dev and test 1,176 rows / 1,440 questions
+      each (the pilot dir's copies of the frozen eval splits).
+      **Fixed:** `load_suite` now reads the fourth split and
+      `train.temperature_source` prefers it, falling back to dev only when it is absent (the
+      synthetic corpus ships none). The printout and `metrics.json` carry the split *and the row
+      count it fit on*, because a label alone is not a witness — an earlier draft of the line
+      printed "calibration" while fitting on dev and only the fitted value gave it away.
+      Witnessed end to end: `temperature: 3.0 (fit on calibration: 20 rows in 20 sets)` on a
+      20-row sample suite, `(fit on dev)` on the synthetic path. Mutation battery: 8 mutations of
+      the new code, all caught — the first pass missed `data.get("calibration", data["dev"])`,
+      which is invisible unless the key is *absent* rather than empty, so
+      `test_synthetic_data_with_no_calibration_key_reports_dev` now covers exactly that.
+      Consequence for the record: **v0's dev metrics carry this defect** (its temperature 3.0 was
+      picked on the same rows), so read v0's dev ECE as optimistic. Its *test* metrics do not —
+      test rows were never in the fit.
+- [x] `--device auto` must consider CUDA (it resolves to mps/cpu only, so any cloud box would
+      silently train on CPU). **Fixed:** `train.resolve_device` — MPS, then CUDA, then CPU, and an
+      explicit `--device` is never rewritten. Order matters and is tested both ways.
 - [ ] Re-derive every V1-B conclusion; numbers in `runs/*.log` predate `385e06c` and are void.
-- [ ] Push the repo. **No remote exists** — 4 commits and the entire codebase live on one laptop.
+- [ ] Push the repo. **No remote exists** — 30 commits and 45 tracked files live on one laptop.
       This is the largest unmanaged risk in the project. User-gated.
 
 ### P1 — Data: the accuracy unlock *(task #14 done; #15 open)*
-The suite froze 500 rows per source; the upstream corpora behind them hold ~2M labelled examples,
-and decision-v2's manifest lists **all 11 sources as trainable** with `holdout_sources: []` and
-explicitly disclaims any decontamination claim.
+The suite froze **300 train rows per source** (contrastive 432, since its generator emits a fixed
+policy grid), 80–116 in each of dev/test and 40–48 in calibration — 500–872 rows per source across
+all four splits, **6,232 rows total** (counted directly on the pinned checkout; an earlier draft of
+this section said "500 rows per source", which conflated the per-source total with the train split,
+now §9.10). The upstream corpora behind them hold ~2M labelled examples, and decision-v2's manifest
+lists **all 11 sources as trainable** with `holdout_sources: []` and explicitly disclaims any
+decontamination claim.
 
 **Done — the pilot slice is on disk** (`bench/pull_upstream.py`, `9e954f9`; corpus in
 `data/decision-v2-pilot/`, gitignored except its manifest). Every figure below is printed by that
@@ -427,3 +448,13 @@ Kept permanently, because the value of this project's claims is that they surviv
    question cells (which is what `--max-q-cells` does), and the M5's crash is explained by the state
    axis at `--batch 32`, not by banking77's 77 options. The correction changes the mitigation, not
    the conclusion: budget by *something*, and 32 GB is not a licence for a 32-row long-state batch.
+10. **"The suite froze 500 rows per source."** Wrong as written: 500–872 is the per-source total
+    across *all four* splits. The train split is 300 rows/source (contrastive 432), dev and test are
+    1,176 rows each (80–116/source), calibration 448. The suite ships **6,232 rows**; the pilot's
+    57,904 train states are 54,472 upstream + 3,432 of those.
+11. **"v0's dev ECE ≤ 0.042."** The scalar behind every v0 dev metric was fit **on dev**, so the
+    dev accuracy/calibration numbers were scored on the rows that picked the temperature — in-sample.
+    Test metrics are unaffected (test never entered the fit). Fixed for future runs by fitting on the
+    suite's `calibration.jsonl`; the v0 figures stand as measured but read dev as optimistic, and
+    the RLCD "ECE halved" delta was measured the same in-sample way on both sides, so its *direction*
+    is safe and its *level* is not quotable.

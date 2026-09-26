@@ -96,12 +96,18 @@ def load_split(path):
     return groups
 
 
-def load_suite(root, train="train.jsonl", dev="development.jsonl", test="test.jsonl"):
-    """A frozen-suite directory -> {"train"|"dev"|"test": groups}. Splits
-    missing on disk map to {} (e.g. eval-only suites)."""
+def load_suite(root, train="train.jsonl", dev="development.jsonl", test="test.jsonl",
+               calibration="calibration.jsonl"):
+    """A frozen-suite directory -> {"train"|"dev"|"test"|"calibration": groups}.
+    Splits missing on disk map to {} (e.g. eval-only suites).
+
+    `calibration` is the suite's own labelled split for fitting the temperature
+    scalar. Fitting it on dev instead — which we did through v0 — uses the same
+    rows to pick the scalar and to report calibration on, so it quietly
+    flatters the dev number."""
     root = Path(root)
     out = {}
-    for name, fname in (("train", train), ("dev", dev), ("test", test)):
+    for name, fname in (("train", train), ("dev", dev), ("test", test), ("calibration", calibration)):
         p = root / fname
         out[name] = load_split(p) if p.exists() else {}
     return out

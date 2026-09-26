@@ -174,7 +174,7 @@ def evaluate(model, tok, splits, device, temperature=1.0):
 
 
 def fit_temperature(model, tok, splits, device):
-    """1-D grid on dev NLL — calibration is a single scalar per checkpoint."""
+    """1-D grid on NLL — calibration is a single scalar per checkpoint."""
     best, best_t = 1e18, 1.0
     model.eval()
     with torch.no_grad():
@@ -191,6 +191,31 @@ def fit_temperature(model, tok, splits, device):
             if tot / cnt < best:
                 best, best_t = tot / cnt, t
     return best_t
+
+
+def temperature_source(data):
+    """Which split the scalar is fit on: the suite's own `calibration` group,
+    else `dev`.
+
+    dev is the fallback for the synthetic corpus, which ships no calibration
+    split — but then the reported dev accuracy is fit on the rows it is scored
+    on, and the printed line says so rather than leaving it implied."""
+    calib = data.get("calibration")
+    return (calib, "calibration") if calib else (data["dev"], "dev")
+
+
+def resolve_device(name):
+    """`auto` prefers MPS, then CUDA, then CPU.
+
+    Resolving to mps/cpu only meant a CUDA cloud box — the structural fix for
+    the M5's memory ceiling — silently trained on CPU."""
+    if name != "auto":
+        return name
+    if torch.backends.mps.is_available():
+        return "mps"
+    if torch.cuda.is_available():
+        return "cuda"
+    return "cpu"
 
 
 def build_needle_batch(exs, tok, device, entity):
@@ -313,9 +338,7 @@ def main():
     args = ap.parse_args()
 
     rng = random.Random(args.seed)
-    device = args.device
-    if device == "auto":
-        device = "mps" if torch.backends.mps.is_available() else "cpu"
+    device = resolve_device(args.device)
 
     if args.long_context:
         train_long_context(args, rng, device)
@@ -447,8 +470,13 @@ def main():
                 out / "model_last.pt",
             )
 
-    temperature = fit_temperature(model, tok, data["dev"], device)
-    print(f"temperature: {temperature}")
+    calib_split, calib_name = temperature_source(data)
+    # the row count rides along with the label: "(fit on calibration)" would
+    # still print if the split were hardcoded, the count would not match
+    n_fit_rows = sum(len(exs) for _q, exs in calib_split.values())
+    temperature = fit_temperature(model, tok, calib_split, device)
+    print(f"temperature: {temperature}  (fit on {calib_name}: {n_fit_rows} rows in "
+          f"{len(calib_split)} sets)")
     dev_m = evaluate(model, tok, data["dev"], device, temperature)
     test_m = evaluate(model, tok, data["test"], device, temperature)
     print("=== dev ===")
@@ -469,7 +497,9 @@ def main():
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
     with open(out / "metrics.json", "w") as f:
-        json.dump({"temperature": temperature, "dev": dev_m, "test": test_m, "qtypes": qtypes}, f, indent=2)
+        json.dump({"temperature": temperature, "temperature_fit_on": calib_name,
+                   "temperature_fit_rows": n_fit_rows,
+                   "dev": dev_m, "test": test_m, "qtypes": qtypes}, f, indent=2)
 
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
