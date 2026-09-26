@@ -127,23 +127,29 @@ observation tokens  ──► embedding ──► bidirectional GLA trunk (6 lay
 (synthetic corpus) · `real_data.py` (kev suite JSONL adapter, `flatten_groups`) ·
 `paraphrase.py` (9 phrasings/core + the reserved held-out index) · `engine.py`
 (streaming sessions) · `rlcd.py` (strictly-proper scoring + KL leash) · `longctx.py` (needle
-generator) · `mlx_model.py` (Apple inference mirror) · `serve.py` (`/v1/sessions`, `/v1/predict`).
+generator) · `mlx_model.py` (Apple inference mirror) · `serve.py` (`/v1/sessions`, `/v1/predict`) ·
+`report.py` (the 3g stratified table: per-(source, question) cells, both floors recomputed from the
+split, instruction-derived strata, laya's own accuracies joined by cell, G1 verdict).
 `bench/`: streaming bench, laya witness runners, needle eval, MLX bench, result summarizer,
 `pull_upstream.py` (P1 data pipeline), `mem_profile.py` (per-axis step memory),
 `pilot_topology.py` (question-set topology + rows-per-forward under each contract),
 `mutation_paraphrase.py` (the P1 gate's mutation battery, 29/29),
 `mutation_memory_plan.py` (the P3 sizing/stop/resume gate, 44 mutations),
+`mutation_report.py` (the 3g reporting gate: every floor, weight and stratum in the table),
 `mutation_kaggle_bundle.py` (the entrypoint + packager gate), `check_python311.py` (the 3.11 witness
 that runs the package on a real 3.11 interpreter and exits 2 rather than skipping).
 `kaggle/`: `run.py` (one-command entrypoint: corpus discovery, the measured flag set, `--resume` only
 when a snapshot exists, tee to `train.log`, `run.json`, non-zero propagation), `package_dataset.py`
 (stage the pilot corpus, verify every byte against the corpus, print the upload command, never run
 it), `requirements.txt`.
-`tests/`: **141 passing + 1 KEV-gated parity test** (skipped here, green wherever `kev` is
+`tests/`: **167 passing + 1 KEV-gated parity test** (skipped here, green wherever `kev` is
 installed). The P3 gate is `test_memory_plan.py` (sizing arithmetic, the refusal, the CUDA headroom
-read through a monkeypatch, the stop rule both ways, snapshot round-trip, resume) and
+read through a monkeypatch, the stop rule both ways, snapshot round-trip, resume),
 `test_kaggle_bundle.py` (the entrypoint's refusals and composed command, a real 2-update run through
-it, the packager's hash discipline); the device-resolution and calibration-split guards, the
+it, the packager's hash discipline) and `test_report.py` (both floors from the cell's own rows, the
+row-weighted cell mean, the instruction-derived strata and their 0.5 boundary, the laya join, the G1
+verdict's two halves, and the CLI on the frozen split reproducing §4.2's published floors);
+the device-resolution and calibration-split guards, the
 batch-sampling regression guards, per-row batch equivalence, float64 scan equivalence, engine parity,
 adapter invariants, and the paraphrase table + trainer-wiring pairs (the table's own tests cannot see
 the loop that uses it).
@@ -165,10 +171,22 @@ amazon 0.325 · banking77 0.250.
 
 ### 4.2 The floors, so "better" means something
 Computed from the same splits, pooled per (source, question), n ≥ 30:
-**macro majority-class 0.4331 · macro uniform-chance 0.3292.**
-Notable: laya beats the constant predictor by **+0.013 on imdb** and **+0.038 on boolq** — i.e. on
+**macro majority-class 0.4331 · macro uniform-chance 0.3321.**
+Both are now recomputed from the shipped rows by `src/myna/report.py` (`python -m myna.report
+--suite data/decision-v2-pilot --split test --metrics <run>`) and pinned by a test at 0.433 / 0.332,
+so the floor G1 is judged against is derived twice by two independent pieces of code and agrees. The
+uniform figure changed from the 0.3292 published here earlier — see §9.16.
+Notable: laya beats the constant predictor by **+0.0125 on imdb** (0.550 over a 43/80 floor) and
+**+0.0375 on boolq** (0.575 over 43/80) — i.e. on
 its binary tasks laya is statistically indistinguishable from answering the same thing every time.
 This is why the accuracy throne is not defended as strongly as a 0.63 average suggests.
+The same harness also measures, rather than lists, the **9-vs-2 stratum split**: on the test split
+boolq and mnli are *per-row-instruction* — the row's own text is the question (80 distinct
+instructions over 80 boolq rows, 80 over 116 mnli slots) — while the other nine repeat a handful of
+schemas across every row (agnews: 8 distinct instructions over 300 labelled slots, all repeated)
+even though the adapter's group signature splits them into 113 near-singleton sets. That distinction
+is what makes "groupable vs not" a measured fact instead of a naming exercise; see §9.17.
+
 
 ### 4.3 laya's own published numbers (from its repo, for context only — different suites)
 typed-decisions 0.766 on 2,000 decisions · ECE 0.081 after temperature fit · T4 p50 39.5 ms for 1
@@ -390,9 +408,19 @@ optimization.** boolq and mnli are the permanent half of it — their instructio
       all caught**, run inside a scratch copy of `src`+`tests` (the repo's own `pythonpath = ["src"]`
       outranks `PYTHONPATH` — §9.12), with a green-baseline guard and an abort-if-the-first-mutant-
       survives guard so a battery that mutates nothing can never report a clean pass.
-- [ ] **3g** Stratified reporting harness: per source × question-type, groupable (9/11) vs
+- [x] **3g** Stratified reporting harness: per source × question-type, groupable (9/11) vs
       per-row-instruction (boolq, mnli), majority/uniform floors in the same table — inference only,
-      so runnable here against v0 and against any Kaggle checkpoint.
+      so runnable here against v0 and against any Kaggle checkpoint. `src/myna/report.py`
+      (`python -m myna.report --suite … --split test --metrics <run dir> [--laya <witness>] [--out j]`).
+      Witnessed, in the table itself: the published floors re-derive from the shipped rows
+      (**majority 0.433 exactly as §4.2, uniform 0.332** — see §9.16), laya's own per-cell accuracies
+      reproduce their margins over the floor (imdb 0.550 over 43/80, boolq 0.575 over the same), the
+      9-vs-2 stratum split is *measured* from instruction strings rather than named (agnews: 8 distinct
+      instructions over 300 labelled slots while its 116 rows sit in 113 exact-signature sets — §9.17),
+      and the six cells whose option counts differ across their sets are printed with their full
+      histograms because the chance floor is row-weighted over them. Gate: `bench/mutation_report.py`
+      — **54 mutations over `src/myna/report.py`, all caught, exit 0**, run against a frozen repo
+      (§9.18 is the process correction that bought that discipline).
 - [ ] **3h** 15.35M vs ~32M head-to-head on identical data — `KAGGLE`.
 - [ ] **3i** G1 verdict: decision-v2 **test ≥ 0.70** macro, ≥ +0.15 over the 0.4331 majority floor,
       per-source table published — `KAGGLE` result, reported as measured or as a loss.
@@ -586,7 +614,43 @@ Kept permanently, because the value of this project's claims is that they surviv
     batch of 1, and the printed plan line says how much of the headroom went to the question branch.
     The rule this breaks is the general one: a per-axis price list is not a budget until the axes
     that are simultaneously live are summed.
-15. **"The packager verifies the corpus."** It did, against tests that could not tell. The first pass
+16. **"Macro uniform-chance 0.3292."** The 3g harness reproduced §4.2's majority floor *exactly*
+    (0.4331) and its uniform floor as **0.3321**. Not a rounding story: a (source, question) cell is
+    asked by several question-sets whose option counts **differ**, because kev randomizes distractors
+    row to row — agnews/topic appears with 4 options for 104 test rows and 5 for 12, banking77/intent
+    with 77 and 78, contrastive/decision with 2, 3 and 4. So `1/options` has no single value per cell,
+    and the old figure was one of the available weightings picked implicitly by an ad-hoc pass that
+    left no script behind. Three alternatives were measured against it on the same split before
+    settling (mean over sets 0.3267, minimum per cell 0.3139, first set read 0.3397 — an ad-hoc probe,
+    published here only to show the spread, not as a result): the harness takes the **row-weighted**
+    0.3321, prints the six mixed cells with their full
+    option histograms so a reader can audit it, and a test pins 0.433/0.332 together. G1 is judged
+    against the majority floor, which is unchanged; the correction matters because a +0.15 margin is
+    quoted, and a margin against a floor that cannot be recomputed is a claim, not a measurement.
+17. **"9 groupable vs 2 per-row" is a fact about instruction strings, not about question-sets.** The
+    first pass of `report.strata()` keyed on the adapter's group signature and classified **11 of 11**
+    sources as per-row-instruction — it reported the artifact and concluded the suite had no
+    structure. The signature *must* include the per-option `criteria` descriptions (kev varies them
+    row to row, they are part of the option text, and two rows with different criteria genuinely
+    cannot share a question tensor — that is why P2 batches on it), so on the test split agnews's 116
+    rows sit in **113** exact-signature sets while sharing only **8** instruction strings, and 0.05 of
+    its rows live in a reused set; boolq's 80 rows are 80 sets *and* 80 distinct instructions, which
+    is the actual per-row case. Measured on the same rows, the two counts diverge for nine sources
+    and coincide for two. Recorded because the same key produced §9.3's "1,146 question-sets, median
+    pool 1, therefore interference" story, and because P1's topology line (17,112 pilot question-sets,
+    96% singletons, against 10,668 schemas) is the same measurement on the train split — true as a
+    *batching* fact, misleading as a taxonomy. The durable rule: a structure claim about a derived
+    corpus is checked against the generator's randomization, and a batch key is not a taxonomy.
+18. **A mutation battery is a measurement, so nothing may move while it runs.** The first two passes of
+    `bench/mutation_report.py` ran while `src/myna/report.py` and `tests/test_report.py` were still
+    being strengthened, and because the harness re-copies `src`+`tests` for every mutation, one log
+    blended code states: eight survivors and a `BAD-PATTERN` whose pattern matches exactly once in the
+    file on disk today, then **53/54** with one survivor ("distinct instructions reported as the set
+    count"). All of
+    it was real signal about the *older* tests and unusable as a witness for these. Two rules follow:
+    freeze the code and the tests for the whole run, and check the reported mutation count against the
+    file's list length before quoting it. The clean pass — repo untouched, battery launched once and
+    left alone — is **54/54, exit 0**, and it is the only number from this gate in a commit message.
     of `bench/mutation_kaggle_bundle.py` caught **21/25**, and the four survivors were all the same
     species of self-flattery: `WORKING` was only ever exercised through a monkeypatch, so a literal
     `/tmp` default — a checkpoint Kaggle would never save — passed; `check()`'s sha branch was

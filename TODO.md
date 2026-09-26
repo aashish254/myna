@@ -113,9 +113,21 @@ So every "train" item below is split into *prepare/verify the Kaggle path locall
 - [x] **3a–3f gate**: `bench/mutation_memory_plan.py` — **44 mutations over `src/myna/train.py`**, run
       inside a scratch copy of the repo (the `pythonpath = ["src"]` trap, §9.12), with green-baseline
       and first-mutation abort guards.
-- [ ] **3g** Stratified reporting harness: per source × question-type table, groupable (9/11) vs
+- [x] **3g** Stratified reporting harness: per source × question-type table, groupable (9/11) vs
       per-row-instruction (boolq, mnli), majority/uniform floors in the same table — runnable on
-      the v0 + any Kaggle checkpoint (inference here is allowed)
+      the v0 + any Kaggle checkpoint (inference here is allowed). `src/myna/report.py` + `tests/test_report.py`
+      (26 tests) + `bench/mutation_report.py` (**54 mutations, all caught, exit 0**). Witnesses printed
+      by the harness on the frozen pilot test split: 1440 rows over 16 cells, 16 kept at n≥30;
+      **majority macro 0.433** (re-derives SPEC §4.2's published 0.4331 through the adapter) and
+      **uniform macro 0.332** (row-weighted; §9.16 corrects the 0.3292 published figure and lists the
+      three alternative weightings it could have been); laya joined per cell (0.682 macro over the
+      shared-instruction stratum) reproducing its +0.0125 imdb / +0.0375 boolq margins; the stratum
+      class measured from instruction strings — agnews 8 distinct instructions over 300 slots inside
+      113 exact-signature sets, boolq 80/80, mnli 80/116 (§9.17); MACRO line model 0.338 vs floor 0.433
+      → **G1 not met** on the void v1-rich checkpoint, which is the point of running it here.
+- [x] **3g process rule**: a mutation battery runs against a frozen repo. Two earlier passes of the same
+      battery reported 42/53 and 53/54 because `src` and `tests` were being edited mid-flight and the
+      harness re-copies them per mutation. SPEC §9.18.
 - [ ] **3h** 15.35M vs ~32M head-to-head on identical data — `KAGGLE`
 - [ ] **3i** G1 verdict: decision-v2 **test ≥ 0.70** macro, ≥ +0.15 over the 0.4331 majority floor,
       per-source table published — `KAGGLE` result, reported here as measured or as a loss
