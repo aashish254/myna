@@ -74,11 +74,13 @@ def main():
     ap.add_argument("--split", default="development")
     ap.add_argument("--n-per-source", type=int, default=30)
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--device", default=None,
+                    help="cpu/cuda/mps; default auto. Pin to cpu to run alongside MPS training")
     ap.add_argument("--out", default="runs/laya_decision_v2.json")
     args = ap.parse_args()
 
     from laya import Router
-    router = Router()
+    router = Router(device=args.device) if args.device else Router()
 
     path = Path(args.suite) / f"{args.split}.jsonl"
     by_src = defaultdict(list)
