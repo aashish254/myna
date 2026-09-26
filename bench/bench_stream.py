@@ -149,6 +149,15 @@ def main():
     if args.laya:
         from laya import Router  # pip install laya
 
+        def laya_questions(qs):
+            # laya's noul schema: criteria omitted or a true/false dict, not a list
+            return {
+                name: ({"type": q["type"], "instructions": q["instructions"]}
+                       if q["type"] == "noul" else q)
+                for name, q in qs.items()
+            }
+
+        lq = laya_questions(questions)
         router = Router()
         lat = []
         for e in exs:
@@ -156,7 +165,7 @@ def main():
             for i in range(1, min(args.steps, len(parts))):
                 growing = " ".join(parts[: i + 1])
                 t0 = time.perf_counter()
-                router.predict(growing, questions)
+                router.predict(growing, lq)
                 lat.append((time.perf_counter() - t0) * 1000)
         ms_laya = sum(lat) / len(lat)
         print(f"laya          avg {ms_laya:8.2f} ms/request")
@@ -174,7 +183,7 @@ def main():
                     ids += encode_text(myna.tok, base)
                 text = myna.tok.decode(ids[:target])
                 t0 = time.perf_counter()
-                router.predict(text, questions)
+                router.predict(text, lq)
                 lats.append((time.perf_counter() - t0) * 1000)
             ms = sum(lats) / len(lats)
             print(f"{target:>13} | {ms:>10.2f}")

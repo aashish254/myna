@@ -62,11 +62,31 @@ exactly, with zero drift.
 
 ## Benchmarks
 
-(filled in by runs/ — streaming vs full re-encode vs laya, and long-context
-tables. Probe-checkpoint sweep on M5, idle machine: myna-stream flat
-~27-28 ms from 128→16384 tokens vs myna-full 49 ms→1664 ms → 1.5x at 128,
-16x at 4k, 31.5x at 8k, 58x at 16k. To be re-measured on the v0 checkpoint
-and against laya.)
+Final v0-checkpoint run on M5, idle machine, CPU, n=8 workflows x 6 appends,
+3 questions/request (`runs/bench_stream.md`, log in `runs/bench_stream_v0.log`):
+
+| state tokens | myna-stream | myna re-encode | laya re-encode | speedup |
+|---|---|---|---|---|
+| 128 | 43.3 ms | 91.3 ms | 179.4 ms | 2.1x |
+| 512 | 31.9 ms | 271.2 ms | 507.4 ms | 8.5x |
+| 1,024 | 34.0 ms | 418.8 ms | 504.5 ms | 12.3x |
+| 2,048 | 28.9 ms | 965.3 ms | 512.5 ms | 33.4x |
+| 4,096 | 38.4 ms | 1,748.1 ms | 506.1 ms | 45.6x |
+| 8,192 | 28.4 ms | 3,132.9 ms | 510.7 ms | 110.5x |
+| 16,384 | 28.9 ms | 6,904.0 ms | n/a (8192 cap) | 239.3x |
+
+Short-state avg: myna-stream 32.5 ms, myna-full 48.1 ms, laya 127.8 ms.
+Retained state: 576 KiB fixed at every length.
+
+Readings:
+1. myna-stream is flat 28-43 ms from 128→16k — the delta-engine claim holds
+   on the trained model, not just the probe.
+2. laya's re-encode plateaus at ~510 ms (its 8192 cap truncation region) and
+   can't serve long states at all. At 16k myna answers ~17x faster than laya
+   answers at its 8k maximum.
+3. Even myna-full (a plain encoder of the same size) beats laya above 2k
+   tokens — that's the architecture of the trunk, before streaming.
+
 
 ## The plateau post-mortem (2026-09-25/26)
 
@@ -83,11 +103,16 @@ label-prior entropy) through 1000 steps and was stopped. Two findings:
    the "plateau" was slow learning, not a dead end. Lesson: judge a run by
    fit-accuracy per EPOCH, not loss per step.
 
-Open question that matters more now: gen(dev) stayed ~0.375 while fit rose —
-if generalization stays far behind memorization at scale, the disjoint-noun
-design is the suspect (the model keys on noun tokens inside templates), and
-the fix is data-side: more nouns per split, more template paraphrases, or
-noun-position randomization.
+The open question from the post-mortem — *does generalization stay far behind
+memorization at scale?* — is answered for v0: it does not, once the data has
+enough surface variety. The gate fix plus expanding the noun pools to ~50 per
+split (with 15% generic-noun dropout to force template keying) produced:
+
+**v0 final: dev 0.968 / test 0.951 overall** (9000 steps, batch 32, MPS,
+~3.7 h on M5). Per-question test accuracy 0.928–0.974, ECE 0.012–0.042 with a
+single refit temperature of 3.0, noul Brier 0.028–0.046. The dev→test gap is
+1.7 points on fully disjoint nouns, so the model reads templates, not nouns.
+dev-mid trajectory: 0.468 @500 → 0.921 @1500 (the grokking knee) → 0.968 @8000.
 
 ## Open questions / next
 

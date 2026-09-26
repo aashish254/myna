@@ -44,19 +44,45 @@ short. Myna is an architecture built for that shape from the ground up.
 
 ## Measured on an Apple M5 (10-core, 32 GB)
 
-Streaming workload: observe a long state, append a small delta, ask 3 typed
-questions — the jev-style agent loop. Average per request, CPU:
+Streaming workload on the trained v0 checkpoint: grow the observation in
+6 appends, re-ask 3 typed questions after each — the agent loop. Average per
+request, idle machine, CPU:
 
-| state tokens | myna-stream | myna re-encode | speedup |
-|---|---|---|---|
-| 512 | 28 ms | 85 ms | 3.0x |
-| 1,024 | 33 ms | 137 ms | 4.2x |
-| 2,048 | 28 ms | 247 ms | 8.7x |
-| 4,096 | 28 ms | 443 ms | 15.8x |
+| state tokens | myna-stream | myna re-encode | laya re-encode | myna speedup |
+|---|---|---|---|---|
+| 128 | 43 ms | 91 ms | 179 ms | 2.1x |
+| 512 | 32 ms | 271 ms | 507 ms | 8.5x |
+| 1,024 | 34 ms | 419 ms | 505 ms | 12.3x |
+| 2,048 | 29 ms | 965 ms | 512 ms | 33.4x |
+| 4,096 | 38 ms | 1,748 ms | 506 ms | 45.6x |
+| 8,192 | 28 ms | 3,133 ms | 511 ms | 110.5x |
+| 16,384 | 29 ms | 6,904 ms | n/a (8192 cap) | 239.3x |
 
 The streaming column is **flat by design**: cost is the question branches
-plus the delta, never the prefix. (Numbers above from the v0 probe
-checkpoint; the full checkpoint's table lands below.)
+plus the delta, never the prefix. laya pays a ~500 ms floor above 512 tokens
+and cannot serve long states at all; myna answers a 16k-token observation
+~17x faster than laya answers an 8k one.
+
+## Trained v0 — accuracy on held-out data
+
+9,000 steps (~3.7 h on an M5, batch 32, MPS), 3,000 synthetic examples, dev
+and test splits using nouns never seen in training. Overall accuracy:
+**0.968 dev / 0.951 test** — generalization is real, not memorization.
+
+| workflow / question | type | test acc | Brier | ECE |
+|---|---|---|---|---|
+| incident/page_oncall | noul | 0.946 | 0.046 | 0.026 |
+| incident/severity | score | 0.958 | — | 0.019 |
+| incident/team | choice | 0.960 | — | 0.020 |
+| moderation/action | score | 0.974 | — | 0.012 |
+| moderation/category | choice | 0.948 | — | 0.027 |
+| moderation/repeat_appeal | noul | 0.946 | 0.043 | 0.037 |
+| support/churn_risk | noul | 0.963 | 0.028 | 0.016 |
+| support/department | choice | 0.947 | — | 0.029 |
+| support/urgency | score | 0.928 | — | 0.042 |
+
+ECE ≤ 0.04 everywhere with a single refit temperature (3.0) — the
+probabilities mean what they say before any RLCD pass.
 
 ## Quickstart
 
