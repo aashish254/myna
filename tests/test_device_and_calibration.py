@@ -6,6 +6,7 @@ Both are measurement-integrity items, so both are gated here:
 - `auto` resolving to mps/cpu only made a CUDA box train on CPU silently.
 """
 
+import pytest
 import torch
 
 from myna.real_data import load_suite
@@ -52,6 +53,27 @@ def test_synthetic_data_with_no_calibration_key_reports_dev():
 
 def test_explicit_device_never_rewritten():
     assert resolve_device("mps") == "mps" and resolve_device("cpu") == "cpu"
+
+
+def test_explicit_unavailable_device_fails_loud():
+    """P3 3a: a Kaggle job that silently lands on CPU burns hours, and `--device
+    cuda` on a Mac used to die two frames inside torch. This box has MPS but no
+    CUDA, so `cuda` is the naturally-unavailable case and `mps` is made
+    unavailable by monkeypatch rather than assumed either way."""
+    with pytest.raises(SystemExit) as e:
+        resolve_device("cuda")
+    assert "not available on this machine" in str(e.value) and "--device auto" in str(e.value)
+    monkey = pytest.MonkeyPatch()
+    monkey.setattr(torch.backends.mps, "is_available", lambda: False)
+    try:
+        with pytest.raises(SystemExit) as e2:
+            resolve_device("mps")
+        assert "it has: cpu" in str(e2.value), "the message must name what the box does have"
+    finally:
+        monkey.undo()
+    with pytest.raises(SystemExit) as e3:
+        resolve_device("tpu")
+    assert "unknown" in str(e3.value)
 
 
 def test_auto_picks_cuda_when_mps_absent(monkeypatch):

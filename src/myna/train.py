@@ -165,6 +165,107 @@ def macro_acc(m):
     return sum(m[k] for k in names) / max(len(names), 1)
 
 
+# ---- memory plan and the stop rule (SPEC §5 P3: 3d, 3e) ----------------------
+
+MI = 1 << 20
+# Both from bench/mem_profile.py at d_model 384 / vocab 8192 / batch 8 — measured
+# retained activations per unit, not a model of what ought to cost what.
+STATE_MIB_PER_POSITION = 0.8
+QUESTION_MIB_PER_CELL = 1.6
+
+
+def state_token_p95(tok, items, limit=4000, rng=None):
+    """p95 of the state lengths, in tokens, over a sample of the rows the loop
+    will actually draw. The sizing uses p95 rather than the mean because the
+    batch pads to its longest row, so the tail *is* the cost."""
+    exs = [ex for _qs, ex in items]
+    if limit and len(exs) > limit:
+        exs = (rng or random.Random(0)).sample(exs, limit)
+    lens = sorted(len(encode_text(tok, e.state)) for e in exs)
+    return lens[min(int(0.95 * (len(lens) - 1)), len(lens) - 1)] if lens else 0
+
+
+def free_device_bytes(device):
+    """Reads the headroom a trainer can actually use, or None.
+
+    CUDA reports it directly. MPS and CPU do not: torch has no MPS headroom call,
+    and free system RAM is not a budget one process may claim — on the M5 the
+    projection that killed a run came from a *projected* rate, not a measured one
+    (SPEC §6). Returning None is the honest answer, and it means `--batch` is
+    taken exactly as given, with a line saying so."""
+    if device == "cuda" and torch.cuda.is_available():
+        try:
+            free, _total = torch.cuda.mem_get_info()
+            return int(free)
+        except RuntimeError:
+            return None
+    return None
+
+
+def rows_that_fit(free_bytes, tokens_p95, safety=0.6, mib_per_position=STATE_MIB_PER_POSITION,
+                  reserve_bytes=0):
+    """Rows whose *state scan* fits in `safety` of the reported headroom, after
+    whatever else the step is known to hold.
+
+    `reserve_bytes` is the question branch of a `--row-batch` step: it is priced
+    from `--max-q-cells` and the measured 1.6 MiB/cell, so the batch cannot be
+    sized as though the states were the only memory in the model — the M5 run died
+    with both branches live. Returning 0 means "nothing fits", which the caller
+    turns into a refusal rather than a batch of 0."""
+    if not free_bytes or tokens_p95 <= 0:
+        return None
+    budget = free_bytes * safety - reserve_bytes
+    if budget <= 0:
+        return 0
+    return max(1, int(budget / MI // (tokens_p95 * mib_per_position)))
+
+
+def median(xs):
+    s = sorted(xs)
+    n = len(s)
+    return s[n // 2] if n % 2 else 0.5 * (s[n // 2 - 1] + s[n // 2])
+
+
+def stop_reason(step_times, free, projected_bytes, factor=1.5, window=20, headroom=1.25):
+    """Why the loop should hard-stop, or None.
+
+    Two signals, both of which we paid for once: a step time drifting above
+    1.5x its own recent median means the allocator is paging or fragmenting,
+    which a loss curve hides until the run is over (§6), and free bytes under
+    `headroom` x the projected need means the *next* batch is the one that dies."""
+    if len(step_times) >= window + 1 and step_times[-1] > factor * median(step_times[-window - 1:-1]):
+        return (f"step time {step_times[-1]:.2f}s > {factor}x median "
+                f"{median(step_times[-window - 1:-1]):.2f}s of the last {window}")
+    if free is not None and projected_bytes and free < projected_bytes * headroom:
+        return (f"free {free / MI:.0f} MiB < {headroom}x projected "
+                f"{projected_bytes / MI:.0f} MiB per step")
+    return None
+
+
+def save_snapshot(out, model, opt, sched, tok, cfg, step, temperature=1.0):
+    """The rolling snapshot: weights *and* the optimizer/scheduler state, so a
+    resumed run continues the schedule instead of restarting the decay."""
+    out = Path(out)
+    out.mkdir(parents=True, exist_ok=True)
+    tok.save(str(out / "tokenizer.json"))
+    torch.save({"state_dict": model.state_dict(), "cfg": vars(cfg), "temperature": temperature,
+                "step": step, "optimizer": opt.state_dict(), "scheduler": sched.state_dict()},
+               out / "model_last.pt")
+    return out / "model_last.pt"
+
+
+def load_snapshot(path, model, opt=None, sched=None):
+    """Weights always; optimizer/scheduler when the caller passes them. Returns
+    the checkpoint's step so the loop can start after it."""
+    blob = torch.load(path, map_location="cpu", weights_only=False)
+    model.load_state_dict(blob["state_dict"])
+    if opt is not None and blob.get("optimizer"):
+        opt.load_state_dict(blob["optimizer"])
+    if sched is not None and blob.get("scheduler"):
+        sched.load_state_dict(blob["scheduler"])
+    return int(blob.get("step", 0))
+
+
 def evaluate(model, tok, splits, device, temperature=1.0, paraphrase_index=None):
     """splits: {key: (questions, examples)} — synthetic workflows and real
     suite groups both fit this shape.
@@ -262,8 +363,24 @@ def resolve_device(name):
     """`auto` prefers MPS, then CUDA, then CPU.
 
     Resolving to mps/cpu only meant a CUDA cloud box — the structural fix for
-    the M5's memory ceiling — silently trained on CPU."""
+    the M5's memory ceiling — silently trained on CPU.
+
+    An *explicit* device that is not available raises instead of reaching
+    `tensor.to()`: `--device cuda` on a Mac died inside torch with a two-frame
+    stack, which reads like a torch bug rather than like a mistyped flag, and a
+    Kaggle job that silently lands on CPU burns wall-clock hours (§6)."""
     if name != "auto":
+        available = {"cpu": True,
+                     "mps": torch.backends.mps.is_available(),
+                     "cuda": torch.cuda.is_available()}.get(name)
+        if available is None:
+            raise SystemExit(f"--device {name!r}: unknown; use auto, cpu, mps or cuda")
+        if not available:
+            here = [d for d in ("mps", "cuda", "cpu")
+                    if d == "cpu" or (d == "mps" and torch.backends.mps.is_available())
+                    or (d == "cuda" and torch.cuda.is_available())]
+            raise SystemExit(f"--device {name!r} is not available on this machine "
+                             f"(it has: {', '.join(here)}); use --device auto")
         return name
     if torch.backends.mps.is_available():
         return "mps"
@@ -388,6 +505,26 @@ def main():
                          "and the reserved ninth phrasing is scored too, so 'it learned to read' is "
                          "measured on two unseen wordings. Suite corpora only: an instruction with "
                          "no table entry raises UnknownSchema rather than passing through.")
+    ap.add_argument("--free-gib", type=float, default=None,
+                    help="headroom the loop may plan against. CUDA reports its own; MPS and CPU "
+                         "have no trustworthy reading, so on those the batch is taken exactly as "
+                         "--batch gives it unless a number is stated here (SPEC P3: a projected "
+                         "rate is not a budget, and the M5 run died on one).")
+    ap.add_argument("--mem-safety", type=float, default=0.6,
+                    help="share of the reported headroom the plan may spend, leaving room for "
+                         "activations the per-position table does not count")
+    ap.add_argument("--save-every", type=int, default=25,
+                    help="write model_last.pt (weights + optimizer + scheduler + step) every N "
+                         "updates so a killed job loses at most N updates of progress (SPEC P3: "
+                         "<=50)")
+    ap.add_argument("--resume", action="store_true",
+                    help="continue from --out/model_last.pt: weights, optimizer and scheduler "
+                         "state, and the step counter. The data RNG is re-seeded from --seed, so a "
+                         "resumed run is a continuation, not a bit-identical replay, and the "
+                         "resume line says which")
+    ap.add_argument("--stop-factor", type=float, default=1.5,
+                    help="hard-stop when one update takes more than this x the median of the "
+                         "last 20, or free bytes fall under the projected need")
     ap.add_argument("--long-context", type=int, default=0,
                     help="train needle-in-long-context recall at this state token length (V1-D); "
                          "uses truncated backprop and ignores --suite/--synthetic")
@@ -509,8 +646,58 @@ def main():
     K = max(1, args.accum_groups)
     log_every = max(1, min(200, args.steps // 60))
     ema = None
+    # --- the memory plan, printed before the first allocation (SPEC P3 3d) ----
+    sample = row_items if row_items is not None else [
+        (qs, ex) for qs, exs in data["train"].values() for ex in exs]
+    p95 = state_token_p95(tok, sample, rng=random.Random(args.seed))
+    free = None if args.free_gib is None else int(args.free_gib * 1024 * MI)
+    if free is None:
+        free = free_device_bytes(device)
+    # The question branch of a --row-batch step is a second, separately measured
+    # allocation (--max-q-cells x 1.6 MiB), so the state plan is priced against
+    # what is left after it. The M5 run sized for states alone and died with both
+    # branches live (SPEC §6).
+    reserve = args.max_q_cells * QUESTION_MIB_PER_CELL * MI if args.row_batch else 0
+    fit = rows_that_fit(free, p95, args.mem_safety, reserve_bytes=reserve)
+    planned = args.batch
+    reserved = f", less {reserve / 1024 / MI:.1f} GiB of question branch" if reserve else ""
+    if fit is None:
+        print(f"memory plan: no headroom reading for {device} (p95 state {p95} tokens, "
+              f"~{args.batch * p95 * STATE_MIB_PER_POSITION / 1024:.1f} GiB/step at batch "
+              f"{args.batch}); --batch taken as given — state --free-gib to plan against",
+              flush=True)
+    elif fit == 0:
+        raise SystemExit(f"memory plan: {args.mem_safety} x {free / 1024 / MI:.1f} GiB free is "
+                         f"not more than the {reserve / 1024 / MI:.1f} GiB the question branch "
+                         f"costs at --max-q-cells {args.max_q_cells}; lower --max-q-cells "
+                         "before asking for a batch")
+    elif args.batch > fit:
+        planned = fit
+        print(f"memory plan: {free / 1024 / MI:.1f} GiB free x {args.mem_safety}{reserved} -> "
+              f"batch {fit} at p95 {p95} tokens x {STATE_MIB_PER_POSITION} MiB/position; "
+              f"--batch {args.batch} exceeds it, using {fit}", flush=True)
+    else:
+        print(f"memory plan: batch {args.batch} fits {free / 1024 / MI:.1f} GiB free x "
+              f"{args.mem_safety}{reserved} at p95 {p95} tokens (needs "
+              f"{(args.batch * p95 * STATE_MIB_PER_POSITION + reserve / MI) / 1024:.1f} GiB)",
+              flush=True)
+    args.batch = planned
+    projected = planned * p95 * STATE_MIB_PER_POSITION * MI + reserve
+    start_step = 0
+    if args.resume:
+        ckpt = Path(args.out) / "model_last.pt"
+        if not ckpt.exists():
+            raise SystemExit(f"--resume: no {ckpt} to continue from")
+        start_step = load_snapshot(ckpt, model, opt, sched) + 1
+        print(f"resume: {ckpt} at step {start_step - 1} -> continuing at {start_step} of "
+              f"{args.steps}; data RNG re-seeded from --seed {args.seed}, so this is a "
+              f"continuation, not a bit-identical replay", flush=True)
+    step_times: list[float] = []
+    stopped = None
+    last_step = start_step - 1
     step_t0 = time.time()
-    for step in range(args.steps):
+    for step in range(start_step, args.steps):
+        t_update = time.time()
         model.train()
         opt.zero_grad(set_to_none=True)
         run_loss = 0.0
@@ -534,21 +721,31 @@ def main():
         opt.step()
         sched.step()
         ema = run_loss if ema is None else 0.95 * ema + 0.05 * run_loss
+        last_step = step
+        step_times.append(time.time() - t_update)
         if step % log_every == 0 or step == args.steps - 1:
             el = time.time() - step_t0
             print(f"step {step:5d}  loss {run_loss:.3f}  ema {ema:.3f}  "
                   f"sets/update {K}  {el:.0f}s", flush=True)
+        # cadence, not convenience: a 10k-update job that dies at 9k without a
+        # snapshot has taught us nothing it did not already know (§6's OOM)
+        if args.save_every and (step + 1) % args.save_every == 0:
+            save_snapshot(args.out, model, opt, sched, tok, cfg, step)
+        reason = stop_reason(step_times[-21:], free_device_bytes(device), projected,
+                             factor=args.stop_factor)
+        if reason:
+            save_snapshot(args.out, model, opt, sched, tok, cfg, step)
+            stopped = reason
+            print(f"STOP at step {step}: {reason}; snapshot written to "
+                  f"{Path(args.out) / 'model_last.pt'}", flush=True)
+            break
         if args.eval_every and step and step % args.eval_every == 0 and step != args.steps - 1:
             m = evaluate(model, tok, dev_probe, device)
             print(f"step {step:5d}  dev-mid acc {macro_acc(m):.4f}", flush=True)
             # rolling snapshot so a long run can be evaluated or stopped early
             out = Path(args.out)
             out.mkdir(parents=True, exist_ok=True)
-            tok.save(str(out / "tokenizer.json"))
-            torch.save(
-                {"state_dict": model.state_dict(), "cfg": vars(cfg), "temperature": 1.0, "step": step},
-                out / "model_last.pt",
-            )
+            save_snapshot(out, model, opt, sched, tok, cfg, step)
 
     calib_split, calib_name = temperature_source(data)
     # the row count rides along with the label: "(fit on calibration)" would
@@ -592,18 +789,27 @@ def main():
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
     with open(out / "metrics.json", "w") as f:
+
         json.dump({"temperature": temperature, "temperature_fit_on": calib_name,
                    "temperature_fit_rows": n_fit_rows,
                    "paraphrase": args.paraphrase, "paraphrase_sets": n_sets,
                    "paraphrase_draws": n_draws,
+                   "batch": args.batch, "state_tokens_p95": p95,
+                   "mem_plan_free_gib": None if free is None else free / 1024 / MI,
+                   "mem_safety": args.mem_safety, "resumed_from_step": start_step,
+                   "stopped": stopped, "last_step": last_step,
+                   "stop_factor": args.stop_factor, "save_every": args.save_every,
                    "dev": dev_m, "test": test_m,
                    "dev_unseen": dev_unseen, "qtypes": qtypes}, f, indent=2)
 
-    out = Path(args.out)
-    out.mkdir(parents=True, exist_ok=True)
     torch.save({"state_dict": model.state_dict(), "cfg": vars(cfg), "temperature": temperature}, out / "model.pt")
+
     tok.save(str(out / "tokenizer.json"))
     print(f"saved checkpoint to {out}")
+    if stopped:
+        # a truncated run that exits 0 reads like a finished one, and the whole
+        # point of the stop rule is that the *reason* reaches the operator
+        raise SystemExit(f"run ended at step {last_step} of {args.steps}: {stopped}")
 
 
 if __name__ == "__main__":

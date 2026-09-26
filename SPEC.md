@@ -131,11 +131,23 @@ generator) · `mlx_model.py` (Apple inference mirror) · `serve.py` (`/v1/sessio
 `bench/`: streaming bench, laya witness runners, needle eval, MLX bench, result summarizer,
 `pull_upstream.py` (P1 data pipeline), `mem_profile.py` (per-axis step memory),
 `pilot_topology.py` (question-set topology + rows-per-forward under each contract),
-`mutation_paraphrase.py` (the P1 gate's mutation battery, 29/29).
-`tests/`: 96 passing + 1 KEV-gated parity test, including float64 scan equivalence, engine parity,
-adapter invariants, per-row batch equivalence, the calibration-split and device-resolution guards,
-the batch-sampling regression guards, and the paraphrase table + trainer-wiring pairs (the table's
-own tests cannot see the loop that uses it).
+`mutation_paraphrase.py` (the P1 gate's mutation battery, 29/29),
+`mutation_memory_plan.py` (the P3 sizing/stop/resume gate, 44 mutations),
+`mutation_kaggle_bundle.py` (the entrypoint + packager gate), `check_python311.py` (the 3.11 witness
+that runs the package on a real 3.11 interpreter and exits 2 rather than skipping).
+`kaggle/`: `run.py` (one-command entrypoint: corpus discovery, the measured flag set, `--resume` only
+when a snapshot exists, tee to `train.log`, `run.json`, non-zero propagation), `package_dataset.py`
+(stage the pilot corpus, verify every byte against the corpus, print the upload command, never run
+it), `requirements.txt`.
+`tests/`: **141 passing + 1 KEV-gated parity test** (skipped here, green wherever `kev` is
+installed). The P3 gate is `test_memory_plan.py` (sizing arithmetic, the refusal, the CUDA headroom
+read through a monkeypatch, the stop rule both ways, snapshot round-trip, resume) and
+`test_kaggle_bundle.py` (the entrypoint's refusals and composed command, a real 2-update run through
+it, the packager's hash discipline); the device-resolution and calibration-split guards, the
+batch-sampling regression guards, per-row batch equivalence, float64 scan equivalence, engine parity,
+adapter invariants, and the paraphrase table + trainer-wiring pairs (the table's own tests cannot see
+the loop that uses it).
+
 
 ---
 
@@ -329,16 +341,68 @@ optimization.** boolq and mnli are the permanent half of it — their instructio
       explained. P3 therefore runs either `--batch ≤ 8` on full states or the truncated-backprop
       path (`forward_truncated`, already built) so only the grad window is retained.
 
-### P3 — Train and validate *(gated on user go, after the M5 crash)*
-- [ ] Memory-safe launch, using P2's measured units: `--max-q-cells` for the question branch and a
-      state batch sized as `free_bytes / (0.8 MiB x state tokens)`, i.e. **batch 8 at the pilot's
-      p95 of 263 tokens, batch 32 only with `forward_truncated`**. Clear the MPS cache between
-      updates, start at a few hundred updates, hard-stop if observed s/update rises or free RAM
-      drops. Checkpoint every ≤ 50 updates.
-- [ ] Then the 15.35M-vs-~32M head-to-head on identical data — the size question is unanswerable
-      until the data exists, and cheap once it does.
-- [ ] Report **stratified** per source: groupable (8/11 sources, 250–300 examples each) vs
-      per-row-instruction (boolq, mnli). Aggregate is marketing, strata are evidence.
+### P3 — Train and validate *(code done and witnessed here; the run itself is `KAGGLE`)*
+- [x] **3a** `train.py` runs on CUDA without edits. The device path is witnessed on this box:
+      `--device auto` considers CUDA (`59240e1`), an explicit unavailable name fails loudly with the
+      list of what the machine has instead of silently downgrading, and `free_device_bytes()` reads
+      `torch.cuda.mem_get_info()` — pinned by a monkeypatched-CUDA test that asserts the plan uses
+      *free* bytes and not total, and that a `RuntimeError` from the driver degrades to `None`
+      ("no headroom reading", `--batch` taken as given). The same flags as the box
+      (`--row-batch --max-q-cells 2048 --accum-groups 2 --group-sample uniform --paraphrase on
+      --free-gib 10 --mem-safety 0.5 --save-every 1 --stop-factor 1.5`) run 3 CPU updates green.
+      The GPU half of the witness is `KAGGLE`.
+- [x] **3b** `kaggle/` bundle. `run.py` is the one-command entrypoint: it refuses to start without
+      `EXPERIMENT_NAME`, refuses a corpus that is missing a split (naming the file, never falling
+      back to the synthetic data), composes the measured flag set, adds `--resume` exactly when
+      `model_last.pt` exists, tees the trainer to `runs/<name>/train.log`, writes `run.json`, and
+      propagates the trainer's non-zero stop exit. `package_dataset.py` stages the pilot corpus,
+      writes `SOURCE_SHA256.json` **from the corpus** plus `dataset-metadata.json`, verifies every
+      staged byte, and prints the upload command instead of running it.
+      Witness: `16 passed` in `tests/test_kaggle_bundle.py`, including a real 2-update CPU training
+      through the entrypoint and a lossy-copy build that exits non-zero. Gate:
+      `bench/mutation_kaggle_bundle.py` → **25/25** (first pass 21/25; §9.15).
+- [x] **3c** Python 3.11. `requires-python` is `>=3.11` (it was `>=3.13`, which made the Kaggle
+      image a *silent fallback*), every file under `src/ tests/ bench/ kaggle/` parses under
+      `feature_version=(3, 11)`, and `bench/check_python311.py` runs the whole thing on a real 3.11
+      interpreter: prints **`PASS: the package imports, compiles and trains on python 3.11`** on
+      3.11.15 / torch 2.6.0, and exits 2 rather than skipping if no 3.11 is found.
+- [x] **3d** Memory-safe sizing as a computed startup line. `state_token_p95()` measures p95 over a
+      4,000-row sample of the rows the loop will draw (p95, not the mean, because the batch pads to
+      its longest row); `rows_that_fit()` divides `safety × free` by `p95 × 0.8 MiB` **after**
+      subtracting the question branch (`--max-q-cells × 1.6 MiB` on `--row-batch` steps), both
+      prices from `bench/mem_profile.py`. Three outcomes, all printed: the batch fits, it is clamped
+      down with the number it was clamped to, or — when the reserve alone eats the budget — the run
+      **refuses** and names the knob (`lower --max-q-cells`). No headroom reading is an explicit
+      line, not an invented number.
+- [x] **3e** Stop rule in the loop: after each update, hard-stop if the last step time exceeds
+      1.5× the median of the previous 20, or if measured free bytes fall below 1.25× the projected
+      per-step need. The stop writes `model_last.pt`, prints the reason, and the process **exits
+      non-zero** — a truncated run that reports success is how a dead job becomes a "result".
+      Witnessed by construction: `--stop-factor 1e-4` over 30 steps makes the 21st update a
+      violation, and the default factor demonstrably lets a normal run finish.
+- [x] **3f** Cadence and resume: `--save-every` defaults to 25 (≤ 50 as the spec demands) and the
+      snapshot carries weights, config, temperature, step, **optimizer and scheduler**, so
+      `--resume` continues the cosine decay instead of restarting it and does not replay the
+      snapshotted update (`start = stored step + 1`). Pinned: a round-trip at step 17 recovers the
+      Adam moments and the scheduler's `state_dict()`; a missing snapshot is a named refusal, not a
+      `torch.load` traceback.
+- [x] All five gates above are mutation-checked by `bench/mutation_memory_plan.py`: **44 mutations,
+      all caught**, run inside a scratch copy of `src`+`tests` (the repo's own `pythonpath = ["src"]`
+      outranks `PYTHONPATH` — §9.12), with a green-baseline guard and an abort-if-the-first-mutant-
+      survives guard so a battery that mutates nothing can never report a clean pass.
+- [ ] **3g** Stratified reporting harness: per source × question-type, groupable (9/11) vs
+      per-row-instruction (boolq, mnli), majority/uniform floors in the same table — inference only,
+      so runnable here against v0 and against any Kaggle checkpoint.
+- [ ] **3h** 15.35M vs ~32M head-to-head on identical data — `KAGGLE`.
+- [ ] **3i** G1 verdict: decision-v2 **test ≥ 0.70** macro, ≥ +0.15 over the 0.4331 majority floor,
+      per-source table published — `KAGGLE` result, reported as measured or as a loss.
+
+**Why the sizing formula changed.** The line above formerly read
+`free_bytes / (0.8 MiB × state tokens)`, which is the *state scan* alone. A `--row-batch` step holds
+the question branch at the same time — that is what the M5 crash was (§9.9) — so the batch the spec
+asked for was sized as though half the model were free. The reserve is now subtracted before rows
+are counted, and if nothing is left the run refuses. See §9.14.
+
 
 ### P4 — Latency reconciliation *(task #17, gates G2)*
 - [ ] Re-run myna vs laya on one box, one process, direct `Agent` call (not `Router`), matched
@@ -393,10 +457,17 @@ optimization.** boolq and mnli are the permanent half of it — their instructio
   option count — §9.9. Never run P4/P6/P7 concurrently with P3.
 - **Training runs on Kaggle, not the M5** (user directive, 2026-09-26): the M5 does architecture
   code, data, tests, inference/eval and every Apple-only measurement (MLX, MPS latency, browser
-  on-device) — those cannot move. Kaggle blockers as of now: (1) no git remote, so the code gets
-  there as an upload or a dataset, (2) `requires-python >=3.13` vs the image's 3.11/3.12,
-  (3) `--device auto` now picks CUDA (fixed in `59240e1`), (4) the suite path is a local absolute
-  path with a trailing space in a parent directory name — the pilot dir must ship as a dataset.
+  on-device) — those cannot move. The blockers this loop could clear are cleared: (1) still no git
+  remote, so the code travels as the kernel's uploaded source and the data as a dataset
+  (`kaggle/package_dataset.py` builds it, prints the upload command, does not run it); (2)
+  `requires-python` is `>=3.11` and the package is proven to train on a real 3.11
+  (`bench/check_python311.py`); (3) `--device auto` picks CUDA (`59240e1`); (4) the pilot dir ships
+  as a dataset, so no suite path with a trailing space reaches the box — `kaggle/run.py` takes
+  `--corpus` or globs `/kaggle/input` and refuses a corpus missing a split.
+  What remains is not code: the GPU run itself, and whoever holds the credentials (`KAGGLE`).
+- **Sizing on the box** is `safety × free − question-branch reserve`, ÷ `p95 state tokens × 0.8 MiB`
+  (§5 P3 3d, §9.14) — with `--free-gib` as the escape hatch when the platform reports nothing usable.
+
 
 ---
 
@@ -505,3 +576,27 @@ Kept permanently, because the value of this project's claims is that they surviv
     `uvicorn` *before* `parse_args()`, which made the optional `serve` extra a requirement for
     reading the usage text. Both now pinned by `tests/test_cli_help.py`, since "one command per
     result" (G7) is worth nothing if the command cannot be asked what it does.
+14. **"Size the batch as `free_bytes / (0.8 MiB × state tokens)`."** Right price, wrong denominator:
+    that is the *state scan* alone, while a `--row-batch` step holds the question branch at the same
+    time — 1.6 MiB per question-token cell, from the same `bench/mem_profile.py` measurement, and
+    `--max-q-cells` is what bounds it. §9.9 already said the M5 died with both axes live, and the
+    P3 sizing bullet still priced one, so the plan would have cheerfully picked a batch that fits
+    the scan and then OOM'd in the probe. Fixed: the reserve is subtracted before rows are counted,
+    a budget the reserve alone eats is a **refusal that names `--max-q-cells`** rather than a silent
+    batch of 1, and the printed plan line says how much of the headroom went to the question branch.
+    The rule this breaks is the general one: a per-axis price list is not a budget until the axes
+    that are simultaneously live are summed.
+15. **"The packager verifies the corpus."** It did, against tests that could not tell. The first pass
+    of `bench/mutation_kaggle_bundle.py` caught **21/25**, and the four survivors were all the same
+    species of self-flattery: `WORKING` was only ever exercised through a monkeypatch, so a literal
+    `/tmp` default — a checkpoint Kaggle would never save — passed; `check()`'s sha branch was
+    probed only by *appending* to a staged file, which changes the size, so a size-only comparison
+    survived; and the manifest's provenance plus the build-time verification were never reached,
+    because every test staged a copy that had already succeeded. Three tests now pin the literal
+    `/kaggle/working`, flip one byte **in place** (same size, different corpus), and make `copy2`
+    itself lossy, which is the only way to ask "does the manifest describe the corpus, or the stage?"
+    Second pass: **25/25**. The general form: a test that exercises a helper on a path the caller
+    never takes is documentation, not a gate — and a mutation battery is the only cheap way to find
+    out which paths those are.
+
+

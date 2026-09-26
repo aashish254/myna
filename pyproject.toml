@@ -5,7 +5,7 @@ description = "Myna: a persistent-state, delta-encoded System-1 decision engine.
 authors = [
     { name = "Aashish", email = "145881415+aashish254@users.noreply.github.com" }
 ]
-requires-python = ">=3.13"
+requires-python = ">=3.11"
 dependencies = [
     "torch>=2.6",
     "numpy>=2.0",

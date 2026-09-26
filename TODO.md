@@ -65,19 +65,54 @@ So every "train" item below is split into *prepare/verify the Kaggle path locall
 - [x] `--max-q-cells` budget + rows-per-forward table (`bench/pilot_topology.py`)
 
 ## P3 — Train and validate — **on Kaggle**
-- [ ] **3a** `train.py` runs on a CUDA device without edits: verify the path locally at CPU scale
-      with the same flags (`--row-batch`, `--max-q-cells`, `--grad-accum`), then `KAGGLE`
-- [ ] **3b** `kaggle/` bundle: `requirements.txt` (torch cu121, python 3.11-compatible), dataset
-      packaging of `data/decision-v2-pilot/`, one-command entrypoint, checkpoint to
-      `/kaggle/working`, resumable, `EXPERIMENT_NAME`/seed pinned
-- [ ] **3c** Python-3.11 compatibility: `requires-python >=3.13` conflicts with the Kaggle image;
-      prove the package imports and trains on 3.11 (or pin a 3.13 image) — no silent fallback
-- [ ] **3d** Memory-safe sizing as a *computed* startup line, not a guess: from free device bytes
-      ÷ 0.8 MiB × p95 state tokens, print the chosen batch and refuse to exceed it
-- [ ] **3e** Stop rule in the loop: hard-stop + save checkpoint if observed s/update rises above
-      1.5× the median of the last 20, or free bytes fall below the projected need
-      (SPEC §6 lesson: a projected rate is not a budget)
-- [ ] **3f** Checkpoint cadence ≤ 50 updates, and a resume test that proves the cadence works
+- [x] **3a** `train.py` runs on a CUDA device without edits: `--device auto` considers CUDA, an
+      explicit unavailable name fails with the list of devices the machine has (never a silent
+      downgrade), and the headroom read goes through `torch.cuda.mem_get_info()` — pinned by a
+      monkeypatched-CUDA test that asserts *free* not total, and that a driver `RuntimeError`
+      degrades to "no headroom reading" with `--batch` taken as given. The exact box flag set
+      (`--row-batch --max-q-cells 2048 --accum-groups 2 --group-sample uniform --paraphrase on
+      --free-gib 10 --mem-safety 0.5 --save-every 1 --stop-factor 1.5`) trains on CPU here.
+      The GPU half is `KAGGLE`.
+- [x] **3b** `kaggle/` bundle: `requirements.txt` (torch cu121-compatible pins, no `+cpu`/`cu121`
+      wheel suffix that would fight the image), `run.py` one-command entrypoint, `package_dataset.py`
+      for `data/decision-v2-pilot/`. Checkpoints go under `/kaggle/working/runs/$EXPERIMENT_NAME`
+      (the constant is pinned by test, not just the monkeypatched default); no name → refusal;
+      half-mounted corpus → refusal naming the missing split, never a fallback to synthetic data;
+      `--resume` added exactly when `model_last.pt` exists; the trainer's non-zero stop exit reaches
+      the notebook. Seed and vocab are pinned in `DEFAULTS`. The packager hashes every staged file
+      against the corpus, writes the manifest **from the corpus**, and prints
+      `kaggle datasets create` instead of running it.
+      Witness: `tests/test_kaggle_bundle.py` → **16 passed**, including a real 2-update CPU training
+      through the entrypoint (`run.json` + tee'd `train.log` + `model_last.pt` carrying optimizer
+      and scheduler) and a deliberately lossy copy that fails the build.
+      Gate: `bench/mutation_kaggle_bundle.py` → **25/25 mutations caught** (first pass: 21/25, and
+      all four survivors were holes in the tests, not the code — SPEC §9.15).
+- [x] **3c** Python 3.11: `requires-python` is `>=3.11` (was `>=3.13`, which made the Kaggle image a
+      silent fallback), every `src/ tests/ bench/ kaggle/` file parses under
+      `ast.parse(..., feature_version=(3, 11))`, and `bench/check_python311.py` runs the package on a
+      real 3.11 interpreter — witness **`PASS: the package imports, compiles and trains on python
+      3.11`** (3.11.15, torch 2.6.0), 2 CPU updates included. It exits 2 rather than skipping when no
+      3.11 exists, because a compatibility check that silently skipped is worse than no check.
+- [x] **3d** Memory plan computed at startup, not guessed: p95 state tokens measured over a
+      4,000-row sample of the rows the loop draws (p95 because the batch pads to its longest row),
+      `safety × free − (--max-q-cells × 1.6 MiB question branch) ÷ (p95 × 0.8 MiB)`, both prices from
+      `bench/mem_profile.py`. Prints one of: fits / clamped-to-N with the reserve named / **refusal**
+      when the question branch alone eats the budget ("lower `--max-q-cells`"). No headroom reading
+      is an explicit line, never an invented number — SPEC §9.14 is the correction that added the
+      reserve.
+- [x] **3e** Stop rule: step time > 1.5× the median of the previous 20 updates, or free bytes <
+      1.25× the projected per-step need → save `model_last.pt`, print `STOP at step N: <reason>`,
+      and **exit non-zero**. Witnessed both ways: `--stop-factor 1e-4` over 30 steps makes the 21st
+      update a violation by construction, and the default factor lets a normal run finish; the window
+      is trailing and needs 21 samples (five samples cannot condemn a sixth).
+- [x] **3f** Cadence ≤ 50 updates and a resume that proves it: `--save-every 25` default, snapshot
+      carries weights + config + temperature + step + **optimizer + scheduler**. `--resume` starts at
+      stored step + 1 (never replays the snapshotted update) and restores the cosine decay — pinned by
+      a round-trip at step 17 (Adam moments, `sched.state_dict()` equality) and by a 6-update run
+      that resumes at 4 of 6. A missing snapshot is a named refusal, not a `torch.load` traceback.
+- [x] **3a–3f gate**: `bench/mutation_memory_plan.py` — **44 mutations over `src/myna/train.py`**, run
+      inside a scratch copy of the repo (the `pythonpath = ["src"]` trap, §9.12), with green-baseline
+      and first-mutation abort guards.
 - [ ] **3g** Stratified reporting harness: per source × question-type table, groupable (9/11) vs
       per-row-instruction (boolq, mnli), majority/uniform floors in the same table — runnable on
       the v0 + any Kaggle checkpoint (inference here is allowed)

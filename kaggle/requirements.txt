@@ -1,0 +1,19 @@
+# The Kaggle image installs these before the run starts:
+#
+#     pip install -r /kaggle/working/myna/kaggle/requirements.txt
+#
+# torch is listed so that a bare image fails loud at install rather than silently
+# importing without it. On Kaggle the preinstalled CUDA build already satisfies
+# the line, so this does not pull a CPU wheel over the GPU one — which is the
+# mistake that would turn a T4x2 job into a CPU job (§6: a device that is not
+# used is a device that was configured).
+#
+# Python here is 3.11, not the 3.13 the MacBook venv runs on; SPEC §5 P3 3c
+# pins that (tests/test_kaggle_bundle.py imports the whole package under the
+# interpreter named in .python-311 and runs two updates on CPU).
+torch>=2.6
+numpy>=2.0
+tokenizers>=0.20
+pyarrow>=18.0
+tqdm>=4.66
+pytest>=8.0
