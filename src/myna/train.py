@@ -118,6 +118,7 @@ def main():
     ap.add_argument("--suite", default=None,
                     help="frozen-suite dir (train/development/test.jsonl, laya/kev request shape); "
                          "overrides the synthetic corpus")
+    ap.add_argument("--vocab", type=int, default=4096)
     args = ap.parse_args()
 
     rng = random.Random(args.seed)
@@ -129,7 +130,7 @@ def main():
         from .real_data import load_suite, suite_texts
 
         data = load_suite(args.suite)
-        tok = train_tokenizer(suite_texts(data["train"]), vocab_size=4096)
+        tok = train_tokenizer(suite_texts(data["train"]), vocab_size=args.vocab)
     else:
         data = {
             "train": {wf: generate(args.n_train, wf, rng, "train") for wf in WORKFLOWS},
