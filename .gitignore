@@ -10,3 +10,10 @@ wheels/
 .venv
 runs/
 .pytest_cache/
+
+# Derived corpora: the rows are upstream text, so only the provenance file stays in git
+# (it pins revisions, seeds, collision counts and the sha256 of the generated train.jsonl).
+data/*
+!data/decision-v2-pilot/
+data/decision-v2-pilot/*
+!data/decision-v2-pilot/upstream_manifest.json
