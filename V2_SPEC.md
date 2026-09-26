@@ -16,6 +16,12 @@ state slope at −10 µs/token and lands one question at 14.7–17.4 ms for stat
 tokens (SPEC §9.22); beyond that it is the *scan*, not the answer, that has to be re-timed, and the
 16k row's witness is the withdrawn table. Quote 128→1k until P7 re-measures it.
 
+*P7 7a has now run, and it splits the two claims.* Scanning, holding and answering from a 16,384-token
+state is measured (cost, memory — §9.22). *Reading* one is not: the needle curve puts v0 at chance on
+its shortest rung, and the harness prints `G4: NOT MEASURED here` rather than a decay line
+(SPEC §9.25). So "16k" may be quoted about the state and never about comprehension until the
+long-context checkpoint exists.
+
 v1 takes it to production reality: MLX/Metal kernel (5 ms), real laya/kev
 corpora, long-context checkpoint, multilingual routing.
 

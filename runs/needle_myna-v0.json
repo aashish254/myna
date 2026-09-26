@@ -1,0 +1,53 @@
+{
+  "ckpt": "runs/myna-v0",
+  "device": "cpu",
+  "seed": 0,
+  "n_per_length": 16,
+  "lengths": [
+    128,
+    1024,
+    4096,
+    8192,
+    16384
+  ],
+  "params_m": 14.45,
+  "temperature": 3.0,
+  "n_options": 6,
+  "baseline": {
+    "shortest_rung": 128,
+    "acc": 0.1875,
+    "chance": 0.16666666666666666,
+    "n": 16,
+    "one_se": 0.0932,
+    "margin": 0.1,
+    "readable": false,
+    "note": "the 128-token rung is at the 0.167 uniform floor, so this curve cannot be read as decay \u2014 the checkpoint does not answer this task at any length"
+  },
+  "rows": [
+    {
+      "tokens": 128,
+      "acc": 0.1875,
+      "ms": 59.53298956137587
+    },
+    {
+      "tokens": 1024,
+      "acc": 0.3125,
+      "ms": 448.7593150001885
+    },
+    {
+      "tokens": 4096,
+      "acc": 0.3125,
+      "ms": 1760.8769453122477
+    },
+    {
+      "tokens": 8192,
+      "acc": 0.125,
+      "ms": 3436.4770858123848
+    },
+    {
+      "tokens": 16384,
+      "acc": 0.0625,
+      "ms": 7425.210583250646
+    }
+  ]
+}

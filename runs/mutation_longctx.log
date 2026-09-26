@@ -1,0 +1,44 @@
+baseline copy: green (1 test file)
+
+[ 1/20] caught      the needle is always pinned to the end of the state
+            FAILED tests/test_longctx.py::test_the_needle_lands_everywhere_in_the_state_not_just_at_the_ends
+[ 2/20] caught      the needle is always pinned to the front
+            FAILED tests/test_longctx.py::test_the_needle_lands_everywhere_in_the_state_not_just_at_the_ends
+[ 3/20] caught      insertion ignores the chosen position
+            FAILED tests/test_longctx.py::test_the_needle_lands_everywhere_in_the_state_not_just_at_the_ends
+[ 4/20] caught      the desk named in the needle is not the gold
+            FAILED tests/test_longctx.py::test_needle_gold_is_the_only_evidence - Asserti...
+[ 5/20] caught      every needle asks about the same entity
+            FAILED tests/test_longctx.py::test_the_needle_lands_everywhere_in_the_state_not_just_at_the_ends
+[ 6/20] caught      the gold is constant, so any flat answer scores 1.000
+            FAILED tests/test_longctx.py::test_ignoring_the_state_lands_on_a_share_not_on_a_result
+[ 7/20] caught      the state stops being built to the requested length
+            FAILED tests/test_longctx.py::test_needle_targets_requested_length - assert 6...
+[ 8/20] caught      the wrong option is scored correct
+            FAILED tests/test_longctx.py::test_a_state_reader_scores_one_at_every_length
+[ 9/20] caught      the argmax becomes an argmin
+            FAILED tests/test_longctx.py::test_a_state_reader_scores_one_at_every_length
+[10/20] caught      one row is averaged over the whole ladder
+            FAILED tests/test_longctx.py::test_a_state_reader_scores_one_at_every_length
+[11/20] caught      the question is asked over three of the six desks
+            FAILED tests/test_longctx.py::test_a_state_reader_scores_one_at_every_length
+[12/20] caught      the seed is parsed, printed, and then ignored
+            FAILED tests/test_longctx.py::test_ignoring_the_state_lands_on_a_share_not_on_a_result
+[13/20] caught      only the first length is measured, the rest are printed anyway
+            FAILED tests/test_longctx.py::test_a_state_reader_scores_one_at_every_length
+[14/20] caught      a zero or negative rung reaches the model
+            FAILED tests/test_longctx.py::test_the_cli_refuses_a_bad_ladder_before_it_loads_a_checkpoint
+[15/20] caught      the default ladder drops the rung G4 is about
+            FAILED tests/test_longctx.py::test_the_default_ladder_reaches_the_length_the_window_claim_makes
+[16/20] caught      a hair above the floor counts as reading the state
+            FAILED tests/test_longctx.py::test_the_curve_says_when_it_cannot_be_read_as_decay
+[17/20] caught      the boundary turns exclusive on the rung exactly at the margin
+            FAILED tests/test_longctx.py::test_the_guard_needs_a_margin_not_a_hair - Asse...
+[18/20] caught      the guard reads the longest rung instead of the shortest
+            FAILED tests/test_longctx.py::test_the_curve_says_when_it_cannot_be_read_as_decay
+[19/20] caught      the standard error is computed as if n multiplied the noise
+            FAILED tests/test_longctx.py::test_the_reported_standard_error_is_the_sample_size_one
+[20/20] caught      the note is printed when the curve is fine and hidden when it is not
+            FAILED tests/test_longctx.py::test_the_curve_says_when_it_cannot_be_read_as_decay
+
+20/20 mutations caught

@@ -1,0 +1,13 @@
+needle recall vs context length — myna-v0 (cpu)
+
+  tokens |    acc |       ms
+     128 |  0.188 |    59.53
+    1024 |  0.312 |   448.76
+    4096 |  0.312 |  1760.88
+    8192 |  0.125 |  3436.48
+   16384 |  0.062 |  7425.21
+
+uniform floor 0.167 (6 desks), 1 s.e. at n=16 is 0.093
+G4: NOT MEASURED here — the 128-token rung is at the 0.167 uniform floor, so this curve cannot be read as decay — the checkpoint does not answer this task at any length
+
+wrote runs/needle_myna-v0.md and runs/needle_myna-v0.json

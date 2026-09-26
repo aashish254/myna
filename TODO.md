@@ -199,8 +199,17 @@ So every "train" item below is split into *prepare/verify the Kaggle path locall
 - [ ] **6c** MLX int8 path re-measured after any parameter growth (MacBook-only)
 
 ## P7 — Long-context proof (G4)
-- [ ] **7a** Needle recall-vs-length curve at 1k/4k/8k/16k on an existing checkpoint (inference)
-- [ ] **7b** 4k truncated-backprop checkpoint — `KAGGLE` (code already built and tested)
+- [x] **7a** Needle recall-vs-length curve on an existing checkpoint (inference) — swept
+      128/1k/4k/8k/16k, 16 needles per rung, seed 0: **0.188 / 0.312 / 0.312 / 0.125 / 0.062**
+      against a 0.167 uniform floor. G4 is **not judged from this run**: the shortest rung is at
+      chance, so the longer rows are not decay, and `eval_lengths`' caller now prints
+      `G4: NOT MEASURED here` rather than a table (`baseline_verdict`). §2.1's 16k row and the
+      README's context column are restated as state/cost measurements only, with §9.25 recording how
+      the one number covered two claims. Witness: `runs/needle_myna-v0.{md,json,log}`,
+      `tests/test_longctx.py` (13), `bench/mutation_longctx.py` (**20/20**)
+- [ ] **7b** 4k truncated-backprop checkpoint — `KAGGLE` (code already built and tested). Re-run 7a
+      against it; G4's numbers are only meaningful once the 128-token rung clears the floor by the
+      guard's margin
 
 ## P8 — Write it up
 - [ ] **8a** README headline table built only from committed artifacts, every cell labelled

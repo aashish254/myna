@@ -46,7 +46,7 @@ to clear, not a gap to reframe around. Where we lose, we print the loss.
 | p50 latency, 1 question (87-token state) | **100.7–117.7 ms** measured here on the M5 CPU · 39.5 ms on their T4 (their measured) | **33.1 ms** myna on the same box and process = **3.04×**, and inside their T4 number | measured (§5 P4 4a, `runs/latency_matched.md`) |
 | p50 latency, 50 questions | **2,923–3,589 ms** here · 771.3 ms T4 (their measured) | **812 ms = 3.60×** same box; against their *T4* number myna takes 5–13% *longer* (812–870 ms vs 771.3), so the ≥ 5× projection did **not** hold (§9.21) | measured (4a) |
 | p50 latency, 1 question, state already scanned | no such API — every call re-reads the state | **14.9 ms = 6.78×** laya's same call | measured (4a) |
-| input window | **512 tokens** english / **1024** typed-decisions (`max_len` 1024 + `head_max_len` 256, read from the checkpoint config by the 4a harness) | 16,384 measured; the *answer* path is length-independent, the scan is not (§9.22) | measured |
+| input window | **512 tokens** english / **1024** typed-decisions (`max_len` 1024 + `head_max_len` 256, read from the checkpoint config by the 4a harness) | the *state* is measured to 16,384 tokens — scanned, held at 576 KiB, answered from, at cost that grows only in the scan (§9.22). The *decision* at that length is not: v0's needle accuracy is 0.312 at 1k and 0.062 at 16k against a 0.167 floor (§9.25) | measured (state), **not met** (accuracy, G4) |
 | retained state | KV-free but re-encodes; window-bounded | **576 KiB fixed, independent of length** | measured |
 | calibration ECE | **0.081** after temperature fit (their measured) | **≤ 0.02**; 0.0076 on v0 **dev**, whose temperature was fit on those rows — read as optimistic (§9.11) | measured (v0), level disputed |
 | refusing a decision | nothing in the response shape refuses: `system_one` returns a choice for every question, and a caller can only threshold `confidence` itself | `Myna(abstain_below=t)` withholds the commitment with a measured `reason`; risk/coverage on `calibration.jsonl` runs 0.349 → 0.596 as coverage falls 1.00 → 0.10, and **no rung reaches G5's 0.95** on v0 (§9.24) | measured (5a/5b), gate not met |
@@ -66,7 +66,7 @@ Quote the ratio, never the millisecond figure.
 | **G1** | Accuracy beats the witness | macro decision-v2 test ≥ 0.70 on the frozen split, per-source table published, ≥ 0.4331 majority floor by ≥ +0.15 | open |
 | **G2** | Latency claim survives equal-footing re-measurement | same box, same window, same question count, direct `Agent` call not `Router`; published ratio recomputed from that or withdrawn | **met** (4a/4c): one M5 process, both fp32, `Agent.system_one`, ladder capped inside laya's 1024 window — **3.04×/3.21×/4.12×/3.60×** at 1/5/10/50 questions end-to-end and **6.78×/4.67×/4.75×/3.65×** on the ask-only path, each the minimum of two committed runs, `runs/latency_matched*.md`. G1 is *not* implied: v0's accuracy still fails (§4.2) |
 | **G3** | Deployment works for real | ONNX browser build answers a live page's decisions; bytes + p50 + cold-load measured in Chrome | open |
-| **G4** | Long-context is *correct*, not just cheap | needle-style typed decision ≥ 0.90 at 4k and ≥ 0.85 at 16k state | open |
+| **G4** | Long-context is *correct*, not just cheap | needle-style typed decision ≥ 0.90 at 4k and ≥ 0.85 at 16k state | **not met, and not yet measurable on this box.** v0's needle curve (`runs/needle_myna-v0.md`) reads 0.188 at 128 tokens against a 0.167 floor — at chance on the shortest rung — so the longer rows are decay of nothing, and the harness now says so itself rather than printing a table (§9.25). The 16k *state* is measured and cheap (§9.22); the 16k *decision* needs the long-context checkpoint, which is 7b / `KAGGLE` |
 | **G5** | Useful confidence, with abstention | risk/coverage curve on `calibration.jsonl`; ≥ 0.95 accuracy at ≥ 60% coverage on banking77 + dbpedia14 + trec | **harness met, gate not met.** Abstention ships: `Myna(ckpt, abstain_below=t)` withholds the commitment and prints the measured reason, the fallback seam labels every answer with the engine that committed, and the curve is a committed artifact (`runs/risk_coverage.md`, 448 rows / 568 questions). Accuracy on v0 climbs **0.349 → 0.535** as coverage falls 1.00 → 0.20 — the confidence ranks the answers, on a checkpoint that cannot do the task — and setting the 0.693 floor on the engine abstains on **227** questions where the curve withheld **227**. But **no rung reaches 0.95** (max 0.596, at 10% coverage) and G5's own three sources sit at 0.000 / 0.025 / 0.150, so the pass needs the `KAGGLE` checkpoint (§9.24) |
 | **G6** | No regression on what already worked | synthetic v0 test ≥ 0.94 (was 0.951 measured) | open |
 | **G7** | Reproducibility | one command per result, seeds pinned, witness JSONs committed, `pytest` green | open |
@@ -152,7 +152,10 @@ that runs the package on a real 3.11 interpreter and exits 2 rather than skippin
 `bench_latency_matched.py` (the 4a/4b harness: one process, both engines, matched inputs, `flock`ed
 output) and its gate `mutation_latency_matched.py` (34 mutations), `risk_coverage.py` (the 5b
 risk/coverage curve, its floor re-run and the G5 verdict) and its gate `mutation_p5.py`
-(49 mutations across the engine's commitment, the seam's labels, the transport and the curve).
+(49 mutations across the engine's commitment, the seam's labels, the transport and the curve),
+`eval_needle.py` (the 7a recall ladder — `--lengths` so the published ladder *is* the command that
+ran it, and `baseline_verdict`, which refuses to let a curve that starts at the uniform floor be
+read as decay) and its gate `mutation_longctx.py` (20 mutations).
 `kaggle/`: `run.py` (one-command entrypoint: corpus discovery, the measured flag set, `--resume` only
 when a snapshot exists, tee to `train.log`, `run.json`, non-zero propagation), `package_dataset.py`
 (stage the pilot corpus, verify every byte against the corpus, print the upload command, never run
@@ -584,10 +587,28 @@ are counted, and if nothing is left the run refuses. See §9.14.
 - [ ] MLX int8 path for Apple, re-measured after any parameter growth.
 
 ### P7 — Long-context proof *(gates G4)*
-- [ ] Train the 4k truncated-backprop checkpoint (`--long-context --init`), code complete and
-      committed.
-- [ ] `bench/eval_needle.py` recall-vs-length curve at 1k/4k/8k/16k — the region where laya is
-      window-limited to 1024 tokens and is therefore not reading the input, only its prefix.
+- [x] **7a** `bench/eval_needle.py` recall-vs-length curve, swept 128 → 16,384 on the checkpoint
+      this box has (`runs/myna-v0`, `--lengths 128 1024 4096 8192 16384 --n 16`, seed 0):
+      **0.188 / 0.312 / 0.312 / 0.125 / 0.062** against a 0.167 uniform floor. The measured answer
+      is that G4 cannot be judged from this run — v0 is at chance on the *shortest* rung, so there
+      is no recall to decay, and the harness now refuses its own curve in print
+      (`baseline_verdict` → "G4: NOT MEASURED here") instead of publishing a table that reads as
+      long-context failure. This is the correction §9.25 records: the 16k number §2.1 carried was
+      a *state and cost* measurement (§9.22), never a reading one. Witnesses:
+      `runs/needle_myna-v0.{md,json,log}`; the gate is `tests/test_longctx.py` (13 — the generator's
+      evidence-uniqueness and length target, the scorer checked against an exactly recomputed share,
+      needle positions that actually spread, and the baseline guard's own boundary) and
+      `bench/mutation_longctx.py` (**20/20 caught**, `runs/mutation_longctx.log`). Two things this
+      pass also fixed in the harness rather than the model: `--lengths` so the published ladder is
+      the command that ran it (the old ladder stopped at 8k, one rung short of the claim), and a JSON
+      witness beside the markdown (G7). The guard's first battery pass scored 19/20, and the
+      survivor was mine rather than the tests': I had written `>= chance + margin - 1e-9` to spare a
+      float-equality annoyance, which made "exclusive versus inclusive" untestable by construction.
+      The tolerance is gone and the boundary is now checked on exactly representable values
+      (0.25 + 0.125 = 0.375), which is the only honest way to claim a boundary is inclusive.
+- [ ] **7b** Train the 4k truncated-backprop checkpoint (`--long-context --init`) — code complete,
+      committed and tested; `KAGGLE`. G4's numbers come from re-running 7a against *that* checkpoint,
+      and only if its 128-token rung clears the floor by the margin the guard requires.
 
 ### P8 — Write it up
 - [ ] README + PLAN headline tables from committed artifacts only, each cell labelled
@@ -905,5 +926,31 @@ Kept permanently, because the value of this project's claims is that they surviv
       suites ship `yelp`/`imdb` noul rows with a criteria dict, so the fixture now uses that shape
       and the deletion is caught. A battery's survivors are read as holes in the tests, and a hole
       in a fixture is as load-bearing as one in an assertion.
+25. **"16,384 tokens" was measured about the state, and never about reading it — and the first
+    needle curve says the second claim is false for every checkpoint on this machine.** §2.1's window
+    row and `README.md` both carried 16k as if one number covered both questions. It does not. The
+    mechanism is genuinely measured: the state is 576 KiB at any length, the scan scales linearly,
+    and the answer path is flat (§9.22). Comprehension is a different measurement, and
+    `bench/eval_needle.py` now runs it — a decisive sentence buried at a random position in filler,
+    16 needles per rung, seed 0, `runs/myna-v0`, 6-way so the uniform floor is 0.167:
+
+    | state tokens | 128 | 1,024 | 4,096 | 8,192 | 16,384 |
+    |---|---|---|---|---|---|
+    | needle accuracy | 0.188 | 0.312 | 0.312 | 0.125 | 0.062 |
+
+    v0 is at the floor *at the shortest rung* (0.188 against 0.167, where one standard error at
+    n=16 is 0.093), which means the rows after it cannot be read as decay: there is no recall here
+    to lose. The 16k figure is worse than chance rather than merely low, and neither of those is a
+    long-context result — it is an out-of-distribution task wearing a long-context costume, because
+    no checkpoint on this box was ever trained to answer a buried-desk question, let alone at 16k
+    (v0's training states are ~90 tokens). What §2.1 now says, in its own row, is
+    *measured (state)* / **not met (accuracy)**; the 16k comprehension claim is G4's, it is gated on
+    the `KAGGLE` long-context checkpoint (7b), and until that checkpoint exists the honest sentence
+    is "myna carries a 16k-token state at fixed size" and not one word about understanding it.
+    The harness change this forced is the part worth keeping: `eval_lengths` now refuses its own
+    curve (`baseline_verdict`) when the shortest rung does not clear the uniform floor by the
+    margin, and prints `G4: NOT MEASURED here` instead of a table a reader could quote as decay.
+    A low curve and a meaningless curve print identically otherwise, and only one of them is
+    interesting in the direction people want.
 
 

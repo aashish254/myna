@@ -54,6 +54,8 @@ def test_module_help_renders(module, flag):
     ("bench/mutation_latency_matched.py", "Mutation battery"),
     ("bench/risk_coverage.py", "--no-verify"),
     ("bench/mutation_p5.py", "Mutation battery"),
+    ("bench/eval_needle.py", "--lengths"),
+    ("bench/mutation_longctx.py", "Mutation battery"),
 ])
 def test_bench_script_help_renders(script, expect):
     """The diag scripts took `sys.argv[1]` positionally, so `--help` was parsed as a
@@ -78,6 +80,7 @@ def test_percent_in_a_help_string_survives_argparse_formatting():
     "bench/mutation_paraphrase.py",
     "bench/mutation_latency_matched.py",
     "bench/mutation_p5.py",
+    "bench/mutation_longctx.py",
 ])
 def test_mutation_help_does_not_run_the_battery(script):
     """Each run is ~30 pytest passes; `--help` must not be one of them."""

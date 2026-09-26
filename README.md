@@ -40,6 +40,15 @@ short. Myna is an architecture built for that shape from the ground up.
 | laya | 421M | ~1.7 GB | n/a (re-encode) | 512–8192 |
 | kev-4B | 4B | ~8 GB | ~GB-scale KV | — |
 
+That last column is a **cost** statement, and the only 16k number this repo has
+measured: the state is scanned once, held at fixed size, and answered from out to
+16,384 tokens. It is not a comprehension claim. The needle test — one decisive
+sentence buried in filler — puts v0 at 0.188 accuracy on a 128-token state against a
+0.167 floor, i.e. at chance before length even enters, and `runs/needle_myna-v0.md`
+prints `G4: NOT MEASURED here` rather than a decay curve. Long-context *correctness*
+is a separate gate, and it waits on the checkpoint trained for it
+([SPEC.md](SPEC.md) §2.2 G4, §9.25).
+
 </div>
 
 ## Measured on an Apple M5 (10-core, 32 GB)
