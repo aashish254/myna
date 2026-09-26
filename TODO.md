@@ -193,10 +193,24 @@ So every "train" item below is split into *prepare/verify the Kaggle path locall
       coverage), which abstention cannot raise
 
 ## P6 — Browser/on-device deployment (G3)
-- [ ] **6a** ONNX export of trunk+pointer head with torch-vs-ONNX parity ≤ 1e-4
+- [x] **6a** ONNX export, parity measured — `src/myna/onnx_export.py`: `state_step.onnx`
+      (256-token chunk + state stack → next state, so length is more calls and never a bigger
+      graph) and `question.onnx` (branch off that state), pointer head left in JavaScript over the
+      spans. Measured on v0: chained 853-token scan with a padded tail **3.13e-06 relative**
+      (1.40e-03 absolute on a state of scale 449), branch **1.88e-05 relative**, masked-row
+      inertness **exactly 0.0**, probabilities **1.86e-07**. Gate split by unit because 1e-4
+      absolute on a ~4.5e2 state asks two BLAS implementations to agree bitwise (§9.26).
+      Three forced findings: `dynamo=True` (the legacy exporter writes graphs onnxruntime refuses
+      to load), `opset_actual` read back from the file (17 was a label; torch wrote 18), and
+      **93.7 MiB fp32 = the trunk twice**, so ≤ 20 MB int8 needs shared weights, not quantisation.
+      Witness: `runs/onnx_parity.json`, `runs/onnx_export.log`, `tests/test_onnx_export.py` (8),
+      `bench/mutation_onnx.py` (**12/12**; its first pass caught the byte-budget lie that two
+      rounds of size assertions had let through)
 - [ ] **6b** In-Chrome measurement via onnxruntime-web: download bytes fp32/int8, cold-load ms,
-      p50 per decision on a real page (screenshot-verified at desktop + mobile widths)
-- [ ] **6c** MLX int8 path re-measured after any parameter growth (MacBook-only)
+      p50 per decision on a real page (screenshot-verified at desktop + mobile widths). Carries two
+      things 6a proved necessary: share or drop the duplicated trunk, and reach parity at the
+      widest real request (`banking77/intent`, 1,067 tokens) which today's 256-wide graph cannot
+      carry — `runs/onnx_parity.json` records that comparison as `"measured": false`
 
 ## P7 — Long-context proof (G4)
 - [x] **7a** Needle recall-vs-length curve on an existing checkpoint (inference) — swept

@@ -1,0 +1,37 @@
+/Users/aashish/next ko ne next gen model/src/myna/onnx_export.py:132: UserWarning: Exporting a model while it is in training mode. Please ensure that this is intended, as it may lead to different behavior during inference. Calling model.eval() before export is recommended.
+  torch.onnx.export(StateStep(trunk, chunk),
+W0927 00:44:29.128000 17277 .venv/lib/python3.13/site-packages/torch/onnx/_internal/exporter/_registration.py:107] torchvision is not installed. Skipping torchvision::nms
+W0927 00:44:29.128000 17277 .venv/lib/python3.13/site-packages/torch/onnx/_internal/exporter/_registration.py:107] torchvision is not installed. Skipping torchvision::roi_align
+W0927 00:44:29.128000 17277 .venv/lib/python3.13/site-packages/torch/onnx/_internal/exporter/_registration.py:107] torchvision is not installed. Skipping torchvision::roi_pool
+W0927 00:44:29.128000 17277 .venv/lib/python3.13/site-packages/torch/onnx/_internal/exporter/_registration.py:107] torchvision is not installed. Skipping torchvision::deform_conv2d
+/Users/aashish/next ko ne next gen model/src/myna/onnx_export.py:139: UserWarning: Exporting a model while it is in training mode. Please ensure that this is intended, as it may lead to different behavior during inference. Calling model.eval() before export is recommended.
+  torch.onnx.export(QuestionBranch(trunk, chunk),
+W0927 00:44:33.144000 17277 .venv/lib/python3.13/site-packages/torch/onnx/_internal/exporter/_registration.py:107] torchvision is not installed. Skipping torchvision::nms
+W0927 00:44:33.144000 17277 .venv/lib/python3.13/site-packages/torch/onnx/_internal/exporter/_registration.py:107] torchvision is not installed. Skipping torchvision::roi_align
+W0927 00:44:33.144000 17277 .venv/lib/python3.13/site-packages/torch/onnx/_internal/exporter/_registration.py:107] torchvision is not installed. Skipping torchvision::roi_pool
+W0927 00:44:33.144000 17277 .venv/lib/python3.13/site-packages/torch/onnx/_internal/exporter/_registration.py:107] torchvision is not installed. Skipping torchvision::deform_conv2d
+[torch.onnx] Obtain model graph for `StateStep([...]` with `torch.export.export(..., strict=False)`...
+[torch.onnx] Obtain model graph for `StateStep([...]` with `torch.export.export(..., strict=False)`... ✅
+[torch.onnx] Run decompositions...
+[torch.onnx] Run decompositions... ✅
+[torch.onnx] Translate the graph into ONNX...
+[torch.onnx] Translate the graph into ONNX... ✅
+[torch.onnx] Optimize the ONNX graph...
+[torch.onnx] Optimize the ONNX graph... ✅
+[torch.onnx] Obtain model graph for `QuestionBranch([...]` with `torch.export.export(..., strict=False)`...
+[torch.onnx] Obtain model graph for `QuestionBranch([...]` with `torch.export.export(..., strict=False)`... ✅
+[torch.onnx] Run decompositions...
+[torch.onnx] Run decompositions... ✅
+[torch.onnx] Translate the graph into ONNX...
+[torch.onnx] Translate the graph into ONNX... ✅
+[torch.onnx] Optimize the ONNX graph...
+[torch.onnx] Optimize the ONNX graph... ✅
+exported to runs/onnx: state_step 35.6 MiB · question 58.12 MiB (each graph carries its own copy of the trunk weights)
+meta: chunk 256, 8 questions x 256 tokens, opset 18, exporter dynamo, 6 layers, 14.45M params, state 576 KiB
+chained scan of 853 tokens over 4 chunks (padded tail): |Δ| 1.40e-03 = 3.13e-06 relative on a state of scale 449.0
+question branch, 4 real + 4 padded rows: |Δ| 1.18e-04 = 1.88e-05 relative on hidden states of scale 6.3
+isolation — question 0 run beside 7 masked rows: |Δ| 0.00e+00
+decision parity through the pointer head, 3 question(s) (probabilities, bounded by 1): |Δ| 1.86e-07
+onnxruntime state_step: 2777.5 ms per 256-token chunk on this box
+PASS: worst unit-scale |Δ| 1.86e-07 against 1e-04, and worst relative 1.88e-05 against 1e-04
+wrote runs/onnx_parity.json

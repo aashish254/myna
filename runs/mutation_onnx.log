@@ -1,0 +1,29 @@
+  note: interpreter aborted after a green summary (recursive_mutex lock failed); treated as green, see the docstring
+baseline copy: green (1 test file)
+
+[ 1/12] caught      the state graph ignores its mask, so padded tokens decay the memory
+            FAILED tests/test_onnx_export.py::test_a_question_too_wide_for_the_graph_fails_instead_of_passing_on_nothing
+[ 2/12] caught      the chain marks every padded position as a real token
+            FAILED tests/test_onnx_export.py::test_parity_passes_within_the_bound - Asser...
+[ 3/12] caught      the padded question ids are left as unmasked garbage
+            FAILED tests/test_onnx_export.py::test_parity_passes_within_the_bound - Asser...
+[ 4/12] caught      the chain over-reads the document, advancing by the padded width
+            FAILED tests/test_onnx_export.py::test_parity_passes_within_the_bound - Asser...
+[ 5/12] caught      the chain throws away the state between chunks
+            FAILED tests/test_onnx_export.py::test_parity_passes_within_the_bound - Asser...
+[ 6/12] caught      the byte budget counts the graph but not its weights file
+            FAILED tests/test_onnx_export.py::test_both_graphs_load_and_report_their_weights
+[ 7/12] caught      the state geometry claims one layer's worth for the whole stack
+            FAILED tests/test_onnx_export.py::test_both_graphs_load_and_report_their_weights
+[ 8/12] caught      the exporter flag is a label instead of the thing that ran
+            FAILED tests/test_onnx_export.py::test_parity_passes_within_the_bound - onnxr...
+[ 9/12] caught      the relative half of the gate is dropped
+            FAILED tests/test_onnx_export.py::test_each_half_of_the_gate_can_be_the_one_that_fails
+[10/12] caught      the absolute half of the gate is dropped
+            FAILED tests/test_onnx_export.py::test_each_half_of_the_gate_can_be_the_one_that_fails
+[11/12] caught      relative error is reported as the absolute error
+            FAILED tests/test_onnx_export.py::test_parity_passes_within_the_bound - Asser...
+[12/12] caught      a request too wide for the graph passes on zero comparisons
+            FAILED tests/test_onnx_export.py::test_a_question_too_wide_for_the_graph_fails_instead_of_passing_on_nothing
+
+12/12 mutations caught

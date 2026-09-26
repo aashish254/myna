@@ -50,7 +50,7 @@ to clear, not a gap to reframe around. Where we lose, we print the loss.
 | retained state | KV-free but re-encodes; window-bounded | **576 KiB fixed, independent of length** | measured |
 | calibration ECE | **0.081** after temperature fit (their measured) | **≤ 0.02**; 0.0076 on v0 **dev**, whose temperature was fit on those rows — read as optimistic (§9.11) | measured (v0), level disputed |
 | refusing a decision | nothing in the response shape refuses: `system_one` returns a choice for every question, and a caller can only threshold `confidence` itself | `Myna(abstain_below=t)` withholds the commitment with a measured `reason`; risk/coverage on `calibration.jsonl` runs 0.349 → 0.596 as coverage falls 1.00 → 0.10, and **no rung reaches G5's 0.95** on v0 (§9.24) | measured (5a/5b), gate not met |
-| browser artifact | ~1.7 GB fp32 / ~420 MB int8 (arithmetic) | **≤ 20 MB int8**, cold load ≤ 3 s | projected, gated on ONNX export |
+| browser artifact | ~1.7 GB fp32 / ~420 MB int8 (arithmetic) | export exists and is parity-checked: **93.7 MiB fp32** across the two graphs, which is the same trunk twice (§9.26) — so ≤ 20 MB int8 needs shared weights, not just quantisation | measured (6a), gate open |
 
 The latency cells are one process on one M5 laptop, `device=cpu`, both engines fp32. An absolute p50
 from that laptop is a range, not a point — two committed runs of the same harness differ by up to
@@ -156,12 +156,17 @@ risk/coverage curve, its floor re-run and the G5 verdict) and its gate `mutation
 `eval_needle.py` (the 7a recall ladder — `--lengths` so the published ladder *is* the command that
 ran it, and `baseline_verdict`, which refuses to let a curve that starts at the uniform floor be
 read as decay) and its gate `mutation_longctx.py` (20 mutations).
+`src/myna/onnx_export.py` is the G3 export path — two fixed-width graphs, the chained-scan
+composition check, and a parity report — with its gate `bench/mutation_onnx.py` (12 mutations).
 `kaggle/`: `run.py` (one-command entrypoint: corpus discovery, the measured flag set, `--resume` only
 when a snapshot exists, tee to `train.log`, `run.json`, non-zero propagation), `package_dataset.py`
 (stage the pilot corpus, verify every byte against the corpus, print the upload command, never run
 it), `requirements.txt`.
-`tests/`: **264 passing + 1 KEV-gated parity test** (skipped here, green wherever `kev` is
-installed). The P5 gate is `test_abstain.py` (the flag against the distribution the same answer
+`tests/`: **289 passing + 1 skipped** — the skip is the KEV-gated parity test, green wherever
+`kev` is installed. The ONNX gate's 8 tests are inside that count (they skip unless the optional
+`browser` extra is present), and their session fixture tears the runtime down deliberately: a live
+onnxruntime pool can abort the interpreter *after* a green summary, which reads as a broken
+baseline to any harness that trusts an exit code. The P5 gate is `test_abstain.py` (the flag against the distribution the same answer
 prints, monotonicity in the floor, noul's confident "no", the reason's measured numbers, the
 policy echo), `test_fallback.py` (only the abstained questions reach the secondary, the label
 follows the decider rather than a literal, both-refused reported, the laya schema shim held equal
@@ -580,8 +585,42 @@ are counted, and if nothing is left the run refuses. See §9.14.
       the artifact says so in the same breath as the curve.
 
 ### P6 — Browser/on-device deployment *(task #18, gates G3)*
-- [ ] Split ONNX export (trunk + pointer head) mirroring `laya-ts/scripts/export_onnx.py`, with
-      torch-vs-ONNX parity ≤ 1e-4.
+- [x] **6a** ONNX export of the two graphs, with torch-vs-ONNX parity measured rather than
+      assumed (`src/myna/onnx_export.py`; `runs/onnx_parity.json`, `runs/onnx_export.log`).
+      The split *is* the architecture: `state_step.onnx` takes a fixed 256-token chunk plus the
+      fixed state stack and returns the next state — a 16k document is 64 calls to the same
+      weights, never a graph that grows — and `question.onnx` resumes from that state, leaving
+      the pointer head (a few matmuls over span means) to JavaScript beside the spans.
+      Measured at chunk 256, 8 questions × 256 tokens, opset 18, `runs/myna-v0` (14.45M):
+      chained scan of 853 tokens over 4 chunks with a padded tail **|Δ| 1.40e-03 = 3.13e-06
+      relative** on a state of scale 449; question branch **1.18e-04 absolute = 1.88e-05
+      relative**; masked-row inertness **exactly 0.0**; and the number a caller acts on —
+      option probabilities through the pointer head — **1.86e-07**. (The run also prints a
+      per-chunk wall-clock figure; it is quoted nowhere, because §9.23 established that this box's
+      absolutes move by 3× under load and G3's cost claim will be measured in Chrome.)
+      That last figure is why the
+      gate is split in two units: the state's entries reach ~4.5e2, so asking 1e-4 of it
+      absolutely demands bitwise agreement between two BLAS implementations, and G3 would read
+      as an unbuildable target instead of a checked one.
+      Three findings the export forced, none of them in the original plan:
+      * **`dynamo=True` is required.** The legacy TorchScript exporter emits graphs this trunk
+        needs that `onnxruntime` refuses to load (`/fwd/Mul_2 … Incompatible dimensions`), so
+        the "successful" export would have failed on the reader's machine instead of ours.
+      * **`opset 17` was a label, not a fact.** torch warns that 17 is below its implementations,
+        writes 18, and its version-converter fallback aborts; `meta.json` now records the opset
+        read back out of the file (`opset_actual`) rather than the one requested.
+      * **Byte budget: 93.7 MiB fp32, and it is two copies of the same trunk** (state_step 35.6
+        + question 58.13). §2.1's ≤ 20 MB int8 target is not reachable by quantising both graphs
+        independently — the weights have to be shared, or the browser has to carry one graph and
+        call it twice. That is 6b's problem, now measured instead of assumed.
+      Still open inside G3, and stated rather than smoothed: the widest request the suite contains
+      is `banking77/intent` at **1,067 tokens** (77 options), measured over
+      `calibration.jsonl`, which does not fit the 256-wide graph exported here — the parity report
+      carries `"measured": false` for it, so decision parity at real width is unproven.
+- [ ] **6b** Measured in Chrome via `onnxruntime-web`: download bytes fp32/int8, cold-load ms, p50
+      per decision on a real page. Includes the shared-weights question 6a leaves open, and parity
+      at the 1,067-token request width.
+- [ ] **6c** MLX int8 path for Apple, re-measured after any parameter growth.
 - [ ] Measured in Chrome via `onnxruntime-web`: download bytes fp32/int8, cold-load ms, p50 per
       decision on a real page.
 - [ ] MLX int8 path for Apple, re-measured after any parameter growth.
@@ -952,5 +991,22 @@ Kept permanently, because the value of this project's claims is that they surviv
     margin, and prints `G4: NOT MEASURED here` instead of a table a reader could quote as decay.
     A low curve and a meaningless curve print identically otherwise, and only one of them is
     interesting in the direction people want.
+26. **Two numbers in the export path were labels, and reading the artifact out loud fixed both.**
+    6a shipped `meta.json` with `"opset": 17` because that is what was passed to the exporter. It is
+    not what the exporter wrote: torch warns that 17 is below its implementations, emits opset 18,
+    and its fallback version-converter aborts with a `RuntimeError` that is printed and then
+    survived — so the metadata asserted a property of a file that did not have it, and the fix is not
+    the number but the source (`opset_actual`, read back from each graph with `onnx.load`). The same
+    mistake in the other direction was the byte budget: `files_mib` summed `*.onnx` and reported
+    0.43 MiB for a model with 36 MB of weights, because the dynamo exporter stores initializers in a
+    sibling `*.onnx.data`. `bench/mutation_onnx.py`'s first pass caught exactly that — deleting the
+    `*` from the glob survived two rounds of assertions, because a threshold like "> 0.01 MiB" cannot
+    distinguish a skeleton from an artifact; what catches it is reading the graph and requiring the
+    reported size to cover the bytes its own initializers declare.
+    What the honest numbers now say is worse news than the draft implied: the two graphs are
+    **35.6 + 58.13 MiB fp32 — the trunk twice over** — so §2.1's ≤ 20 MB int8 target cannot be met by
+    quantising each graph on its own. Either the weights are shared between them or the browser
+    carries one graph and calls it twice, and that is now 6b's premise rather than a surprise at the
+    end of it.
 
 

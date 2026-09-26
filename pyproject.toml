@@ -21,6 +21,11 @@ mlx = [
 serve = ["fastapi>=0.110", "uvicorn>=0.29"]
 bench = ["safetensors>=0.4", "transformers>=4.48", "huggingface_hub>=0.20"]
 dev = ["pytest>=8.0", "fastapi>=0.110", "httpx>=0.27"]
+browser = [
+    "onnx>=1.23.0",
+    "onnxruntime>=1.30.0",
+    "onnxscript>=0.7.2",
+]
 
 [project.scripts]
 myna-serve = "myna.serve:main"
