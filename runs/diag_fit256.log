@@ -1,0 +1,8 @@
+
+
+
+N=256 steps=1000 lr=0.0006 device=mps
+step     0  ema 1.2859  fit 0.375  gen(dev) 0.342  94s
+step   100  ema 1.1620  fit 0.328  gen(dev) 0.328  1008s
+step   200  ema 1.1229  fit 0.448  gen(dev) 0.375  1776s
+step   300  ema 0.4185  fit 0.935  gen(dev) 0.706  2404s

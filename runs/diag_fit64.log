@@ -1,0 +1,6 @@
+
+
+
+N=64 steps=600 lr=0.0006 device=mps
+step     0  ema 1.1834  fit 0.451  20s
+step    60  ema 0.3376  fit 0.970  459s

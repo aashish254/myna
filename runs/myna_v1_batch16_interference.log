@@ -1,0 +1,32 @@
+
+
+
+tokenizer trained: 8192
+params: 16926848
+step     0  loss 0.731  ema 0.731  2s
+step   200  loss 0.692  ema 1.457  168s
+step   200  dev-mid acc 0.3413
+step   400  loss 1.618  ema 1.757  365s
+step   400  dev-mid acc 0.3364
+step   600  loss 1.098  ema 1.612  568s
+step   600  dev-mid acc 0.2504
+step   800  loss 1.645  ema 1.463  744s
+step   800  dev-mid acc 0.3777
+step  1000  loss 0.696  ema 1.560  911s
+step  1000  dev-mid acc 0.2805
+step  1200  loss 1.249  ema 1.423  1074s
+step  1200  dev-mid acc 0.2414
+step  1400  loss 0.692  ema 1.543  1243s
+step  1400  dev-mid acc 0.2505
+step  1600  loss 1.660  ema 1.325  1402s
+step  1600  dev-mid acc 0.3536
+step  1800  loss 0.335  ema 1.216  1562s
+step  1800  dev-mid acc 0.3660
+step  2000  loss 0.520  ema 1.518  1751s
+step  2000  dev-mid acc 0.2606
+step  2200  loss 1.562  ema 1.613  1998s
+step  2200  dev-mid acc 0.3619
+step  2400  loss 2.671  ema 1.444  2206s
+step  2400  dev-mid acc 0.2448
+step  2600  loss 0.699  ema 1.526  2393s
+step  2600  dev-mid acc 0.3547

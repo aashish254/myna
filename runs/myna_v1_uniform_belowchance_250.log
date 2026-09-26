@@ -1,0 +1,14 @@
+
+
+
+tokenizer trained: 8192
+params: 16926848
+step     0  loss 2.737  ema 2.737  sets/update 8  6s
+step    41  loss 2.676  ema 2.021  sets/update 8  127s
+step    82  loss 1.071  ema 1.748  sets/update 8  245s
+step   123  loss 1.493  ema 1.841  sets/update 8  360s
+step   164  loss 1.938  ema 1.845  sets/update 8  478s
+step   205  loss 1.847  ema 1.914  sets/update 8  598s
+step   246  loss 0.985  ema 1.879  sets/update 8  703s
+step   250  dev-mid acc 0.2272
+step   287  loss 0.967  ema 1.774  sets/update 8  854s

@@ -72,6 +72,8 @@ exactly, with zero drift.
 
 ## Benchmarks
 
+### WITHDRAWN (2026-09-26, SPEC §9.20) — kept here as the record, not as a result
+
 Final v0-checkpoint run on M5, idle machine, CPU, n=8 workflows x 6 appends,
 3 questions/request (`runs/bench_stream.md`, log in `runs/bench_stream_v0.log`):
 
@@ -88,14 +90,37 @@ Final v0-checkpoint run on M5, idle machine, CPU, n=8 workflows x 6 appends,
 Short-state avg: myna-stream 32.5 ms, myna-full 48.1 ms, laya 127.8 ms.
 Retained state: 576 KiB fixed at every length.
 
-Readings:
-1. myna-stream is flat 28-43 ms from 128→16k — the delta-engine claim holds
-   on the trained model, not just the probe.
-2. laya's re-encode plateaus at ~510 ms (its 8192 cap truncation region) and
-   can't serve long states at all. At 16k myna answers ~17x faster than laya
-   answers at its 8k maximum.
-3. Even myna-full (a plain encoder of the same size) beats laya above 2k
-   tokens — that's the architecture of the trunk, before streaming.
+Why it is withdrawn, against its own numbers:
+1. The `speedup` column is `myna re-encode / myna-stream` — myna against itself. It never measured
+   laya, and reading 1 ("the delta-engine claim holds") is the only thing it supports.
+2. Reading 2 called laya's ~510 ms plateau "its 8192 cap truncation region" in the same breath as
+   "~17x faster than laya answers at its 8k maximum". The laya checkpoint's typed-decisions window
+   is **1024**, so every row above 1,024 fed it the same input: the plateau *is* the truncation, and
+   comparing a complete 16k read against a 1k read is not a speedup.
+3. Reading 3 is contradicted by the row above it: myna-full 965.3 ms vs laya 512.5 ms at 2,048
+   tokens. myna's non-streaming path does not "beat laya above 2k" — it loses until the comparison
+   becomes meaningless.
+4. laya was driven through `Router` with `noul` criteria stripped by a local shim: neither the call
+   path nor the options-per-question matched what laya publishes.
+
+### What replaced it: matched-condition, one process, both engines (SPEC §5 P4)
+
+`bench/bench_latency_matched.py` → `runs/latency_matched.md`. Same `str` state, same question
+`dict`, both fp32, laya as `Agent.system_one` on `55cf4c4`, ladder capped inside laya's window,
+`flock`ed so no second copy can share the box mid-run. p50, 10 reps, 3 warm-ups:
+
+| questions | laya `system_one` | myna end-to-end | ratio | myna, state cached | ratio |
+|---|---|---|---|---|---|
+| 1 | 100.7 ms | 33.1 ms | 3.04x | 14.9 ms | 6.78x |
+| 5 | 272.0 ms | 74.9 ms | 3.63x | 55.5 ms | 4.90x |
+| 10 | 506.3 ms | 120.8 ms | 4.19x | 98.2 ms | 5.15x |
+| 50 | 3,589.5 ms | 870.0 ms | 4.13x | 787.1 ms | 4.56x |
+
+Shipped claim = per-row minimum over the two committed runs: **3.04 / 3.21 / 4.12 / 3.60×** and
+**6.78 / 4.67 / 4.75 / 3.65×**. Cost fits on the ladder: ask is 10.1 ms + 9.6 ms/question with a
+state slope of −10.3 µs/token (zero — the fixed-size state, measured), observe is 360 µs/token with
+a negative intercept (quadratic inside a 256-token chunk), and laya's additive fit reaches only
+R² 0.74 because its cost is state × questions.
 
 
 ## The plateau post-mortem (2026-09-25/26)

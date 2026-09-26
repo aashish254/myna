@@ -5,11 +5,16 @@
 > long-range *research* program (Pillars 1–6: state algebra, O(window) edits, two-timescale
 > memory, utility heads, on-device learning). Where a figure here disagrees with SPEC.md, SPEC.md
 > wins — notably 14.4M → **15.35M measured**, and the 239× figure, which is an internal ablation
-> and not a competitor comparison.
+> and not a competitor comparison (SPEC §9.20 withdraws the table it came from).
 
 v0 proved the engine: a 14.4M-param persistent-state decision model that
 answers typed questions in ~30 ms flat from 128→16k tokens, 239x faster than
 re-reading, calibrated to ECE ≤ 0.04, on a MacBook.
+
+*Flat is right; the range is not measured.* The matched-condition harness fits the answer path's
+state slope at −10 µs/token and lands one question at 14.7–17.4 ms for states from 66 to 1,060
+tokens (SPEC §9.22); beyond that it is the *scan*, not the answer, that has to be re-timed, and the
+16k row's witness is the withdrawn table. Quote 128→1k until P7 re-measures it.
 
 v1 takes it to production reality: MLX/Metal kernel (5 ms), real laya/kev
 corpora, long-context checkpoint, multilingual routing.

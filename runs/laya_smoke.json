@@ -1,0 +1,110 @@
+{
+  "split": "development",
+  "n_per_source": 2,
+  "seed": 0,
+  "overall_acc": 0.4583333333333333,
+  "n": 24,
+  "by_type": {
+    "choice": 0.4,
+    "score": 0.3333333333333333,
+    "noul": 0.625
+  },
+  "rows": [
+    {
+      "source": "agnews",
+      "qid": "topic",
+      "type": "choice",
+      "acc": 0.5,
+      "n": 2,
+      "brier": null
+    },
+    {
+      "source": "amazon",
+      "qid": "stars",
+      "type": "score",
+      "acc": 0.0,
+      "n": 2,
+      "brier": null
+    },
+    {
+      "source": "banking77",
+      "qid": "intent",
+      "type": "choice",
+      "acc": 0.5,
+      "n": 2,
+      "brier": null
+    },
+    {
+      "source": "boolq",
+      "qid": "answer",
+      "type": "noul",
+      "acc": 1.0,
+      "n": 2,
+      "brier": 0.05496608
+    },
+    {
+      "source": "contrastive",
+      "qid": "decision",
+      "type": "noul",
+      "acc": 0.5,
+      "n": 2,
+      "brier": 0.232617845
+    },
+    {
+      "source": "dbpedia14",
+      "qid": "category",
+      "type": "choice",
+      "acc": 0.0,
+      "n": 2,
+      "brier": null
+    },
+    {
+      "source": "imdb",
+      "qid": "positive",
+      "type": "noul",
+      "acc": 0.5,
+      "n": 2,
+      "brier": 0.500000005
+    },
+    {
+      "source": "mnli",
+      "qid": "relation",
+      "type": "choice",
+      "acc": 0.5,
+      "n": 2,
+      "brier": null
+    },
+    {
+      "source": "sst5",
+      "qid": "sentiment",
+      "type": "score",
+      "acc": 0.5,
+      "n": 2,
+      "brier": null
+    },
+    {
+      "source": "trec",
+      "qid": "answer_type",
+      "type": "choice",
+      "acc": 0.5,
+      "n": 2,
+      "brier": null
+    },
+    {
+      "source": "yelp",
+      "qid": "rating",
+      "type": "score",
+      "acc": 0.5,
+      "n": 2,
+      "brier": null
+    },
+    {
+      "source": "yelp",
+      "qid": "recommend",
+      "type": "noul",
+      "acc": 0.5,
+      "n": 2,
+      "brier": 0.19809510500000002
+    }
+  ]
+}

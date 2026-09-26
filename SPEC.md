@@ -43,19 +43,27 @@ to clear, not a gap to reframe around. Where we lose, we print the loss.
 | parameters | 421.29M (enc 394.78M + head 26.51M) — *their published figure* | **15.35M measured**, ≤ 32M allowed | measured |
 | accuracy, kev decision-v2 **test** | **0.6319** (our own seeded witness, n=546) | **≥ 0.70** gate · 0.75 stretch | projected |
 | accuracy, their own typed-decisions bench | 0.766 (2,000 decisions) | not comparable — different suite; do not quote side by side | — |
-| p50 latency, 1 question, T4 | **39.5 ms** (their measured) | ≤ 39.5 ms **on a laptop CPU** | measured-ish, needs §5 P4 |
-| p50 latency, 50 questions, T4 | **771.3 ms** (their measured) | ≥ 5× faster, same box | projected, gated on cloud access |
-| input window | **512 tokens** english / **1024** typed-decisions | 16,384 measured; flat cost | measured |
+| p50 latency, 1 question (87-token state) | **100.7–117.7 ms** measured here on the M5 CPU · 39.5 ms on their T4 (their measured) | **33.1 ms** myna on the same box and process = **3.04×**, and inside their T4 number | measured (§5 P4 4a, `runs/latency_matched.md`) |
+| p50 latency, 50 questions | **2,923–3,589 ms** here · 771.3 ms T4 (their measured) | **812 ms = 3.60×** same box; against their *T4* number myna takes 5–13% *longer* (812–870 ms vs 771.3), so the ≥ 5× projection did **not** hold (§9.21) | measured (4a) |
+| p50 latency, 1 question, state already scanned | no such API — every call re-reads the state | **14.9 ms = 6.78×** laya's same call | measured (4a) |
+| input window | **512 tokens** english / **1024** typed-decisions (`max_len` 1024 + `head_max_len` 256, read from the checkpoint config by the 4a harness) | 16,384 measured; the *answer* path is length-independent, the scan is not (§9.22) | measured |
 | retained state | KV-free but re-encodes; window-bounded | **576 KiB fixed, independent of length** | measured |
 | calibration ECE | **0.081** after temperature fit (their measured) | **≤ 0.02**; 0.0076 on v0 **dev**, whose temperature was fit on those rows — read as optimistic (§9.11) | measured (v0), level disputed |
 | browser artifact | ~1.7 GB fp32 / ~420 MB int8 (arithmetic) | **≤ 20 MB int8**, cold load ≤ 3 s | projected, gated on ONNX export |
+
+The latency cells are one process on one M5 laptop, `device=cpu`, both engines fp32. An absolute p50
+from that laptop is a range, not a point — two committed runs of the same harness differ by up to
+22% on laya's 50-question row and 14% on myna's, because other sessions share these cores
+(§9.23). So each ratio cell is the **minimum across the committed runs** (`latency_matched.md` and
+`latency_matched_run1_superseded.md`), taken per row, and every cell names the run it came from.
+Quote the ratio, never the millisecond figure.
 
 ### 2.2 Acceptance gates — the project is not finished until all pass
 
 | # | gate | pass condition | status |
 |---|---|---|---|
 | **G1** | Accuracy beats the witness | macro decision-v2 test ≥ 0.70 on the frozen split, per-source table published, ≥ 0.4331 majority floor by ≥ +0.15 | open |
-| **G2** | Latency claim survives equal-footing re-measurement | same box, same window, same question count, direct `Agent` call not `Router`; published ratio recomputed from that or withdrawn | open |
+| **G2** | Latency claim survives equal-footing re-measurement | same box, same window, same question count, direct `Agent` call not `Router`; published ratio recomputed from that or withdrawn | **met** (4a/4c): one M5 process, both fp32, `Agent.system_one`, ladder capped inside laya's 1024 window — **3.04×/3.21×/4.12×/3.60×** at 1/5/10/50 questions end-to-end and **6.78×/4.67×/4.75×/3.65×** on the ask-only path, each the minimum of two committed runs, `runs/latency_matched*.md`. G1 is *not* implied: v0's accuracy still fails (§4.2) |
 | **G3** | Deployment works for real | ONNX browser build answers a live page's decisions; bytes + p50 + cold-load measured in Chrome | open |
 | **G4** | Long-context is *correct*, not just cheap | needle-style typed decision ≥ 0.90 at 4k and ≥ 0.85 at 16k state | open |
 | **G5** | Useful confidence, with abstention | risk/coverage curve on `calibration.jsonl`; ≥ 0.95 accuracy at ≥ 60% coverage on banking77 + dbpedia14 + trec | open |
@@ -137,12 +145,14 @@ split, instruction-derived strata, laya's own accuracies joined by cell, G1 verd
 `mutation_memory_plan.py` (the P3 sizing/stop/resume gate, 44 mutations),
 `mutation_report.py` (the 3g reporting gate: every floor, weight and stratum in the table),
 `mutation_kaggle_bundle.py` (the entrypoint + packager gate), `check_python311.py` (the 3.11 witness
-that runs the package on a real 3.11 interpreter and exits 2 rather than skipping).
+that runs the package on a real 3.11 interpreter and exits 2 rather than skipping),
+`bench_latency_matched.py` (the 4a/4b harness: one process, both engines, matched inputs, `flock`ed
+output) and its gate `mutation_latency_matched.py` (34 mutations).
 `kaggle/`: `run.py` (one-command entrypoint: corpus discovery, the measured flag set, `--resume` only
 when a snapshot exists, tee to `train.log`, `run.json`, non-zero propagation), `package_dataset.py`
 (stage the pilot corpus, verify every byte against the corpus, print the upload command, never run
 it), `requirements.txt`.
-`tests/`: **167 passing + 1 KEV-gated parity test** (skipped here, green wherever `kev` is
+`tests/`: **201 passing + 1 KEV-gated parity test** (skipped here, green wherever `kev` is
 installed). The P3 gate is `test_memory_plan.py` (sizing arithmetic, the refusal, the CUDA headroom
 read through a monkeypatch, the stop rule both ways, snapshot round-trip, resume),
 `test_kaggle_bundle.py` (the entrypoint's refusals and composed command, a real 2-update run through
@@ -160,8 +170,9 @@ the loop that uses it).
 ## 4. Baselines we are measured against
 
 All numbers below are **measured by us** unless attributed. Our own witness scripts and result
-JSONs live in `runs/` (gitignored; the two laya witness JSONs are the ones that matter and must be
-committed or reproduced on demand).
+JSONs live in `runs/`, and the small tables in it (`.json`/`.md`/`.log`) are committed — checkpoints
+and `*.pt` dumps are not (G7's "witness JSONs committed" is satisfied by the ignore rule, not by an
+intent; an earlier draft of this section said the opposite and meant it).
 
 ### 4.1 laya, on kev decision-v2 (our seeded witness)
 `bench/eval_laya_real.py`, n=546, 40 per source, seed 0.
@@ -194,6 +205,18 @@ question rising ~14.9 ms per extra question (771.3 ms at 50) · checkpoints 421.
 321.91M multilingual. Their `BENCHMARKS.md` states that Jev figures are third-party and never
 independently measured — we match that discipline: no competitor number in our tables unless we
 ran it or we label whose number it is.
+
+**Their T4 ladder does not transfer to this box, so 4a measured laya here rather than citing it.**
+Same checkpoint (revision `55cf4c4`, the one their server-CPU table used), `Agent.system_one`, fp32,
+weights fp32 with autocast off, `max_len` 1024 / `head_max_len` 256, 421.29M params, 8 intra-op
+threads, two committed runs (p50, `run3`/`run1`): **100.7 / 117.7 ms** for one question, 272.0 / 305.5
+at 5, 506.3 / 574.9 at 10, 3,589.5 / 2,923.4 at 50 — 2.5–3.0× their T4 figure at one question and
+3.8–4.7× at 50, i.e. **57–71 ms per extra question here against their ~14.9 ms**. Both vendors'
+latency is now from the same silicon; the T4 column stays labelled as theirs and is never used as
+myna's denominator, which is exactly why §2.1's 50-question row had to be restated (§9.21). A third
+run of the same command, whose artifact the current one overwrote, read within 0.4% of these at one
+question and 32% below at 50 — this column is machine-state dependent and the ratio is the
+publishable quantity (§9.23).
 
 ### 4.4 Jev
 Browser agent with a dynamic, indexed action space (TypeSafe). Published p50 236–276 ms per
@@ -433,11 +456,65 @@ are counted, and if nothing is left the run refuses. See §9.14.
 
 
 ### P4 — Latency reconciliation *(task #17, gates G2)*
-- [ ] Re-run myna vs laya on one box, one process, direct `Agent` call (not `Router`), matched
+- [x] Re-run myna vs laya on one box, one process, direct `Agent` call (not `Router`), matched
       state length / question count / dtype / options-per-question.
-- [ ] Separate fixed per-call overhead from per-token and per-question cost.
-- [ ] Until then the only latency sentence allowed in public: *myna on a laptop CPU has roughly the
+      **4a witness:** `bench/bench_latency_matched.py`, one M5 process, device `cpu` for both, both
+      weight dtypes *reported* rather than assumed (`torch.float32` each, laya's autocast off), the
+      same `str` state object and the same question `dict` handed to both engines (3-option `choice`
+      alternating with `noul`, exactly laya's own `bench_latency.py` ladder), laya called as
+      `Agent.system_one` on checkpoint `55cf4c4`. Ladder capped at 1024 tokens so **no row compares
+      myna reading a document against laya reading a prefix of it** — the harness derives
+      `usage.input_tokens / questions` per row and would label a plateau `laya_truncated`; no row
+      was labelled. Reproduce with
+      `PYTHONPATH="<laya checkout>" .venv/bin/python -u -m bench.bench_latency_matched` (without
+      laya importable the harness runs the myna half and **withdraws the ratio**, which is the
+      §9.1 behaviour, not a failure). Artifacts `runs/latency_matched.{json,md}` (run 3) and
+      `runs/latency_matched_run1_superseded.{json,md}` (run 1), both committed. Ratio, recomputed:
+      **3.04× / 3.21× / 4.12× / 3.60×** end-to-end at 1 / 5 / 10 / 50 questions, and
+      **6.78× / 4.67× / 4.75× / 3.65×** against laya's same call from myna's ask-only path — each
+      cell the **worse of the two runs**, because the two runs disagree by up to 22% in absolute p50
+      while other sessions share these cores, and a busy laptop must not get to pick the flattering
+      number (§9.23). The internal drift check re-measured the first shape at +1.9% (myna) and
+      +12.6% (laya) in run 3, −0.7% / +1.8% in run 1 — that spread is why the absolute column is not
+      the claim.
+      Gate: `tests/test_latency_matched.py` **26 tests**, `bench/mutation_latency_matched.py`
+      **34/34 mutations caught, exit 0** on a frozen repo (`runs/mutation_latency_matched.log`). The
+      battery's first pass scored 30/31 and the
+      survivor was an uncovered branch (`fit_cost` guarded the question axis against a zero-variance
+      column but not the state axis), now pinned both ways; the three newest mutations are the
+      single-instance lock, which exists because a duplicate harness run was caught mid-measurement.
+- [x] Separate fixed per-call overhead from per-token and per-question cost.
+      **4b witness:** least squares on the ladder, `t = fixed + per_state_token·L + per_question·Q`,
+      run 3 with run 1 in brackets.
+      myna **observe**: 360.4 [548.5] µs/state-token, R² 0.9979 [0.9996] — with a *negative*
+      intercept, because within a 256-token chunk the scan is quadratic: doubling the state costs
+      2.85× [3.40×] at 66→133 tokens and 2.82× [2.85×] at 133→265, then stops compounding once the
+      state spans several chunks (1.93× [1.72×] at 265→530, 1.97× [2.20×] at 530→1060; §9.22, and
+      the reason myna's ~33 ms decision figure is a *short-state* result).
+      myna **ask**: 10.12 [9.29] ms fixed + 9.59 [12.15] ms/question with a state slope of −10.3
+      [−4.0] µs/token, i.e. zero within run noise — the fixed-size state claim, measured, on both
+      runs. myna **end-to-end**: 4.82 [1.89] ms + 368.4 [528.2] µs/token + 8.94 [9.74] ms/question,
+      R² 0.9915 [0.9794].
+      **laya's additive fit gives R² 0.7356 [0.7297]**, which is the structural point: its cost is
+      state × questions (one sequence carrying the whole state, per question), so the ladder's
+      530-token rows read 289 [507] ms at 1 question and 2,563 [3,151] ms at 10.
+- [x] Until then the only latency sentence allowed in public: *myna on a laptop CPU has roughly the
       per-decision latency laya reports on a datacenter T4.*
+      **4c: superseded by measurement, partly.** The first half of that sentence is now *stronger
+      than the constraint and still conservative*: at a 1-question / 87-token decision myna measures
+      **33.1 ms** on the M5 CPU (run 1: 38.3 ms), inside laya's published T4 39.5 ms on **both** runs,
+      and **3.04×** faster than laya measured on this same box. The T4 margin stays context only —
+      cross-silicon, never a denominator (§4.3) — so what G2 actually carries is the same-box ratio.
+      What does **not** survive is §2.1's other projection (**≥ 5× at 50 questions, §9.21**): myna's
+      50-question p50 is 870 ms (run 1: 812 ms) against laya's 771.3 ms on a T4, i.e. myna takes
+      13% (5%) *longer* than laya took on datacenter silicon, and against laya on this box the ratio
+      is 3.60× — with a per-extra-question marginal of 17.1 ms (15.8) against laya's 71.2 (57.3), so
+      even the *slope* ratio never reached 5× here.
+      Also withdrawn with it: the README's 33×–239× long-context column, which compared myna
+      reading a document against laya truncating it (**§9.20**).
+      And the sub-40 ms figure is a *1-question, 87-token* result: at 50 questions the state is
+      irrelevant and the question branches are the whole cost (ask-only 787 ms, run 1: 801, §9.22).
+      Quote a shape, not a number.
 
 ### P5 — Abstention and risk/coverage *(task #16, gates G5 — the flagship scenario)*
 - [ ] Confidence threshold tuned on `calibration.jsonl`; emit `abstain` with the reason.
@@ -536,6 +613,10 @@ Kept permanently, because the value of this project's claims is that they surviv
 1. **"239× faster than laya."** Wrong: 239× is myna-stream vs *myna's own* re-encode path — an
    internal ablation. Real measured comparison vs laya: ~15× at 1k tokens on the same box, rising
    with context length. Fixed in the memory file; must never reappear in the README.
+   **This entry's own remedy was wrong too** — no artifact ever produced "~15× at 1k tokens", and the
+   number that would have, laya's ~500 ms plateau, is its truncation window (§9.20). The lesson is
+   not "the ratio was inflated"; it is that a correction which replaces one unmeasured competitor
+   number with another, while the README that carried the first stays published, is not a correction.
 2. **"laya's context ceiling is 8192, so we have 2× it."** Wrong. The laya *checkpoint* windows are
    512 (english) / 1024 (typed-decisions); 8192 was a Router-level input guard. Our long-context
    claim is therefore **categorical, not a ratio**: beyond ~1024 tokens laya is deciding from a
@@ -651,7 +732,8 @@ Kept permanently, because the value of this project's claims is that they surviv
     freeze the code and the tests for the whole run, and check the reported mutation count against the
     file's list length before quoting it. The clean pass — repo untouched, battery launched once and
     left alone — is **54/54, exit 0**, and it is the only number from this gate in a commit message.
-    of `bench/mutation_kaggle_bundle.py` caught **21/25**, and the four survivors were all the same
+19. **"The Kaggle bundle is verified at build time" was a claim about a code path no test reached.** The
+    first battery of `bench/mutation_kaggle_bundle.py` caught **21/25**, and the four survivors were all the same
     species of self-flattery: `WORKING` was only ever exercised through a monkeypatch, so a literal
     `/tmp` default — a checkpoint Kaggle would never save — passed; `check()`'s sha branch was
     probed only by *appending* to a staged file, which changes the size, so a size-only comparison
@@ -662,5 +744,77 @@ Kept permanently, because the value of this project's claims is that they surviv
     Second pass: **25/25**. The general form: a test that exercises a helper on a path the caller
     never takes is documentation, not a gate — and a mutation battery is the only cheap way to find
     out which paths those are.
+20. **The README's streaming table outlived the correction that named it.** §9.1 flagged the 239×
+    mislabel and the table stayed up, with its laya column intact, until 4a. The column-by-column
+    failures, which §9.1 did not see:
+    * The 2.1×–239.3× "myna speedup" column is **myna against itself** — `myna-full / myna-stream`,
+      both myna, from `bench/bench_stream.py`. It sits in a table headed "Measured on an Apple M5"
+      with a laya column beside it, and the prose around it ("33× faster than laya", "the streaming
+      column is flat by design… laya pays a ~500 ms floor") reads it as a competitor ratio. It never
+      was one; the artifact `runs/bench_stream.md` names its own column `speedup` and computes it
+      from two myna modes.
+    * The "~500 ms floor above 512 tokens" is **truncation, not a plateau**. laya's typed-decisions
+      checkpoint has `max_len` 1024 (`head_max_len` 256), and `system_one`'s own docstring says it
+      truncates silently beyond the window — so every row from 1,024 to 8,192 tokens fed it the same
+      ~1k-token input and cost the same ~510 ms. Its cost stopped growing because its *input*
+      stopped growing. 4a's `laya_tokens_per_row` exists precisely to catch this shape.
+    * "myna answers a 16k-token observation ~17× faster than laya answers an 8k one" divides myna
+      reading 16,384 tokens by laya reading the first ~1,024 of them. Two systems doing different
+      amounts of work is not a comparison, and no re-labelling saves it.
+    * The laya half also went through `Router`, not `Agent.system_one`, and through a local
+      `laya_questions()` shim that *deleted* the `criteria` of every `noul` question — so options per
+      question were not matched either, on the one axis G2's own row names.
+    The rule this buys: a column header has to name both operands, and a plateau in a competitor's
+    cost curve must be explained by that competitor's *input* before it is published as that
+    competitor's ceiling. Sharper still, from `PLAN.md`'s own reading of the same table: it said
+    "laya's re-encode plateaus at ~510 ms (**its 8192 cap truncation region**) and can't serve long
+    states at all. At 16k myna answers ~17x faster than laya answers at its 8k maximum" — the
+    truncation was *known* in the sentence that used it as a denominator, two windows too low, and
+    the same section's third reading ("even myna-full beats laya above 2k") is contradicted by the
+    row printed directly above it (965 ms vs 512 ms). Recording a fact in a log is not the same as
+    applying it; the gate has to be a script that refuses to print the claim.
+    The honest version of the same architectural point survives 4a untouched:
+    myna's answer path really is length-independent (§9.22), and laya really has no cached-state API
+    — which is a capability difference and does not need a ratio to be interesting.
+21. **The "≥ 5× at 50 questions" target compared a laptop to a datacenter GPU and lost.** §2.1 carried
+    `771.3 ms (their measured)` in the baseline column against `≥ 5× faster, same box` in ours — the
+    cell contradicted itself, since nothing about it was on one box until 4a. Measured: myna's
+    50-question p50 on the M5 CPU is **870 ms** (run 1: 812), which is **1.13× (1.05×)** laya's T4
+    wall time — myna takes slightly *longer* than laya did on datacenter silicon, at 29× fewer
+    parameters — and **3.60×** against laya measured on this box. The per-extra-question marginals
+    (myna 17.1 [15.8] ms, laya 71.2 [57.3]) bound the marginal ratio at 3.6–4.2×, so no reading of
+    the same data reaches 5×. The mechanism of the miss is the mixing itself: laya's per-question
+    cost on this CPU is 3.8–4.8× its T4 cost, while myna's whole call is within 13% of that T4 call,
+    so projecting a laptop-scaled myna against a T4-scaled laya manufactured a multiplier. The target
+    is retired as measured, not re-cut: the public claim is **3–4× on one box** plus the
+    length-independence result (§9.22).
+22. **"The cost is flat in context length" is true of the answer and false of the scan.** Both
+    committed runs fit the `ask` path's state slope to **−10.3 [−4.0] µs/token** — indistinguishable
+    from zero — and answering one question from a cached state costs 14.7–17.4 ms p50 whether that
+    state is 66 or 1,060 tokens. That is the fixed-size-state claim with a witness rather than an
+    architectural assertion, and it is the result that survives every retraction in this section. The
+    *scan* is the other half, and §2.1's old "flat cost" cell was simply wrong: within a 256-token
+    chunk `gla_chunked` evaluates the quadratic form, so 66→133 tokens costs **2.85× (3.40×)** for
+    twice the input, and only stops compounding once the state spans several chunks (1.93× [1.72×],
+    then 1.97× [2.20×]). What that does to the headline: myna's sub-40 ms decision is an 87-token
+    result, and at 1,060 tokens with one question the same-box lead narrows to **1.45× [1.25×]** —
+    while at 10 questions on the same state it is **11.6× [11.2×]**, stable across runs. So the
+    advantage lives in the question axis, robustly; in the state axis it lives only as far as the
+    scan's shape lets it. Two follow-ups this exposes — a larger `INFER_CHUNK` for no-grad scans, and
+    a linear-in-chunk scan form — are **unmeasured, so nothing is claimed about either**.
+23. **An absolute p50 from this laptop is not reproducible, and one run was contaminated by me.** Three
+    runs of the same command, laya then myna, at 1/5/10/50 questions: run 1 **117.7/305.5/574.9/2,923.4**
+    and **38.3/95.3/139.6/811.8**; run 2 (its artifact was overwritten by run 3)
+    **101.1/268.3/482.8/2,426.0** and **35.4/73.3/113.2/658.1**; run 3 **100.7/272.0/506.3/3,589.5**
+    and **33.1/74.9/120.8/870.0**. The 50-question row alone spans 22% for laya and 7% for myna, and
+    the e2e ratio for one shape has been reported as 2.86×, 3.04× and 3.08×. Two causes, one of them
+    mine: run 2's ladder was timed while I ran `--help` checks in the same repo, and all three ran
+    while other agent sessions ran pytest on these same 10 cores. What changed as a result: the
+    harness now takes a `flock` on its output path and refuses a second copy (this exists because a
+    duplicate harness PID pair *was* running for ~40 s in this session, interleaving one log), and
+    every ratio cell in §2.1, §2.2 and §4.3 is the **minimum across the committed runs**, so shared
+    cores can hurt our number but never improve it. Not fixed, and stated plainly: this is a
+    development laptop, not a benchmark box, and stable absolute latencies need dedicated hardware —
+    G2 is gated on the ratio, so it does not depend on getting one.
 
 

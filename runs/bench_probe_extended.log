@@ -1,0 +1,12 @@
+== streaming: cost per request as the observation grows ==
+ state tokens |  myna-stream ms |  myna-full ms |  speedup
+          128 |           32.77 |         49.33 |     1.5x
+          512 |           27.20 |         82.91 |     3.0x
+         1024 |           27.63 |        130.45 |     4.7x
+         2048 |           28.09 |        243.30 |     8.7x
+         4096 |           27.49 |        439.57 |    16.0x
+         8192 |           27.38 |        863.42 |    31.5x
+        16384 |           28.48 |       1663.70 |    58.4x
+
+short-state avg: myna-stream 27.12 ms, myna-full 36.35 ms, speedup 1.34x
+wrote runs/bench_stream.md

@@ -10,6 +10,13 @@ Modes compared (same weights, same machine, same questions):
   myna-full     full re-encode per request               (what encoders do)
   laya          optional, with --laya, pip laya Router   (real baseline)
 
+DO NOT PUBLISH THE laya COLUMN AS A RATIO. Its "~500 ms floor above 512 tokens" is
+`Router` truncating the state at the checkpoint's 1024-token window, and its
+`speedup` column is myna-full / myna-stream — both myna. The whole table was
+withdrawn (SPEC §9.20); the matched-condition replacement is
+`bench/bench_latency_matched.py`. What this script still legitimately shows is
+myna against itself: the streaming mode's independence from prefix length.
+
 Usage: uv run python -m bench.bench_stream --ckpt runs/myna-v0 [--laya]
 """
 

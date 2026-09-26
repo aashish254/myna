@@ -1,0 +1,32 @@
+440 records across 11 sources from development
+Fetching 5 files:   0%|          | 0/5 [00:00<?, ?it/s]Fetching 5 files: 100%|██████████| 5/5 [00:00<00:00, 2465.50it/s]
+/Users/aashish/github contribution /GIT/laya/laya/router.py:295: RuntimeWarning: laya: this checkpoint ships invalid temperatures or values outside [0.5, 5]; using choice:11+=0.10058280825614929 -> 0.5. Treat confidence from the affected entries as uncalibrated.
+  agent = Agent(repo, **kwargs)
+Fetching 5 files:   0%|          | 0/5 [00:00<?, ?it/s]Fetching 5 files: 100%|██████████| 5/5 [00:00<00:00, 1349.95it/s]
+
+source/qid [type]                           acc    n   brier
+agnews/is_business [noul]                 0.941   17  0.0538
+agnews/is_scitech [noul]                  0.929   14  0.0477
+agnews/is_sports [noul]                   0.895   19  0.0799
+agnews/is_world [noul]                    0.875   16  0.0811
+agnews/topic [choice]                     0.850   40
+amazon/stars [score]                      0.250   40
+banking77/intent [choice]                 0.325   40
+boolq/answer [noul]                       0.775   40  0.1544
+contrastive/decision [choice]             0.458   24
+contrastive/decision [noul]               0.875   16  0.1181
+dbpedia14/category [choice]               0.825   40
+imdb/positive [noul]                      0.450   40  0.5498
+mnli/relation [choice]                    0.600   40
+sst5/sentiment [score]                    0.300   40
+trec/answer_type [choice]                 0.875   40
+yelp/rating [score]                       0.600   40
+yelp/recommend [noul]                     0.750   40  0.1816
+
+laya development: overall acc 0.6392 over 546 question instances
+  choice acc 0.6696  (n=224)
+  score  acc 0.3833  (n=120)
+  noul   acc 0.7574  (n=202)
+  noul   Brier 0.1583
+
+wrote runs/laya_decision_v2.json

@@ -1,0 +1,27 @@
+== streaming: cost per request as the observation grows ==
+retained state per observation: 576 KiB (n_layers x heads x dk x dv, fixed — a 16k-token state would cost 151 MB if per-layer hidden states were kept)
+ state tokens |  myna-stream ms |  myna-full ms |  speedup
+          128 |           43.27 |         91.29 |     2.1x
+          512 |           31.93 |        271.21 |     8.5x
+         1024 |           33.99 |        418.84 |    12.3x
+         2048 |           28.87 |        965.29 |    33.4x
+         4096 |           38.36 |       1748.05 |    45.6x
+         8192 |           28.36 |       3132.94 |   110.5x
+        16384 |           28.85 |       6904.02 |   239.3x
+
+short-state avg: myna-stream 32.53 ms, myna-full 48.09 ms, speedup 1.48x
+Fetching 5 files:   0%|          | 0/5 [00:00<?, ?it/s]Fetching 5 files: 100%|██████████| 5/5 [00:00<00:00, 5065.58it/s]
+/Users/aashish/github contribution /GIT/laya/laya/router.py:295: RuntimeWarning: laya: this checkpoint ships invalid temperatures or values outside [0.5, 5]; using choice:11+=0.10058280825614929 -> 0.5. Treat confidence from the affected entries as uncalibrated.
+  agent = Agent(repo, **kwargs)
+laya          avg   127.78 ms/request
+
+== laya re-encode at matched state lengths ==
+ state tokens |    laya ms
+          128 |     179.35
+          512 |     507.41
+         1024 |     504.54
+         2048 |     512.47
+         4096 |     506.10
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (9534 > 8192). Running this sequence through the model will result in indexing errors
+         8192 |     510.71
+wrote runs/bench_stream.md

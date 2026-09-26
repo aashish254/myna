@@ -1,0 +1,6 @@
+
+
+
+device=mps lr=0.0006 steps=1200 params=14363648
+step     0  ema 1.239  fit(train) 0.358  gen(dev) 0.354  67s
+step   200  ema 1.151  fit(train) 0.337  gen(dev) 0.347  868s

@@ -1,0 +1,150 @@
+{
+  "split": "development",
+  "n_per_source": 40,
+  "seed": 0,
+  "overall_acc": 0.6391941391941391,
+  "n": 546,
+  "by_type": {
+    "choice": 0.6696428571428571,
+    "score": 0.38333333333333336,
+    "noul": 0.7574257425742574
+  },
+  "rows": [
+    {
+      "source": "agnews",
+      "qid": "is_business",
+      "type": "noul",
+      "acc": 0.9411764705882353,
+      "n": 17,
+      "brier": 0.05379603764705882
+    },
+    {
+      "source": "agnews",
+      "qid": "is_scitech",
+      "type": "noul",
+      "acc": 0.9285714285714286,
+      "n": 14,
+      "brier": 0.047696672142857145
+    },
+    {
+      "source": "agnews",
+      "qid": "is_sports",
+      "type": "noul",
+      "acc": 0.8947368421052632,
+      "n": 19,
+      "brier": 0.07985986473684212
+    },
+    {
+      "source": "agnews",
+      "qid": "is_world",
+      "type": "noul",
+      "acc": 0.875,
+      "n": 16,
+      "brier": 0.081085416875
+    },
+    {
+      "source": "agnews",
+      "qid": "topic",
+      "type": "choice",
+      "acc": 0.85,
+      "n": 40,
+      "brier": null
+    },
+    {
+      "source": "amazon",
+      "qid": "stars",
+      "type": "score",
+      "acc": 0.25,
+      "n": 40,
+      "brier": null
+    },
+    {
+      "source": "banking77",
+      "qid": "intent",
+      "type": "choice",
+      "acc": 0.325,
+      "n": 40,
+      "brier": null
+    },
+    {
+      "source": "boolq",
+      "qid": "answer",
+      "type": "noul",
+      "acc": 0.775,
+      "n": 40,
+      "brier": 0.15441377325
+    },
+    {
+      "source": "contrastive",
+      "qid": "decision",
+      "type": "choice",
+      "acc": 0.4583333333333333,
+      "n": 24,
+      "brier": null
+    },
+    {
+      "source": "contrastive",
+      "qid": "decision",
+      "type": "noul",
+      "acc": 0.875,
+      "n": 16,
+      "brier": 0.11814717125
+    },
+    {
+      "source": "dbpedia14",
+      "qid": "category",
+      "type": "choice",
+      "acc": 0.825,
+      "n": 40,
+      "brier": null
+    },
+    {
+      "source": "imdb",
+      "qid": "positive",
+      "type": "noul",
+      "acc": 0.45,
+      "n": 40,
+      "brier": 0.54975055325
+    },
+    {
+      "source": "mnli",
+      "qid": "relation",
+      "type": "choice",
+      "acc": 0.6,
+      "n": 40,
+      "brier": null
+    },
+    {
+      "source": "sst5",
+      "qid": "sentiment",
+      "type": "score",
+      "acc": 0.3,
+      "n": 40,
+      "brier": null
+    },
+    {
+      "source": "trec",
+      "qid": "answer_type",
+      "type": "choice",
+      "acc": 0.875,
+      "n": 40,
+      "brier": null
+    },
+    {
+      "source": "yelp",
+      "qid": "rating",
+      "type": "score",
+      "acc": 0.6,
+      "n": 40,
+      "brier": null
+    },
+    {
+      "source": "yelp",
+      "qid": "recommend",
+      "type": "noul",
+      "acc": 0.75,
+      "n": 40,
+      "brier": 0.18155689425000004
+    }
+  ]
+}

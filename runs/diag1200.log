@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/Users/aashish/next ko ne next gen model/bench/diag_learn.py", line 26, in <module>
+    "probe_train": {wf: data[:200] for wf, data in data["train"].items()},
+                                                   ^^^^
+NameError: name 'data' is not defined

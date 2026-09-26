@@ -8,9 +8,16 @@ wheels/
 
 # Virtual environments
 .venv
-runs/
 .pytest_cache/
 bench/out/
+
+# runs/ holds checkpoints and scratch. G7 promises committed witnesses, so the
+# small tables (.json/.md/.log) stay tracked; weights directories, *.pt dumps and
+# the latency harness's .lock file do not.
+runs/*
+!runs/*.json
+!runs/*.md
+!runs/*.log
 
 # Derived corpora: the rows are upstream text, so only the provenance file stays in git
 # (it pins revisions, seeds, collision counts and the sha256 of the generated train.jsonl).

@@ -1,0 +1,48 @@
+== 0. load: one process, both engines ==
+/Users/aashish/github contribution /GIT/laya/laya/agent.py:1178: RuntimeWarning: laya: this checkpoint ships invalid temperatures or values outside [0.5, 5]; using choice:11+=0.10058280825614929 -> 0.5. Treat confidence from the affected entries as uncalibrated.
+  return Agent(model_id_or_path, device=device, token=token, subfolder=subfolder, fast=fast,
+laya 0.3.20 from /Users/aashish/.cache/huggingface/hub/models--convaiinnovations--laya/snapshots/55cf4c4ebb4ebe31b2550e8bdf3bd21b99753851/typed-decisions in 1.5s: max_len=1024 head_max_len=256 421.3M params, weights torch.float32, amp=False autocast_dtype=torch.float32
+myna 14.45M params, weights torch.float32, device cpu
+
+== 1. matched calls: same str state, same dict of questions ==
+   q |    laya p50/p95 ms |    myna e2e p50/p95 | myna ask-only p50 | tokens: laya row x q / myna state+q
+   1 |   100.69/114.09   |     33.08/35.42    |             14.86 | 98.0x1 / 87+48
+   5 |   271.99/289.77   |     74.87/80.92    |             55.45 | 99.6x5 / 87+186
+  10 |   506.28/526.08   |    120.75/126.84   |             98.22 | 100.0x10 / 87+345
+  50 |  3589.50/5019.55  |    869.95/958.44   |            787.12 | 100.0x50 / 87+1725
+
+== 2. cost ladder (4b): state length x question count ==
+state tok    q |  laya p50  tok/row |  myna obs     ask     e2e
+[transformers] Ignoring clean_up_tokenization_spaces=True for BPE tokenizer TokenizersBackend. The clean_up_tokenization post-processing step is designed for WordPiece tokenizers and is destructive for BPE (it strips spaces before punctuation). Set clean_up_tokenization_spaces=False to suppress this warning, or set clean_up_tokenization_spaces_for_bpe_even_though_it_will_corrupt_output=True to force cleanup anyway.
+       66    1 |    109.56     85.0 |     12.11   17.43   29.87  
+       66   10 |    536.71     87.0 |     12.11  127.86  142.68  
+      133    1 |    126.88    144.0 |     34.52   16.08   51.20  
+      133   10 |    719.27    146.0 |     34.52   93.08  124.64  
+      265    1 |    178.19    259.0 |     97.49   14.52  121.15  
+      265   10 |   1363.97    261.0 |     97.49   99.61  199.54  
+      530    1 |    289.24    489.0 |    188.49   14.59  205.42  
+      530   10 |   2562.57    491.0 |    188.49   94.33  289.78  
+     1060    1 |    605.29    947.0 |    370.99   14.70  417.79  
+     1060   10 |   5479.16    949.0 |    370.99   94.04  471.19  
+- `myna_observe`: fixed **-7.334 ms**, **360.4 µs** per state token, **0.0 ms** per question, R² 0.9979 (5 rows, terms fixed+L)  
+  _negative intercept: cost rises super-linearly with state length, so the linear fit understates short states and should not be extrapolated_
+- `myna_ask`: fixed **10.115 ms**, **-10.32 µs** per state token, **9.591 ms** per question, R² 0.9619 (10 rows, terms fixed+L+Q)
+- `myna_e2e`: fixed **4.824 ms**, **368.35 µs** per state token, **8.942 ms** per question, R² 0.9915 (10 rows, terms fixed+L+Q)
+- `laya_e2e`: fixed **-1082.808 ms**, **3186.12 µs** per state token, **207.834 ms** per question, R² 0.7356 (10 rows, terms fixed+L+Q)  
+  _negative intercept: cost rises super-linearly with state length, so the linear fit understates short states and should not be extrapolated_
+
+== 3. the ratio, recomputed on equal footing ==
+p50, same box/process/inputs
+| questions | laya_system_one_p50_ms | myna_predict_p50_ms | speedup_e2e | myna_ask_only_p50_ms | speedup_stream |
+|---|---|---|---|---|---|
+| 1 | 100.691 | 33.083 | 3.04 | 14.856 | 6.78 |
+| 5 | 271.988 | 74.866 | 3.63 | 55.453 | 4.9 |
+| 10 | 506.277 | 120.753 | 4.19 | 98.217 | 5.15 |
+| 50 | 3589.496 | 869.952 | 4.13 | 787.12 | 4.56 |
+
+
+== 4. drift check: section 1's first shape again, nothing unloaded ==
+myna q=1: first 33.083 ms, repeat 33.721 ms (+1.9%)
+laya q=1: first 100.691 ms, repeat 113.354 ms (+12.6%)
+
+wrote runs/latency_matched.json and runs/latency_matched.md

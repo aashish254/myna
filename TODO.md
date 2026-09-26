@@ -136,10 +136,22 @@ So every "train" item below is split into *prepare/verify the Kaggle path locall
       per-source table published — `KAGGLE` result, reported here as measured or as a loss
 
 ## P4 — Latency reconciliation (G2)
-- [ ] **4a** One box, one process, direct laya `Agent` call (not `Router`), matched window,
+- [x] **4a** One box, one process, direct laya `Agent` call (not `Router`), matched window,
       question count, dtype, options/question — MacBook, inference only
-- [ ] **4b** Decompose fixed per-call vs per-token vs per-question cost for myna
-- [ ] **4c** Publish the ratio recomputed from 4a, or withdraw it (SPEC §9.1 discipline)
+      Witness: `bench/bench_latency_matched.py` → `runs/latency_matched.{json,md}` (+ run 1 kept as
+      `_run1_superseded`). Both dtypes reported (`torch.float32` each, laya autocast off), same `str`
+      and same `dict` objects to both engines, `Agent.system_one` on `55cf4c4`, ladder capped inside
+      laya's 1024 window and `usage.input_tokens/questions` derived per row — no row truncated.
+      `flock` on the output path refuses a second copy. 26 tests, 34/34 mutations caught.
+- [x] **4b** Decompose fixed per-call vs per-token vs per-question cost for myna
+      Witness: least squares on the ladder — ask 10.1 ms fixed + 9.6 ms/question with a state slope
+      of −10.3 µs/token (≈ 0: the fixed-size state, measured); observe 360 µs/token with a *negative*
+      intercept because the scan is quadratic inside a chunk. laya's additive fit R² 0.74 is the
+      structural finding: state × questions.
+- [x] **4c** Publish the ratio recomputed from 4a, or withdraw it (SPEC §9.1 discipline)
+      Witness: **3.04× / 3.21× / 4.12× / 3.60×** end-to-end and **6.78× / 4.67× / 4.75× / 3.65×**
+      streaming at 1/5/10/50 questions — each the *minimum* of the two committed runs (§9.23).
+      Withdrawn: the ≥ 5× @ 50-questions target (§9.21) and the README's 33×–239× column (§9.20).
 
 ## P5 — Abstention and risk/coverage (G5, flagship)
 - [ ] **5a** Threshold + abstain reason emitted from the engine (no silent fast path)

@@ -49,6 +49,8 @@ def test_module_help_renders(module, flag):
     ("bench/diag_overfit.py", "--n"),
     ("bench/mutation_report.py", "Mutation battery"),
     ("bench/mutation_memory_plan.py", "Mutation battery"),
+    ("bench/bench_latency_matched.py", "--intra-threads"),
+    ("bench/mutation_latency_matched.py", "Mutation battery"),
 ])
 def test_bench_script_help_renders(script, expect):
     """The diag scripts took `sys.argv[1]` positionally, so `--help` was parsed as a
@@ -69,9 +71,13 @@ def test_percent_in_a_help_string_survives_argparse_formatting():
     assert "1.4%" in r.stdout and "65%" in r.stdout, "the measured rates must still print"
 
 
-def test_mutation_help_does_not_run_the_battery():
+@pytest.mark.parametrize("script", [
+    "bench/mutation_paraphrase.py",
+    "bench/mutation_latency_matched.py",
+])
+def test_mutation_help_does_not_run_the_battery(script):
     """Each run is ~30 pytest passes; `--help` must not be one of them."""
-    r = subprocess.run([sys.executable, "bench/mutation_paraphrase.py", "--help"],
+    r = subprocess.run([sys.executable, script, "--help"],
                        capture_output=True, text=True, cwd=ROOT,
                        env={"PYTHONPATH": SRC, "PATH": "/usr/bin:/bin", "HOME": str(Path.home())})
     assert r.returncode == 0, r.stderr[-400:]

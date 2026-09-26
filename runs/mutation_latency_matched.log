@@ -1,0 +1,72 @@
+baseline copy: green (1 test file)
+
+[ 1/34] caught      the question ladder alternates the other way, so q0 is not a choice
+            FAILED tests/test_latency_matched.py::test_the_question_ladder_alternates_like_layas_own_bench
+[ 2/34] caught      every question becomes a 3-option choice: options/question stops matching
+            FAILED tests/test_latency_matched.py::test_the_question_ladder_alternates_like_layas_own_bench
+[ 3/34] caught      the choice option set shrinks to 2, so laya gets easier work
+            FAILED tests/test_latency_matched.py::test_options_per_question_agree_across_the_two_engines
+[ 4/34] caught      the state is no longer scaled, so 'same str object' stops being the same content
+            FAILED tests/test_latency_matched.py::test_both_engines_are_handed_the_very_same_objects
+[ 5/34] caught      missing answers stop being an error
+            FAILED tests/test_latency_matched.py::test_an_engine_that_answers_fewer_questions_fails_the_run
+[ 6/34] caught      the failure message reports the request size, not what came back
+            FAILED tests/test_latency_matched.py::test_an_engine_that_answers_fewer_questions_fails_the_run
+[ 7/34] caught      the degeneracy check is switched off
+            FAILED tests/test_latency_matched.py::test_a_confidently_dead_head_is_not_a_measurement
+[ 8/34] caught      an empty answer dict counts as non-degenerate
+            FAILED tests/test_latency_matched.py::test_a_confidently_dead_head_is_not_a_measurement
+[ 9/34] caught      score answers stop being read, so every score looks dead
+            FAILED tests/test_latency_matched.py::test_score_answers_are_judged_on_their_distribution
+[10/34] caught      per-row tokens stop being divided by the row count
+            FAILED tests/test_latency_matched.py::test_laya_usage_is_a_sum_over_question_rows
+[11/34] caught      the divide loses its guard, so an empty call would crash the run
+            FAILED tests/test_latency_matched.py::test_laya_usage_is_a_sum_over_question_rows
+[12/34] caught      a plateau no longer reads as truncation
+            FAILED tests/test_latency_matched.py::test_a_plateau_in_the_per_row_sequence_is_called_truncation
+[13/34] caught      growing rows get flagged as truncated, killing every honest row
+            FAILED tests/test_latency_matched.py::test_a_plateau_in_the_per_row_sequence_is_called_truncation
+[14/34] caught      the at-window test moves out of reach
+            FAILED tests/test_latency_matched.py::test_a_plateau_in_the_per_row_sequence_is_called_truncation
+[15/34] caught      warm-up calls are dropped, so the first cold pass is the measurement
+            FAILED tests/test_latency_matched.py::test_warmup_runs_are_not_timed_but_do_run
+[16/34] caught      percentiles computed on unsorted samples
+            FAILED tests/test_latency_matched.py::test_stats_describe_the_samples_it_was_given
+[17/34] caught      the percentile index is one past the rank it means
+            FAILED tests/test_latency_matched.py::test_stats_describe_the_samples_it_was_given
+[18/34] caught      a constant state axis is fitted anyway (collinear with the intercept)
+            FAILED tests/test_latency_matched.py::test_a_single_state_length_still_yields_a_honest_per_question_slope
+[19/34] caught      a constant question axis is fitted anyway — the -44.9 ms fixed cost
+            FAILED tests/test_latency_matched.py::test_a_held_constant_axis_is_dropped_not_fitted
+[20/34] caught      the identifiability guard stops counting degrees of freedom
+            FAILED tests/test_latency_matched.py::test_too_few_rows_for_the_terms_is_refused_with_a_reason
+[21/34] caught      per-token cost reported in ms as if it were µs
+            FAILED tests/test_latency_matched.py::test_fit_recovers_coefficients_it_was_given
+[22/34] caught      the fit targets the question count instead of the measured time
+            FAILED tests/test_latency_matched.py::test_fit_recovers_coefficients_it_was_given
+[23/34] caught      a negative intercept stops being flagged
+            FAILED tests/test_latency_matched.py::test_a_negative_intercept_is_flagged_rather_than_published_plain
+[24/34] caught      an unidentifiable fit prints numbers anyway
+            FAILED tests/test_latency_matched.py::test_too_few_rows_for_the_terms_is_refused_with_a_reason
+[25/34] caught      the end-to-end speedup is inverted
+            FAILED tests/test_latency_matched.py::test_the_ratio_is_computed_from_the_p50s_and_nothing_else
+[26/34] caught      the streaming speedup is computed against the wrong baseline
+            FAILED tests/test_latency_matched.py::test_the_ratio_is_computed_from_the_p50s_and_nothing_else
+[27/34] caught      a ratio is printed even when laya never ran
+            FAILED tests/test_latency_matched.py::test_a_laya_less_run_writes_ratio_null_and_exits_zero
+[28/34] caught      the empty table crashes instead of saying there were no rows
+            FAILED tests/test_latency_matched.py::test_table_renders_every_column_of_every_row
+[29/34] caught      the disclaimer that no accuracy was measured is deleted
+            FAILED tests/test_latency_matched.py::test_the_markdown_names_both_models_and_their_windows
+[30/34] caught      the markdown claims a laya version that was never loaded
+            FAILED tests/test_latency_matched.py::test_a_run_without_laya_withdraws_the_ratio_instead_of_projecting_it
+[31/34] caught      matched dtype becomes a hard label instead of the reported weight dtype
+            FAILED tests/test_latency_matched.py::test_the_markdown_names_both_models_and_their_windows
+[32/34] caught      the single-instance guard is never called, so two copies can time together
+            FAILED tests/test_latency_matched.py::test_main_refuses_before_it_loads_a_model_when_the_lock_is_held
+[33/34] caught      the guard keeps its print but loses its exit
+            FAILED tests/test_latency_matched.py::test_a_second_copy_cannot_share_the_output_path
+[34/34] caught      the lock turns shared: a second copy is admitted
+            FAILED tests/test_latency_matched.py::test_a_second_copy_cannot_share_the_output_path
+
+34/34 mutations caught

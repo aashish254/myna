@@ -44,24 +44,42 @@ short. Myna is an architecture built for that shape from the ground up.
 
 ## Measured on an Apple M5 (10-core, 32 GB)
 
-Streaming workload on the trained v0 checkpoint: grow the observation in
-6 appends, re-ask 3 typed questions after each — the agent loop. Average per
-request, idle machine, CPU:
+One process, both engines resident, `device=cpu`, both fp32 — the same Python
+`str` state and the same question `dict` handed to each engine. laya is called as
+`Agent.system_one` on its published `55cf4c4` checkpoint, on laya's own
+Stripe-payout ticket (87 myna / 57 laya tokens), alternating 3-option `choice`
+and `noul` questions exactly like laya's own latency bench. p50 over 10 reps
+after 3 warm-ups:
 
-| state tokens | myna-stream | myna re-encode | laya re-encode | myna speedup |
-|---|---|---|---|---|
-| 128 | 43 ms | 91 ms | 179 ms | 2.1x |
-| 512 | 32 ms | 271 ms | 507 ms | 8.5x |
-| 1,024 | 34 ms | 419 ms | 505 ms | 12.3x |
-| 2,048 | 29 ms | 965 ms | 512 ms | 33.4x |
-| 4,096 | 38 ms | 1,748 ms | 506 ms | 45.6x |
-| 8,192 | 28 ms | 3,133 ms | 511 ms | 110.5x |
-| 16,384 | 29 ms | 6,904 ms | n/a (8192 cap) | 239.3x |
+| questions | laya `system_one` | myna end-to-end | ratio | myna, state already scanned | ratio |
+|---|---|---|---|---|---|
+| 1 | 100.7 ms | 33.1 ms | **3.04×** | 14.9 ms | **6.78×** |
+| 5 | 272.0 ms | 74.9 ms | 3.63× | 55.5 ms | 4.90× |
+| 10 | 506.3 ms | 120.8 ms | 4.19× | 98.2 ms | 5.15× |
+| 50 | 3,589.5 ms | 870.0 ms | 4.13× | 787.1 ms | 4.56× |
 
-The streaming column is **flat by design**: cost is the question branches
-plus the delta, never the prefix. laya pays a ~500 ms floor above 512 tokens
-and cannot serve long states at all; myna answers a 16k-token observation
-~17x faster than laya answers an 8k one.
+Reproduce: `PYTHONPATH="<laya checkout>" .venv/bin/python -m
+bench.bench_latency_matched` → `runs/latency_matched.md`. That table is one run;
+**the claim shipped in `SPEC.md` §2.1 is the per-row minimum across the two
+committed runs — 3.04× / 3.21× / 4.12× / 3.60× end-to-end and 6.78× / 4.67× /
+4.75× / 3.65× streaming** — because two runs of this command on this laptop differ
+by up to 22% in absolute ms (other sessions share these cores), and the
+conservative number is the only one that belongs in a README (SPEC §9.23).
+Accuracy is not measured by this table and nothing here implies it.
+
+What the *shape* of the cost says, fitted over a state ladder capped inside laya's
+1024-token window: answering from a cached state costs **14.7–17.4 ms whether that
+state is 66 or 1,060 tokens** (fitted state slope −10 µs/token, i.e. zero) — the
+fixed-size state, measured rather than drawn. The scan is **not** flat: within a
+256-token chunk it is quadratic, so the sub-40 ms decision is a short-state result
+(SPEC §9.22). laya's cost is state × questions — one sequence carrying the whole
+state, once per question — which is why its additive fit lands at R² 0.74 while
+myna's lands at 0.99.
+
+*An earlier version of this section published 33×–239× speedups against a "~500 ms
+laya floor". The floor was `Router` truncating the state at 1,024 tokens while
+myna read all of it, and the speedup column was myna against itself. Withdrawn —
+SPEC.md §9.20.*
 
 ## Trained v0 — accuracy on held-out data
 
@@ -145,9 +163,11 @@ expected-utility decisions, 15 MB on-device model — is specified with
 acceptance criteria in [V2_SPEC.md](V2_SPEC.md).
 
 Honest limits: word-order-heavy tasks can be partly solved bag-of-cues style;
-mid-state edits (not appends) fall back to a full — still linear-time —
-re-encode; the question-branch constant (~28 ms CPU today) is kernel work,
-not architecture work.
+mid-state edits (not appends) fall back to a full re-encode — linear in the
+state's length asymptotically, but with a quadratic factor inside each 256-token
+chunk, so short states are cheaper than long ones (§9.22); and the question
+branch's fixed cost (**10.1 ms** fitted, 14.7–17.4 ms to answer one question
+regardless of state length) is kernel work, not architecture work.
 
 Apache-2.0 · research log in [PLAN.md](PLAN.md) · questions to
 [aashish254](https://github.com/aashish254)

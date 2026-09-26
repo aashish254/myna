@@ -1,0 +1,23 @@
+
+
+
+tokenizer trained: 8192
+params: 16926848
+step     0  loss 1.431  ema 1.431  sets/update 8  3s
+step    25  loss 1.431  ema 1.545  sets/update 8  72s
+step    50  loss 1.193  ema 1.360  sets/update 8  144s
+Error: command buffer exited with error status.
+	The Metal Performance Shaders operations encoded on it may not have completed.
+	Error: 
+	(null)
+	Insufficient Memory (00000008:kIOGPUCommandBufferCallbackErrorOutOfMemory)
+	<AGXG17GFamilyCommandBuffer: 0x7a50825f80>
+    label = <none> 
+    device = <AGXG17GDevice: 0x101a09520>
+        name = Apple M5 
+    commandQueue = <AGXG17GFamilyCommandQueue: 0x101a0be60>
+        label = <none> 
+        device = <AGXG17GDevice: 0x101a09520>
+            name = Apple M5 
+    retainedReferences = 1
+step    75  loss 1.275  ema 1.335  sets/update 8  370s
