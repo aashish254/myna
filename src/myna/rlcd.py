@@ -1,14 +1,22 @@
 """RLCD-style fine-tuning: optimize the DECISION score, not the token.
 
-The supervised checkpoint maximizes CE, which is already a proper score for
-the reported distribution — but CE gradients shrink once the argmax is right,
-so confidence drifts away from calibration. Here we fine-tune directly on a
-strictly proper reward (log score or Brier) with REINFORCE + a batch-mean
-baseline and a KL leash to the reference policy:
+The supervised checkpoint maximizes CE, which is a proper score for the
+reported distribution — but CE gradients shrink once the argmax is right,
+so confidence drifts away from calibration. Here we fine-tune directly on
+a strictly proper reward with a KL leash to the reference:
 
     reward(p, gold) = log p[gold]            (log)  or
                       1 - ||p - onehot||^2   (brier)
-    loss = -(reward - baseline) * log p[gold]  +  beta * KL(ref || p)
+    loss = -reward.mean() + beta * KL(p || ref)
+
+Note why there is no REINFORCE here, unlike laya's RLCD: our policy IS the
+reported distribution — there is no sampled action to take a gradient
+through. A first attempt with REINFORCE + batch-mean baseline actively
+degraded the model (train reward 1.0 -> -0.98 in 200 steps): it pushes
+p(gold) DOWN on examples scoring above the batch mean, which is meaningless
+when p is the answer, not a step of a trajectory. The proper score of a
+reported distribution is differentiable in the distribution; we optimize it
+directly.
 
 Usage:
     uv run python -m myna.rlcd --ckpt runs/myna-v0 --steps 800 --score brier
@@ -48,17 +56,16 @@ def rlcd_step(model, ref, b, args):
                    b["span_mat"], b["opt_valid"], b["decide_idx"]) / args.policy_temp
     probs = F.softmax(logits, dim=-1)
     logp = F.log_softmax(logits, dim=-1)
-    with torch.no_grad():
-        r = proper_score(probs.detach(), b["gold"], args.score)
-        baseline = r.mean()
-    lp_gold = logp.gather(-1, b["gold"][..., None]).squeeze(-1)
-    policy_loss = -((r - baseline) * lp_gold).mean()
+    # the reported distribution IS the policy: the proper score is
+    # differentiable in it, so maximize it directly (no REINFORCE).
+    r = proper_score(probs, b["gold"], args.score)
     with torch.no_grad():
         ref_logp = F.log_softmax(
             ref(b["state_ids"], b["state_len"], b["q_ids"], b["q_mask"],
                 b["span_mat"], b["opt_valid"], b["decide_idx"]) / args.policy_temp, dim=-1)
     kl = (probs * (logp - ref_logp)).sum(-1).mean()
-    return policy_loss + args.beta * kl, float(r.mean())
+    loss = -r.mean() + args.beta * kl
+    return loss, float(r.mean().detach())
 
 
 def report(model, tok, splits, device, temperature, tag):
@@ -98,7 +105,7 @@ def main():
     train = {wf: generate(1500, wf, rng, "train") for wf in WORKFLOWS}
     dev = {wf: generate(args.n_eval, wf, rng, "dev") for wf in WORKFLOWS}
     print(f"reference temperature {temperature}")
-    report(model, tok, dev, args.device, temperature, "before")
+    m_before = report(model, tok, dev, args.device, temperature, "before")
 
     opt = torch.optim.AdamW(model.parameters(), lr=args.lr)
     wfs = list(WORKFLOWS)
@@ -112,14 +119,13 @@ def main():
         torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
         opt.step()
         if step % 100 == 0 or step == args.steps - 1:
-            print(f"step {step:5d}  loss {float(loss):.4f}  mean-reward {r:.4f}", flush=True)
+            print(f"step {step:5d}  loss {float(loss.detach()):.4f}  mean-reward {r:.4f}", flush=True)
 
     # refit the single temperature scalar after RLCD — the leash changes the scale
     from .train import fit_temperature
 
     temperature = fit_temperature(model, tok, dev, args.device)
     m_after = report(model, tok, dev, args.device, temperature, "after")
-    m_before = report(ref, tok, dev, args.device, myna.temperature, "ref-same-t")
 
     import json
     from pathlib import Path

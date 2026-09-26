@@ -81,8 +81,12 @@ and test splits using nouns never seen in training. Overall accuracy:
 | support/department | choice | 0.947 | — | 0.029 |
 | support/urgency | score | 0.928 | — | 0.042 |
 
-ECE ≤ 0.04 everywhere with a single refit temperature (3.0) — the
-probabilities mean what they say before any RLCD pass.
+ECE ≤ 0.04 everywhere with a single refit temperature (3.0). A short RLCD
+pass — 800 steps maximizing the Brier proper score under a KL leash to the
+supervised model — then **halved it: mean ECE 0.0191 → 0.0076, dev accuracy
+up to 0.9657**, every question improved or held. The policy here *is* the
+reported distribution, so the score is optimized differentiably, no REINFORCE
+(PLAN.md decision 10 has the post-mortem of trying it the generative way).
 
 ## Quickstart
 

@@ -59,6 +59,16 @@ exactly, with zero drift.
    initializes at weight 0, bias sigmoid⁻¹(0.99). With the default bias 0 the
    gate sits at 0.5 and erases a token's trace to 1e-6 within 20 steps —
    training from that regime never escaped chance on the full corpus.
+10. **The policy IS the answer — no REINFORCE in a non-sampling head.** The
+    first RLCD run copied laya's recipe (REINFORCE + batch-mean baseline) and
+    degraded the model: train reward fell 1.0 → −0.98 in 200 steps, because
+    above-baseline examples had p(gold) pushed *down*. That machinery assumes
+    sampled trajectories; our pointer head reports a distribution directly,
+    and the strictly proper score of a reported distribution is
+    differentiable in it. Correct objective: `max E[Brier(p, gold)] − β·KL(p‖ref)`
+    → acc 0.9626 → 0.9657, mean ECE 0.0191 → 0.0076, mean Brier 0.0258 →
+    0.0232, every one of 9 questions improved or held. Lesson: transplant the
+    objective, not the optimizer folklore.
 
 ## Benchmarks
 
@@ -126,5 +136,8 @@ dev-mid trajectory: 0.468 @500 → 0.921 @1500 (the grokking knee) → 0.968 @80
 - Train a "long" checkpoint with truncated-backprop on 4k states.
 - Real corpora: laya's typed-decisions benchmark and kev's frozen suites for
   apples-to-apples accuracy (speed is already apples-to-apples: same box).
-- RLCD-style training (strictly proper scoring) as in laya — v0 used plain CE
-  with a fitted temperature; RLCD is the v1 experiment.
+- ~~RLCD-style training (strictly proper scoring) as in laya~~ done: Brier
+  maximization with a KL leash (decision 10) took dev acc 0.9626 → 0.9657 and
+  mean ECE 0.0191 → 0.0076 on `runs/myna-v0-rlcd` — calibration roughly halved
+  with no accuracy sacrifice. The v0 line closes here; v1 (real corpora, MLX
+  kernel) and the v2 research program are specced in [V2_SPEC.md](V2_SPEC.md).
