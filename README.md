@@ -134,7 +134,11 @@ workflows: ticket triage, incident triage, content moderation) with disjoint
 train/dev/test vocabulary. It proves the architecture learns and streams;
 it does **not** yet claim parity with laya/kev on their frozen suites — that
 comparison is the next milestone in [PLAN.md](PLAN.md), along with RLCD-style
-training, Metal kernels for the scan, and multilingual coverage.
+training, Metal kernels for the scan, and multilingual coverage. The full
+next-generation design — free-text questions, state algebra (merge/branch/diff
+of cached states), O(window) mid-state edits, unbounded two-timescale memory,
+expected-utility decisions, 15 MB on-device model — is specified with
+acceptance criteria in [V2_SPEC.md](V2_SPEC.md).
 
 Honest limits: word-order-heavy tasks can be partly solved bag-of-cues style;
 mid-state edits (not appends) fall back to a full — still linear-time —
