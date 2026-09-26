@@ -2,8 +2,8 @@
 examples? If not, the training path — not the data or capacity — is broken.
 Raise N (256, 1024, 2000) in later stages to find where fitting breaks."""
 
+import argparse
 import random
-import sys
 import time
 
 import torch
@@ -13,9 +13,13 @@ from myna.model import MynaConfig, MynaModel, typed_loss
 from myna.tokenizer import train_tokenizer
 from myna.train import build_batch, evaluate
 
-N = int(sys.argv[1]) if len(sys.argv) > 1 else 64
-STEPS = int(sys.argv[2]) if len(sys.argv) > 2 else 1000
-LR = float(sys.argv[3]) if len(sys.argv) > 3 else 6e-4
+ap = argparse.ArgumentParser(description="can the model memorize N examples at all?")
+ap.add_argument("--n", type=int, default=64, help="examples per workflow in the pool")
+ap.add_argument("--steps", type=int, default=1000)
+ap.add_argument("--lr", type=float, default=6e-4)
+args = ap.parse_args()
+
+N, STEPS, LR = args.n, args.steps, args.lr
 
 rng = random.Random(42)
 device = "mps" if torch.backends.mps.is_available() else "cpu"

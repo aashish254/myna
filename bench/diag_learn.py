@@ -5,8 +5,8 @@ generalization gap (train climbs, dev flat). Trains the production-size
 model on a 2000/workflow pool and probes both splits every 200 steps.
 """
 
+import argparse
 import random
-import sys
 import time
 
 import torch
@@ -16,12 +16,17 @@ from myna.model import MynaConfig, MynaModel, typed_loss
 from myna.tokenizer import train_tokenizer
 from myna.train import build_batch, evaluate
 
-STEPS = int(sys.argv[1]) if len(sys.argv) > 1 else 1200
-LR = float(sys.argv[2]) if len(sys.argv) > 2 else 6e-4
+ap = argparse.ArgumentParser(description="fit(train) vs gen(dev) on the synthetic corpus")
+ap.add_argument("--steps", type=int, default=1200)
+ap.add_argument("--lr", type=float, default=6e-4)
+ap.add_argument("--pool", type=int, default=2000, help="train examples per workflow")
+args = ap.parse_args()
+
+STEPS, LR = args.steps, args.lr
 
 rng = random.Random(42)
 device = "mps" if torch.backends.mps.is_available() else "cpu"
-train_pool = {wf: (WORKFLOWS[wf][0], generate(2000, wf, rng, "train")) for wf in WORKFLOWS}
+train_pool = {wf: (WORKFLOWS[wf][0], generate(args.pool, wf, rng, "train")) for wf in WORKFLOWS}
 data = {
     "train": train_pool,
     "probe_train": {wf: (q, exs[:200]) for wf, (q, exs) in train_pool.items()},
@@ -33,7 +38,8 @@ model = MynaModel(cfg).to(device)
 opt = torch.optim.AdamW(model.parameters(), lr=LR, weight_decay=0.01)
 sched = torch.optim.lr_scheduler.CosineAnnealingLR(opt, STEPS)
 wfs = list(WORKFLOWS)
-print(f"device={device} lr={LR} steps={STEPS} params={sum(p.numel() for p in model.parameters())}", flush=True)
+print(f"device={device} lr={LR} steps={STEPS} pool={args.pool}/workflow "
+      f"params={sum(p.numel() for p in model.parameters())}", flush=True)
 
 t0 = time.time()
 ema = None

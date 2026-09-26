@@ -19,8 +19,11 @@ So every "train" item below is split into *prepare/verify the Kaggle path locall
 - [x] Correct SPEC §6's stale budget line ("budget by option count") against §9.9's measurement
 - [x] `--help` renders for every CLI (`myna.train`, `myna.rlcd`, `myna.serve`) — argparse `%`
       crash and the uvicorn-before-parse_args crash, both pinned by `tests/test_cli_help.py`
-- [ ] `bench/diag_learn.py` / `diag_overfit.py` take positional argv and reject `--help`; their
-      V1-B numbers are void anyway (SPEC §9.3) — retire or convert them when V1-B is re-derived
+- [x] `bench/diag_learn.py` / `diag_overfit.py` converted to argparse (`--steps --lr --pool`, `--n`);
+      they took positional `sys.argv`, so `--help` died in `int('--help')` — witnessed against
+      `git show HEAD:bench/diag_overfit.py`, which still raises the `ValueError`. Now pinned by
+      `tests/test_cli_help.py` alongside `myna.report --help`. Their V1-B *numbers* remain void and
+      are re-derived post-`385e06c` (the KAGGLE item below), which is a different debt.
 - [ ] Re-derive every V1-B conclusion from a post-`385e06c` run — `KAGGLE` (needs the retrain)
 - [ ] Push the repo to a remote — user-gated, no remote exists (SPEC §5 P0: largest unmanaged risk)
 

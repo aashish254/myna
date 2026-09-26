@@ -36,11 +36,30 @@ def _help(*argv):
     ("myna.train", "--max-q-cells"),
     ("myna.rlcd", "--score"),
     ("myna.serve", "--port"),
+    ("myna.report", "--min-rows"),
 ])
 def test_module_help_renders(module, flag):
     r = _help("-m", module)
     assert r.returncode == 0, f"{module} --help died: {r.stderr[-400:]}"
     assert flag in r.stdout, f"{module} --help does not list {flag}"
+
+
+@pytest.mark.parametrize("script,expect", [
+    ("bench/diag_learn.py", "--pool"),
+    ("bench/diag_overfit.py", "--n"),
+    ("bench/mutation_report.py", "Mutation battery"),
+    ("bench/mutation_memory_plan.py", "Mutation battery"),
+])
+def test_bench_script_help_renders(script, expect):
+    """The diag scripts took `sys.argv[1]` positionally, so `--help` was parsed as a
+    step count and died in `int()` — the same class of defect §9.13 found in
+    `myna.train`. A reader cannot tell a moved flag from a broken install."""
+    r = subprocess.run([sys.executable, script, "--help"], capture_output=True, text=True,
+                       cwd=ROOT, env={"PYTHONPATH": SRC, "PATH": "/usr/bin:/bin",
+                                      "HOME": str(Path.home())})
+    assert r.returncode == 0, f"{script} --help died: {r.stderr[-400:]}"
+    assert expect in r.stdout, r.stdout[-400:]
+    assert "Traceback" not in r.stderr, r.stderr[-400:]
 
 
 def test_percent_in_a_help_string_survives_argparse_formatting():
