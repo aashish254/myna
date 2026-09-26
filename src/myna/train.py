@@ -20,6 +20,16 @@ from .model import MynaConfig, MynaModel, typed_loss
 from .tokenizer import question_tensors, train_tokenizer, encode_text
 
 
+def draw_batch(pool, batch, rng):
+    """Distinct examples only, shortening the batch rather than repeating one row.
+
+    With replacement a singleton pool yields `batch` copies of the same example: the
+    step drives its loss to ~0 and contributes almost no gradient. decision-v2 hits
+    this constantly because option descriptions are randomized per row, so many
+    question-sets hold a single row."""
+    return rng.sample(pool, min(batch, len(pool)))
+
+
 def build_batch(exs, tok, questions, device):
     """questions: list[Question] fixed for the batch (the v0 contract: one
     question set shared across rows; real-corpus batches group by question
@@ -262,12 +272,21 @@ def main():
         sched = torch.optim.lr_scheduler.CosineAnnealingLR(opt, args.steps)
 
     wfs = list(data["train"])
+    pools = sorted(len(data["train"][k][1]) for k in wfs)
+    thin = sum(1 for n in pools if n < args.batch)
+    print(f"train question-sets: {len(wfs)}  median pool {pools[len(pools)//2]}  "
+          f"sets with pool<batch({args.batch}) {thin} ({thin/len(wfs):.0%} of sets run a short batch)",
+          flush=True)
 
     def group_cycle(keys, mode):
-        """uniform = every set once per pass (full coverage, but on this suite 98.6% of
-        updates then train sets that cannot be learned from one example, and the rich sets
-        measured below chance at the same update count). pool = weight by example count.
-        sqrt = geometric compromise between the two."""
+        """uniform = every set once per pass; pool = weight by example count;
+        sqrt = geometric compromise between the two.
+
+        Note on this suite: a set is keyed by its exact question *tensors*, and
+        decision-v2 randomizes option descriptions per row, so many sets hold one
+        row even though the underlying schema (same instruction, same option keys)
+        recurs hundreds of times. Thin pools are a tensor-identity artifact, not
+        evidence that the task has one example -- see myna.real_data._signature."""
         if mode == "uniform":
             while True:
                 ks = list(keys)
@@ -295,7 +314,7 @@ def main():
         for _ in range(K):
             wf = next(cycle)
             questions, pool = data["train"][wf]
-            exs = rng.choices(pool, k=args.batch)
+            exs = draw_batch(pool, args.batch, rng)
             b = build_batch(exs, tok, questions, device)
             logits = model(b["state_ids"], b["state_len"], b["q_ids"], b["q_mask"],
                            b["span_mat"], b["opt_valid"], b["decide_idx"])

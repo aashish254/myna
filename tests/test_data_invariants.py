@@ -58,3 +58,27 @@ def test_score_options_are_ordered_levels():
                 _, cues = WORKFLOWS[wf]
                 for i in range(len(q.options)):
                     assert f"{q.name}#{i}" in cues
+
+
+def test_draw_batch_never_repeats_a_row():
+    from myna.train import draw_batch
+
+    rng = random.Random(3)
+    pool = list(range(400))
+    for _ in range(50):
+        b = draw_batch(pool, 32, rng)
+        assert len(b) == 32 and len(set(b)) == 32
+
+
+def test_draw_batch_shortens_rather_than_duplicating():
+    """A one-row question-set must give one row, not `batch` copies of it.
+
+    The real suite produces many such sets: option descriptions are randomized per
+    row, so rows of one task land in separate tensor groups. Sampling with
+    replacement there drives a step's loss to ~0 while it sees a single example."""
+    from myna.train import draw_batch
+
+    rng = random.Random(3)
+    for batch in (4, 16, 32):
+        assert draw_batch([7], batch, rng) == [7]
+    assert draw_batch([1, 2, 3], 8, rng) != [1, 1, 1, 1, 1, 1, 1, 1]

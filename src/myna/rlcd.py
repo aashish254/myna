@@ -37,7 +37,7 @@ import torch.nn.functional as F
 from .data import WORKFLOWS, generate
 from .engine import Myna
 from .tokenizer import encode_text
-from .train import build_batch, evaluate
+from .train import build_batch, draw_batch, evaluate
 
 
 def proper_score(probs: torch.Tensor, gold: torch.Tensor, kind: str) -> torch.Tensor:
@@ -113,7 +113,7 @@ def main():
         model.train()
         wf = wfs[step % len(wfs)]
         questions, pool = train[wf]
-        b = build_batch(rng.sample(pool, args.batch), tok, questions, args.device)
+        b = build_batch(draw_batch(pool, args.batch, rng), tok, questions, args.device)
         loss, r = rlcd_step(model, ref, b, args)
         opt.zero_grad(set_to_none=True)
         loss.backward()
