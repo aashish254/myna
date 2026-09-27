@@ -13,6 +13,11 @@ What it pins, and why each is a rule rather than a taste:
   is not named is not evidence.
 * output under `/kaggle/working`, which is the only path Kaggle persists.
 * `--seed` — recorded in the command line and in `run.json` next to the metrics.
+  It now fixes the weights as well as the data order: `myna.train` seeds torch from
+  it, which is what makes a two-cell ablation differ in one thing.
+* `--score-loss` — `ce` unless stated, so a plain run reproduces every published
+  figure. `emd` is one flag and one output directory away, which is what makes the
+  P9 ablation a pair of runs rather than a re-run whose drift reads as an effect.
 * `--resume` when a snapshot already exists at that path, so re-running the
   notebook cell continues instead of restarting.
 * the device is `auto`, which on a CUDA box picks CUDA and *fails loud* if CUDA is
@@ -66,6 +71,11 @@ DEFAULTS = {
     "stop_factor": 1.5,
     "seed": 0,
     "vocab": 8192,
+    # ce, not emd: every figure this repo has published was trained with cross-
+    # entropy on `score` cells, so the runner's default has to reproduce them. The
+    # flag exists so one notebook cell can be flipped to `emd` and the other left
+    # alone — a paired GPU run, not a lone re-run whose drift reads as an effect.
+    "score_loss": "ce",
 }
 
 
@@ -114,6 +124,7 @@ def build_command(corpus: Path, out: Path, args) -> list[str]:
                                 else d["stop_factor"]),
            "--seed", str(args.seed if args.seed is not None else d["seed"]),
            "--vocab", str(args.vocab if args.vocab is not None else d["vocab"]),
+           "--score-loss", args.score_loss or d["score_loss"],
            "--paraphrase", args.paraphrase, "--row-batch"]
     if args.min_train_pool:
         cmd += ["--min-train-pool", str(args.min_train_pool)]
@@ -142,6 +153,10 @@ def main(argv=None):
                     "tolerance the loop stops itself on; the default is what runs on Kaggle")
     ap.add_argument("--min-train-pool", type=int, default=0)
     ap.add_argument("--paraphrase", choices=["off", "on"], default="on")
+    ap.add_argument("--score-loss", choices=["ce", "emd"], default=None,
+                    help="how a `score` cell is priced (SPEC §5 P9). Default from the runner "
+                         "is ce, the loss every published figure used; emd is the ablation, "
+                         "and run.json records which one ran")
     ap.add_argument("--dry-run", action="store_true", help="print the command and exit")
     ap.add_argument("--check", action="store_true", help="verify the interpreter, the "
                     "imports, the device and the corpus, then exit")

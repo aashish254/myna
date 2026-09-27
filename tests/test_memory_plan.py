@@ -272,9 +272,10 @@ EVAL_ROWS = [
 ]
 
 
-def _write_suite(dirpath: Path):
+def _write_suite(dirpath: Path, train_rows=None):
     dirpath.mkdir(parents=True, exist_ok=True)
-    for name, rows in (("train", TRAIN_ROWS), ("development", EVAL_ROWS),
+    for name, rows in (("train", TRAIN_ROWS if train_rows is None else train_rows),
+                       ("development", EVAL_ROWS),
                        ("test", EVAL_ROWS), ("calibration", EVAL_ROWS)):
         with (dirpath / f"{name}.jsonl").open("w") as f:
             for r in rows:
@@ -282,8 +283,8 @@ def _write_suite(dirpath: Path):
     return dirpath
 
 
-def _run(tmp_path, extra, expect_zero=True):
-    suite = _write_suite(tmp_path / "suite")
+def _run(tmp_path, extra, expect_zero=True, train_rows=None):
+    suite = _write_suite(tmp_path / "suite", train_rows)
     out = tmp_path / "out"
     cmd = [sys.executable, "-m", "myna.train", "--suite", str(suite), "--out", str(out),
            "--device", "cpu", "--steps", "2", "--batch", "2", "--vocab", "128",
@@ -431,6 +432,111 @@ def test_resume_without_a_snapshot_fails_loud(tmp_path):
     assert r.returncode != 0
     assert "to continue from" in r.stderr + r.stdout
     assert "Traceback" not in r.stderr, "an expected condition must not surface as a crash"
+
+
+# ---- --warm-start: the weights carry, the schedule does not -----------------
+
+def _weights(path):
+    return torch.load(path, map_location="cpu", weights_only=False)["state_dict"]
+
+
+def test_warm_start_actually_moves_the_weights(tmp_path):
+    """The discriminator a no-op flag cannot survive.
+
+    Two cold runs of the same command must be bit-identical — that is the seeding
+    `--seed` always promised and did not give. Given that, a warm-started run that
+    still lands on the cold weights has loaded nothing, and one that lands
+    elsewhere can only have got there from the checkpoint."""
+    _r1, out = _run(tmp_path, ["--steps", "2", "--save-every", "2"])
+    src = out / "model_last.pt"
+    assert src.exists()
+    _r2, warm = _run(tmp_path / "warm", ["--steps", "2", "--warm-start", str(src)])
+    _r3, cold = _run(tmp_path / "cold", ["--steps", "2"])
+    _r4, cold2 = _run(tmp_path / "cold2", ["--steps", "2"])
+    w, c, c2 = (_weights(p / "model.pt") for p in (warm, cold, cold2))
+    assert w.keys() == c.keys() == c2.keys()
+    assert all(torch.equal(c[k], c2[k]) for k in c), \
+        "two cold runs must be bit-identical or no A/B from this trainer means anything"
+    assert any(not torch.equal(w[k], c[k]) for k in w), \
+        "a warm start that lands on identical weights loaded nothing"
+
+
+def test_warm_start_keeps_the_step_counter_and_the_optimizer(tmp_path):
+    _r, out = _run(tmp_path, ["--steps", "2", "--save-every", "2"])
+    r2, out2 = _run(tmp_path / "w", ["--steps", "3", "--warm-start", str(out / "model_last.pt")])
+    line = [ln for ln in r2.stdout.splitlines() if ln.startswith("warm-start:")][0]
+    assert "trained at step 1" in line, line          # the source really was opened
+    assert "scheduler are fresh" in line
+    assert "resume:" not in r2.stdout                 # not the other path
+    m = json.loads((out2 / "metrics.json").read_text())
+    assert m["resumed_from_step"] == 0 and m["last_step"] == 2, \
+        "a warm start restarts the schedule, so it owns steps 0..2"
+
+
+def test_warm_start_and_resume_together_is_refused(tmp_path):
+    """They mean opposite things about the optimizer state, and whichever one won
+    silently, a future reader of the log would not be able to tell what ran."""
+    _r, out = _run(tmp_path, ["--steps", "2", "--save-every", "2"])
+    r, _o = _run(tmp_path / "both",
+                 ["--warm-start", str(out / "model_last.pt"), "--resume"],
+                 expect_zero=False)
+    assert r.returncode != 0
+    text = r.stderr + r.stdout
+    assert "different things" in text and "Traceback" not in text
+
+
+def test_warm_start_with_a_missing_file_fails_loud(tmp_path):
+    r, _o = _run(tmp_path, ["--warm-start", str(tmp_path / "nowhere.pt")], expect_zero=False)
+    assert r.returncode != 0
+    assert "no " in r.stderr + r.stdout and "Traceback" not in r.stderr
+
+
+# ---- the sizing statistic belongs to the corpus, not to the experiment -------
+
+def _pool_rows(n_short=5700, n_long=300, long_words=20):
+    """A train pool above `state_token_p95`'s 4000-row sampling limit, with exactly
+    5% long documents so the 95th percentile sits on a cliff: a sample that draws
+    more than 5% long rows reads the p95 as a long row, one that draws fewer reads
+    it as a short one.
+
+    The 4096+ rows are load-bearing. Under the limit the sampler takes every row,
+    no seed can move the answer, and a test written on the small fixture would
+    pass against the bug this one exists to catch."""
+    rows = []
+    for i in range(n_short + n_long):
+        r = json.loads(json.dumps(TRAIN_ROWS[i % len(TRAIN_ROWS)]))
+        r["state"]["document"] = ("the ceasefire was signed in geneva" if i < n_short
+                                  else "geneva " + " ".join(["talks"] * long_words))
+        rows.append(r)
+    return rows
+
+
+def _plan_for(tmp_path, seed, rows):
+    """One update at a stated 0.2 GiB, which is tight enough that the p95 decides
+    the batch: the clamp is the thing a seed must not be able to move."""
+    r, out = _run(tmp_path / f"s{seed}", ["--seed", str(seed), "--steps", "1",
+                                          "--batch", "32", "--free-gib", "0.2"],
+                  train_rows=rows)
+    m = json.loads((out / "metrics.json").read_text())
+    return m["state_tokens_p95"], m["batch"]
+
+
+def test_the_memory_plan_does_not_depend_on_the_experiment_seed(tmp_path):
+    """`--seed` is the replication knob, and it was resizing the step.
+
+    Measured on the full pilot: the same command at two seeds planned p95 267 at
+    batch 15 and p95 274 at batch 14, because `state_token_p95` was handed
+    `random.Random(args.seed)` and draws 4000 rows from 57 904. A "same command,
+    other seed" run was therefore not the same run at a different data order — it
+    was a different batch, and batch is what the learning rate is priced against."""
+    rows = _pool_rows()
+    plans = {s: _plan_for(tmp_path, s, rows) for s in (0, 7, 11, 23)}
+    p95s = {p[0] for p in plans.values()}
+    batches = {p[1] for p in plans.values()}
+    assert len(p95s) == 1, f"the sizing statistic moved with --seed: {plans}"
+    assert len(batches) == 1, f"the planned batch moved with --seed: {plans}"
+    assert next(iter(batches)) < 32, \
+        "the fixture no longer engages the clamp, so the batch check proves nothing"
 
 
 def test_row_batch_subtracts_the_question_branch_from_the_plan(tmp_path):
