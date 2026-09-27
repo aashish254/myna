@@ -84,7 +84,7 @@ requires all three rather than the flattering pair:
 |---|---|---|
 | laya 421M — their engine, their suite, 40 rows/source | **0.667** · *m* | `runs/laya_decision_v2_test.json`, joined cell by cell |
 | **myna, untrained control** — random init, the suite's own tokenizer, current code | seed 0 **0.346** · seed 1 **0.351** · mean **0.348** · *m* | `runs/scratch_decision_v2_test.md` |
-| myna trained on this corpus (G1) | **gated** — no local number exists, and one would be a projection | `kaggle/`, TODO 3i |
+| myna trained on this corpus (G1) | **gated here** — the Kaggle checkpoint has run and its verdict is TODO 3i's to publish; until its witness is a file in this repo, a figure for this row is a number with nothing behind it (§9.30) | `kaggle/run.py`, TODO 3i |
 | majority-label floor, same 16 cells | 0.433 · *m* | `runs/report_scratch_vs_laya.log` |
 | uniform-chance floor, same 16 cells | 0.332 · *m* | same |
 
@@ -94,11 +94,17 @@ upstream corpus scores **0.338** on those same 16 cells
 `uv run python -m myna.report --suite data/decision-v2-pilot --split test --metrics runs/myna-v1-rich/metrics.json --laya runs/laya_decision_v2_test.json --out runs/report_void_vs_laya.json`)
 — *below* its own control, by 0.008, which is the
 same order as the control's 0.005 seed spread, and void as evidence regardless
-because it predates the `385e06c` batching fix (§5 P1). Read together, the honest
-sentence is the uncomfortable one: **nothing about myna's architecture has been
-measured on this corpus yet, in either direction.** What the control does prove is
-the one falsification that mattered — a probe head or an answer head that leaked the
-label would sit above the 0.332 chance floor, and it sits on it.
+because it predates the `385e06c` batching fix (§5 P1). So the honest sentence
+about this repo as it stands is: **no committed measurement of myna's
+architecture on this corpus exists in either direction** — the control that could
+not have learned anything sits on the chance floor, and the checkpoint that could
+is not here. What the control does prove is the one falsification that mattered —
+a probe head or an answer head that leaked the label would sit above the 0.332
+chance floor, and it sits on it. The third row waits on its artifact rather than
+on a run: `v1b-kaggle-3600b` has trained and reported its own metrics, and TODO 3i
+publishes that number the moment its witness is a file in this repo, because a
+figure for a checkpoint this repo cannot open is a number with nothing behind it —
+which is the mistake §9.30 exists to prevent.
 
 Reproduce the control (1,440 rows scored on CPU; no gradient step, on any corpus):
 

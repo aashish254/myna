@@ -834,7 +834,8 @@ are counted, and if nothing is left the run refuses. See §9.14.
       this box) are in TODO 8b. §9.31 is what the mutation battery caught on the way.
 - [x] **The upstream-corpus comparison, published as three rows** — the §8 risk line's mandate.
       README's *On the upstream corpus* section prints laya **0.667**, myna's untrained control
-      **0.346 / 0.351 (mean 0.348)**, and myna-trained as **gated**, over the same 16
+      **0.346 / 0.351 (mean 0.348)**, and myna-trained as **gated on its witness rather than on
+      a run**, over the same 16
       (source, question) cells with the 0.433 and 0.332 floors beside them, and discloses that
       the one local checkpoint that ever saw the corpus scores **0.338** — below its own control
       and void under §5 P1 — which is the sentence that settles what has and has not been
@@ -903,7 +904,7 @@ are counted, and if nothing is left the run refuses. See §9.14.
 |---|---|---|
 | 15.35M cannot learn instruction-following well enough to clear G1 | **high** | both prerequisites are now built — P1 data (4.25M tokens) and P2's per-row contract — so this risk is finally testable rather than arguable; if G1 still fails, the honest product is abstention (G5), not accuracy |
 | Latency advantage evaporates under equal-footing measurement (P4) | **high** | the size, window, calibration and browser-memory claims stand independently; the pitch must survive without the ratio |
-| Upstream-data comparison reads as unfair | medium | **disclosed, P8 8c**: README prints myna-scratch (0.348 mean over two seeds), myna-trained (**gated**), and laya (0.667) as three rows over the same 16 cells, with the 0.433/0.332 floors and the void-checkpoint disclosure (0.338, below its own control) beside them |
+| Upstream-data comparison reads as unfair | medium | **disclosed, P8 8c**: README prints myna-scratch (0.348 mean over two seeds), myna-trained (**gated on its witness being committed here** — the run has happened, and 3i publishes its number from its own artifact), and laya (0.667) as three rows over the same 16 cells, with the 0.433/0.332 floors and the void-checkpoint disclosure (0.338, below its own control) beside them |
 | Another machine crash mid-run | medium | cloud training, checkpoint every ≤ 50 updates, observed-rate stop rule |
 | ONNX export can't express the recurrent scan efficiently | medium | prototype the export before committing to G3; fallback is wasm-only fp16 with a measured caveat |
 | Parameter growth quietly voids the speed claims | low | re-run the latency ladder after any size change, in the same commit |
