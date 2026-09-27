@@ -1,0 +1,42 @@
+baseline copy: green (1 test file)
+
+[ 1/19] caught      typed_loss's own default stops being the published objective
+            FAILED tests/test_ordinal_loss.py::test_the_default_is_the_published_objective_byte_for_byte
+[ 2/19] caught      the ce branch stops returning early, so ce needs the emd masks
+            FAILED tests/test_ordinal_loss.py::test_ce_cannot_tell_a_one_rung_miss_from_the_opposite_end
+[ 3/19] caught      the trainer's flag default flips to emd
+            FAILED tests/test_ordinal_loss.py::test_the_loop_passes_the_flag_it_was_given
+[ 4/19] caught      the price is normalised by the batch's padded O, not the cell's K
+            FAILED tests/test_ordinal_loss.py::test_a_short_cell_costs_the_same_inside_a_long_batch
+[ 5/19] caught      the legend is normalised by K instead of K-1, so the worst price is under 1
+            FAILED tests/test_ordinal_loss.py::test_ce_cannot_tell_a_one_rung_miss_from_the_opposite_end
+[ 6/19] caught      the gold rung is exclusive, so a perfect prediction still costs
+            FAILED tests/test_ordinal_loss.py::test_ce_cannot_tell_a_one_rung_miss_from_the_opposite_end
+[ 7/19] caught      the CDF is accumulated from the wrong end of the legend
+            FAILED tests/test_ordinal_loss.py::test_ce_cannot_tell_a_one_rung_miss_from_the_opposite_end
+[ 8/19] caught      the distance is absolute rather than squared
+            FAILED tests/test_ordinal_loss.py::test_ce_cannot_tell_a_one_rung_miss_from_the_opposite_end
+[ 9/19] caught      the sum stops being bounded by the cell's own options
+            FAILED tests/test_ordinal_loss.py::test_the_builder_masks_feed_the_loss_in_the_order_the_loop_passes_them
+[10/19] caught      every cell with a gold becomes ordinal
+            FAILED tests/test_ordinal_loss.py::test_only_score_cells_are_repriced - asser...
+[11/19] caught      no cell is ordinal, so emd is ce wearing a new name
+            FAILED tests/test_ordinal_loss.py::test_ce_cannot_tell_a_one_rung_miss_from_the_opposite_end
+[12/19] caught      the loop forgets to pass the flag
+            FAILED tests/test_ordinal_loss.py::test_the_loop_passes_the_flag_it_was_given
+[13/19] caught      the loop passes has_gold where the ordinal mask belongs
+            FAILED tests/test_ordinal_loss.py::test_the_score_cells_are_marked_in_the_real_batch
+[14/19] caught      the loop withholds the masks the objective asked for
+            FAILED tests/test_ordinal_loss.py::test_the_loop_passes_the_flag_it_was_given
+[15/19] caught      build_batch marks the non-score questions ordinal
+            FAILED tests/test_ordinal_loss.py::test_build_batch_marks_the_score_questions_only
+[16/19] caught      build_row_batch marks every live cell ordinal
+            FAILED tests/test_ordinal_loss.py::test_build_row_batch_marks_score_cells_and_leaves_padding_false
+[17/19] caught      --long-context accepts a loss it cannot price
+            FAILED tests/test_ordinal_loss.py::test_long_context_refuses_a_loss_it_cannot_price
+[18/19] caught      build_batch stops emitting the ordinal mask
+            FAILED tests/test_ordinal_loss.py::test_build_batch_marks_the_score_questions_only
+[19/19] caught      build_row_batch stops emitting the ordinal mask
+            FAILED tests/test_ordinal_loss.py::test_build_row_batch_marks_score_cells_and_leaves_padding_false
+
+19/19 mutations caught

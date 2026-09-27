@@ -373,6 +373,42 @@ So every "train" item below is split into *prepare/verify the Kaggle path locall
       push, on G1/G4's checkpoints and on any trained artifact for G6.
       Suite at this tick: **383 passed, 1 skipped**.
 
+## P9 — The three defects the first valid checkpoint named (SPEC §5 P9)
+- [x] **9a** `score` cells are trained with a nominal cost while every other component treats the
+      legend as ordered — `typed_loss` charges "predicted 4, gold 3" like "predicted 1, gold 5". Add
+      the squared-Cramér/EMD² path over the option index, normalised by `K−1`, selected by
+      `--score-loss {ce,emd}` with **`ce` the default** so no published figure moves. The verdict is
+      the next Kaggle run's; the code, its gate and its mutation battery are this box's. SPEC §5 P9.
+      Done: `typed_loss` takes `(ordinal, opt_valid, score_loss)` and prices marked cells with the
+      Cramér sum over the cell's own `K−1` inside one mean over live cells; both batch builders emit
+      the mask from `q.type == "score"`, the loop's single call site passes it, `--score-loss`
+      defaults to `ce`, and `--long-context` refuses `emd` rather than silently training `ce`. Three
+      properties are the gate: a one-rung miss and an opposite-end miss are byte-identical under
+      `ce` and strictly ordered under `emd`; the worst price is 1.0 at every legend length; at
+      `K = 2` the number *is* the Brier score of the second option.
+      `tests/test_ordinal_loss.py` 18 tests, three running one CPU update through a `typed_loss`
+      spy (the trainer seeds no torch, so a cross-process loss comparison could not fail);
+      `bench/mutation_ordinal.py` **19/19 caught** (`runs/mutation_ordinal.log`). Two findings: the
+      sum is multiplied by `opt_valid` because a masked tail is only harmless by coincidence, and
+      the `[N] → [B,N]` expand is **dead code** — torch broadcasting makes the shared and per-row
+      forms the same tensor, so that mutation survived its own battery (§9.33).
+      Suite at this tick: **404 passed, 1 skipped**; registry `--check` 22/22 rows and 38 figures;
+      gates 7/7 verdicts and **3 met / 2 not met / 2 open — NOT clear**, unchanged, because nothing
+      published was trained with `emd`.
+- [ ] **9b** The readout fix is **closed without being built**: fitting a per-cell threshold on the
+      suite's own `calibration` split makes the binary cells worse, and the argmaxes were not
+      collapsing as claimed (the diagnostic's artifact is Kaggle-side, so its numbers stay out of
+      prose — §9.24/§9.30). What survives is the reporting half: a Brier column beside every `noul`
+      accuracy in `myna.report`, labelled as reporting, not as a fix. Nothing here raises G1's
+      ceiling. SPEC §5 P9.
+- [ ] **9c** Report the cells that lose to their own majority floor as that: `max(acc, majority)`
+      beside `acc`, the delta labelled as the clip's worth, not the model's. Which cells qualify is
+      9c's own measurement on the committed pilot split, not a carried-over count. *Printing* the
+      clip is reporting; *acting* on it is a per-cell fallback rule and that is the user's
+      leaderboard call, so 9c builds the report and stays out of the decision. SPEC §5 P9.
+- [ ] **9d** `banking77/intent` and `mnli/relation` are inside or outside G1's scope — a decision
+      for the user, recorded so a later run does not silently average them back in.
+
 ## Cross-cutting
 - [ ] Every new gate mutation-checked, witness quoted in the commit message (SPEC §7.1)
 - [ ] `pytest` green at every tick; 0 skips other than the KEV-gated parity test

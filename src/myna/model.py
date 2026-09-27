@@ -141,8 +141,47 @@ class MynaModel(nn.Module):
         return self._question_head(S_layers, state_len, q_ids, q_mask, span_mat, opt_valid, decide_idx)
 
 
-def typed_loss(logits: torch.Tensor, gold: torch.Tensor, has_gold: torch.Tensor):
-    """logits [B,N,O], gold [B,N] option index, has_gold [B,N] bool."""
+def typed_loss(
+    logits: torch.Tensor,
+    gold: torch.Tensor,
+    has_gold: torch.Tensor,
+    ordinal: torch.Tensor | None = None,
+    opt_valid: torch.Tensor | None = None,
+    score_loss: str = "ce",
+):
+    """logits [B,N,O], gold [B,N] option index, has_gold [B,N] bool.
+
+    `ordinal` [B,N] (or [N], shared the way the question tensors are) marks the cells
+    whose options are an ordered legend, and `opt_valid` [B,N,O] (or [N,O]) says how
+    many options each cell really has. `score_loss="emd"` charges those cells the
+    squared-Cramér distance between the predicted CDF and the gold step instead of the
+    nominal cost; every other cell keeps cross-entropy, and the mean is over cells
+    either way, never a mean of per-cell means.
+
+    The divisor is the cell's own `K-1`, not the batch's padded `O`, because `O`
+    would under-charge exactly the short-option rows a mixed batch is full of. With
+    `K-1` the worst reachable price is 1.0 for every legend, which is what makes a
+    two-option cell and a six-option cell one scale rather than two — and at `K = 2`
+    the expression *is* the Brier score of the second option's probability, the
+    statistic §9.24 already insists on quoting beside a noul argmax. The sum runs
+    over the batch's `O` columns but is multiplied by `opt_valid`, because the price
+    is a sum over the cell's own options and that has to stay true even when a caller
+    hands over logits whose padded tail is not yet masked to -inf. `"ce"` is the
+    default because every published figure in this repo was trained with it.
+    """
     lp = F.log_softmax(logits, dim=-1)
     sel = lp.gather(-1, gold[..., None]).squeeze(-1)
-    return -sel[has_gold].mean()
+    if score_loss == "ce":
+        return -sel[has_gold].mean()
+    if ordinal is None or opt_valid is None:
+        raise ValueError(
+            f"score_loss={score_loss!r} needs the ordinal mask and opt_valid: which cells "
+            "are ordered, and how many options each has"
+        )
+    cdf = lp.exp().cumsum(-1)
+    rung = (torch.arange(logits.shape[-1], device=logits.device) >= gold[..., None])
+    emd = ((cdf - rung.to(cdf.dtype)) ** 2 * opt_valid.to(cdf.dtype)).sum(-1)
+    # a shared-form [N] / [N,O] mask broadcasts against the [B,N] cells by torch's own
+    # rules; no expand is needed, and writing one would be a branch nothing can test.
+    return torch.where(ordinal, emd / (opt_valid.sum(-1) - 1).clamp(min=1),
+                       -sel)[has_gold].mean()

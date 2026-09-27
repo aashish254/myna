@@ -48,6 +48,8 @@ def build_batch(exs, tok, questions, device):
         "state_len": lens.to(device),
         "gold": gold.to(device),
         "has_gold": torch.ones_like(gold, dtype=torch.bool).to(device),
+        "ordinal": torch.tensor([q.type == "score" for q in questions],
+                                dtype=torch.bool).to(device),
         **{k: v.to(device) for k, v in qt.items()},
     }
 
@@ -59,7 +61,8 @@ def build_row_batch(items, tok, device, paraphraser=None, rng=None):
     maximum, and `has_gold` marks the cells that belong to a real question so a
     mixed batch trains on the union of its cells. This is what lets 32 boolq
     rows — 32 different instructions, one question each — share one forward
-    pass instead of running 32 batches of one.
+    pass instead of running 32 batches of one. `ordinal` marks the cells whose
+    legend is ordered, which is what `--score-loss emd` prices.
 
     With `paraphraser`, each row's set is replaced by a drawn phrasing (SPEC §5
     P1: the suite's own wording is never trained on).
@@ -76,14 +79,17 @@ def build_row_batch(items, tok, device, paraphraser=None, rng=None):
         state[i, : len(x)] = torch.tensor(x)
     gold = torch.zeros(len(items), n_q, dtype=torch.int64)
     has_gold = torch.zeros(len(items), n_q, dtype=torch.bool)
+    ordinal = torch.zeros(len(items), n_q, dtype=torch.bool)
     for i, (qs, ex) in enumerate(items):
         gold[i, : len(qs)] = torch.tensor(ex.gold[: len(qs)], dtype=torch.int64)
         has_gold[i, : len(qs)] = True
+        ordinal[i, : len(qs)] = torch.tensor([q.type == "score" for q in qs], dtype=torch.bool)
     return {
         "state_ids": state.to(device),
         "state_len": lens.to(device),
         "gold": gold.to(device),
         "has_gold": has_gold.to(device),
+        "ordinal": ordinal.to(device),
         **{k: v.to(device) for k, v in qt.items()},
     }
 
@@ -520,6 +526,14 @@ def main():
                          "and the reserved ninth phrasing is scored too, so 'it learned to read' is "
                          "measured on two unseen wordings. Suite corpora only: an instruction with "
                          "no table entry raises UnknownSchema rather than passing through.")
+    ap.add_argument("--score-loss", choices=["ce", "emd"], default="ce",
+                    help="how a `score` cell is priced: ce is cross-entropy over the option "
+                         "index, which charges \"predicted 4, gold 3\" the same as \"predicted "
+                         "1, gold 5\"; emd charges the squared-Cramér distance over the legend, "
+                         "normalised by the cell's own K-1, so a one-rung miss is cheap and the "
+                         "opposite end costs 1.0 whatever the legend length (at K=2 it is the "
+                         "Brier score). Default ce: every published figure was trained with it "
+                         "(SPEC §5 P9: 9a).")
     ap.add_argument("--free-gib", type=float, default=None,
                     help="headroom the loop may plan against. CUDA reports its own; MPS and CPU "
                          "have no trustworthy reading, so on those the batch is taken exactly as "
@@ -560,6 +574,12 @@ def main():
             # print a run that claims a gate it never ran
             raise SystemExit("--paraphrase on is not available with --long-context: the "
                              "needle schemas are not in the phrasing table")
+        if args.score_loss == "emd":
+            # the needle batch builder hand-makes one choice question and carries no
+            # ordinal mask, so emd would have nothing to price; accepting the flag and
+            # training on ce would print a run that claims a loss it did not use
+            raise SystemExit("--score-loss emd is not available with --long-context: the "
+                             "needle corpus has no score cells and no ordinal mask")
         train_long_context(args, rng, device)
         return
 
@@ -732,7 +752,8 @@ def main():
                 b = build_row_batch(items, tok, device, paraphraser, rng)
             logits = model(b["state_ids"], b["state_len"], b["q_ids"], b["q_mask"],
                            b["span_mat"], b["opt_valid"], b["decide_idx"])
-            loss = typed_loss(logits, b["gold"], b["has_gold"]) / K
+            loss = typed_loss(logits, b["gold"], b["has_gold"], b["ordinal"],
+                              b["opt_valid"], args.score_loss) / K
             loss.backward()
             run_loss += loss.item()
         torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)

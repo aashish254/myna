@@ -862,6 +862,88 @@ are counted, and if nothing is left the run refuses. See §9.14.
       itself: G1 and G4 need Kaggle, G6 needs any trained v1 artifact, and P0's push is
       user-gated with no remote yet created.
 
+### P9 — The three defects the first valid checkpoint named *(9a shipped; 9b's fix measured dead; 9c local; 9d the user's call)*
+
+Opened by the diagnostic run against `v1b-kaggle-3600b`'s own logits (TODO 3i's lane), which answers
+the capacity question in the direction that matters: **the mechanism is not broken, the cost
+function is.** Option-order permutation tracking shows the pointer head reads option *text* — under
+permutation a cell's accuracy barely moves — so the trunk can find the answer and the training
+signal is what misprices it. **The magnitudes belong to 3i's witness and are deliberately not
+printed here**: the artifact they were read from is a Kaggle checkpoint with no committed witness in
+this repo, and §9.30 is exactly about not letting such a number into prose. What is structural, and
+what this repo can act on without the artifact:
+
+- [x] **9a** `score` questions are trained with a **nominal** cost. `typed_loss` is
+      `F.log_softmax(...).gather(gold)`, so over an ordered legend "predicted 4, gold 3" is charged
+      the same as "predicted 1, gold 5" — the first is one rung of a scale and the second is the
+      opposite end of it. Every other part of the stack already believes the legend is ordered:
+      `data.py` documents `options` as "for score this is the ordinal legend", and both the engine
+      and the MLX bench read a `score` as the *index-weighted expectation* over it. The loss is the
+      one component that does not, which makes this an internal inconsistency before it is a
+      research idea — and it is the only one of the three defects that a training run can fix
+      without new data or new parameters. Fix: a squared-Cramér / EMD² path over the option index
+      (`Σ_k (F_p(k) − F_gold(k))²`, normalised by `K−1` so a two-option cell and a six-option cell
+      are on one scale), selected by `--score-loss {ce,emd}` with **`ce` the default**, so no
+      published number moves and the next Kaggle run is the experiment. Note the property that
+      makes the normalisation right rather than cosmetic: at `K = 2` this expression *is* the Brier
+      score of the "Yes" probability, which is the statistic §9.24 already insists on quoting
+      beside a noul argmax. `KAGGLE` for the verdict, `here` for the code and its gate.
+      **Shipped.** `typed_loss(logits, gold, has_gold, ordinal, opt_valid, score_loss)` prices the
+      cells `ordinal` marks with the Cramér sum divided by the cell's own `K−1` and every other cell
+      with the old cross-entropy, in **one mean over live cells** — not a mean of per-cell means,
+      which a rectangular batch holding a padded question row would otherwise turn into a per-row
+      weighting. `build_batch` and `build_row_batch` emit the mask from `q.type == "score"`, the
+      loop's single call site passes flag and masks, and `--score-loss` defaults to `ce`, so the
+      published figures are untouched. Three properties are the gate rather than the formula: a
+      one-rung miss and an opposite-end miss with the *same* `p(gold)` are byte-identical under `ce`
+      (that is the defect, pinned in a test) and strictly ordered under `emd`; the worst reachable
+      price is 1.0 for every legend length; and at `K = 2` the number *is* the Brier score of the
+      second option — for noul that is "yes", which is §9.24's statistic arriving from the loss
+      rather than from a report. `tests/test_ordinal_loss.py`: 18 tests, three of which run the
+      trainer for one CPU update through a `typed_loss` spy, because the trainer seeds no torch and
+      two processes therefore never share an init — "the printed loss changed" would pass even if
+      the flag did nothing, so the call site is watched instead of its output. The absent flag is
+      one of those three: it must mean `ce`. `bench/mutation_ordinal.py` **19/19 caught**
+      (`runs/mutation_ordinal.log`). Two findings from building it: the sum is multiplied by
+      `opt_valid` because a masked tail is only *harmless by coincidence* — hand it the builders'
+      real `opt_valid` beside unmasked logits and an unmasked sum prices a cell's padding — and the
+      `[N] → [B,N]` expand that was written first is **gone**, because torch's own broadcasting makes
+      the shared and per-row forms the same tensor, no input could tell them apart, and that
+      mutation survived its own battery (§9.33). The level is 3i's: nothing published moves, because
+      nothing published was trained with `emd`.
+- [ ] **9b** *Premise corrected by measurement; the readout fix is closed without being built.* This
+      box used to say that `noul` cells are scored by an argmax that collapses onto one index while
+      the continuous probability ranks, and that the fix is a threshold or a label-prior bias in the
+      readout. The follow-up diagnostic refutes both halves on most of those cells (its artifact is
+      a Kaggle-side file, so §9.30 keeps its numbers out of this prose): the argmaxes are not
+      pinned to one index, and **fitting a per-cell decision threshold on the suite's own
+      `calibration` split makes the binary cells worse, not better** — 40–52 calibration rows per
+      cell cannot estimate a threshold, and that split's class balance is not dev/test's. One cell
+      formerly cited as a readout casualty turns out to be *anti-ranked* instead, which is the
+      failure mode 9d calls dead rather than mis-ruled. What survives of 9b is the reporting half,
+      and it is still worth building: a Brier column beside every `noul` accuracy in `myna.report`,
+      because §9.24's point is that an argmax alone over-reports a binary cell either way — it just
+      is not a *fix*, and it must not be listed as one. Nothing here raises G1's ceiling.
+- [ ] **9c** Some cells score **below their own majority-label floor**. The first diagnostic named
+      four; the follow-up that corrected 9b leaves two of them standing as floor-losers and moves the
+      rest into 9d's dead-cell question, which is the right split — a cell below its floor *and*
+      below its own permutation null is not a decision-rule casualty. This is a reporting failure
+      before it is a modelling one: a cell that loses
+      to the majority answer is a cell where the model should not be answering, and G5's abstention
+      machinery already exists to say so. 9c is the `myna.report` change that surfaces it —
+      per-cell `max(acc, majority)` printed next to `acc`, and the delta labelled as the clip's
+      worth rather than the model's. Local, and its arithmetic is checkable against the committed
+      pilot split today. The boundary has to be drawn in the same sentence: *printing* the clip is
+      reporting, and it is worth exactly the arithmetic it shows; *acting* on it — predicting the
+      training-set majority whenever a cell's dev accuracy sits under its own floor — is a per-cell
+      fallback rule, which is a leaderboard decision and not a learning improvement, and 9b is the
+      evidence of what a readout rule fitted on this suite's calibration data measured. 9c builds
+      the report and stays out of the decision.
+- [ ] **9d** Two cells are dead and no decision rule fixes them (`banking77/intent`,
+      `mnli/relation`): their association numbers do not beat their own permutation nulls. 9d is a
+      scope decision for G1 — in or out — not a fix, and it is the user's call, not a checkbox to
+      tick by shipping something. Recorded so the next run does not silently average them back in.
+
 ---
 
 ## 6. Compute and budget
@@ -1440,3 +1522,32 @@ Kept permanently, because the value of this project's claims is that they surviv
     to be printed, because a merged cell is a different quantity from either row and a
     reader cannot tell which one they are being shown. A comprehension over rows is how a
     uniqueness assumption hides: it cannot fail, it just keeps the last one.
+
+33. **A branch no input could distinguish sat in the ordinal loss, and its mutation
+   survived its own battery; the fix was to delete the branch, not to write a harder
+   test.** P9 9a gave `typed_loss` an `ordinal`/`opt_valid` pair that arrives either
+   per-row (`[B,N]`, `[B,N,O]`) or shared across the batch (`[N]`, `[N,O]`), the same
+   two forms the question tensors have carried since P2. The first version expanded the
+   shared form by hand — `if ordinal.dim() == 1: ordinal = ordinal.expand(gold.shape[0],
+   -1)` — which reads like a shape contract and is not one: broadcasting already turns
+   `[N]` against `[B,N]` into exactly the tensor the expand builds, and a shared-form
+   mask *by definition* says the same thing about every row, so no input exists in which
+   the two forms disagree. `bench/mutation_ordinal.py` proved it the only way that
+   counts — `if ordinal.dim() == 1:` → `if False:` left all 18 tests green — and so the
+   branch is gone, with the contract now living in a comment on the arithmetic and in
+   `test_the_shared_and_per_row_forms_agree`, which is the witness worth keeping because
+   it can still fail. Two rules fall out. *A battery entry that cannot fail is evidence
+   about the code, not about the battery*: either the instrument is under-sized or the
+   branch is dead, and the two are told apart by trying an input in which they should
+   disagree. *An explicit broadcast is not documentation* — writing a conversion the
+   language already performs buys a line nobody can test.
+   The same run produced its exact opposite, which is why the rule is not "delete
+   defensive masking". The `* opt_valid` that bounds the CDF sum to a cell's own options
+   looks equally redundant, because a caller that masked its logits to -1e9 makes every
+   tail term `(1 − 1)²`; and `MynaModel.forward` does mask them. But `typed_loss` cannot
+   see that — it receives a tensor — and the value of a sum over `O` columns is *not* the
+   value of a sum over the cell's `K` options for a caller that built its logits by
+   hand, which is what three of this file's tests do. Masked away, the mutation is caught
+   by exactly one of them (`test_the_builder_masks_feed_the_loss_in_the_order_the_loop_
+   passes_them`); that single test is the reason the multiply stays and the reason its
+   name is written down rather than left to the next reader.

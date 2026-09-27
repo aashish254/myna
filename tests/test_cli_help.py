@@ -34,6 +34,7 @@ def _help(*argv):
 @pytest.mark.parametrize("module,flag", [
     ("myna.train", "--paraphrase"),
     ("myna.train", "--max-q-cells"),
+    ("myna.train", "--score-loss"),
     ("myna.rlcd", "--score"),
     ("myna.serve", "--port"),
     ("myna.serve", "--abstain-below"),
@@ -65,6 +66,7 @@ def test_module_help_renders(module, flag):
     ("bench/mutation_scratch.py", "Mutation battery"),
     ("bench/gates.py", "--check"),
     ("bench/mutation_gates.py", "Mutation battery"),
+    ("bench/mutation_ordinal.py", "Mutation battery"),
 ])
 def test_bench_script_help_renders(script, expect):
     """The diag scripts took `sys.argv[1]` positionally, so `--help` was parsed as a
@@ -94,6 +96,7 @@ def test_percent_in_a_help_string_survives_argparse_formatting():
     "bench/mutation_mlx.py",
     "bench/mutation_scratch.py",
     "bench/mutation_gates.py",
+    "bench/mutation_ordinal.py",
 ])
 def test_mutation_help_does_not_run_the_battery(script):
     """Each run is ~30 pytest passes; `--help` must not be one of them."""
