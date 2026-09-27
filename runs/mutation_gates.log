@@ -1,0 +1,38 @@
+baseline copy: green (1 test file)
+
+[ 1/17] caught      a proof reads its field and then ignores the value
+            FAILED tests/test_gates.py::test_a_proof_whose_field_flipped_reds_the_gate - ...
+[ 2/17] caught      a proof key path stops walking lists
+            FAILED tests/test_gates.py::test_the_committed_tree_passes - TypeError: list ...
+[ 3/17] caught      a proof file no longer has to be committed
+            FAILED tests/test_gates.py::test_a_proof_file_that_is_not_committed_reds_the_gate
+[ 4/17] caught      a met verdict may rest on a field that prints false
+            FAILED tests/test_gates.py::test_a_met_gate_cannot_rest_on_a_field_that_prints_false
+[ 5/17] caught      a met verdict stops needing a field that prints true
+            FAILED tests/test_gates.py::test_a_met_gate_cannot_rest_on_a_field_that_prints_false
+[ 6/17] caught      a not-met verdict stops needing a field that prints false
+            FAILED tests/test_gates.py::test_a_not_met_gate_needs_a_field_that_prints_false
+[ 7/17] caught      a cited registry row stops being re-checked
+            FAILED tests/test_gates.py::test_a_gate_citing_a_drifted_registry_row_goes_red
+[ 8/17] caught      a cited row no longer has to be locally reproducible
+            FAILED tests/test_gates.py::test_a_met_verdict_cannot_rest_on_a_run_this_box_cannot_repeat
+[ 9/17] caught      a void artifact can back a verdict again (§9.23)
+            FAILED tests/test_gates.py::test_a_met_verdict_cannot_rest_on_a_void_artifact
+[10/17] caught      a gate may cite nothing at all
+            FAILED tests/test_gates.py::test_a_gate_citing_nothing_at_all_reds - Assertio...
+[11/17] caught      open no longer has to name a run this box cannot do
+            FAILED tests/test_gates.py::test_open_must_name_the_run_this_box_cannot_do - ...
+[12/17] caught      SPEC §2.2's verdict word stops being compared
+            FAILED tests/test_gates.py::test_prose_and_code_must_lead_with_the_same_word
+[13/17] caught      a gate with no §2.2 row at all passes
+            FAILED tests/test_gates.py::test_a_gate_with_no_prose_row_of_its_own_reds - a...
+[14/17] caught      the release headline counts every verdict as met
+            FAILED tests/test_gates.py::test_the_release_state_counts_the_verdicts_that_are_there
+[15/17] caught      README's generated block loses its fences
+            FAILED tests/test_gates.py::test_the_verdict_tally_is_the_one_the_readme_prints
+[16/17] caught      G7's proof reports green while registry rows drift
+            FAILED tests/test_gates.py::test_g7_goes_red_when_the_registry_itself_drifts
+[17/17] caught      --check's exit code stops reflecting the failures
+            FAILED tests/test_gates.py::test_check_exits_nonzero_when_a_verdict_breaks - ...
+
+17/17 mutations caught

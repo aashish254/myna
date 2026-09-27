@@ -64,13 +64,20 @@ Quote the ratio, never the millisecond figure.
 
 | # | gate | pass condition | status |
 |---|---|---|---|
-| **G1** | Accuracy beats the witness | macro decision-v2 test ≥ 0.70 on the frozen split, per-source table published, ≥ 0.4331 majority floor by ≥ +0.15 | open |
+| **G1** | Accuracy beats the witness | macro decision-v2 test ≥ 0.70 on the frozen split, per-source table published, ≥ 0.4331 majority floor by ≥ +0.15 | open — open on a missing **artifact**, not a missing **run**: `v1b-kaggle-3600b` trained 3,600 updates on Kaggle and reported its own metrics, and no witness of it is committed in this repo, which is exactly the case §9.30 refuses a figure for. What is committed is the untrained control (**0.346 / 0.351**, `runs/scratch_decision_v2_test.md`) and the void pre-`385e06c` checkpoint (**0.338**), both far below the bar, and `runs/report_scratch_vs_laya.json` prints `"pass": false` for the control's own G1 check. TODO 3i publishes the verdict from its own artifact |
 | **G2** | Latency claim survives equal-footing re-measurement | same box, same window, same question count, direct `Agent` call not `Router`; published ratio recomputed from that or withdrawn | **met** (4a/4c): one M5 process, both fp32, `Agent.system_one`, ladder capped inside laya's 1024 window — **3.04×/3.21×/4.12×/3.60×** at 1/5/10/50 questions end-to-end and **6.78×/4.67×/4.75×/3.65×** on the ask-only path, each the minimum of two committed runs, `runs/latency_matched*.md`. G1 is *not* implied: v0's accuracy still fails (§4.2) |
 | **G3** | Deployment works for real | ONNX browser build answers a live page's decisions; bytes + p50 + cold-load measured in Chrome | **met, as a mechanics gate only.** `browser/index.html` runs the exported artifact in real Chrome 153 and answers three typed decisions with the same probabilities the torch engine prints (6/6 parity checks, both isolation modes, desktop and mobile widths, `runs/browser_g3.json`); bytes, cold-load and p50 are measured there with the box's load average recorded beside them. What this does **not** say: the artifact it deploys is v0, which still fails G1 and G5, the ≤ 20 MB int8 route is open at the byte level and closed at the agreement level (§9.28), and the Apple-silicon int8 route closes for the opposite reason — 17.40 MiB at 9.24e-03 and **no** latency win at all, so fp32 is the artifact on both paths (§9.29) |
 | **G4** | Long-context is *correct*, not just cheap | needle-style typed decision ≥ 0.90 at 4k and ≥ 0.85 at 16k state | **not met, and not yet measurable on this box.** v0's needle curve (`runs/needle_myna-v0.md`) reads 0.188 at 128 tokens against a 0.167 floor — at chance on the shortest rung — so the longer rows are decay of nothing, and the harness now says so itself rather than printing a table (§9.25). The 16k *state* is measured and cheap (§9.22); the 16k *decision* needs the long-context checkpoint, which is 7b / `KAGGLE` |
-| **G5** | Useful confidence, with abstention | risk/coverage curve on `calibration.jsonl`; ≥ 0.95 accuracy at ≥ 60% coverage on banking77 + dbpedia14 + trec | **harness met, gate not met.** Abstention ships: `Myna(ckpt, abstain_below=t)` withholds the commitment and prints the measured reason, the fallback seam labels every answer with the engine that committed, and the curve is a committed artifact (`runs/risk_coverage.md`, 448 rows / 568 questions). Accuracy on v0 climbs **0.349 → 0.535** as coverage falls 1.00 → 0.20 — the confidence ranks the answers, on a checkpoint that cannot do the task — and setting the 0.693 floor on the engine abstains on **227** questions where the curve withheld **227**. But **no rung reaches 0.95** (max 0.596, at 10% coverage) and G5's own three sources sit at 0.000 / 0.025 / 0.150, so the pass needs the `KAGGLE` checkpoint (§9.24) |
+| **G5** | Useful confidence, with abstention | risk/coverage curve on `calibration.jsonl`; ≥ 0.95 accuracy at ≥ 60% coverage on banking77 + dbpedia14 + trec | **not met on the level, met on the machinery.** Abstention ships: `Myna(ckpt, abstain_below=t)` withholds the commitment and prints the measured reason, the fallback seam labels every answer with the engine that committed, and the curve is a committed artifact (`runs/risk_coverage.md`, 448 rows / 568 questions). Accuracy on v0 climbs **0.349 → 0.535** as coverage falls 1.00 → 0.20 — the confidence ranks the answers, on a checkpoint that cannot do the task — and setting the 0.693 floor on the engine abstains on **227** questions where the curve withheld **227**. But **no rung reaches 0.95** (max 0.596, at 10% coverage) and G5's own three sources sit at 0.000 / 0.025 / 0.150, so the pass needs the `KAGGLE` checkpoint (§9.24) |
 | **G6** | No regression on what already worked | synthetic v0 test ≥ 0.94 | open — v0's measured test macro is **0.9523** (`runs/train-v0.log`, macro of its nine `=== test ===` rows), so the level clears today; the gate stays open until a v1 checkpoint is run against it, and a draft of this row cited "0.951", which no artifact prints (§9.30) |
-| **G7** | Reproducibility | one command per result, seeds pinned, witness JSONs committed, `pytest` green | open |
+| **G7** | Reproducibility | one command per result, seeds pinned, witness JSONs committed, `pytest` green | **met, as a binding rather than a rebuild.** `bench/reproduce.py` holds 22 rows binding every published table cell to one command and one committed witness each, and `make repro` re-reads the 38 quoted figures out of those artifacts rather than out of the prose; the seeds live inside the printed commands (`--seed 0`, `--seeds 0 1`), not in sentences about them. What this does **not** say: no target *executes* the registry end to end — 14 rows re-run on this box, 2 retrain a checkpoint, 2 need a laya checkout, 3 need Chrome, 1 is `KAGGLE` — which is why TODO 8b stays unticked and why G7 is discipline rather than a one-command rebuild |
+
+**This column is not a claim.** `make gates` (`bench/gates.py --check`) re-reads each cell's
+leading verdict word, the registry row that gate cites, and the named field inside a committed
+artifact — and a `met` verdict is refused if the field it rests on prints `false`, while an
+`open` verdict is refused unless the gate names a run this box cannot do. As of P8 8d the tally
+is **3 met, 2 not met, 2 open**, so the release gate is not clear; README's copy of that table is
+generated from the same file and is therefore *not* evidence (§9.31).
 
 ### 2.3 Non-goals (deliberate exclusions)
 - **No text generation, no vocabulary readout.** The contract is decisions in constant time.
@@ -845,6 +852,15 @@ are counted, and if nothing is left the run refuses. See §9.14.
       in by, so the two witnesses have to agree to the printed digit — and §9.32 is the
       competitor-side bug that join found on the way.
 - [ ] Public release gate: P0 push + G1–G7 all pass or all explicitly marked not met.
+      The verdict half is done — P8 8d — and it says **no**. `bench/gates.py` binds each of
+      G1–G7 to a registry row *and* to a named field read out of a committed artifact, so no
+      verdict can be greener than the witness behind it: **3 met** (G2 on the matched ratios,
+      G3 on the in-Chrome parity, G7 on the checker itself), **2 not met** (G4, whose own
+      harness prints `readable: false`; G5, whose curve prints `g5.pass: false`), **2 open**
+      (G1 and G6, both waiting on artifacts that are not in this repo). `make gates` is the
+      check and SPEC §2.2 is the prose it reads. What keeps this line unticked is the release
+      itself: G1 and G4 need Kaggle, G6 needs any trained v1 artifact, and P0's push is
+      user-gated with no remote yet created.
 
 ---
 

@@ -11,6 +11,30 @@ decision models, and both re-encode the entire state on every request. Agent
 loops don't work that way — the state grows at the edge and the questions are
 short. Myna is an architecture built for that shape from the ground up.
 
+<!-- gates:release:begin -->
+## Where this stands: the release gate, all seven rows
+
+**3 of 7 met, 2 not met, 2 open — the release gate is NOT clear.**
+
+Every verdict below is checked against a committed artifact — the registry
+row beside it and the field read out of that artifact by
+`uv run python bench/gates.py --check` — and the same words head the
+status column of [SPEC.md](SPEC.md) §2.2. The gate that decides whether
+this is a product (G1) and the gate that decides what it can read (G4)
+are the two that cannot be closed on this box.
+
+| gate | verdict | what the committed artifact prints | what it does not claim |
+|---|---|---|---|
+| **G1** — Accuracy beats the witness | **open** | nothing that decides it. What is committed is the untrained control at **0.346 / 0.351** (`runs/scratch_decision_v2_test.md`) and the void pre-`385e06c` checkpoint at **0.338**, and `runs/report_scratch_vs_laya.json` prints `"pass": false` for the control's own G1 check. | open on a missing *artifact*, not a missing *run*. `v1b-kaggle-3600b` trained 3,600 updates on Kaggle and reported its own metrics; no witness of it is committed in this repo, which is exactly the case §9.30 refuses a figure for. TODO 3i publishes the verdict from its own artifact — and until then the two numbers above are the architecture at chance and at chance-after-a-gradient-step, neither of which is G1's subject. |
+| **G2** — Latency claim survives equal-footing re-measurement | **met** | one M5 process, both engines fp32, `Agent.system_one` called directly, ladder capped inside laya's own 1024 window: **3.04×/3.21×/4.12×/3.60×** end-to-end and **6.78×/4.67×/4.75×/3.65×** ask-only at 1/5/10/50 questions, each cell the minimum of two committed runs. | met as a ratio, which is all G2 asks. It carries no accuracy implication: the model that is faster is the one that still fails G1, and the millisecond columns behind these ratios are load-dependent on a box other sessions share (§9.23) — quote the ratio, never the milliseconds. |
+| **G3** — Deployment works for real | **met** | the exported artifact answers three typed decisions in real Chrome 153 with the same probabilities the torch engine prints — 6/6 parity checks, both isolation modes, desktop and mobile widths — and its bytes, cold-load and p50 are measured there with the box's load average printed beside them. | met as a mechanics gate, and the caveat is part of the verdict rather than a footnote: what ships is v0, which fails G1 and G5; the ≤ 20 MB int8 route is open on bytes and closed on agreement (§9.28); the Apple-silicon int8 route closes for the opposite reason — 17.40 MiB at 9.24e-03 and no latency win at all, so fp32 is the artifact on both paths (§9.29). |
+| **G4** — Long-context is *correct*, not just cheap | **not met** | v0's needle curve prints **0.188 at 128 tokens** against a 0.167 uniform floor — at chance on the *shortest* rung — so the longer rows are the decay of nothing, and `runs/needle_myna-v0.md` prints `G4: not measured by this run` in place of a table a reader could quote. | not met, and not met by a run that cannot answer the question. The 16k *state* is measured, fixed at 576 KiB and cheap (§9.22); the 16k *decision* needs the 4k truncated-backprop checkpoint, which is 7b / `KAGGLE`. Those are two different claims and only the first one is settled. |
+| **G5** — Useful confidence, with abstention | **not met** | the curve's own `g5.pass` is `false`: accuracy climbs **0.349 → 0.535** as coverage falls 1.00 → 0.20 over 448 rows / 568 questions, **no rung reaches 0.95** (the max is 0.596, at 10% coverage), and G5's three named sources measure 0.000 / 0.025 / 0.150. | not met on the level, met on the machinery, and the gate is the level. `Myna(abstain_below=t)` withholds the commitment with a measured reason and the fallback seam labels which engine committed — a confidence that ranks the answers of a model that cannot answer is routing, not the product G5 describes (§9.24). |
+| **G6** — No regression on what already worked | **open** | v0's measured test macro is **0.9523** — the macro of the nine `=== test ===` rows in `runs/train-v0.log`, recomputed from its rows because the log prints no overall line — so the level clears today. | open rather than met, because the gate is written against the *next* checkpoint: it says "no regression", and there is no trained v1 artifact in this repo to regress. A draft of this row cited 0.951, a figure no artifact prints (§9.30), which is why the value here is computed from the log's own rows. |
+| **G7** — Reproducibility | **met** | `make repro` is green at this tick: 22 registry rows bind every published table cell to one command and one committed witness, and the 38 quoted figures are re-read out of those files rather than out of the prose. The seeds live inside the printed commands (`--seed 0`, `--seeds 0 1`), not in sentences about them. | met as a binding, not as a rebuild, and the gap is disclosed rather than absorbed: no target *executes* the registry end to end — 14 rows re-run on this box, 2 retrain a checkpoint, 2 need a laya checkout on `PYTHONPATH`, 3 need Google Chrome and 1 is `KAGGLE`. That is TODO 8b, which stays unticked for exactly this reason. |
+
+<!-- gates:release:end -->
+
 ## The architecture
 
 1. **Gated linear attention trunk.** Each layer carries a fixed-size matrix
@@ -421,6 +445,22 @@ the `gated-kaggle` row has **no witness on purpose** — that figure does not ex
 and no local run may invent it. `make repro-show ROW=ID` prints what a row would do and
 `make repro-run ROW=ID` does it, overwriting a committed witness the README quotes —
 hence the two-step.
+
+The release-gate table at the top of this file is deliberately **not** a row here. Its
+command is
+
+```bash
+make gates                                               # or:
+uv run python bench/gates.py --check    # every verdict, or it says which one lost its witness
+```
+
+and what that proves is different in kind: `bench/gates.py` imports the registry above
+rather than restating it, so a verdict cannot be greener than the artifact under it, and it
+re-reads one named field from a committed JSON file per gate (`g5.pass`,
+`baseline.readable`, `inference_only`, `meta.myna_dtype`). But the table itself is
+*generated* from the same declarations it would check, and §9.31 says what a checker
+generates is not evidence — so the evidence is [SPEC.md](SPEC.md) §2.2's status column and
+the files it cites, which is exactly what `--check` reads.
 
 <!-- reproduce:registry:begin -->
 ```bash

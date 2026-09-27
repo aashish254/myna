@@ -334,7 +334,44 @@ So every "train" item below is split into *prepare/verify the Kaggle path locall
       for the void checkpoint says so in its note, because an artifact whose input is uncommitted
       cannot be quoted as evidence.
       Suite at this tick: **354 passed, 1 skipped**.
-- [ ] **8d** Release gate: G1–G7 each pass or each explicitly marked not met
+- [x] **8d** Release gate: G1–G7 each pass or each explicitly marked not met. The answer is
+      **no, and here is which**: `bench/gates.py` carries one verdict per gate — **3 met**
+      (G2 the matched latency ratios, G3 the in-Chrome mechanics, G7 the checker itself),
+      **2 not met** (G4, G5), **2 open** (G1, G6) — and `make gates` prints
+      *7/7 verdicts hold — 3 of 7 met, 2 not met, 2 open — the release gate is NOT clear.*
+      The binding, not the tally, is the work. A gate cites (i) registry rows from
+      `bench/reproduce.py`, **imported and re-run** so a verdict inherits its witness's drift
+      verbatim instead of restating it, and (ii) proofs — a named key path read out of a
+      committed JSON artifact and compared to the value the verdict rests on:
+      `g5.pass=false` for G5, `baseline.readable=false` for G4, `inference_only=true` plus
+      both `*_dtype=torch.float32` for G2, `pass=true`/`rows/0/report/passed=6` for G3, and
+      the registry's own green exit for G7. Four rules then refuse the easy lies: a `met`
+      verdict may not rest on a field that prints `false`, and needs one that prints `true`;
+      `not met` needs a field that prints `false`, because a failure is a claim too; a
+      verdict may not rest on a `void` artifact (§9.23) or on a row this box cannot re-run;
+      and **`open` is only allowed for a gate that names the run it cannot do** — so "open"
+      means a missing artifact, never a measurement nobody took. That last rule is what keeps
+      G1 honest: the control's 0.346 sits under its threshold and G1 is still `open`, because
+      the checkpoint that decides it has no witness in this repo (§9.30).
+      Instrument: `tests/test_gates.py` (**25** tests) and `bench/mutation_gates.py`
+      (**17/17 caught, exit 0** — `runs/mutation_gates.log`). This battery had to link `.git`
+      and the four docs into its scratch copy, because the checker under test reads the git
+      index and the prose rather than only its own argv. One entry survived its first pass
+      and the fix was to the test: dropping the status filter from the "locally reproducible"
+      rule was invisible while the discriminating citation was a `gated-kaggle` row, because
+      the registry already forbids those quotes, so `r["quotes"]` failed it either way — the
+      two halves of the condition denoted the same outcome. The test now cites a `retrain`
+      row (committed witness, unreproducible run) *and* a `gated-kaggle` row.
+      What the prose had to give up: §2.2's G5 cell led with "harness met", so the verdict
+      word is now first ("not met on the level, met on the machinery"); G7 moves from a bare
+      `open` to **met as a binding, not a rebuild**, with the 14-of-22 split printed beside
+      it rather than in a footnote; and G1's one-word `open` becomes the sentence that says
+      which artifact is missing. README's copy of the table is generated, and §9.31 is why it
+      is labelled as carrying no evidence — `--check` reads §2.2 and the JSON files, never the
+      generated block. TODO 8b and §5's release line stay unticked on purpose: 8b is the
+      one-target-runs-everything gap (Kaggle-side), and the release itself still waits on P0's
+      push, on G1/G4's checkpoints and on any trained artifact for G6.
+      Suite at this tick: **382 passed, 1 skipped**.
 
 ## Cross-cutting
 - [ ] Every new gate mutation-checked, witness quoted in the commit message (SPEC §7.1)
