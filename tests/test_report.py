@@ -20,6 +20,7 @@ independent pieces of code, agreeing, is a floor you can quote.
 
 import json
 import os
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -27,8 +28,9 @@ from pathlib import Path
 import pytest
 
 from myna.data import Example, Question
-from myna.report import (MIN_CELL_ROWS, accuracy_cells, cell_stats, g1_verdict, laya_cells,
-                         macro, main, roll_up, strata, table_text)
+from myna.real_data import load_split
+from myna.report import (LBL, MIN_CELL_ROWS, accuracy_cells, brier_cells, cell_stats,
+                         g1_verdict, laya_cells, macro, main, roll_up, strata, table_text)
 
 REPO = Path(__file__).resolve().parent.parent
 PILOT = REPO / "data" / "decision-v2-pilot"
@@ -207,7 +209,7 @@ def test_the_table_prints_the_strata_with_their_own_macro():
     assert "0.333" in ag, "the majority floor must ride in the same line as the model"
     assert "0.083" in ag, "the last column is model minus MAJORITY, not minus chance"
     assert "trec/answer_type" in text, "a kept cell with no model number still prints floors"
-    assert "macro over its" in text
+    assert "macro: 1 cell(s)" in text
 
 
 def test_laya_columns_join_on_the_cell_not_on_the_row_count():
@@ -236,7 +238,7 @@ def test_a_perfect_laya_macro_still_prints_when_its_other_cell_is_zero():
     laya = {("agnews", "topic"): {"acc": 0.95, "n": 40},
             ("trec", "answer_type"): {"acc": 0.0, "n": 40}}
     text = table_text(rows, strata(SPLIT), laya=laya, split="test")
-    ln = [l for l in text.splitlines() if "macro over its 2 scored cells" in l][0]
+    ln = [l for l in text.splitlines() if "macro: 2 cell(s)" in l][0]
     assert "0.475" in ln, ln
 
 
@@ -276,6 +278,10 @@ def test_the_majority_floor_reproduces_the_published_04331(tmp_path, empty_metri
     # print over all kept cells rather than vanish as an em dash.
     assert "no cell in" in r.stdout, "say that the table has floors and no model"
     assert "floors over all 16 kept cells" in line[0], line[0]
+    # 9c's `elif` is not decoration: with no model number the clip macro is None, and
+    # "the clip column is the model column" would read as a model beating every floor.
+    assert "the clip column is the model column" not in r.stdout, \
+        "nothing was scored, so there is nothing to compare a clip against"
 
 
 @pytest.mark.skipif(not (PILOT / "test.jsonl").exists(), reason="pilot corpus not on disk")
@@ -521,3 +527,241 @@ def test_main_accepts_a_run_directory(tmp_path):
     assert main(["--suite", str(PILOT), "--split", "test", "--metrics", str(art),
                  "--out", str(tmp_path / "s.json")]) == 0
     assert (tmp_path / "s.json").exists()
+
+
+# ---- 9c's clip column and 9b's Brier column (SPEC §5 P9) ----------------------
+#
+# Two of the three numbers a cell can be judged on already ride in this table; 9c
+# adds `max(model, majority)` *beside* the model rather than instead of it, and the
+# sentence that labels the difference is the artifact under test. What a mutation
+# battery would catch and a count of passing tests would not: a clip printed in
+# place of the accuracy, a clip macro sold as a gain, and a missing `:brier` sidecar
+# read as a Brier of zero.
+
+def _cli_metrics(tmp_path, metrics):
+    p = tmp_path / "metrics.json"
+    p.write_text(json.dumps({"test": metrics}))
+    return str(p)
+
+
+def _pilot_metrics(tmp_path, price, brier=None):
+    """A metrics file with the pilot's *own* set keys, priced per question type.
+
+    The keys come from the split so the row weights are the real ones; the prices are
+    constants, so every expected figure below is hand arithmetic rather than the
+    module's own output.
+    """
+    groups = load_split(PILOT / "test.jsonl")
+    m = {}
+    for wf, (qs, _ex) in groups.items():
+        for q in qs:
+            m[f"{wf}/{q.name}"] = price(q.type)
+            if brier and q.type == "noul":
+                m[f"{wf}/{q.name}:brier"] = brier
+    return _cli_metrics(tmp_path, m)
+
+
+def test_clip_is_the_bigger_number_and_its_worth_is_the_difference():
+    stats = cell_stats(SPLIT)
+    acc, _ = accuracy_cells({"boolq#0000/answer": 0.5, "agnews#aaaa/topic": 0.5,
+                             "agnews#bbbb/topic": 0.5}, SPLIT)
+    rows = {(r["source"], r["question"]): r for r in roll_up(stats, acc, keep_min=5)}
+    bq = rows[("boolq", "answer")]
+    assert bq["majority"] == pytest.approx(5 / 8), "five 1s in eight rows"
+    assert bq["acc"] == pytest.approx(0.5) and bq["clip"] == pytest.approx(0.625)
+    assert bq["clip_worth"] == pytest.approx(0.125), \
+        "the clip's worth is what the constant predictor has that the model does not"
+    ag = rows[("agnews", "topic")]
+    assert ag["acc"] == pytest.approx(0.5) and ag["clip"] == pytest.approx(0.5)
+    assert ag["clip_worth"] == 0.0, "a cell above its floor is not owed a clip"
+    assert rows[("trec", "answer_type")]["clip"] is None, \
+        "no model number means no clip, not a clip equal to the floor"
+
+
+def test_the_clip_and_brier_columns_ride_beside_the_model_not_over_it():
+    stats = cell_stats(SPLIT)
+    acc, _ = accuracy_cells({"boolq#0000/answer": 0.5}, SPLIT)
+    rows = roll_up(stats, acc, keep_min=5, briers={("boolq", "answer"): 0.375})
+    text = table_text(rows, strata(SPLIT))
+    hdr = [ln for ln in text.splitlines() if ln.startswith("source/question")][0]
+    assert "clip" in hdr and "brier" in hdr
+    ln = [l for l in text.splitlines() if l.startswith("boolq/answer")][0]
+    assert "0.500" in ln and "0.625" in ln, "model and clip on the same line"
+    assert "0.375" in ln, ln
+    assert "0.563" not in ln, "the line carries both numbers, never their midpoint"
+    assert "clip = max(model, maj)" in text and "oracle" in text, \
+        "the column is labelled where it is printed, not only in the docstring"
+
+
+COLS = ("model", "clip", "laya", "maj", "unif", "brier", "-maj")
+
+
+def _edges(hdr):
+    """Where each numeric column *ends*, plus the boundary that opens the first one.
+
+    Every field before the numbers is right-aligned, so a header word ends exactly on
+    its field; the label is left-aligned, so its end says nothing. Without the opening
+    boundary the first numeric column swallows the whole row prefix.
+    """
+    return [hdr.index("sets") + len("sets"),
+            *(hdr.index(nm) + len(nm) for nm in COLS)]
+
+
+def _columns(ln, edges):
+    """Read one table line by *position*, the way a reader does."""
+    out, prev = {}, edges[0]
+    for nm, e in zip(COLS, edges[1:]):
+        out[nm] = ln[prev:e].strip()
+        prev = e
+    return out
+
+
+def test_the_macro_row_lands_in_the_same_columns_as_the_cells(tmp_path, capsys):
+    """A header word and the number under it are one claim. The committed artifact
+    had the macro row's label overrun its field by six characters, so every figure in
+    it sat six columns right of the header it belonged to — no assertion about values
+    can see that, and a reader's eye reads a column by position.
+
+    The pilot split, not the small fixture: its longest real cell name is 20
+    characters, which is what makes the label field's width load-bearing. A Brier is
+    priced so the column left of the delta is occupied too, and one noul cell is read
+    whose delta is negative — that is the pair of figures that can collide.
+    """
+    metrics = _pilot_metrics(tmp_path, lambda t: 0.5, brier=0.4)
+    assert main(["--suite", str(PILOT), "--split", "test", "--metrics", metrics]) == 0
+    out = capsys.readouterr().out.splitlines()
+    hdr = [ln for ln in out if ln.startswith("source/question")][0]
+    edges = _edges(hdr)
+    assert len(set(edges)) == 8, edges
+    body = [ln for ln in out
+            if ln.startswith(("contrastive/decision", "banking77/intent",
+                              "agnews/is_business", "  macro:"))]
+    assert len(body) == 5, \
+        f"the 20-char name, a 16-char name, a priced noul cell, two macro rows: {body}"
+    for ln in body:
+        ends = [m.end() for m in re.finditer(r"-?\d\.\d{3}", ln)]
+        assert ends, ln
+        assert all(e in edges for e in ends), (ln, edges, ends)
+        # Alignment is not enough: a delta that fills its field exactly butts against
+        # the figure to its left, and "0.312-0.125" reads as one number. The width the
+        # delta gets is what keeps a minus sign off its neighbour.
+        assert not re.search(r"\d-\d\.\d", ln), f"two figures touch: {ln}"
+    # The one width the data sets rather than the design: the label field has to
+    # outlast the longest real cell name, or the table's first column stops being one.
+    widest = max(len(f"{s}/{q}") for s, q in cell_stats(load_split(PILOT / "test.jsonl")))
+    assert LBL > widest, f"LBL {LBL} against the split's own widest cell name {widest}"
+
+
+def test_the_clip_keeps_whichever_number_wins(tmp_path, capsys):
+    """`clip` is a maximum, so one row has to show the model and another the floor —
+    at one price for every cell the two orders both occur on this split. A column
+    that always printed the floor, or always the model, passes any single-row check.
+    """
+    metrics = _pilot_metrics(tmp_path, lambda t: 0.5)
+    assert main(["--suite", str(PILOT), "--split", "test", "--metrics", metrics]) == 0
+    out = capsys.readouterr().out.splitlines()
+    edges = _edges([ln for ln in out if ln.startswith("source/question")][0])
+
+    def cells(prefix):
+        return [_columns(ln, edges) for ln in out if ln.startswith(prefix)]
+
+    # yelp/rating's floor is 0.275, so a 0.5 model keeps its own number...
+    yr = [r for r in cells("yelp/rating")][0]
+    assert yr["model"] == "0.500" and yr["clip"] == "0.500" and yr["maj"] == "0.275", yr
+    # ...and agnews/is_business's floor is 0.698, so the same model does not.
+    ab = [r for r in cells("agnews/is_business")][0]
+    assert ab["model"] == "0.500" and ab["clip"] == "0.698" and ab["maj"] == "0.698", ab
+    loser = [ln for ln in out if "agnews/is_business 0.500 < 0.698" in ln]
+    assert len(loser) == 1, "the named cell and its worth belong to the floor-loser line"
+    # The macro row has to carry the clip too, and it is not the majority macro: eight
+    # of the shared group's 14 cells keep 0.500, four take an agnews floor (0.698,
+    # 0.653, 0.809, 0.778) and two take 0.537, which averages to 0.572 — against the
+    # 0.431 floor and the 0.500 model in the same two columns.
+    mr = _columns([ln for ln in out if ln.startswith("  macro: 14")][0], edges)
+    assert mr["model"] == "0.500" and mr["clip"] == "0.572" and mr["maj"] == "0.431", mr
+
+
+def test_a_missing_brier_sidecar_is_an_em_dash_not_a_zero():
+    stats = cell_stats(SPLIT)
+    acc, _ = accuracy_cells({"boolq#0000/answer": 0.5}, SPLIT)
+    ln = [l for l in table_text(roll_up(stats, acc, keep_min=5), strata(SPLIT)).splitlines()
+          if l.startswith("boolq/answer")][0]
+    assert "—" in ln and "0.000" not in ln, ln
+
+
+def test_a_floor_losing_cell_is_named_and_its_delta_called_arithmetic(tmp_path, capsys):
+    """The clip is an oracle statistic, so the only honest print names the cells and
+    refuses the gain. This is the sentence a later run will be quoted on."""
+    metrics = _pilot_metrics(tmp_path, lambda t: 0.0)
+    assert main(["--suite", str(PILOT), "--split", "test", "--metrics", metrics]) == 0
+    out = capsys.readouterr().out
+    assert "16 of 16 scored cell(s) answer below their own majority floor" in out, out
+    assert "worth +0.250" in out, "sst5's floor is a quarter of the rows: name the worth"
+    assert "of arithmetic and 0 of model" in out, out
+    assert "leaderboard decision" in out, "the clip is not offered as a fix"
+    assert "MACRO over the 16 scored cells: model 0.000" in out, \
+        "the clip macro must not become the headline number"
+    assert "0.433" in out, "the majority macro is still the floor, printed as the floor"
+
+
+def test_a_model_no_floor_beats_says_the_clip_column_buys_nothing(tmp_path, capsys):
+    metrics = _pilot_metrics(tmp_path, lambda t: 1.0)
+    assert main(["--suite", str(PILOT), "--split", "test", "--metrics", metrics]) == 0
+    out = capsys.readouterr().out
+    assert "no scored cell answers below its own majority floor" in out, out
+    assert "1.000 = 1.000" in out, "clip == model, and the line says so rather than silence"
+
+
+def test_brier_is_row_weighted_and_a_key_from_another_split_carries_no_weight():
+    """The weights differ by 10 to 2 here on purpose: with equal-size sets the
+    weighted and unweighted means coincide, and a dropped weight would survive."""
+    br = brier_cells({"agnews#aaaa/topic:brier": 0.1, "agnews#bbbb/topic:brier": 0.3,
+                      "zzz#ffff/topic:brier": 0.9}, SPLIT)
+    assert br[("agnews", "topic")] == pytest.approx((0.1 * 10 + 0.3 * 2) / 12), br
+    assert ("zzz", "topic") not in br, "a sidecar with no rows in the split is not a cell"
+    assert brier_cells({"boolq#0000/answer": 0.1}, SPLIT) == {}, \
+        "a plain accuracy key is not a Brier sidecar"
+
+
+def test_the_noul_line_counts_sidecars_and_reads_against_the_coin_flip(tmp_path, capsys):
+    metrics = _pilot_metrics(tmp_path, lambda t: 0.5, brier=0.25)
+    assert main(["--suite", str(PILOT), "--split", "test", "--metrics", metrics]) == 0
+    out = capsys.readouterr().out
+    assert "noul: 8 of 8 scored binary cells carry a :brier sidecar" in out, out
+    assert "0.250 against 0.250 for a coin flip" in out, \
+        "a Brier equal to chance is the point of printing the reference"
+    assert "§9.24" in out, "the sentence says why an argmax alone is not enough"
+
+
+def test_a_metrics_file_with_no_sidecars_calls_its_brier_column_missing_data(tmp_path,
+                                                                            capsys):
+    metrics = _pilot_metrics(tmp_path, lambda t: 0.5)
+    assert main(["--suite", str(PILOT), "--split", "test", "--metrics", metrics]) == 0
+    out = capsys.readouterr().out
+    assert "noul: 0 of 8 scored binary cells carry a :brier sidecar" in out, out
+    assert "missing data and not a model that scores 0" in out, out
+
+
+def test_the_json_report_carries_the_clip_and_brier_as_fields(tmp_path):
+    out = tmp_path / "r.json"
+    metrics = _pilot_metrics(tmp_path, lambda t: 0.1, brier=0.4)
+    assert main(["--suite", str(PILOT), "--split", "test", "--metrics", metrics,
+                 "--out", str(out)]) == 0
+    j = json.loads(out.read_text())
+    # `clip` is per-cell, so a model price of 0.1 keeps its own number everywhere
+    # except banking77/intent, whose floor is 0.043: the average of those maxima is
+    # the macro, and it is not the floor macro. Both halves of that difference are
+    # what the test would miss if the column were `majority` renamed.
+    prices = [max(0.1, c["majority"]) for c in j["cells"]]
+    assert j["macro"]["clip"] == pytest.approx(sum(prices) / len(prices)), j["macro"]
+    assert j["macro"]["clip_worth"] == pytest.approx(j["macro"]["clip"] - j["macro"]["acc"]), \
+        "the clip is the model plus its own worth, cell by cell: an unclipped difference " \
+        "would make a cell above its floor subtract from the total"
+    assert len(j["below_majority_floor"]) == 15, \
+        "one cell beats its own floor at 0.1, and it is the 77-way one"
+    assert not any(e["cell"] == "banking77/intent" for e in j["below_majority_floor"])
+    assert all(e["clip_worth"] > 0 for e in j["below_majority_floor"])
+    assert j["macro"]["brier_noul"] == pytest.approx(0.4)
+    assert j["brier"]["noul_cells"] == 8 and j["brier"]["priced_cells"] == 8
+    cell = [c for c in j["cells"] if c["source"] == "sst5"][0]
+    assert cell["clip"] == pytest.approx(cell["majority"]) and cell["brier"] is None

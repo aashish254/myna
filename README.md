@@ -111,6 +111,18 @@ requires all three rather than the flattering pair:
 | myna trained on this corpus (G1) | **gated here** — the Kaggle checkpoint has run and its verdict is TODO 3i's to publish; until its witness is a file in this repo, a figure for this row is a number with nothing behind it (§9.30) | `kaggle/run.py`, TODO 3i |
 | majority-label floor, same 16 cells | 0.433 · *m* | `runs/report_scratch_vs_laya.log` |
 | uniform-chance floor, same 16 cells | 0.332 · *m* | same |
+| majority-label **clip** of that control — `max(model, floor)` per cell, an oracle not a result | 0.436 · *m* | `runs/report_scratch_vs_laya.json` |
+
+The last row is the one that must not be read as a score. `myna.report` now prints
+`clip = max(model, majority)` beside each cell's own accuracy, and the control's
+16-cell clip macro is **0.436** against its model macro of **0.346** — the +0.090
+difference is "answering nothing, per cell, with this split's majority label", which
+is an *oracle* statistic (the floor is measured on the rows being scored), it is
+available to no model, and the report says so on the line that prints it
+(`runs/report_scratch_vs_laya.log`: 13 of 16 cells answer below their own floor).
+Printing it is reporting; *acting* on it would be a per-cell fallback rule — a
+leaderboard decision, not a learning improvement, and SPEC §5 P9: 9c builds the
+report and stays out of that decision.
 
 The disclosure in the middle. The one checkpoint this repo ever trained on the
 upstream corpus scores **0.338** on those same 16 cells

@@ -395,17 +395,47 @@ So every "train" item below is split into *prepare/verify the Kaggle path locall
       Suite at this tick: **404 passed, 1 skipped**; registry `--check` 22/22 rows and 38 figures;
       gates 7/7 verdicts and **3 met / 2 not met / 2 open — NOT clear**, unchanged, because nothing
       published was trained with `emd`.
-- [ ] **9b** The readout fix is **closed without being built**: fitting a per-cell threshold on the
+- [x] **9b** The readout fix is **closed without being built**: fitting a per-cell threshold on the
       suite's own `calibration` split makes the binary cells worse, and the argmaxes were not
       collapsing as claimed (the diagnostic's artifact is Kaggle-side, so its numbers stay out of
       prose — §9.24/§9.30). What survives is the reporting half: a Brier column beside every `noul`
       accuracy in `myna.report`, labelled as reporting, not as a fix. Nothing here raises G1's
       ceiling. SPEC §5 P9.
-- [ ] **9c** Report the cells that lose to their own majority floor as that: `max(acc, majority)`
+      Done (the reporting half only): `brier_cells()` reads `evaluate()`'s `:brier` sidecars and
+      weights them by the rows in each question-set; `roll_up` puts the result in a `brier` column
+      beside the accuracy, with the group's macro under it. Three ways it can lie, three tests: a
+      sidecar-less metrics file prints an **em dash** and the report says the column is empty
+      because the file has none, "which is missing data and not a model that scores 0"; a sidecar
+      whose set is unknown to the split carries **no weight** instead of a zero; and the printed
+      count is `priced of noul`, never `noul of noul`. No threshold and no per-cell bias went into
+      the readout — the dead half stays dead and the box is ticked because the surviving half
+      shipped. `bench/eval_scratch.py` still strips `:brier`/`:ece` on purpose, so the one
+      committed artifact that could show the em-dash path does, at `"priced_cells": 0` of 8.
+- [x] **9c** Report the cells that lose to their own majority floor as that: `max(acc, majority)`
       beside `acc`, the delta labelled as the clip's worth, not the model's. Which cells qualify is
       9c's own measurement on the committed pilot split, not a carried-over count. *Printing* the
       clip is reporting; *acting* on it is a per-cell fallback rule and that is the user's
       leaderboard call, so 9c builds the report and stays out of the decision. SPEC §5 P9.
+      Done, and it stayed out of the decision: `roll_up` carries `clip` and
+      `clip_worth = max(0, majority − acc)`, the legend above the table defines the column where it
+      prints and calls it an oracle, and `main()` names each floor-loser with its worth before
+      saying "+0.090 of **arithmetic and 0 of model** … a leaderboard decision, not a learning
+      improvement". Measured on the committed control over the pilot split: **13 of its 16 cells**
+      answer below their own majority floor; clip macro **0.4365** against model **0.3462** and
+      floor **0.4331** — three cells (both `yelp` rows, `mnli/relation`) beat their floor and keep
+      their own number, which is why a per-cell maximum is not the floor renamed. `--out` carries
+      `macro.clip`, `macro.clip_worth`, `macro.brier_noul` and `below_majority_floor`. Nothing in
+      `src/myna/` reads any of them: no fallback consults `clip_worth`, and acting on it is 9d's
+      company, i.e. the user's call.
+      Two things the build surfaced, both logged: the committed artifacts' macro row had been
+      sitting **six columns right of its header** the whole time and no value assertion could see
+      it (§9.34), and the new columns needed a delta field seven wide or two figures printed as
+      one. `table_text` now emits every line through one `_trow`, and `LBL` is asserted against the
+      split's own widest cell name.
+      Suite at this tick: **415 passed, 1 skipped**; `tests/test_report.py` 29 → **40** tests;
+      `bench/mutation_report.py` **93/93 caught** (67 → 93; `runs/mutation_report.log`); registry
+      `--check` 22/22 rows and **41 figures**; gates 7/7 verdicts and **3 met / 2 not met / 2 open
+      — NOT clear**, unchanged, because a clip is not a result and nothing published was retrained.
 - [ ] **9d** `banking77/intent` and `mnli/relation` are inside or outside G1's scope — a decision
       for the user, recorded so a later run does not silently average them back in.
 

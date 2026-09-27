@@ -522,10 +522,11 @@ optimization.** boolq and mnli are the permanent half of it — their instructio
       instructions over 300 labelled slots while its 116 rows sit in 113 exact-signature sets — §9.17),
       and the six cells whose option counts differ across their sets are printed with their full
       histograms because the chance floor is row-weighted over them. Gate: `bench/mutation_report.py`
-      — **67 mutations over `src/myna/report.py`, all caught, exit 0**, run against a frozen repo
-      (§9.18 is the process correction that bought that discipline; 54 of the 67 are 3g's, and
-      P8 8c added the 13 that cover the competitor line and the §9.32 merge, which is also why
-      the laya per-cell figures below moved by 0.008–0.009).
+      — **93 mutations over `src/myna/report.py`, all caught, exit 0**, run against a frozen repo
+      (§9.18 is the process correction that bought that discipline; 54 of them are 3g's, P8 8c added
+      the 13 that cover the competitor line and the §9.32 merge — which is also why the laya
+      per-cell figures below moved by 0.008–0.009 — and §5 P9's 9b/9c added the 26 that cover the
+      clip column, the Brier column and the table's geometry, §9.34).
 - [ ] **3h** The default-config model (**15.35M** at vocab 4096; v0's artifact is **14.45M** at its
       1,740-entry tokenizer — §2.1 names both) against the ≤ 32M allowance, head-to-head on
       identical data — `KAGGLE`.
@@ -911,7 +912,7 @@ what this repo can act on without the artifact:
       the shared and per-row forms the same tensor, no input could tell them apart, and that
       mutation survived its own battery (§9.33). The level is 3i's: nothing published moves, because
       nothing published was trained with `emd`.
-- [ ] **9b** *Premise corrected by measurement; the readout fix is closed without being built.* This
+- [x] **9b** *Premise corrected by measurement; the readout fix is closed without being built.* This
       box used to say that `noul` cells are scored by an argmax that collapses onto one index while
       the continuous probability ranks, and that the fix is a threshold or a label-prior bias in the
       readout. The follow-up diagnostic refutes both halves on most of those cells (its artifact is
@@ -924,7 +925,27 @@ what this repo can act on without the artifact:
       and it is still worth building: a Brier column beside every `noul` accuracy in `myna.report`,
       because §9.24's point is that an argmax alone over-reports a binary cell either way — it just
       is not a *fix*, and it must not be listed as one. Nothing here raises G1's ceiling.
-- [ ] **9c** Some cells score **below their own majority-label floor**. The first diagnostic named
+      **Built (the surviving half only).** `myna.report` reads `evaluate()`'s
+      `"<set>/<question>:brier"` sidecars through `brier_cells()`, weights them by the rows in each
+      question-set for the same reason `accuracy_cells` does, and prints the result in a `brier`
+      column beside every binary cell's accuracy, with the group's macro under it. The three things
+      this column can lie about are the three it is tested on: a metrics file that predates the
+      sidecars prints an **em dash** and the report says "the column is empty because this metrics
+      file has none, which is missing data and not a model that scores 0"; a sidecar whose
+      question-set is unknown to the split contributes **no weight** rather than a zero; and the
+      count on the line is `priced of noul`, never `noul of noul`. The box is ticked because the
+      surviving half shipped and the dead half is recorded as dead — the readout applies no
+      per-cell bias and no fitted threshold anywhere in `src/myna/`, and §9.24's negative result
+      stands. Where Briers exist on this box at all, they are not quotable: the diagnostic's
+      artifact is Kaggle-side and outside the repo, and the only local metrics file carrying
+      `:brier` keys is the void pre-`385e06c` checkpoint's (§9.23), which is itself uncommitted — so
+      `runs/report_void_vs_laya.log` does print a Brier column, and the registry note for that row
+      says plainly that neither its clip nor its Brier figure enters the prose (§9.30). The
+      committed control is the clean case, and it is the em-dash path: `bench/eval_scratch.py`
+      strips `:brier`/`:ece` on purpose — a Brier column off a random init is noise with a decimal
+      point on it — so `runs/report_scratch_vs_laya.json` reports `"priced_cells": 0` of its 8 noul
+      cells and the report says the column is empty because the file has none.
+- [x] **9c** Some cells score **below their own majority-label floor**. The first diagnostic named
       four; the follow-up that corrected 9b leaves two of them standing as floor-losers and moves the
       rest into 9d's dead-cell question, which is the right split — a cell below its floor *and*
       below its own permutation null is not a decision-rule casualty. This is a reporting failure
@@ -939,6 +960,23 @@ what this repo can act on without the artifact:
       fallback rule, which is a leaderboard decision and not a learning improvement, and 9b is the
       evidence of what a readout rule fitted on this suite's calibration data measured. 9c builds
       the report and stays out of the decision.
+      **Built, and it stayed out of the decision.** `roll_up` carries `clip = max(acc, majority)`
+      and `clip_worth = max(0, majority − acc)` beside the model's own number, the legend defines
+      the column on the line above the table where it prints ("It is an oracle — the floor is
+      measured on the rows being scored"), and `main()` names every floor-loser with its worth and
+      then says what the difference is: "+0.090 of arithmetic and 0 of model … a leaderboard
+      decision, not a learning improvement". Measured on what this box can measure without
+      training — the untrained control over the committed pilot split — **13 of its 16 cells answer
+      below their own majority floor**, and the clip macro is **0.4365** where the model is
+      **0.3462** and the floor **0.4331**. That last pair is the reason `clip` is its own column
+      and not the floor renamed: three cells (both `yelp` rows, `mnli/relation`) score above their
+      floor and keep their own number, so a per-cell maximum beats the average of the floors while
+      thirteen cells are losing. Those 13 are the *control's* — the two trained floor-losers the
+      diagnostics named are a Kaggle-side list and stay 9d's. `--out` carries `macro.clip`,
+      `macro.clip_worth`, `macro.brier_noul` and a `below_majority_floor` array naming each losing
+      cell, so the sentence has fields behind it (§9.30). Nothing in `src/myna/` reads the clip: no
+      fallback consults `clip_worth`, and the per-cell abstention rule this column makes tempting
+      is the user's call, listed as such under 9d.
 - [ ] **9d** Two cells are dead and no decision rule fixes them (`banking77/intent`,
       `mnli/relation`): their association numbers do not beat their own permutation nulls. 9d is a
       scope decision for G1 — in or out — not a fix, and it is the user's call, not a checkbox to
@@ -1551,3 +1589,49 @@ Kept permanently, because the value of this project's claims is that they surviv
    by exactly one of them (`test_the_builder_masks_feed_the_loss_in_the_order_the_loop_
    passes_them`); that single test is the reason the multiply stays and the reason its
    name is written down rather than left to the next reader.
+
+34. **A committed report table put its macro row six columns right of the header it
+   belongs to, and 29 tests, 125 assertions and 67 green mutations were satisfied by
+   it.** `runs/scratch_decision_v2_test.md` and both `runs/report_*.log` carry the
+   per-stratum macro line that `table_text` builds. Its label,
+   `  macro over its 14 scored cells`, is 32 characters and the label field was 26
+   wide, so the row's first figure ended at column 59 where the header's `model` ends
+   at 53: every average in the most-quoted line in the artifact sat under the column to
+   its left. No number was wrong — the misplacement cost nothing but meaning — which is
+   precisely why it survived three rounds of this file's reporting work. Every
+   assertion in `tests/test_report.py` greps a line and looks for a substring;
+   `bench/mutation_report.py` mutates formulas and values; and `bench/reproduce.py
+   --check` asks whether a quoted figure is present in its witness. All three were
+   green on the misaligned table, and all three would still be green today if the
+   widths had been left alone.
+   What found it was a *new* column. 9c's `clip` and 9b's `brier` are honest only if a
+   figure sits under its own header, so the test added for them
+   (`test_the_macro_row_lands_in_the_same_columns_as_the_cells`) reads each line by
+   character offset, with the offsets derived from the printed header rather than from
+   a constant — and the first run showed the macro row one field out of place. The fix
+   is structural: `LBL`/`WID` and one `_trow` that the header, every cell row and every
+   macro row pass through. Adding the columns then produced a second failure pointing
+   the other way: with seven numeric fields, a six-character delta butted against the
+   Brier figure and the table printed `0.312-0.125`, which a reader takes as one number.
+   No assertion about column *edges* can see that — right-aligned fields land a
+   six-character value on their edge whether or not anything separates it from its
+   neighbour — so `WID`'s last field 7→6 survives every positional check and needed an
+   instrument of its own (`assert not re.search(r"\d-\d\.\d", ln)`). The battery now
+   carries the label-width mutation and the field-width mutation as separate entries,
+   because they are failures in opposite directions and only the second one was visible
+   before anything was written about it. `LBL`'s 21 stopped being a design taste too: it
+   is this split's widest real cell name, `contrastive/decision` at 20, and the test
+   asserts `LBL > widest` over `cell_stats(load_split(...))`, so a future source with a
+   longer name breaks the build instead of the table.
+   The general form: *a number's column is part of the number.* Position is a claim
+   about which quantity a reader is being shown, no value assertion can see it, so a
+   table with more than one row type needs at least one test that reads by offset — and
+   widths have to be checked both for overrunning and for touching. The process form
+   matters more: `--check` verifies that a figure is in its witness and that a doc
+   quotes its command, and it does **not** re-run the command, so an artifact can carry
+   a layout its own code would no longer produce, indefinitely and green. Re-rendering
+   the control to settle this produced a determinism witness for free —
+   `runs/scratch_metrics_test.json` came out byte-identical (sha256 `99f54cb0…`), seeds
+   0/1 printed 0.346/0.351 again, and every per-cell figure matched the copy it replaced.
+   Layout moved, nothing scored did, which is what licenses saying the re-rendered
+   artifact is the same measurement better drawn.

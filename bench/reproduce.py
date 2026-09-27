@@ -256,11 +256,19 @@ ROWS = [
         ["runs/report_scratch_vs_laya.json", "runs/report_scratch_vs_laya.log",
          "runs/laya_decision_v2_test.json"],
         [("runs/report_scratch_vs_laya.log", "myna 0.346 · laya 0.667 · gap -0.321"),
-         ("runs/report_scratch_vs_laya.json", '"laya": 0.6668154761904762')],
+         ("runs/report_scratch_vs_laya.json", '"laya": 0.6668154761904762'),
+         # 9c's column, tied to the artifact that printed it: the clip is a *pair* of
+         # numbers (what it is, and what part of it is not the model), so both halves
+         # are quoted rather than the flattering one.
+         ("runs/report_scratch_vs_laya.json", '"clip": 0.43648613706976636'),
+         ("runs/report_scratch_vs_laya.json", '"clip_worth": 0.09032601120535727'),
+         ("runs/report_scratch_vs_laya.log", "13 of 16 scored cell(s) answer below "
+                                             "their own majority floor")],
         "16 cells both sides scored, unweighted. laya's row-weighted overall (0.6319, in "
         "its own JSON) is a different statistic over a different sample and never appears "
         "in this line; its contrastive/decision cell is two rows of that JSON merged by "
-        "rows (§9.32)."),
+        "rows (§9.32). The clip macro is not the majority macro: a cell above its floor "
+        "keeps its own number, which is why 0.4364 > 0.4331 while 13 cells lose."),
 
     row("void-vs-laya", "README upstream table's disclosure row · SPEC §5 P1, §9.23",
         "uv run python -m myna.report --suite data/decision-v2-pilot --split test "
@@ -272,7 +280,9 @@ ROWS = [
         "The input is the one local checkpoint that ever saw the upstream corpus, and it "
         "is uncommitted and void as evidence (§5 P1: trained before the 385e06c batching "
         "fix). It witnesses a disclosure — 0.338 against a control of 0.346 — and not a "
-        "ceiling in either direction."),
+        "ceiling in either direction. Its own report now prints the 9c clip column and "
+        "9b's Brier column, and neither is quoted: the artifact is committed, the "
+        "metrics file behind it is not, so §9.30 keeps both out of the prose."),
 
     row("g1-v1", "SPEC §2.1 G1 myna row · TODO 3i",
         "KAGGLE: train on decision-v2 per kaggle/PLAN, then "

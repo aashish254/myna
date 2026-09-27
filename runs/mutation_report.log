@@ -1,139 +1,191 @@
 baseline copy: green (1 test file)
 
-[ 1/67] caught      a cell's row count becomes its last set's row count
+[ 1/93] caught      a cell's row count becomes its last set's row count
             FAILED tests/test_report.py::test_majority_floor_is_the_cells_own_label_histogram
-[ 2/67] caught      the set count reports rows, so 'sets' stops meaning sets
+[ 2/93] caught      the set count reports rows, so 'sets' stops meaning sets
             FAILED tests/test_report.py::test_majority_floor_is_the_cells_own_label_histogram
-[ 3/67] caught      the label histogram counts each distinct label once
+[ 3/93] caught      the label histogram counts each distinct label once
             FAILED tests/test_report.py::test_majority_floor_is_the_cells_own_label_histogram
-[ 4/67] caught      the majority floor becomes the minority label
+[ 4/93] caught      the majority floor becomes the minority label
             FAILED tests/test_report.py::test_majority_floor_is_the_cells_own_label_histogram
-[ 5/67] caught      the majority floor becomes 1.0, i.e. it always wins
+[ 5/93] caught      the majority floor becomes 1.0, i.e. it always wins
             FAILED tests/test_report.py::test_majority_floor_is_the_cells_own_label_histogram
-[ 6/67] caught      the option mix counts sets instead of rows
+[ 6/93] caught      the option mix counts sets instead of rows
             FAILED tests/test_report.py::test_uniform_floor_weights_the_option_counts_it_actually_sees
-[ 7/67] caught      chance keeps only the last set's option count
+[ 7/93] caught      chance keeps only the last set's option count
             FAILED tests/test_report.py::test_uniform_floor_weights_the_option_counts_it_actually_sees
-[ 8/67] caught      chance ignores the option count entirely
+[ 8/93] caught      chance ignores the option count entirely
             FAILED tests/test_report.py::test_uniform_floor_weights_the_option_counts_it_actually_sees
-[ 9/67] caught      the uniform floor is priced at the widest set, unweighted
+[ 9/93] caught      the uniform floor is priced at the widest set, unweighted
             FAILED tests/test_report.py::test_uniform_floor_weights_the_option_counts_it_actually_sees
-[10/67] caught      the floors are swapped in the row the table prints
+[10/93] caught      the floors are swapped in the row the table prints
             FAILED tests/test_report.py::test_the_table_prints_the_strata_with_their_own_macro
-[11/67] caught      a scored set's weight becomes 1 row, so singletons outvote
+[11/93] caught      a scored set's weight becomes 1 row, so singletons outvote
             FAILED tests/test_report.py::test_cell_accuracy_is_weighted_by_rows_not_by_sets
-[12/67] caught      the cell mean drops its row weights
+[12/93] caught      the cell mean drops its row weights
             FAILED tests/test_report.py::test_cell_accuracy_is_weighted_by_rows_not_by_sets
-[13/67] caught      the n a cell reports is the number of sets, not their rows
+[13/93] caught      the n a cell reports is the number of sets, not their rows
             FAILED tests/test_report.py::test_cell_accuracy_is_weighted_by_rows_not_by_sets
-[14/67] caught      a scored set missing from the split is absorbed silently
+[14/93] caught      a scored set missing from the split is absorbed silently
             FAILED tests/test_report.py::test_a_scored_set_that_is_not_in_the_split_is_reported
-[15/67] caught      the key is split the wrong way round
+[15/93] caught      the key is split the wrong way round
             FAILED tests/test_report.py::test_cell_accuracy_is_weighted_by_rows_not_by_sets
-[16/67] caught      only the Brier sidecar is filtered, not the ECE one
+[16/93] caught      only the Brier sidecar is filtered, not the ECE one
             FAILED tests/test_report.py::test_sidecar_metric_keys_never_become_accuracy_rows
-[17/67] caught      strata key on the question name instead of its instruction
+[17/93] caught      strata key on the question name instead of its instruction
             FAILED tests/test_report.py::test_strata_separates_a_repeated_schema_from_a_per_row_question
-[18/67] caught      a slot counts as one even when the row asks five questions
+[18/93] caught      a slot counts as one even when the row asks five questions
             FAILED tests/test_report.py::test_strata_separates_a_repeated_schema_from_a_per_row_question
-[19/67] caught      the per-source row count becomes its last set's
+[19/93] caught      the per-source row count becomes its last set's
             FAILED tests/test_report.py::test_strata_sees_two_measures_where_the_adapter_sees_one
-[20/67] caught      reused-set rows count once per set
+[20/93] caught      reused-set rows count once per set
             FAILED tests/test_report.py::test_strata_sees_two_measures_where_the_adapter_sees_one
-[21/67] caught      every instruction counts as repeated
+[21/93] caught      every instruction counts as repeated
             FAILED tests/test_report.py::test_strata_separates_a_repeated_schema_from_a_per_row_question
-[22/67] caught      repetition counts distinct instructions instead of slots
+[22/93] caught      repetition counts distinct instructions instead of slots
             FAILED tests/test_report.py::test_strata_separates_a_repeated_schema_from_a_per_row_question
-[23/67] caught      the share divides by rows, so it can exceed 1.0 (the first pass did)
+[23/93] caught      the share divides by rows, so it can exceed 1.0 (the first pass did)
             FAILED tests/test_report.py::test_strata_share_is_a_fraction_of_slots_not_a_sum_of_rows
-[24/67] caught      the set-reuse share divides by sets
+[24/93] caught      the set-reuse share divides by sets
             FAILED tests/test_report.py::test_strata_sees_two_measures_where_the_adapter_sees_one
-[25/67] caught      the stratum threshold becomes permissive enough to fold mnli in
+[25/93] caught      the stratum threshold becomes permissive enough to fold mnli in
             FAILED tests/test_report.py::test_boolq_and_mnli_are_the_only_per_row_sources
-[26/67] caught      distinct instructions reported as the set count
+[26/93] caught      distinct instructions reported as the set count
             FAILED tests/test_report.py::test_strata_sees_two_measures_where_the_adapter_sees_one
-[27/67] caught      the set count reported as the instruction count
+[27/93] caught      the set count reported as the instruction count
             FAILED tests/test_report.py::test_strata_sees_two_measures_where_the_adapter_sees_one
-[28/67] caught      the minimum-rows filter is inverted
+[28/93] caught      the minimum-rows filter is inverted
             FAILED tests/test_report.py::test_min_rows_keeps_cells_and_says_which_it_dropped
-[29/67] caught      the shipped floor of 30 rows per cell becomes 4
+[29/93] caught      the shipped floor of 30 rows per cell becomes 4
             FAILED tests/test_report.py::test_the_majority_floor_reproduces_the_published_04331
-[30/67] caught      a cell scored only by unknown sets shows a model number
+[30/93] caught      a cell scored only by unknown sets shows a model number
             FAILED tests/test_report.py::test_a_scored_set_from_another_split_never_becomes_a_model_number
-[31/67] caught      n_scored and n collapse into each other
+[31/93] caught      n_scored and n collapse into each other
             FAILED tests/test_report.py::test_min_rows_keeps_cells_and_says_which_it_dropped
-[32/67] caught      a macro drops zeros, so the competitor's 0.0 stops counting
+[32/93] caught      a macro drops zeros, so the competitor's 0.0 stops counting
             FAILED tests/test_report.py::test_macro_averages_over_cells_not_over_rows - a...
-[33/67] caught      an empty macro reports 0.0 instead of 'nothing was scored'
+[33/93] caught      an empty macro reports 0.0 instead of 'nothing was scored'
             FAILED tests/test_report.py::test_macro_is_none_when_nothing_was_scored - Ass...
-[34/67] caught      the stratum laya macro drops zeros too
+[34/93] caught      the stratum laya macro drops zeros too
             FAILED tests/test_report.py::test_a_perfect_laya_macro_still_prints_when_its_other_cell_is_zero
-[35/67] caught      -maj is computed against chance, not against the majority floor
+[35/93] caught      -maj is computed against chance, not against the majority floor
             FAILED tests/test_report.py::test_the_table_prints_the_strata_with_their_own_macro
-[36/67] caught      G1's target is lowered to 0.50
+[36/93] caught      G1's target is lowered to 0.50
             FAILED tests/test_report.py::test_g1_needs_both_the_target_and_the_margin - a...
-[37/67] caught      G1's margin over the floor is lowered to 0.05
+[37/93] caught      G1's margin over the floor is lowered to 0.05
             FAILED tests/test_report.py::test_g1_needs_both_the_target_and_the_margin - A...
-[38/67] caught      G1 becomes the target alone
+[38/93] caught      G1 becomes the target alone
             FAILED tests/test_report.py::test_g1_needs_both_the_target_and_the_margin - A...
-[39/67] caught      a missing floor counts as a floor of nothing at all
+[39/93] caught      a missing floor counts as a floor of nothing at all
             FAILED tests/test_report.py::test_g1_needs_both_the_target_and_the_margin - T...
-[40/67] caught      every number in the table rounds to one decimal
+[40/93] caught      every number in the table rounds to one decimal
             FAILED tests/test_report.py::test_the_table_prints_the_strata_with_their_own_macro
-[41/67] caught      the laya column prints the sample size instead of the accuracy
+[41/93] caught      the laya column prints the sample size instead of the accuracy
             FAILED tests/test_report.py::test_laya_columns_join_on_the_cell_not_on_the_row_count
-[42/67] caught      a run scored on test is read out of the dev block
+[42/93] caught      a run scored on test is read out of the dev block
             FAILED tests/test_report.py::test_a_scored_set_from_another_split_never_becomes_a_model_number
-[43/67] caught      a run directory is no longer accepted, only the file inside it
+[43/93] caught      a run directory is no longer accepted, only the file inside it
             FAILED tests/test_report.py::test_the_laya_witness_rides_in_the_same_table - ...
-[44/67] caught      a missing split turns into a stack trace instead of a refusal
+[44/93] caught      a missing split turns into a stack trace instead of a refusal
             FAILED tests/test_report.py::test_a_split_that_is_not_there_fails_loudly - As...
-[45/67] caught      --min-rows 0 is allowed, so every cell joins the G1 average
+[45/93] caught      --min-rows 0 is allowed, so every cell joins the G1 average
             FAILED tests/test_report.py::test_a_min_rows_of_zero_fails_loudly - assert (0...
-[46/67] caught      the report never says the table has no model in it
+[46/93] caught      the report never says the table has no model in it
             FAILED tests/test_report.py::test_the_majority_floor_reproduces_the_published_04331
-[47/67] caught      the mixed-option-count note only fires on three or more counts
+[47/93] caught      the mixed-option-count note only fires on three or more counts
             FAILED tests/test_report.py::test_the_majority_floor_reproduces_the_published_04331
-[48/67] caught      an unweighted question-set is quietly kept out of the note
+[48/93] caught      an unweighted question-set is quietly kept out of the note
             FAILED tests/test_report.py::test_a_scored_set_from_another_split_never_becomes_a_model_number
-[49/67] caught      the floors vanish with the model instead of describing the split
+[49/93] caught      the floors vanish with the model instead of describing the split
             FAILED tests/test_report.py::test_the_majority_floor_reproduces_the_published_04331
-[50/67] caught      the report stops saying which basis the floors were averaged over
+[50/93] caught      the report stops saying which basis the floors were averaged over
             FAILED tests/test_report.py::test_the_majority_floor_reproduces_the_published_04331
-[51/67] caught      the laya banner drops the split it was measured on
+[51/93] caught      the laya banner drops the split it was measured on
             FAILED tests/test_report.py::test_the_laya_witness_rides_in_the_same_table - ...
-[52/67] caught      the JSON artifact loses the strata it printed
+[52/93] caught      the JSON artifact loses the strata it printed
             FAILED tests/test_report.py::test_a_real_metrics_file_lands_in_the_right_cells
-[53/67] caught      the JSON artifact claims nothing went unmatched
+[53/93] caught      the JSON artifact claims nothing went unmatched
             FAILED tests/test_report.py::test_a_scored_set_from_another_split_never_becomes_a_model_number
-[54/67] caught      the JSON artifact records a verdict of pass
+[54/93] caught      the JSON artifact records a verdict of pass
             FAILED tests/test_report.py::test_a_scored_set_from_another_split_never_becomes_a_model_number
-[55/67] caught      the competitor line quietly uses every scored cell, not the shared ones
+[55/93] caught      the competitor line quietly uses every scored cell, not the shared ones
             FAILED tests/test_report.py::test_a_cell_the_competitor_never_scored_moves_the_floor_too
-[56/67] caught      myna's side of the gap is averaged over its own cells while laya's is not
+[56/93] caught      myna's side of the gap is averaged over its own cells while laya's is not
             FAILED tests/test_report.py::test_a_cell_the_competitor_never_scored_moves_the_floor_too
-[57/67] caught      the floor beside the gap is the 16-cell floor, not the gap's own
+[57/93] caught      the floor beside the gap is the 16-cell floor, not the gap's own
             FAILED tests/test_report.py::test_a_cell_the_competitor_never_scored_moves_the_floor_too
-[58/67] caught      the floor beside the gap becomes chance, which is always easier to beat
+[58/93] caught      the floor beside the gap becomes chance, which is always easier to beat
             FAILED tests/test_report.py::test_the_competitor_line_averages_one_cell_set_not_two
-[59/67] caught      the gap changes sign, i.e. it is reported as myna's lead
+[59/93] caught      the gap changes sign, i.e. it is reported as myna's lead
             FAILED tests/test_report.py::test_the_competitor_line_averages_one_cell_set_not_two
-[60/67] caught      the line stops naming which statistic it is
+[60/93] caught      the line stops naming which statistic it is
             FAILED tests/test_report.py::test_the_competitor_line_averages_one_cell_set_not_two
-[61/67] caught      a shrunken intersection is reported silently
+[61/93] caught      a shrunken intersection is reported silently
             FAILED tests/test_report.py::test_a_cell_the_competitor_never_scored_moves_the_floor_too
-[62/67] caught      the artifact claims as many shared cells as there are scored ones
+[62/93] caught      the artifact claims as many shared cells as there are scored ones
             FAILED tests/test_report.py::test_a_cell_the_competitor_never_scored_moves_the_floor_too
-[63/67] caught      the competitor line goes away whenever it would be unflattering
+[63/93] caught      the competitor line goes away whenever it would be unflattering
             FAILED tests/test_report.py::test_the_competitor_line_averages_one_cell_set_not_two
-[64/67] caught      a two-row competitor cell keeps only its last row's accuracy
+[64/93] caught      a two-row competitor cell keeps only its last row's accuracy
             FAILED tests/test_report.py::test_the_laya_witness_rides_in_the_same_table - ...
-[65/67] caught      a two-row competitor cell reports only its last row's sample size
+[65/93] caught      a two-row competitor cell reports only its last row's sample size
             FAILED tests/test_report.py::test_the_laya_witness_rides_in_the_same_table - ...
-[66/67] caught      the merge note goes silent, so the cell looks single-sourced
+[66/93] caught      the merge note goes silent, so the cell looks single-sourced
             FAILED tests/test_report.py::test_the_competitor_line_averages_one_cell_set_not_two
-[67/67] caught      the two-row cell is dropped from the join instead of merged
+[67/93] caught      the two-row cell is dropped from the join instead of merged
             FAILED tests/test_report.py::test_the_laya_witness_rides_in_the_same_table - ...
+[68/93] caught      the clip takes the smaller number
+            FAILED tests/test_report.py::test_clip_is_the_bigger_number_and_its_worth_is_the_difference
+[69/93] caught      the clip column becomes the majority floor
+            FAILED tests/test_report.py::test_clip_is_the_bigger_number_and_its_worth_is_the_difference
+[70/93] caught      the clip column becomes the model column
+            FAILED tests/test_report.py::test_clip_is_the_bigger_number_and_its_worth_is_the_difference
+[71/93] caught      a cell above its floor is owed a negative worth
+            FAILED tests/test_report.py::test_clip_is_the_bigger_number_and_its_worth_is_the_difference
+[72/93] caught      clip_worth becomes the model's gain over the floor, i.e. the sign flips
+            FAILED tests/test_report.py::test_clip_is_the_bigger_number_and_its_worth_is_the_difference
+[73/93] caught      every cell at its own floor is named a floor-loser
+            FAILED tests/test_report.py::test_a_model_no_floor_beats_says_the_clip_column_buys_nothing
+[74/93] caught      with nothing scored the clip sentence still prints, as an empty win
+            FAILED tests/test_report.py::test_the_majority_floor_reproduces_the_published_04331
+[75/93] caught      the table's model column prints the clip
+            FAILED tests/test_report.py::test_the_clip_keeps_whichever_number_wins - Asse...
+[76/93] caught      the macro row's clip cell is the majority macro
+            FAILED tests/test_report.py::test_the_clip_keeps_whichever_number_wins - Asse...
+[77/93] caught      the clip column loses its definition from the legend
+            FAILED tests/test_report.py::test_the_clip_and_brier_columns_ride_beside_the_model_not_over_it
+[78/93] caught      the clip's worth is sold as a model gain
+            FAILED tests/test_report.py::test_a_floor_losing_cell_is_named_and_its_delta_called_arithmetic
+[79/93] caught      the clip macro becomes the majority macro
+            FAILED tests/test_report.py::test_a_model_no_floor_beats_says_the_clip_column_buys_nothing
+[80/93] caught      the artifact lists every cell as a floor-loser
+            FAILED tests/test_report.py::test_the_json_report_carries_the_clip_and_brier_as_fields
+[81/93] caught      the artifact stops carrying the clip macro
+            FAILED tests/test_report.py::test_the_json_report_carries_the_clip_and_brier_as_fields
+[82/93] caught      the label field no longer outlasts the widest cell name
+            FAILED tests/test_report.py::test_the_macro_row_lands_in_the_same_columns_as_the_cells
+[83/93] caught      the delta column loses its column of air and butts against the Brier
+            FAILED tests/test_report.py::test_the_macro_row_lands_in_the_same_columns_as_the_cells
+[84/93] caught      a missing sidecar is a Brier of zero
+            FAILED tests/test_report.py::test_a_missing_brier_sidecar_is_an_em_dash_not_a_zero
+[85/93] caught      the :brier suffix stays on the question name
+            FAILED tests/test_report.py::test_brier_is_row_weighted_and_a_key_from_another_split_carries_no_weight
+[86/93] caught      the Brier mean drops its row weights
+            FAILED tests/test_report.py::test_brier_is_row_weighted_and_a_key_from_another_split_carries_no_weight
+[87/93] caught      a sidecar from a set the split does not carry is priced at an unknown weight
+            FAILED tests/test_report.py::test_brier_is_row_weighted_and_a_key_from_another_split_carries_no_weight
+[88/93] caught      a Brier over zero rows divides by zero instead of leaving the cell unpriced
+            FAILED tests/test_report.py::test_brier_is_row_weighted_and_a_key_from_another_split_carries_no_weight
+[89/93] caught      every scored cell is called binary
+            FAILED tests/test_report.py::test_the_noul_line_counts_sidecars_and_reads_against_the_coin_flip
+[90/93] caught      a cell with no sidecar joins the Brier average
+            FAILED tests/test_report.py::test_the_competitor_line_averages_one_cell_set_not_two
+[91/93] caught      the noul line claims every binary cell carries a sidecar
+            FAILED tests/test_report.py::test_a_metrics_file_with_no_sidecars_calls_its_brier_column_missing_data
+[92/93] caught      the Brier is printed with no coin-flip yardstick
+            FAILED tests/test_report.py::test_the_noul_line_counts_sidecars_and_reads_against_the_coin_flip
+[93/93] caught      the brier macro in the artifact is the clip macro
+            FAILED tests/test_report.py::test_the_json_report_carries_the_clip_and_brier_as_fields
 
-67/67 mutations caught
+93/93 mutations caught
 exit 0

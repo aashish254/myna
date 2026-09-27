@@ -1,9 +1,9 @@
 {
   "cmd": "python bench/eval_scratch.py --split test --seeds 0 1 --out runs/scratch_decision_v2_test.md --metrics-out runs/scratch_metrics_test.json",
   "load_avg": [
-    15.98876953125,
-    10.658203125,
-    7.21630859375
+    3.935546875,
+    3.138671875,
+    2.9716796875
   ],
   "suite": "data/decision-v2-pilot",
   "split": "test",
@@ -77,7 +77,10 @@
       "majority": 0.6976744186046512,
       "uniform": 0.5,
       "acc": 0.46511627906976744,
-      "n_scored": 43
+      "n_scored": 43,
+      "clip": 0.6976744186046512,
+      "clip_worth": 0.23255813953488375,
+      "brier": null
     },
     {
       "source": "agnews",
@@ -89,7 +92,10 @@
       "majority": 0.6530612244897959,
       "uniform": 0.5,
       "acc": 0.5714285714285714,
-      "n_scored": 49
+      "n_scored": 49,
+      "clip": 0.6530612244897959,
+      "clip_worth": 0.08163265306122447,
+      "brier": null
     },
     {
       "source": "agnews",
@@ -101,7 +107,10 @@
       "majority": 0.8085106382978723,
       "uniform": 0.5,
       "acc": 0.5319148936170213,
-      "n_scored": 47
+      "n_scored": 47,
+      "clip": 0.8085106382978723,
+      "clip_worth": 0.276595744680851,
+      "brier": null
     },
     {
       "source": "agnews",
@@ -113,7 +122,10 @@
       "majority": 0.7777777777777778,
       "uniform": 0.5,
       "acc": 0.6222222222222222,
-      "n_scored": 45
+      "n_scored": 45,
+      "clip": 0.7777777777777778,
+      "clip_worth": 0.15555555555555556,
+      "brier": null
     },
     {
       "source": "agnews",
@@ -125,7 +137,10 @@
       "majority": 0.3275862068965517,
       "uniform": 0.24482758620689649,
       "acc": 0.27586206896551724,
-      "n_scored": 116
+      "n_scored": 116,
+      "clip": 0.3275862068965517,
+      "clip_worth": 0.051724137931034475,
+      "brier": null
     },
     {
       "source": "amazon",
@@ -137,7 +152,10 @@
       "majority": 0.2625,
       "uniform": 0.2,
       "acc": 0.175,
-      "n_scored": 80
+      "n_scored": 80,
+      "clip": 0.2625,
+      "clip_worth": 0.08750000000000002,
+      "brier": null
     },
     {
       "source": "banking77",
@@ -149,7 +167,10 @@
       "majority": 0.04310344827586207,
       "uniform": 0.01296978883185777,
       "acc": 0.008620689655172414,
-      "n_scored": 116
+      "n_scored": 116,
+      "clip": 0.04310344827586207,
+      "clip_worth": 0.034482758620689655,
+      "brier": null
     },
     {
       "source": "boolq",
@@ -161,7 +182,10 @@
       "majority": 0.5375,
       "uniform": 0.5,
       "acc": 0.5,
-      "n_scored": 80
+      "n_scored": 80,
+      "clip": 0.5375,
+      "clip_worth": 0.03749999999999998,
+      "brier": null
     },
     {
       "source": "contrastive",
@@ -173,7 +197,10 @@
       "majority": 0.45408163265306123,
       "uniform": 0.39625850340136043,
       "acc": 0.37244897959183676,
-      "n_scored": 196
+      "n_scored": 196,
+      "clip": 0.45408163265306123,
+      "clip_worth": 0.08163265306122447,
+      "brier": null
     },
     {
       "source": "dbpedia14",
@@ -185,7 +212,10 @@
       "majority": 0.12931034482758622,
       "uniform": 0.07093596059113294,
       "acc": 0.09482758620689655,
-      "n_scored": 116
+      "n_scored": 116,
+      "clip": 0.12931034482758622,
+      "clip_worth": 0.03448275862068967,
+      "brier": null
     },
     {
       "source": "imdb",
@@ -197,7 +227,10 @@
       "majority": 0.5375,
       "uniform": 0.5,
       "acc": 0.4375,
-      "n_scored": 80
+      "n_scored": 80,
+      "clip": 0.5375,
+      "clip_worth": 0.09999999999999998,
+      "brier": null
     },
     {
       "source": "mnli",
@@ -209,7 +242,10 @@
       "majority": 0.35344827586206895,
       "uniform": 0.32471264367816083,
       "acc": 0.3706896551724138,
-      "n_scored": 116
+      "n_scored": 116,
+      "clip": 0.3706896551724138,
+      "clip_worth": 0.0,
+      "brier": null
     },
     {
       "source": "sst5",
@@ -221,7 +257,10 @@
       "majority": 0.25,
       "uniform": 0.2,
       "acc": 0.125,
-      "n_scored": 80
+      "n_scored": 80,
+      "clip": 0.25,
+      "clip_worth": 0.125,
+      "brier": null
     },
     {
       "source": "trec",
@@ -233,7 +272,10 @@
       "majority": 0.28448275862068967,
       "uniform": 0.16420361247947457,
       "acc": 0.13793103448275862,
-      "n_scored": 116
+      "n_scored": 116,
+      "clip": 0.28448275862068967,
+      "clip_worth": 0.14655172413793105,
+      "brier": null
     },
     {
       "source": "yelp",
@@ -245,7 +287,10 @@
       "majority": 0.275,
       "uniform": 0.2,
       "acc": 0.2875,
-      "n_scored": 80
+      "n_scored": 80,
+      "clip": 0.2875,
+      "clip_worth": 0.0,
+      "brier": null
     },
     {
       "source": "yelp",
@@ -257,7 +302,10 @@
       "majority": 0.5375,
       "uniform": 0.5,
       "acc": 0.5625,
-      "n_scored": 80
+      "n_scored": 80,
+      "clip": 0.5625,
+      "clip_worth": 0.0,
+      "brier": null
     }
   ]
 }

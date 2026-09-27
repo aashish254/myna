@@ -1,4 +1,4 @@
-"""Mutation battery for the 3g stratified-reporting gate (SPEC §7.1).
+"""Mutation battery for the stratified-reporting gate (SPEC §7.1, gates 3g and §5 P9 9b/9c).
 
 Same discipline as `mutation_memory_plan.py`: copy `src` + `tests` into a scratch
 repo (because `pyproject.toml` pins `pythonpath = ["src"]` relative to the rootdir
@@ -24,6 +24,13 @@ a missing model number already fails the verdict through `macro_acc is None`. An
 `labels = c.pop("labels")` → `c["labels"]` is genuinely equivalent (the key is
 private and nothing downstream reads it). Naming those is the point: a battery that
 claims to cover what it cannot reach is worse than one that admits the gap.
+
+The 9c/9b block at the end is where that discipline bites hardest, because both
+columns are *favourable* statistics. A clip printed instead of the model, a clip
+macro sold as progress, a `:brier` sidecar that is missing drawn as a 0.000 — each
+one makes the run look better or more measured than it is, and each is a mutation
+rather than a bug hunt, so the tests that catch them are written against the
+figures the shipped split produces.
 """
 
 import shutil
@@ -118,11 +125,10 @@ MUTATIONS = [
     ("the shipped floor of 30 rows per cell becomes 4", RP,
      "MIN_CELL_ROWS = 30", "MIN_CELL_ROWS = 4"),
     ("a cell scored only by unknown sets shows a model number", RP,
-     "                     \"acc\": a[\"acc\"] if a and a[\"n\"] else None,",
-     "                     \"acc\": a[\"acc\"] if a else None,"),
+     "        acc_v = a[\"acc\"] if a and a[\"n\"] else None",
+     "        acc_v = a[\"acc\"] if a else None"),
     ("n_scored and n collapse into each other", RP,
-     "                     \"n_scored\": a[\"n\"] if a else 0})",
-     "                     \"n_scored\": s[\"n\"] if a else 0})"),
+     "\"n_scored\": a[\"n\"] if a else 0,", "\"n_scored\": s[\"n\"] if a else 0,"),
     ("a macro drops zeros, so the competitor's 0.0 stops counting", RP,
      "    vals = [r[field] for r in rows if r[field] is not None]", "    vals = [r[field] for r in rows if r[field]]"),
     ("an empty macro reports 0.0 instead of 'nothing was scored'", RP,
@@ -224,6 +230,81 @@ MUTATIONS = [
      "    for c in cells.values():\n        if c[\"n\"]:",
      "    cells = {k: c for k, c in cells.items() if c[\"rows\"] == 1}\n"
      "    for c in cells.values():\n        if c[\"n\"]:"),
+    # --- 9c's clip column: an oracle printed beside the model, not instead of it -----
+    ("the clip takes the smaller number", RP,
+     "                     \"clip\": None if acc_v is None else max(acc_v, s[\"majority\"]),",
+     "                     \"clip\": None if acc_v is None else min(acc_v, s[\"majority\"]),"),
+    ("the clip column becomes the majority floor", RP,
+     "                     \"clip\": None if acc_v is None else max(acc_v, s[\"majority\"]),",
+     "                     \"clip\": None if acc_v is None else s[\"majority\"],"),
+    ("the clip column becomes the model column", RP,
+     "                     \"clip\": None if acc_v is None else max(acc_v, s[\"majority\"]),",
+     "                     \"clip\": acc_v,"),
+    ("a cell above its floor is owed a negative worth", RP,
+     "                     \"clip_worth\": None if acc_v is None else max(0.0, s[\"majority\"] - acc_v),",
+     "                     \"clip_worth\": None if acc_v is None else s[\"majority\"] - acc_v,"),
+    ("clip_worth becomes the model's gain over the floor, i.e. the sign flips", RP,
+     "                     \"clip_worth\": None if acc_v is None else max(0.0, s[\"majority\"] - acc_v),",
+     "                     \"clip_worth\": None if acc_v is None else max(0.0, acc_v - s[\"majority\"]),"),
+    ("every cell at its own floor is named a floor-loser", RP,
+     "    losers = [r for r in scored if r[\"clip_worth\"] > 0]",
+     "    losers = [r for r in scored if r[\"clip_worth\"] >= 0]"),
+    ("with nothing scored the clip sentence still prints, as an empty win", RP,
+     "    elif scored:\n        clip_worth = 0.0", "    else:\n        clip_worth = 0.0"),
+    ("the table's model column prints the clip", RP,
+     "                               (_fmt(r[\"acc\"]), _fmt(r[\"clip\"]), _fmt(la), _fmt(r[\"majority\"]),",
+     "                               (_fmt(r[\"clip\"]), _fmt(r[\"clip\"]), _fmt(la), _fmt(r[\"majority\"]),"),
+    ("the macro row's clip cell is the majority macro", RP,
+     "            _fmt(m), _fmt(macro(scored, \"clip\")), _fmt(_macro_with(scored, laya_acc)),",
+     "            _fmt(m), _fmt(macro(scored, \"majority\")), _fmt(_macro_with(scored, laya_acc)),"),
+    ("the clip column loses its definition from the legend", RP,
+     "             \"clip = max(model, maj): what the cell scores answering nothing with this split's \"",
+     "             \"clip: what the cell scores answering nothing with this split's \""),
+    ("the clip's worth is sold as a model gain", RP,
+     "f\"the model prints {_fmt(ma)}: +{_fmt(clip_worth)} of arithmetic and 0 of \"",
+     "f\"the model prints {_fmt(ma)}: +{_fmt(clip_worth)} of progress and 0 of \""),
+    ("the clip macro becomes the majority macro", RP,
+     "    mc = macro(scored, \"clip\")", "    mc = macro(scored, \"majority\")"),
+    ("the artifact lists every cell as a floor-loser", RP,
+     "                                       \"clip_worth\": r[\"clip_worth\"]} for r in losers],",
+     "                                       \"clip_worth\": r[\"clip_worth\"]} for r in scored],"),
+    ("the artifact stops carrying the clip macro", RP,
+     "                                             \"clip\": mc, \"clip_worth\": clip_worth,",
+     "                                             \"clip_worth\": clip_worth,"),
+    # --- the table's geometry (the bug the committed artifact shipped with) ----------
+    ("the label field no longer outlasts the widest cell name", RP,
+     "LBL, WID = 21, (6, 6, 6, 6, 6, 6, 7)", "LBL, WID = 18, (6, 6, 6, 6, 6, 6, 7)"),
+    ("the delta column loses its column of air and butts against the Brier", RP,
+     "LBL, WID = 21, (6, 6, 6, 6, 6, 6, 7)", "LBL, WID = 21, (6, 6, 6, 6, 6, 6, 6)"),
+    # --- 9b's Brier column: read the sidecar, price nothing that has none ------------
+    ("a missing sidecar is a Brier of zero", RP,
+     "                     \"brier\": (briers or {}).get((source, qname))})",
+     "                     \"brier\": (briers or {}).get((source, qname), 0.0)})"),
+    ("the :brier suffix stays on the question name", RP,
+     "        wf, name = key[:-len(\":brier\")].split(\"/\", 1)",
+     "        wf, name = key.split(\"/\", 1)"),
+    ("the Brier mean drops its row weights", RP,
+     "            out[k] = sum(v * n for v, n in pp) / tot",
+     "            out[k] = sum(v for v, _n in pp) / len(pp)"),
+    ("a sidecar from a set the split does not carry is priced at an unknown weight", RP,
+     "        pairs[(_source_of(wf), name)].append((val, len(groups[wf][1]) if wf in groups else 0))",
+     "        pairs[(_source_of(wf), name)].append((val, len(groups[wf][1])))"),
+    ("a Brier over zero rows divides by zero instead of leaving the cell unpriced", RP,
+     "        if tot:\n            out[k] = sum(v * n for v, n in pp) / tot",
+     "        if True:\n            out[k] = sum(v * n for v, n in pp) / tot"),
+    ("every scored cell is called binary", RP,
+     "    noul = [r for r in scored if r[\"type\"] == \"noul\"]", "    noul = list(scored)"),
+    ("a cell with no sidecar joins the Brier average", RP,
+     "    priced = [r for r in noul if r[\"brier\"] is not None]", "    priced = list(noul)"),
+    ("the noul line claims every binary cell carries a sidecar", RP,
+     "        print(f\"noul: {len(priced)} of {len(noul)} scored binary cells carry a :brier sidecar\"",
+     "        print(f\"noul: {len(noul)} of {len(noul)} scored binary cells carry a :brier sidecar\""),
+    ("the Brier is printed with no coin-flip yardstick", RP,
+     "f\"; their mean Brier is {_fmt(brier_macro)} against 0.250 for a coin flip, \"",
+     "f\"; their mean Brier is {_fmt(brier_macro)} across the cells, \""),
+    ("the brier macro in the artifact is the clip macro", RP,
+     "                                             \"brier_noul\": brier_macro,",
+     "                                             \"brier_noul\": mc,"),
 ]
 
 

@@ -9,11 +9,20 @@ three numbers that mean something only together:
   that cell (an unweighted mean lets a 1-row group outvote a 116-row one);
 * the cell's **majority floor** — what a constant predictor scores on those exact
   labels — and its **uniform floor**, `1/options`;
+* `max(model, majority)` beside the model's own number, and the gap labelled for
+  what it is: the clip's worth, not the model's (SPEC §5 P9: 9c);
 * which **stratum** the source is in: *shared-instruction* (a stable schema reused
   by many rows) or *per-row-instruction* (boolq, mnli, where the instruction text
   *is* the row). Nine vs two on this suite is why one aggregate number is not a
   result — and `strata()` derives that split from the instruction strings rather
   than naming sources, because the group keys would say something else entirely.
+
+For `noul` cells the table also carries **Brier** beside the accuracy, because an
+argmax alone over-reports a binary cell in both directions (§9.24): 0.55 accuracy and
+0.55 accuracy are different results if one ranks the gold label and the other does
+not. It reads `evaluate()`'s `:brier` sidecars, so a metrics file that predates them
+leaves the column empty — which prints as an em dash and is said out loud, never as a
+0.
 
 Nothing here runs inference. It reads what `myna.train` wrote (`metrics.json`) and
 the frozen split it scored, so the floors and the weights come from the rows on
@@ -152,25 +161,61 @@ def strata(groups: dict) -> dict:
     return out
 
 
-def roll_up(stats: dict, acc: dict, keep_min: int = MIN_CELL_ROWS) -> list[dict]:
+def brier_cells(metrics: dict, groups: dict) -> dict:
+    """`evaluate()`'s `{"<key>/<qname>:brier": mean}` sidecars -> {(source, qname): brier}.
+
+    Row-weighted across the question-sets, for the same reason `accuracy_cells` is:
+    the map is one entry per set. Only `noul` cells have a sidecar to find, and a
+    cell with none is *not* a cell with a Brier of zero — `main()` prints the count
+    of noul cells left unpriced rather than averaging an empty column into the
+    macro. Keys the split does not carry contribute no weight, exactly as in
+    `accuracy_cells`.
+    """
+    pairs: dict[tuple[str, str], list[tuple[float, int]]] = defaultdict(list)
+    for key, val in metrics.items():
+        if not key.endswith(":brier"):
+            continue
+        wf, name = key[:-len(":brier")].split("/", 1)
+        pairs[(_source_of(wf), name)].append((val, len(groups[wf][1]) if wf in groups else 0))
+    out = {}
+    for k, pp in pairs.items():
+        tot = sum(n for _v, n in pp)
+        # Zero rows is zero evidence, exactly as in `roll_up`: a sidecar whose sets are
+        # all unknown to this split leaves the cell unpriced rather than averaging it in.
+        if tot:
+            out[k] = sum(v * n for v, n in pp) / tot
+    return out
+
+
+def roll_up(stats: dict, acc: dict, keep_min: int = MIN_CELL_ROWS,
+            briers: dict | None = None) -> list[dict]:
     """One row per (source, question) cell, floors and model side by side.
 
     Only cells with `keep_min` rows are kept, and the kept set is *derived from
     the data*, so a table built on a subsample says which cells it dropped.
+
+    `clip` is `max(acc, majority)` and `clip_worth` the part of it the model did not
+    earn, `max(0, majority - acc)`. Both are an *oracle* statistic — the floor is
+    measured on the split being scored — so they bound what abstaining to a constant
+    per-cell label could recover and are not attainable by any model. That is the
+    whole reason 9c prints them beside `acc` instead of replacing it (SPEC §5 P9).
     """
     rows = []
     for (source, qname), s in sorted(stats.items()):
         if s["n"] < keep_min:
             continue
         a = acc.get((source, qname))
+        acc_v = a["acc"] if a and a["n"] else None
         # A set that is not in the split carries no rows, so a cell whose only scored
         # sets are unknown has no evidence in it. Printing 0.5 there would be a model
         # number derived from zero rows — the note in `main()` is the story instead.
         rows.append({"source": source, "question": qname, "type": s["type"],
                      "n": s["n"], "options": max(s["options"]), "options_by_size": s["options"],
                      "sets": s["sets"], "majority": s["majority"], "uniform": s["uniform"],
-                     "acc": a["acc"] if a and a["n"] else None,
-                     "n_scored": a["n"] if a else 0})
+                     "acc": acc_v, "n_scored": a["n"] if a else 0,
+                     "clip": None if acc_v is None else max(acc_v, s["majority"]),
+                     "clip_worth": None if acc_v is None else max(0.0, s["majority"] - acc_v),
+                     "brier": (briers or {}).get((source, qname))})
     return rows
 
 
@@ -233,12 +278,34 @@ def _macro_with(rows, values):
     return sum(vals) / len(vals) if vals else None
 
 
+#: The table is one geometry, not three f-strings that happen to agree: the header,
+#: every cell row and every macro row come through `_trow`, because a hand-padded
+#: macro label overran its field by six characters in the committed artifact and the
+#: columns under it were not lined up. Every value is five characters except the
+#: delta, which can be `-1.000`, so it alone gets the extra column of air. 21 for the
+#: label because the longest real cell name is `contrastive/decision` at 20.
+LBL, WID = 21, (6, 6, 6, 6, 6, 6, 7)
+
+
+def _trow(label, type_="", n="", sets="", vals=()):
+    """One table line: `label`, then type/n/sets, then the right-aligned numeric cells."""
+    assert len(vals) == len(WID), f"{len(vals)} values for {len(WID)} columns"
+    return (f"{label:<{LBL}}{type_:>7}{n:>6}{sets:>5}"
+            + "".join(f"{v:>{w}}" for v, w in zip(vals, WID, strict=True))).rstrip()
+
+
 def table_text(rows, strata_map, laya=None, split="test"):
     """The table as text, grouped by stratum, with the macro lines under it."""
     laya_acc = {k: v["acc"] for k, v in (laya or {}).items()}
-    lines = [f"stratified {split} — one row per (source, question) cell, n = rows in it"]
-    hdr = (f"{'source/question':<26}{'type':>7}{'n':>6}{'sets':>6}{'model':>8}"
-           f"{'laya':>8}{'maj':>8}{'unif':>8}{'-maj':>8}")
+    lines = [f"stratified {split} — one row per (source, question) cell, n = rows in it",
+             "clip = max(model, maj): what the cell scores answering nothing with this split's "
+             "majority label. It is an oracle (the floor is measured on the rows being scored), "
+             "so a clip above the model is the clip's worth, not the model's, and 9c prints it "
+             "beside the number rather than instead of it. brier = mean (p-g)^2 over a noul "
+             "cell's second option, 0.25 being the coin flip; an empty cell means the metrics "
+             "file carried no :brier sidecar, which is not a 0."]
+    hdr = _trow("source/question", "type", "n", "sets",
+                ("model", "clip", "laya", "maj", "unif", "brier", "-maj"))
     for cls in ("shared-instruction", "per-row-instruction"):
         group = [r for r in rows if strata_map.get(r["source"], {}).get("class") == cls]
         if not group:
@@ -250,17 +317,21 @@ def table_text(rows, strata_map, laya=None, split="test"):
         for r in group:
             la = laya_acc.get((r["source"], r["question"]))
             d = None if r["acc"] is None else r["acc"] - r["majority"]
-            lines.append(f"{r['source'] + '/' + r['question']:<26}{r['type']:>7}{r['n']:>6}"
-                         f"{r['sets']:>6}{_fmt(r['acc']):>8}{_fmt(la):>8}"
-                         f"{_fmt(r['majority']):>8}{_fmt(r['uniform']):>8}{_fmt(d):>8}")
+            lines.append(_trow(r["source"] + "/" + r["question"], r["type"], str(r["n"]),
+                               str(r["sets"]),
+                               (_fmt(r["acc"]), _fmt(r["clip"]), _fmt(la), _fmt(r["majority"]),
+                                _fmt(r["uniform"]), _fmt(r["brier"]), _fmt(d))))
         scored = [r for r in group if r["acc"] is not None]
         m = macro(scored, "acc")
         margin = None if m is None else m - macro(scored, "majority")
-        lines.append(f"{'  macro over its %d scored cells' % len(scored):<26}{'':>7}{'':>6}"
-                     f"{'':>6}{_fmt(m):>8}"
-                     f"{_fmt(_macro_with(scored, laya_acc)):>8}"
-                     f"{_fmt(macro(scored, 'majority')):>8}{_fmt(macro(scored, 'uniform')):>8}"
-                     f"{_fmt(margin):>8}")
+        nb = [r["brier"] for r in scored if r["brier"] is not None]
+        lines.append(_trow(f"  macro: {len(scored)} cell(s)", vals=(
+            _fmt(m), _fmt(macro(scored, "clip")), _fmt(_macro_with(scored, laya_acc)),
+            _fmt(macro(scored, "majority")), _fmt(macro(scored, "uniform")),
+            _fmt(sum(nb) / len(nb) if nb else None), _fmt(margin))))
+        if nb and len(nb) < len([r for r in scored if r["type"] == "noul"]):
+            lines.append(f"  brier macro over {len(nb)} of the group's noul cells; "
+                         f"the rest have no :brier sidecar in this metrics file")
     return "\n".join(lines)
 
 
@@ -305,7 +376,8 @@ def main(argv=None) -> int:
         raise SystemExit(f"{metrics_path} has no {key!r} block "
                          f"(it has: {', '.join(k for k in metrics if isinstance(metrics[k], dict))})")
     acc, unmatched = accuracy_cells(metrics[key], groups)
-    rows = roll_up(stats, acc, args.min_rows)
+    briers = brier_cells(metrics[key], groups)
+    rows = roll_up(stats, acc, args.min_rows, briers)
     laya = None
     laya_merged: dict = {}
     if args.laya:
@@ -356,6 +428,39 @@ def main(argv=None) -> int:
         f" · uniform {_fmt(macro(rows, 'uniform'))})")
     print(f"\nMACRO over the {len(scored)} scored cells: model {_fmt(ma)} · "
           f"majority floor {_fmt(mm)} · uniform floor {_fmt(mu)}{extra}")
+    # 9c's honest sentence: which cells the model loses to a constant predictor, and
+    # what clipping them would buy. The clip is an oracle — its floor is measured on
+    # the rows being scored — so the delta is arithmetic, and saying so here is the
+    # only thing that keeps the column from being read as a result (SPEC §5 P9).
+    mc = macro(scored, "clip")
+    losers = [r for r in scored if r["clip_worth"] > 0]
+    clip_worth = None if (mc is None or ma is None) else mc - ma
+    if losers:
+        print(f"{len(losers)} of {len(scored)} scored cell(s) answer below their own "
+              f"majority floor: "
+              + ", ".join(f"{r['source']}/{r['question']} {_fmt(r['acc'])} < "
+                          f"{_fmt(r['majority'])} (worth +{_fmt(r['clip_worth'])})"
+                          for r in losers))
+        print(f"  clipping those to the split's majority label would print {_fmt(mc)} where "
+              f"the model prints {_fmt(ma)}: +{_fmt(clip_worth)} of arithmetic and 0 of "
+              f"model. The floor is read off the scored rows, so a real fallback would use "
+              f"a training-set prior and land under this number — that is a leaderboard "
+              f"decision, not a learning improvement, and not what this column claims.")
+    elif scored:
+        clip_worth = 0.0
+        print(f"no scored cell answers below its own majority floor, so the clip column is "
+              f"the model column: {_fmt(mc)} = {_fmt(ma)}")
+    # 9b's reporting half: an argmax alone over-reports a binary cell either way.
+    noul = [r for r in scored if r["type"] == "noul"]
+    priced = [r for r in noul if r["brier"] is not None]
+    brier_macro = sum(r["brier"] for r in priced) / len(priced) if priced else None
+    if noul:
+        print(f"noul: {len(priced)} of {len(noul)} scored binary cells carry a :brier sidecar"
+              + (f"; their mean Brier is {_fmt(brier_macro)} against 0.250 for a coin flip, "
+                 f"which is the number §9.24 asks for beside an accuracy because an argmax "
+                 f"alone over-reports a binary cell either way (SPEC §5 P9: 9b)" if priced else
+                 "; the column is empty because this metrics file has none, which is missing "
+                 "data and not a model that scores 0"))
     # The competitor line is computed over the intersection, never over each side's
     # own best set of cells: two macros over two different cell sets are not a gap,
     # and "laya 0.63 vs myna 0.34" from the two harnesses' own summaries is exactly
@@ -392,8 +497,18 @@ def main(argv=None) -> int:
                                    "dropped_cells": dropped, "unmatched_sets": unmatched,
                                    "strata": cls, "cells": rows,
                                    "macro": {"acc": ma, "majority": mm, "uniform": mu,
+                                             "clip": mc, "clip_worth": clip_worth,
+                                             "brier_noul": brier_macro,
                                              "cells_scored": len(scored), "cells_kept": len(rows),
                                              "both": both},
+                                   "below_majority_floor": [
+                                       {"cell": f"{r['source']}/{r['question']}", "acc": r["acc"],
+                                        "majority": r["majority"], "clip": r["clip"],
+                                        "clip_worth": r["clip_worth"]} for r in losers],
+                                   "brier": {"noul_cells": len(noul), "priced_cells": len(priced),
+                                             "macro": brier_macro,
+                                             "cells": {f"{r['source']}/{r['question']}":
+                                                       r["brier"] for r in priced}},
                                    "g1": v}, indent=2) + "\n")
         print(f"wrote {out}")
     return 0
