@@ -1,0 +1,12 @@
+runs/onnx_int8: dynamic int8 over the exported graphs
+  head.bin            0.75 MiB   (fp32 0.75)
+  question.onnx       1.63 MiB   (fp32 1.66)
+  state_step.onnx     2.48 MiB   (fp32 2.49)
+  tokenizer.json      0.10 MiB   (fp32 0.10)
+  weights.bin        13.60 MiB   (fp32 54.32)
+  artifact           18.56 MiB   (fp32 59.32)
+weights: 54.32 MiB fp32 -> 13.60 MiB with quint8 (55 regions, 33 read by both graphs)
+new ops the browser's runtime must implement: DequantizeLinear, DynamicQuantizeLinear, MatMulInteger
+node browser/selftest.mjs --artifact runs/onnx_int8: RED (5 checks ok)
+  FAIL  chained state over 525 tokens in 3 calls matches 6 layer fingerprints (the engine's own chain: 3 calls): worst relative 2.67e-2 against 0.0001
+  FAIL  3 decisions agree with the engine: worst |Δp| 6.48e-2 against 0.0001

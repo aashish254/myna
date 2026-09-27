@@ -90,6 +90,53 @@ laya floor". The floor was `Router` truncating the state at 1,024 tokens while
 myna read all of it, and the speedup column was myna against itself. Withdrawn —
 SPEC.md §9.20.*
 
+## In a browser tab, measured
+
+The exported artifact runs with no server and no build step. `browser/index.html`
+re-implements the tokenizer in JavaScript from `tokenizer.json` alone, chains
+`state_step.onnx` one call per 256-token chunk, runs the pointer head and the
+abstention gate over the option spans from `head.bin`, and answers the same three
+typed decisions the Python engine answers — checked against the Python engine by
+`browser/parity.mjs`, the same module `node browser/selftest.mjs` fails a build on
+(7 checks in node, 6 in the tab, which has no filesystem to compare bytes against).
+
+Google Chrome 153, headless, cold cache, throwaway profile, 15 decisions per row
+(`bench/browser_g3.mjs` → `runs/browser_g3.json`):
+
+| | fp32 — what ships | int8 — attempted |
+|---|---|---|
+| artifact the page fetches | 59.32 MiB | **18.56 MiB** |
+| bytes on the wire, incl. the 13.58 MiB wasm runtime | 73.09 MiB | 32.33 MiB |
+| `weights.bin` requests | **1** (shared by both graphs) | 1 |
+| cold load | 254–394 ms | 214–336 ms |
+| p50 per decision, 10 threads / 1 thread | 436 / 742 ms | 413 / 757 ms |
+| option probabilities vs the torch engine | **1.03e-06** | 6.48e-02 |
+| Chrome's own parity checks | **6/6** | 4/6 |
+
+Two things that table says and one it does not. It says the trunk really is
+transferred once — 93.7 MiB of duplicated fp32 weights in the first export, 59.32
+MiB now, with Chrome's network log as the witness rather than a sum in a README.
+And it says the ≤ 20 MB int8 route is a **byte win and an agreement loss**: dynamic
+quint8 lands at 18.56 MiB and moves option probabilities 648× past the bound the
+fp32 artifact meets, for 5% latency on a box that was busier during the int8 run —
+so int8 ships nowhere (SPEC §9.28). What the table does *not* say is anything about
+accuracy: the checkpoint in that artifact is v0, which still fails the real-corpus
+gate below.
+
+```bash
+uv run python -m myna.onnx_export --ckpt runs/myna-v0 --out runs/onnx \
+    --scan-chunk 16 --n-chunks 4 --suite data/decision-v2-pilot   # → runs/onnx_parity.json
+uv run python bench/browser_expected.py                            # → browser/expected.json
+npm ci && npm run selftest                                         # 7 checks, node
+npm run g3                                                         # Chrome: bytes, cold, p50, shots
+uv run python bench/quantize_int8.py                               # the int8 row above
+```
+
+Absolute milliseconds from this laptop are a range, not a point, so the witness
+files carry `uptime`'s load average next to every number (SPEC §9.23), and the tab's
+own memory reading (176 MiB) counts JS-managed heap only — it does not attribute the
+54 MiB mounted into the wasm heap, which is why no total-tab memory figure is claimed.
+
 ## Trained v0 — accuracy on held-out data
 
 9,000 steps (~3.7 h on an M5, batch 32, MPS), 3,000 synthetic examples, dev

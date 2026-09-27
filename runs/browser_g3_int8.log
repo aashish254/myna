@@ -1,0 +1,14 @@
+run isolated-1440px ... p50 412.5 ms over 15, 32.3 MiB on the wire
+run isolated-390px ... p50 445.7 ms over 15, 32.3 MiB on the wire
+run plain-1440px ... p50 757.4 ms over 15, 32.3 MiB on the wire
+run plain-390px ... p50 756.4 ms over 15, 32.3 MiB on the wire
+
+mode      width     artifact MiB  wire MiB  wasm MiB  cold ms  p50 ms  min  max  threads  js MiB                            checks
+isolated  1440x900  18.56         32.33     13.58     336      413     387  428  10       123.4                             4/6   
+isolated  390x844   18.56         32.33     13.58     222      446     404  510  10       123.3                             4/6   
+plain     1440x900  18.56         32.33     13.58     278      757     754  794  1        n/a (API absent in this browser)  4/6   
+plain     390x844   18.56         32.33     13.58     214      756     753  795  1        n/a (API absent in this browser)  4/6   
+
+wrote runs/browser_g3_int8.json
+FAILED checks in isolated-1440px, isolated-390px, plain-1440px, plain-390px
+exit=1

@@ -50,7 +50,7 @@ to clear, not a gap to reframe around. Where we lose, we print the loss.
 | retained state | KV-free but re-encodes; window-bounded | **576 KiB fixed, independent of length** | measured |
 | calibration ECE | **0.081** after temperature fit (their measured) | **≤ 0.02**; 0.0076 on v0 **dev**, whose temperature was fit on those rows — read as optimistic (§9.11) | measured (v0), level disputed |
 | refusing a decision | nothing in the response shape refuses: `system_one` returns a choice for every question, and a caller can only threshold `confidence` itself | `Myna(abstain_below=t)` withholds the commitment with a measured `reason`; risk/coverage on `calibration.jsonl` runs 0.349 → 0.596 as coverage falls 1.00 → 0.10, and **no rung reaches G5's 0.95** on v0 (§9.24) | measured (5a/5b), gate not met |
-| browser artifact | ~1.7 GB fp32 / ~420 MB int8 (arithmetic) | export exists and is parity-checked: **93.7 MiB fp32** across the two graphs, which is the same trunk twice (§9.26) — so ≤ 20 MB int8 needs shared weights, not just quantisation | measured (6a), gate open |
+| browser artifact | ~1.7 GB fp32 / ~420 MB int8 (arithmetic) | measured in real Chrome, cold cache: **59.32 MiB fp32** artifact — the trunk shared, `weights.bin` fetched **once** — answering a live page with **6/6 parity checks green**, and **73.09 MiB** on the wire once the 13.58 MiB wasm runtime is counted. Dynamic int8 gets the artifact to **18.56 MiB** (inside the ≤ 20 MB target) and moves option probabilities by **6.48e-02** = 648× the fp32 bound, so it buys bytes and not agreement (§9.28) | measured (6b) |
 
 The latency cells are one process on one M5 laptop, `device=cpu`, both engines fp32. An absolute p50
 from that laptop is a range, not a point — two committed runs of the same harness differ by up to
@@ -65,7 +65,7 @@ Quote the ratio, never the millisecond figure.
 |---|---|---|---|
 | **G1** | Accuracy beats the witness | macro decision-v2 test ≥ 0.70 on the frozen split, per-source table published, ≥ 0.4331 majority floor by ≥ +0.15 | open |
 | **G2** | Latency claim survives equal-footing re-measurement | same box, same window, same question count, direct `Agent` call not `Router`; published ratio recomputed from that or withdrawn | **met** (4a/4c): one M5 process, both fp32, `Agent.system_one`, ladder capped inside laya's 1024 window — **3.04×/3.21×/4.12×/3.60×** at 1/5/10/50 questions end-to-end and **6.78×/4.67×/4.75×/3.65×** on the ask-only path, each the minimum of two committed runs, `runs/latency_matched*.md`. G1 is *not* implied: v0's accuracy still fails (§4.2) |
-| **G3** | Deployment works for real | ONNX browser build answers a live page's decisions; bytes + p50 + cold-load measured in Chrome | open |
+| **G3** | Deployment works for real | ONNX browser build answers a live page's decisions; bytes + p50 + cold-load measured in Chrome | **met, as a mechanics gate only.** `browser/index.html` runs the exported artifact in real Chrome 153 and answers three typed decisions with the same probabilities the torch engine prints (6/6 parity checks, both isolation modes, desktop and mobile widths, `runs/browser_g3.json`); bytes, cold-load and p50 are measured there with the box's load average recorded beside them. What this does **not** say: the artifact it deploys is v0, which still fails G1 and G5, and the ≤ 20 MB int8 route is open at the byte level and closed at the agreement level (§9.28) |
 | **G4** | Long-context is *correct*, not just cheap | needle-style typed decision ≥ 0.90 at 4k and ≥ 0.85 at 16k state | **not met, and not yet measurable on this box.** v0's needle curve (`runs/needle_myna-v0.md`) reads 0.188 at 128 tokens against a 0.167 floor — at chance on the shortest rung — so the longer rows are decay of nothing, and the harness now says so itself rather than printing a table (§9.25). The 16k *state* is measured and cheap (§9.22); the 16k *decision* needs the long-context checkpoint, which is 7b / `KAGGLE` |
 | **G5** | Useful confidence, with abstention | risk/coverage curve on `calibration.jsonl`; ≥ 0.95 accuracy at ≥ 60% coverage on banking77 + dbpedia14 + trec | **harness met, gate not met.** Abstention ships: `Myna(ckpt, abstain_below=t)` withholds the commitment and prints the measured reason, the fallback seam labels every answer with the engine that committed, and the curve is a committed artifact (`runs/risk_coverage.md`, 448 rows / 568 questions). Accuracy on v0 climbs **0.349 → 0.535** as coverage falls 1.00 → 0.20 — the confidence ranks the answers, on a checkpoint that cannot do the task — and setting the 0.693 floor on the engine abstains on **227** questions where the curve withheld **227**. But **no rung reaches 0.95** (max 0.596, at 10% coverage) and G5's own three sources sit at 0.000 / 0.025 / 0.150, so the pass needs the `KAGGLE` checkpoint (§9.24) |
 | **G6** | No regression on what already worked | synthetic v0 test ≥ 0.94 (was 0.951 measured) | open |
@@ -591,13 +591,16 @@ are counted, and if nothing is left the run refuses. See §9.14.
       fixed state stack and returns the next state — a 16k document is 64 calls to the same
       weights, never a graph that grows — and `question.onnx` resumes from that state, leaving
       the pointer head (a few matmuls over span means) to JavaScript beside the spans.
-      Measured at chunk 256, 8 questions × 256 tokens, opset 18, `runs/myna-v0` (14.45M):
-      chained scan of 853 tokens over 4 chunks with a padded tail **|Δ| 1.40e-03 = 3.13e-06
-      relative** on a state of scale 449; question branch **1.18e-04 absolute = 1.88e-05
-      relative**; masked-row inertness **exactly 0.0**; and the number a caller acts on —
-      option probabilities through the pointer head — **1.86e-07**. (The run also prints a
-      per-chunk wall-clock figure; it is quoted nowhere, because §9.23 established that this box's
-      absolutes move by 3× under load and G3's cost claim will be measured in Chrome.)
+      Measured at chunk 256, 8 questions × 64 tokens, opset 18, `runs/myna-v0` (14.45M), on the
+      shared-weight artifact 6b ships: chained scan of 853 tokens over 4 chunks with a padded tail
+      **|Δ| 7.32e-04 = 1.63e-06 relative** on a state of scale 449; question branch **2.83e-05
+      absolute = 4.58e-06 relative**; masked-row inertness **exactly 0.0**; and the number a caller
+      acts on — option probabilities through the pointer head — **8.94e-08**. (These are the numbers
+      `runs/onnx_parity.json` and `runs/onnx_export.log` print today; 6a's first pass recorded the
+      same properties on the duplicated-trunk graphs at 3.13e-06 / 1.88e-05 / 1.86e-07, and the file
+      was re-derived after sharing rather than left as a memory. The per-chunk wall-clock figure the
+      run also prints is quoted nowhere, because §9.23 established that this box's absolutes move by
+      3× under load and G3's cost claim is measured in Chrome.)
       That last figure is why the
       gate is split in two units: the state's entries reach ~4.5e2, so asking 1e-4 of it
       absolutely demands bitwise agreement between two BLAS implementations, and G3 would read
@@ -612,18 +615,68 @@ are counted, and if nothing is left the run refuses. See §9.14.
       * **Byte budget: 93.7 MiB fp32, and it is two copies of the same trunk** (state_step 35.6
         + question 58.13). §2.1's ≤ 20 MB int8 target is not reachable by quantising both graphs
         independently — the weights have to be shared, or the browser has to carry one graph and
-        call it twice. That is 6b's problem, now measured instead of assumed.
-      Still open inside G3, and stated rather than smoothed: the widest request the suite contains
-      is `banking77/intent` at **1,067 tokens** (77 options), measured over
-      `calibration.jsonl`, which does not fit the 256-wide graph exported here — the parity report
-      carries `"measured": false` for it, so decision parity at real width is unproven.
-- [ ] **6b** Measured in Chrome via `onnxruntime-web`: download bytes fp32/int8, cold-load ms, p50
-      per decision on a real page. Includes the shared-weights question 6a leaves open, and parity
-      at the 1,067-token request width.
+        call it twice. That is 6b's problem, now measured instead of assumed. On the narrower
+        profile 6b actually ships the same comparison is 93.2 MiB unshared against **59.32 MiB**
+        shared, and that is the pair §2.1 quotes; 93.7 belongs to 6a's own 8 × 256-token export.
+      What 6a left open, and 6b closed: the widest request the suite contains is `banking77/intent`
+      at **1,067 tokens** (77 options), measured over `calibration.jsonl`, which does not fit the
+      64-token question width this profile exports — `runs/onnx_parity.json` records it as
+      `"measured": false, "graph_width": 64`. The same request through a graph wide enough to carry
+      it (width 1152, `runs/onnx_parity_widest.json`) is measured at **4.25e-07** on option
+      probabilities, so real-width parity is a profile choice with a price in peak tile bytes
+      (3.00 → 12.0 MiB) rather than an unproven claim.
+- [x] **6b** Measured in Chrome via `onnxruntime-web`: download bytes fp32/int8, cold-load ms, p50
+      per decision on a real page, with the two things 6a proved necessary both closed.
+      * **The duplicated trunk is gone.** `onnx_export.share_weights` rewrites both graphs to read
+        their initializers from one `weights.bin`, deduplicated by the SHA-256 of each tensor's
+        bytes — sound because initializers are constants that no node writes. Sharing is then
+        *counted by content region, not name*: `dynamo` numbers initializers `val_N` per graph, and
+        on this artifact **36 initializer names are common to the two graphs while only 33
+        byte-regions actually are** — a name intersection measures the exporter's counter, not the
+        sharing. `min_bytes = 4096` keeps shape-inference constants inline, because onnxruntime
+        refuses to read them from an external file. Artifact on the shipped profile:
+        **93.2 → 59.32 MiB**, of which `weights.bin` is 54.32 MiB transferred once.
+      * **Parity at the widest real request.** The `banking77/intent` question 6a left as
+        `"measured": false` — 1,067 tokens, 77 options — is now exported at the width it needs
+        (graph width 1152) and measured: decision probabilities **4.25e-07** absolute, chain
+        **4.25e-06** relative on a state of scale 287, `runs/onnx_parity_widest.json` with
+        `"measured": true`. `--scan-chunk` stays the tab's memory knob: 3.00 MiB peak tile at the
+        shipped profile, 12.0 MiB at the wide one.
+      * **The page is a second implementation, and it is checked as one.** `browser/bpe.js` rebuilds
+        the ByteLevel BPE from `tokenizer.json` alone (separators deleted rather than turned into
+        `Ġ`, byte→symbol identity for the printable ranges, no `max_word_length` cutoff because this
+        tokenizer writes none and a 260-character word merges normally); `browser/head.js` runs the
+        pointer head and the abstention gate out of `head.bin`; `browser/myna.js` chains the scan.
+        `browser/parity.mjs` is the single witness both `node browser/selftest.mjs` (7 checks) and
+        the tab (6 — the on-disk byte comparison needs a filesystem) import, so a green tick in
+        Chrome is produced by the code the build gate fails on. Node: 1,243 tokens across 32 strings
+        and 3 question layouts identical, chained state over 525 tokens in 3 calls within
+        **2.86e-05** relative, decisions within **1.03e-06**, abstention reproduced at three floors,
+        every fetched file byte-equal to the file on disk.
+      * **Chrome, cold cache, throwaway profile** (`bench/browser_g3.mjs`, CDP over Node's own
+        WebSocket, `Network.loadingFinished.encodedDataLength` as the byte witness):
+        **Google Chrome 153.0.8010.53**, onnxruntime-web 1.30.0, four rows — COOP/COEP-isolated and
+        plain, 1440×900 and 390×844, 15 decisions each. Artifact **59.32 MiB**, wire **73.09 MiB**
+        with the **13.58 MiB** wasm runtime counted separately and never folded into the model's
+        figure, `weights.bin` requested **exactly once** in all four rows, cold load 254–394 ms,
+        p50 **436/426 ms** on 10 threads against **742/743 ms** single-thread. Screenshots:
+        `docs/screenshots/{isolated,plain}-{1440px,390px}.png`; witness `runs/browser_g3.json`,
+        which carries `uptime`'s load average (5.30 at the time of the run; the int8 sweep beside it
+        ran at 7.58, and each file records its own) next to every millisecond in it, per §9.23.
+      * **int8 was attempted, and it is a byte win only** — see §9.28.
+      * **Gates.** `pytest` 295 passed / 1 skipped (the KEV-gated parity test),
+        `node browser/selftest.mjs` 7/7 (`runs/browser_selftest.log`), `bench/mutation_onnx.py`
+        **22/22**, and `bench/mutation_browser.py` **24/24** (`runs/mutation_browser.log`) across
+        five clusters — tokenizer, chain, head, abstention, mount + bytes. Its first pass left
+        three survivors, two of which were the instrument's blind spot rather than the code's;
+        §9.27 records all three and the coverage assertion that keeps the second kind from
+        recurring.
+      Still open, and stated rather than smoothed: the tab's own `measureUserAgentSpecificMemory`
+      reading (176 MiB) counts JS-managed heap only and does **not** attribute the 54 MiB mounted
+      into the wasm heap, so no total-tab memory figure is claimed here; plain mode has no memory
+      API at all, which is printed as `n/a (API absent in this browser)` rather than as zero; and
+      every probability above is v0's, so a green G3 is a working artifact, not a shippable model.
 - [ ] **6c** MLX int8 path for Apple, re-measured after any parameter growth.
-- [ ] Measured in Chrome via `onnxruntime-web`: download bytes fp32/int8, cold-load ms, p50 per
-      decision on a real page.
-- [ ] MLX int8 path for Apple, re-measured after any parameter growth.
 
 ### P7 — Long-context proof *(gates G4)*
 - [x] **7a** `bench/eval_needle.py` recall-vs-length curve, swept 128 → 16,384 on the checkpoint
@@ -1008,5 +1061,50 @@ Kept permanently, because the value of this project's claims is that they surviv
     quantising each graph on its own. Either the weights are shared between them or the browser
     carries one graph and calls it twice, and that is now 6b's premise rather than a surprise at the
     end of it.
+27. **Three of the browser battery's 24 mutations survived on the first pass, and two of those were
+    the instrument's fault, not the code's.** `bench/mutation_browser.py` edits one line of the
+    JavaScript implementation at a time and requires `node browser/selftest.mjs` to go red, so a
+    survivor normally means an untested property. These three did not all mean that:
+    * **The scan loop had two sufficient exits.** Disabling its `if (take.length < chunk) break;`
+      survived because the loop *bound* — `fed < ids.length || fed === 0` — already stops an empty
+      document after its one padded call. The program was right and the mutation was wrong, so the
+      mutation was replaced by the one that attacks the same property from the side that is actually
+      load-bearing (dropping `|| fed === 0`, which dies on the empty-document check), and the
+      redundancy is now listed in the battery's own "deliberately absent" section instead of being
+      quietly kept as a passing line.
+    * **The score answer's expectation was compared as `null` against `null`.** The two probe floors
+      in `browser/expected.json` were 0.9 and 0.9995, and at both of them the `score` question
+      abstains — so `readout` returned `null` for `score`, the engine's want was `null`, and
+      `probs.reduce((a, p, j) => a + j * p)` could be rewritten as `a + p` (which is 1.0 by
+      construction, i.e. always wrong) while the gate printed green. Two fixes: a third floor at 0.6,
+      below every argmax this checkpoint produced (the softest is 0.7802), so all three types have a
+      committed case; and `parity.mjs` now asserts that coverage rather than assuming it — a type
+      with no committed case fails the gate and says *"no committed score case: its commit-branch
+      arithmetic is never compared"*. An instrument that reports only what it happened to reach is
+      how a gate stays green for a quarter of its life while one of its six checks tests nothing.
+    * **The byte total was never added up.** Per-file equality held while the printed *sum* was
+      rewritten to count only `*.onnx`, producing "4.15 MiB across 6 files" next to a 54 MiB
+      `weights.bin` — the exact shape of the 6a bug §9.26 records, arriving again through a second
+      door. What catches it is comparing the printed total against the directory's own total, which
+      is what the node gate now checks in the same line.
+28. **int8 meets ≤ 20 MB and misses the parity bound by 648×, and the tab is barely faster for
+    it.** §2.1's browser row carried a single compound target — "≤ 20 MB int8" — that was really two
+    claims, and measuring them separately split them. `bench/quantize_int8.py` runs onnxruntime's
+    dynamic quantisation over the *exported graphs* (not a fresh torch model, so the artifact
+    `bench/mutation_onnx.py` gates is the thing being shrunk) and re-shares the result through the
+    same `share_weights`: the artifact is **18.56 MiB**, inside the target, and the wire is 32.33 MiB
+    once the 13.58 MiB wasm runtime is counted (`runs/browser_g3_int8.json`). onnxruntime-web 1.30
+    runs the result — `MatMulInteger`, `DynamicQuantizeLinear` and `DequantizeLinear` are all
+    implemented in the wasm build, which was the assumption most likely to kill this route and it did
+    not. What killed it is the agreement: chained state **2.67e-02** relative and option
+    probabilities **6.48e-02** absolute against the fp32 gate's 1e-4, i.e. four of the tab's six
+    checks green and the two that carry numbers red. The three decisions' *labels* were unchanged on
+    that document — one document, 525 tokens, three questions, which is not a suite and is not
+    offered as evidence that quint8 is safe at 77 options. And the speed the loss bought is small:
+    p50 **413 ms** against fp32's **436 ms** at 10 threads (5%, inside the run-to-run spread §9.23
+    measures on this box, and the int8 sweep ran at a *higher* load average) and 757 ms against
+    742 ms single-thread, i.e. slower. So the byte target is met and the artifact that ships is
+    fp32; reopening int8 needs a quantisation tolerance argued against the decision suite, not
+    inherited from the fp32 export's bound.
 
 

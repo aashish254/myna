@@ -11,6 +11,9 @@ wheels/
 .pytest_cache/
 bench/out/
 
+# onnxruntime-web for the node gate; reinstall with `npm ci`, never commit
+node_modules/
+
 # runs/ holds checkpoints and scratch. G7 promises committed witnesses, so the
 # small tables (.json/.md/.log) stay tracked; weights directories, *.pt dumps and
 # the latency harness's .lock file do not.
@@ -25,3 +28,9 @@ data/*
 !data/decision-v2-pilot/
 data/decision-v2-pilot/*
 !data/decision-v2-pilot/upstream_manifest.json
+
+# The four shipping screenshots are the layout witness and are committed. The int8 set
+# is the same page with two red checks — its claim is the byte and probability table in
+# runs/browser_g3_int8.json, and `npm run g3 -- --artifact runs/onnx_int8` redraws the
+# PNGs on demand, so 4.4 MB of near-duplicate pixels stay out of a 114 KiB repo.
+docs/screenshots/int8/

@@ -1,0 +1,801 @@
+{
+ "note": "written by bench/browser_g3.mjs; every number is Chrome's or the page's own, from a cold cache on this box",
+ "chrome": "Google Chrome 153.0.8010.53",
+ "chrome_headless": "new",
+ "onnxruntime_web": "1.30.0",
+ "box": {
+  "load": "12:05  up 22:21, 1 user, load averages: 5.30 5.94 6.73",
+  "platform": "Darwin 27.0.0",
+  "cpus": 10,
+  "mem_gib": 32
+ },
+ "artifact": "runs/onnx",
+ "runs": 15,
+ "expected": "browser/expected.json",
+ "server": {
+  "host": "127.0.0.1:8019",
+  "cache_disabled": true,
+  "coop_coep": "per mode, recorded on each row"
+ },
+ "rows": [
+  {
+   "tag": "isolated-1440px",
+   "width": 1440,
+   "height": 900,
+   "cross_origin_isolated": true,
+   "wall_ms": 68103,
+   "requests": {
+    "/browser/index.html": 9840,
+    "/browser/app.js": 18243,
+    "/browser/myna.js": 8422,
+    "/browser/parity.mjs": 10225,
+    "/browser/bpe.js": 6918,
+    "/browser/head.js": 5849,
+    "/node_modules/onnxruntime-web/dist/ort.wasm.bundle.min.mjs": 73311,
+    "/runs/onnx/meta.json": 2175,
+    "/favicon.ico": "HTTP 404 (237 B)",
+    "/runs/onnx/weights.bin": 56961278,
+    "/runs/onnx/state_step.onnx": 2613835,
+    "/node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.mjs": 24638,
+    "/node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.wasm": 14240143,
+    "/runs/onnx/question.onnx": 1736047,
+    "/runs/onnx/tokenizer.json": 102894,
+    "/runs/onnx/head.bin": 788732,
+    "/browser/expected.json": 33779
+   },
+   "wasm_bytes": 14240143,
+   "wire_bytes_total": 76636329,
+   "report": {
+    "artifact": "/runs/onnx",
+    "expected": "/browser/expected.json",
+    "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.0.0 Safari/537.36",
+    "crossOriginIsolated": true,
+    "ort_web": null,
+    "wasm_build": "ort.wasm.bundle.min.mjs + ort-wasm-simd-threaded.wasm",
+    "wasm_threads": 10,
+    "profile": {
+     "chunk": 256,
+     "q_len": 64,
+     "n_questions": 8,
+     "scan_chunk": 16,
+     "n_layers": 6,
+     "d_model": 384,
+     "d_ptr": 256,
+     "temperature": 3,
+     "abstain_below": null,
+     "opset": {
+      "state_step.onnx": 18,
+      "question.onnx": 18
+     },
+     "exporter": "dynamo",
+     "peak_tile_bytes": 3145728,
+     "state_bytes_total": 589824
+    },
+    "transfer": {
+     "per_file": {
+      "meta.json": 1933,
+      "weights.bin": 56961024,
+      "state_step.onnx": 2613582,
+      "question.onnx": 1735794,
+      "tokenizer.json": 102650,
+      "head.bin": 788480
+     },
+     "total_bytes": 62203463,
+     "runtime_excluded": true,
+     "cold_ms": 394.4,
+     "session_create_ms": 384.6,
+     "mount": "weights.bin fetched once, mounted into both sessions"
+    },
+    "tab_memory": {
+     "available": true,
+     "bytes": 184634274,
+     "note": "JS-managed memory only; the mounted weights are in the wasm heap",
+     "breakdown": [
+      {
+       "bytes": 0,
+       "type": []
+      },
+      {
+       "bytes": 337062,
+       "type": []
+      },
+      {
+       "bytes": 184209492,
+       "type": [
+        {
+         "scope": "Window",
+         "url": "http://127.0.0.1:8019/browser/index.html?report=1&runs=15&artifact=runs%2Fonnx"
+        }
+       ]
+      },
+      {
+       "bytes": 87720,
+       "type": []
+      }
+     ]
+    },
+    "peak_tile_mib": 3,
+    "cold_load_ms": 394.4,
+    "decision": {
+     "tokens": 525,
+     "calls": 3,
+     "scan_ms": 231.3,
+     "branch_ms": 214.4,
+     "e2e_ms": [
+      417.7,
+      425.3,
+      426.8,
+      427.1,
+      427.5,
+      429.9,
+      433.4,
+      435.8,
+      437.2,
+      438.3,
+      438.8,
+      446.3,
+      447.7,
+      448.1,
+      453.6
+     ],
+     "p50_ms": 435.8,
+     "runs": 15
+    },
+    "decisions": [
+     {
+      "name": "department",
+      "type": "choice",
+      "abstain": false,
+      "verdict": "shipping",
+      "confidence": 0.7802298500230822,
+      "margin": null
+     },
+     {
+      "name": "urgency",
+      "type": "score",
+      "abstain": false,
+      "verdict": "not urgent",
+      "confidence": null,
+      "margin": null
+     },
+     {
+      "name": "churn_risk",
+      "type": "noul",
+      "abstain": false,
+      "verdict": "Yes",
+      "confidence": null,
+      "margin": null
+     }
+    ],
+    "checks": [
+     {
+      "ok": true,
+      "label": "32 strings / 1243 tokens tokenized identically",
+      "detail": ""
+     },
+     {
+      "ok": true,
+      "label": "3 question layouts identical",
+      "detail": ""
+     },
+     {
+      "ok": true,
+      "label": "chained state over 525 tokens in 3 calls matches 6 layer fingerprints (the engine's own chain: 3 calls)",
+      "detail": "worst relative 2.86e-5 against 0.0001"
+     },
+     {
+      "ok": true,
+      "label": "an empty document costs one padded scan call rather than hanging the tab",
+      "detail": "1 calls for 0 tokens"
+     },
+     {
+      "ok": true,
+      "label": "3 decisions agree with the engine",
+      "detail": "worst |Δp| 1.03e-6 against 0.0001"
+     },
+     {
+      "ok": true,
+      "label": "abstention: 9 answers at the 0.6/0.9/0.9995 floors and 3 gate cases match the engine (5 abstain, 4 commit)",
+      "detail": ""
+     }
+    ],
+    "passed": 6,
+    "failed": 0,
+    "shape_probe": null
+   },
+   "screenshot": "docs/screenshots/isolated-1440px.png"
+  },
+  {
+   "tag": "isolated-390px",
+   "width": 390,
+   "height": 844,
+   "cross_origin_isolated": true,
+   "wall_ms": 67693,
+   "requests": {
+    "/browser/index.html": 9840,
+    "/browser/app.js": 18243,
+    "/browser/myna.js": 8422,
+    "/browser/parity.mjs": 10225,
+    "/browser/bpe.js": 6918,
+    "/browser/head.js": 5849,
+    "/node_modules/onnxruntime-web/dist/ort.wasm.bundle.min.mjs": 73311,
+    "/runs/onnx/meta.json": 2175,
+    "/runs/onnx/weights.bin": 56961278,
+    "/runs/onnx/state_step.onnx": 2613835,
+    "/node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.mjs": 24638,
+    "/node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.wasm": 14240143,
+    "/runs/onnx/question.onnx": 1736047,
+    "/runs/onnx/tokenizer.json": 102894,
+    "/runs/onnx/head.bin": 788732,
+    "/browser/expected.json": 33779
+   },
+   "wasm_bytes": 14240143,
+   "wire_bytes_total": 76636329,
+   "report": {
+    "artifact": "/runs/onnx",
+    "expected": "/browser/expected.json",
+    "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.0.0 Safari/537.36",
+    "crossOriginIsolated": true,
+    "ort_web": null,
+    "wasm_build": "ort.wasm.bundle.min.mjs + ort-wasm-simd-threaded.wasm",
+    "wasm_threads": 10,
+    "profile": {
+     "chunk": 256,
+     "q_len": 64,
+     "n_questions": 8,
+     "scan_chunk": 16,
+     "n_layers": 6,
+     "d_model": 384,
+     "d_ptr": 256,
+     "temperature": 3,
+     "abstain_below": null,
+     "opset": {
+      "state_step.onnx": 18,
+      "question.onnx": 18
+     },
+     "exporter": "dynamo",
+     "peak_tile_bytes": 3145728,
+     "state_bytes_total": 589824
+    },
+    "transfer": {
+     "per_file": {
+      "meta.json": 1933,
+      "weights.bin": 56961024,
+      "state_step.onnx": 2613582,
+      "question.onnx": 1735794,
+      "tokenizer.json": 102650,
+      "head.bin": 788480
+     },
+     "total_bytes": 62203463,
+     "runtime_excluded": true,
+     "cold_ms": 288.1,
+     "session_create_ms": 282.7,
+     "mount": "weights.bin fetched once, mounted into both sessions"
+    },
+    "tab_memory": {
+     "available": true,
+     "bytes": 184515887,
+     "note": "JS-managed memory only; the mounted weights are in the wasm heap",
+     "breakdown": [
+      {
+       "bytes": 87720,
+       "type": []
+      },
+      {
+       "bytes": 183528686,
+       "type": [
+        {
+         "scope": "Window",
+         "url": "http://127.0.0.1:8019/browser/index.html?report=1&runs=15&artifact=runs%2Fonnx"
+        }
+       ]
+      },
+      {
+       "bytes": 899481,
+       "type": []
+      },
+      {
+       "bytes": 0,
+       "type": []
+      }
+     ]
+    },
+    "peak_tile_mib": 3,
+    "cold_load_ms": 288.1,
+    "decision": {
+     "tokens": 525,
+     "calls": 3,
+     "scan_ms": 204.6,
+     "branch_ms": 246.7,
+     "e2e_ms": [
+      410.8,
+      413.8,
+      416.2,
+      418.2,
+      418.5,
+      422.5,
+      425.3,
+      426,
+      430.1,
+      430.2,
+      432.4,
+      438,
+      439.9,
+      444.5,
+      453.2
+     ],
+     "p50_ms": 426,
+     "runs": 15
+    },
+    "decisions": [
+     {
+      "name": "department",
+      "type": "choice",
+      "abstain": false,
+      "verdict": "shipping",
+      "confidence": 0.7802298500230822,
+      "margin": null
+     },
+     {
+      "name": "urgency",
+      "type": "score",
+      "abstain": false,
+      "verdict": "not urgent",
+      "confidence": null,
+      "margin": null
+     },
+     {
+      "name": "churn_risk",
+      "type": "noul",
+      "abstain": false,
+      "verdict": "Yes",
+      "confidence": null,
+      "margin": null
+     }
+    ],
+    "checks": [
+     {
+      "ok": true,
+      "label": "32 strings / 1243 tokens tokenized identically",
+      "detail": ""
+     },
+     {
+      "ok": true,
+      "label": "3 question layouts identical",
+      "detail": ""
+     },
+     {
+      "ok": true,
+      "label": "chained state over 525 tokens in 3 calls matches 6 layer fingerprints (the engine's own chain: 3 calls)",
+      "detail": "worst relative 2.86e-5 against 0.0001"
+     },
+     {
+      "ok": true,
+      "label": "an empty document costs one padded scan call rather than hanging the tab",
+      "detail": "1 calls for 0 tokens"
+     },
+     {
+      "ok": true,
+      "label": "3 decisions agree with the engine",
+      "detail": "worst |Δp| 1.03e-6 against 0.0001"
+     },
+     {
+      "ok": true,
+      "label": "abstention: 9 answers at the 0.6/0.9/0.9995 floors and 3 gate cases match the engine (5 abstain, 4 commit)",
+      "detail": ""
+     }
+    ],
+    "passed": 6,
+    "failed": 0,
+    "shape_probe": null
+   },
+   "screenshot": "docs/screenshots/isolated-390px.png"
+  },
+  {
+   "tag": "plain-1440px",
+   "width": 1440,
+   "height": 900,
+   "cross_origin_isolated": false,
+   "wall_ms": 12693,
+   "requests": {
+    "/browser/index.html": 9755,
+    "/browser/app.js": 18158,
+    "/browser/myna.js": 8337,
+    "/browser/parity.mjs": 10140,
+    "/browser/bpe.js": 6833,
+    "/browser/head.js": 5764,
+    "/node_modules/onnxruntime-web/dist/ort.wasm.bundle.min.mjs": 73226,
+    "/runs/onnx/meta.json": 2090,
+    "/runs/onnx/weights.bin": 56961193,
+    "/runs/onnx/state_step.onnx": 2613750,
+    "/node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.mjs": 24553,
+    "/node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.wasm": 14240058,
+    "/runs/onnx/question.onnx": 1735962,
+    "/runs/onnx/tokenizer.json": 102809,
+    "/runs/onnx/head.bin": 788647,
+    "/browser/expected.json": 33694
+   },
+   "wasm_bytes": 14240058,
+   "wire_bytes_total": 76634969,
+   "report": {
+    "artifact": "/runs/onnx",
+    "expected": "/browser/expected.json",
+    "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.0.0 Safari/537.36",
+    "crossOriginIsolated": false,
+    "ort_web": null,
+    "wasm_build": "ort.wasm.bundle.min.mjs + ort-wasm-simd-threaded.wasm",
+    "wasm_threads": 1,
+    "profile": {
+     "chunk": 256,
+     "q_len": 64,
+     "n_questions": 8,
+     "scan_chunk": 16,
+     "n_layers": 6,
+     "d_model": 384,
+     "d_ptr": 256,
+     "temperature": 3,
+     "abstain_below": null,
+     "opset": {
+      "state_step.onnx": 18,
+      "question.onnx": 18
+     },
+     "exporter": "dynamo",
+     "peak_tile_bytes": 3145728,
+     "state_bytes_total": 589824
+    },
+    "transfer": {
+     "per_file": {
+      "meta.json": 1933,
+      "weights.bin": 56961024,
+      "state_step.onnx": 2613582,
+      "question.onnx": 1735794,
+      "tokenizer.json": 102650,
+      "head.bin": 788480
+     },
+     "total_bytes": 62203463,
+     "runtime_excluded": true,
+     "cold_ms": 339.1,
+     "session_create_ms": 332.9,
+     "mount": "weights.bin fetched once, mounted into both sessions"
+    },
+    "tab_memory": {
+     "available": false,
+     "reason": "API absent in this browser"
+    },
+    "peak_tile_mib": 3,
+    "cold_load_ms": 339.1,
+    "decision": {
+     "tokens": 525,
+     "calls": 3,
+     "scan_ms": 348.1,
+     "branch_ms": 392.2,
+     "e2e_ms": [
+      735.1,
+      735.9,
+      737.2,
+      738.7,
+      739.4,
+      739.5,
+      739.7,
+      741.8,
+      741.9,
+      743.7,
+      745.2,
+      747.3,
+      761.1,
+      767.3,
+      772.6
+     ],
+     "p50_ms": 741.8,
+     "runs": 15
+    },
+    "decisions": [
+     {
+      "name": "department",
+      "type": "choice",
+      "abstain": false,
+      "verdict": "shipping",
+      "confidence": 0.7802298500230822,
+      "margin": null
+     },
+     {
+      "name": "urgency",
+      "type": "score",
+      "abstain": false,
+      "verdict": "not urgent",
+      "confidence": null,
+      "margin": null
+     },
+     {
+      "name": "churn_risk",
+      "type": "noul",
+      "abstain": false,
+      "verdict": "Yes",
+      "confidence": null,
+      "margin": null
+     }
+    ],
+    "checks": [
+     {
+      "ok": true,
+      "label": "32 strings / 1243 tokens tokenized identically",
+      "detail": ""
+     },
+     {
+      "ok": true,
+      "label": "3 question layouts identical",
+      "detail": ""
+     },
+     {
+      "ok": true,
+      "label": "chained state over 525 tokens in 3 calls matches 6 layer fingerprints (the engine's own chain: 3 calls)",
+      "detail": "worst relative 2.86e-5 against 0.0001"
+     },
+     {
+      "ok": true,
+      "label": "an empty document costs one padded scan call rather than hanging the tab",
+      "detail": "1 calls for 0 tokens"
+     },
+     {
+      "ok": true,
+      "label": "3 decisions agree with the engine",
+      "detail": "worst |Δp| 1.03e-6 against 0.0001"
+     },
+     {
+      "ok": true,
+      "label": "abstention: 9 answers at the 0.6/0.9/0.9995 floors and 3 gate cases match the engine (5 abstain, 4 commit)",
+      "detail": ""
+     }
+    ],
+    "passed": 6,
+    "failed": 0,
+    "shape_probe": null
+   },
+   "screenshot": "docs/screenshots/plain-1440px.png"
+  },
+  {
+   "tag": "plain-390px",
+   "width": 390,
+   "height": 844,
+   "cross_origin_isolated": false,
+   "wall_ms": 12584,
+   "requests": {
+    "/browser/index.html": 9755,
+    "/browser/app.js": 18158,
+    "/browser/myna.js": 8337,
+    "/browser/parity.mjs": 10140,
+    "/browser/bpe.js": 6833,
+    "/browser/head.js": 5764,
+    "/node_modules/onnxruntime-web/dist/ort.wasm.bundle.min.mjs": 73226,
+    "/runs/onnx/meta.json": 2090,
+    "/runs/onnx/weights.bin": 56961193,
+    "/runs/onnx/state_step.onnx": 2613750,
+    "/node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.mjs": 24553,
+    "/node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.wasm": 14240058,
+    "/runs/onnx/question.onnx": 1735962,
+    "/runs/onnx/tokenizer.json": 102809,
+    "/runs/onnx/head.bin": 788647,
+    "/browser/expected.json": 33694
+   },
+   "wasm_bytes": 14240058,
+   "wire_bytes_total": 76634969,
+   "report": {
+    "artifact": "/runs/onnx",
+    "expected": "/browser/expected.json",
+    "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.0.0 Safari/537.36",
+    "crossOriginIsolated": false,
+    "ort_web": null,
+    "wasm_build": "ort.wasm.bundle.min.mjs + ort-wasm-simd-threaded.wasm",
+    "wasm_threads": 1,
+    "profile": {
+     "chunk": 256,
+     "q_len": 64,
+     "n_questions": 8,
+     "scan_chunk": 16,
+     "n_layers": 6,
+     "d_model": 384,
+     "d_ptr": 256,
+     "temperature": 3,
+     "abstain_below": null,
+     "opset": {
+      "state_step.onnx": 18,
+      "question.onnx": 18
+     },
+     "exporter": "dynamo",
+     "peak_tile_bytes": 3145728,
+     "state_bytes_total": 589824
+    },
+    "transfer": {
+     "per_file": {
+      "meta.json": 1933,
+      "weights.bin": 56961024,
+      "state_step.onnx": 2613582,
+      "question.onnx": 1735794,
+      "tokenizer.json": 102650,
+      "head.bin": 788480
+     },
+     "total_bytes": 62203463,
+     "runtime_excluded": true,
+     "cold_ms": 253.9,
+     "session_create_ms": 249,
+     "mount": "weights.bin fetched once, mounted into both sessions"
+    },
+    "tab_memory": {
+     "available": false,
+     "reason": "API absent in this browser"
+    },
+    "peak_tile_mib": 3,
+    "cold_load_ms": 253.9,
+    "decision": {
+     "tokens": 525,
+     "calls": 3,
+     "scan_ms": 347.4,
+     "branch_ms": 392.9,
+     "e2e_ms": [
+      739.1,
+      739.3,
+      741.9,
+      742,
+      742.6,
+      742.6,
+      742.7,
+      742.9,
+      742.9,
+      748.6,
+      752,
+      753.2,
+      779.3,
+      783.1,
+      783.5
+     ],
+     "p50_ms": 742.9,
+     "runs": 15
+    },
+    "decisions": [
+     {
+      "name": "department",
+      "type": "choice",
+      "abstain": false,
+      "verdict": "shipping",
+      "confidence": 0.7802298500230822,
+      "margin": null
+     },
+     {
+      "name": "urgency",
+      "type": "score",
+      "abstain": false,
+      "verdict": "not urgent",
+      "confidence": null,
+      "margin": null
+     },
+     {
+      "name": "churn_risk",
+      "type": "noul",
+      "abstain": false,
+      "verdict": "Yes",
+      "confidence": null,
+      "margin": null
+     }
+    ],
+    "checks": [
+     {
+      "ok": true,
+      "label": "32 strings / 1243 tokens tokenized identically",
+      "detail": ""
+     },
+     {
+      "ok": true,
+      "label": "3 question layouts identical",
+      "detail": ""
+     },
+     {
+      "ok": true,
+      "label": "chained state over 525 tokens in 3 calls matches 6 layer fingerprints (the engine's own chain: 3 calls)",
+      "detail": "worst relative 2.86e-5 against 0.0001"
+     },
+     {
+      "ok": true,
+      "label": "an empty document costs one padded scan call rather than hanging the tab",
+      "detail": "1 calls for 0 tokens"
+     },
+     {
+      "ok": true,
+      "label": "3 decisions agree with the engine",
+      "detail": "worst |Δp| 1.03e-6 against 0.0001"
+     },
+     {
+      "ok": true,
+      "label": "abstention: 9 answers at the 0.6/0.9/0.9995 floors and 3 gate cases match the engine (5 abstain, 4 commit)",
+      "detail": ""
+     }
+    ],
+    "passed": 6,
+    "failed": 0,
+    "shape_probe": null
+   },
+   "screenshot": "docs/screenshots/plain-390px.png"
+  }
+ ],
+ "summary": [
+  {
+   "mode": "isolated",
+   "width": 1440,
+   "artifact_mib": 59.32,
+   "wire_mib": 73.09,
+   "wasm_runtime_mib": 13.58,
+   "cold_load_ms": 394.4,
+   "session_create_ms": 384.6,
+   "p50_ms": 435.8,
+   "min_ms": 417.7,
+   "max_ms": 453.6,
+   "threads": 10,
+   "peak_tile_mib": 3,
+   "tab_memory_mib": 176.1,
+   "tab_memory_note": null,
+   "checks_passed": 6,
+   "checks_failed": 0,
+   "weights_requests": 1,
+   "screenshot": "docs/screenshots/isolated-1440px.png"
+  },
+  {
+   "mode": "isolated",
+   "width": 390,
+   "artifact_mib": 59.32,
+   "wire_mib": 73.09,
+   "wasm_runtime_mib": 13.58,
+   "cold_load_ms": 288.1,
+   "session_create_ms": 282.7,
+   "p50_ms": 426,
+   "min_ms": 410.8,
+   "max_ms": 453.2,
+   "threads": 10,
+   "peak_tile_mib": 3,
+   "tab_memory_mib": 176,
+   "tab_memory_note": null,
+   "checks_passed": 6,
+   "checks_failed": 0,
+   "weights_requests": 1,
+   "screenshot": "docs/screenshots/isolated-390px.png"
+  },
+  {
+   "mode": "plain",
+   "width": 1440,
+   "artifact_mib": 59.32,
+   "wire_mib": 73.08,
+   "wasm_runtime_mib": 13.58,
+   "cold_load_ms": 339.1,
+   "session_create_ms": 332.9,
+   "p50_ms": 741.8,
+   "min_ms": 735.1,
+   "max_ms": 772.6,
+   "threads": 1,
+   "peak_tile_mib": 3,
+   "tab_memory_mib": null,
+   "tab_memory_note": "API absent in this browser",
+   "checks_passed": 6,
+   "checks_failed": 0,
+   "weights_requests": 1,
+   "screenshot": "docs/screenshots/plain-1440px.png"
+  },
+  {
+   "mode": "plain",
+   "width": 390,
+   "artifact_mib": 59.32,
+   "wire_mib": 73.08,
+   "wasm_runtime_mib": 13.58,
+   "cold_load_ms": 253.9,
+   "session_create_ms": 249,
+   "p50_ms": 742.9,
+   "min_ms": 739.1,
+   "max_ms": 783.5,
+   "threads": 1,
+   "peak_tile_mib": 3,
+   "tab_memory_mib": null,
+   "tab_memory_note": "API absent in this browser",
+   "checks_passed": 6,
+   "checks_failed": 0,
+   "weights_requests": 1,
+   "screenshot": "docs/screenshots/plain-390px.png"
+  }
+ ]
+}

@@ -1,0 +1,15 @@
+{
+  "name": "myna-browser-artifact",
+  "version": "0.0.0",
+  "private": true,
+  "description": "The one npm dependency in this repo: onnxruntime-web, which browser/index.html runs the exported ONNX artifact against. The model itself is Python (see pyproject.toml).",
+  "license": "Apache-2.0",
+  "type": "module",
+  "scripts": {
+    "selftest": "node browser/selftest.mjs",
+    "g3": "node bench/browser_g3.mjs --mode both --widths 1440x900,390x844"
+  },
+  "dependencies": {
+    "onnxruntime-web": "^1.30.0"
+  }
+}

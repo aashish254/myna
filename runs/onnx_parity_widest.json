@@ -1,0 +1,41 @@
+{
+  "ckpt": "runs/myna-v0",
+  "out": "runs/onnx-wide",
+  "chain_max_abs_error": 0.001220703125,
+  "chain_max_rel_error": 4.248865393607454e-06,
+  "state_scale": 287.30096435546875,
+  "question_max_abs_error": 7.128715515136719e-05,
+  "question_max_rel_error": 1.1244240241353293e-05,
+  "isolation_max_abs_error": 0.0,
+  "decision_max_abs_error": 4.246830940246582e-07,
+  "decision_questions_compared": 3,
+  "widest_request": {
+    "source": "banking77",
+    "question": "intent",
+    "tokens": 1067,
+    "n_options": 77,
+    "graph_width": 1152,
+    "measured": true,
+    "decision_max_abs_error": 4.246830940246582e-07
+  },
+  "decision_questions_too_wide": 0,
+  "max_abs_error_allowed": 0.0001,
+  "max_rel_error_allowed": 0.0001,
+  "pass": true,
+  "state_tokens": 597,
+  "n_chunks": 3,
+  "chunk": 256,
+  "n_questions_real": 1,
+  "n_questions_padded": 2,
+  "state_step_ms_per_chunk": 205.14,
+  "files_mib": {
+    "head.bin": 0.75,
+    "question.onnx": 5.87,
+    "state_step.onnx": 0.88,
+    "tokenizer.json": 0.1,
+    "weights.bin": 54.35
+  },
+  "shared_weights": true,
+  "transfer_mib": 61.95,
+  "unshared_transfer_mib": 99.5
+}

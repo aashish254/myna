@@ -1,0 +1,53 @@
+baseline copy: green (7 checks)
+
+[ 1/24] caught      the greedy merge takes the rarest pair instead of the commonest
+            Node.js v24.21.0
+[ 2/24] caught      the merge never considers the word's last pair
+            FAIL  32 strings / 1243 tokens tokenized identically: 22 strings differ — "I have a question about the partner prog": py
+[ 3/24] caught      byte-level symbols stop being shifted out of the text's own range
+            FAIL  32 strings / 1243 tokens tokenized identically: 9 strings differ — "I have a question about the partner prog": pyt
+[ 4/24] caught      an option's span ends one token early
+            FAIL  3 question layouts identical: 3 layouts differ
+[ 5/24] caught      added tokens are split on but thrown away
+            FAIL  32 strings / 1243 tokens tokenized identically: 1 strings differ — "[OPT] sneaky [DECIDE] too": python 1,85,1141,7
+[ 6/24] caught      the scan mask covers the padding too
+            FAIL  chained state over 525 tokens in 3 calls matches 6 layer fingerprints (the engine's own chain: 3 calls): worst rel
+[ 7/24] caught      every chunk is fed as if it started at position zero
+            FAIL  chained state over 525 tokens in 3 calls matches 6 layer fingerprints (the engine's own chain: 3 calls): worst rel
+[ 8/24] caught      the layer stack comes back in the other order
+            FAIL  chained state over 525 tokens in 3 calls matches 6 layer fingerprints (the engine's own chain: 3 calls): worst rel
+[ 9/24] caught      each call re-reads the document's first chunk
+            FAIL  chained state over 525 tokens in 3 calls matches 6 layer fingerprints (the engine's own chain: 3 calls): worst rel
+[10/24] caught      the empty document gets no padded scan call at all
+            FAIL  an empty document costs one padded scan call rather than hanging the tab: 0 calls for 0 tokens
+[11/24] caught      question padding is left unmasked
+            FAIL  3 decisions agree with the engine: worst |Δp| 4.24e-2 against 0.0001
+[12/24] caught      the temperature is read and then not used
+            FAIL  3 decisions agree with the engine: worst |Δp| 2.02e-1 against 0.0001
+[13/24] caught      the pointer scale multiplies by sqrt(d) instead of dividing
+            FAIL  3 decisions agree with the engine: worst |Δp| 2.20e-1 against 0.0001
+[14/24] caught      the projection biases are dropped
+            FAIL  3 decisions agree with the engine: worst |Δp| 6.18e-3 against 0.0001
+[15/24] caught      an option is its first token rather than its span's mean
+            FAIL  3 decisions agree with the engine: worst |Δp| 1.19e-1 against 0.0001
+[16/24] caught      the span sum is never divided by the span's length
+            FAIL  3 decisions agree with the engine: worst |Δp| 1.51e-1 against 0.0001
+[17/24] caught      the margin is reported as the top probability
+            FAIL  abstention: 9 answers at the 0.6/0.9/0.9995 floors and 3 gate cases match the engine (5 abstain, 4 commit): depart
+[18/24] caught      the gate commits on the margin instead of the confidence
+            FAIL  abstention: 9 answers at the 0.6/0.9/0.9995 floors and 3 gate cases match the engine (5 abstain, 4 commit): depart
+[19/24] caught      a score becomes the sum of probabilities instead of their expectation
+            FAIL  abstention: 9 answers at the 0.6/0.9/0.9995 floors and 3 gate cases match the engine (5 abstain, 4 commit): urgenc
+[20/24] caught      noul reports p(No) as the number the Brier score is defined on
+            FAIL  abstention: 9 answers at the 0.6/0.9/0.9995 floors and 3 gate cases match the engine (5 abstain, 4 commit): churn_
+[21/24] caught      a choice commits through the gate
+            FAIL  abstention: 9 answers at the 0.6/0.9/0.9995 floors and 3 gate cases match the engine (5 abstain, 4 commit): depart
+[22/24] caught      a score level commits through the gate
+            FAIL  abstention: 9 answers at the 0.6/0.9/0.9995 floors and 3 gate cases match the engine (5 abstain, 4 commit): urgenc
+[23/24] caught      the shared weights are mounted under a name neither graph asks for
+            Node.js v24.21.0
+[24/24] caught      the transfer total counts only the graph skeletons
+            FAIL  every fetched file is the file on disk, and the total is their sum (4.15 MiB across 6 files): printed 4.15 MiB, di
+
+24/24 mutations caught
+exit=0

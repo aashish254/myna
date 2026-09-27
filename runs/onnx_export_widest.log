@@ -1,0 +1,36 @@
+W0927 12:01:27.231000 72240 .venv/lib/python3.13/site-packages/torch/onnx/_internal/exporter/_registration.py:107] torchvision is not installed. Skipping torchvision::nms
+W0927 12:01:27.231000 72240 .venv/lib/python3.13/site-packages/torch/onnx/_internal/exporter/_registration.py:107] torchvision is not installed. Skipping torchvision::roi_align
+W0927 12:01:27.231000 72240 .venv/lib/python3.13/site-packages/torch/onnx/_internal/exporter/_registration.py:107] torchvision is not installed. Skipping torchvision::roi_pool
+W0927 12:01:27.231000 72240 .venv/lib/python3.13/site-packages/torch/onnx/_internal/exporter/_registration.py:107] torchvision is not installed. Skipping torchvision::deform_conv2d
+W0927 12:01:30.833000 72240 .venv/lib/python3.13/site-packages/torch/onnx/_internal/exporter/_registration.py:107] torchvision is not installed. Skipping torchvision::nms
+W0927 12:01:30.833000 72240 .venv/lib/python3.13/site-packages/torch/onnx/_internal/exporter/_registration.py:107] torchvision is not installed. Skipping torchvision::roi_align
+W0927 12:01:30.833000 72240 .venv/lib/python3.13/site-packages/torch/onnx/_internal/exporter/_registration.py:107] torchvision is not installed. Skipping torchvision::roi_pool
+W0927 12:01:30.833000 72240 .venv/lib/python3.13/site-packages/torch/onnx/_internal/exporter/_registration.py:107] torchvision is not installed. Skipping torchvision::deform_conv2d
+[torch.onnx] Obtain model graph for `StateStep([...]` with `torch.export.export(..., strict=False)`...
+[torch.onnx] Obtain model graph for `StateStep([...]` with `torch.export.export(..., strict=False)`... ✅
+[torch.onnx] Run decompositions...
+[torch.onnx] Run decompositions... ✅
+[torch.onnx] Translate the graph into ONNX...
+[torch.onnx] Translate the graph into ONNX... ✅
+[torch.onnx] Optimize the ONNX graph...
+[torch.onnx] Optimize the ONNX graph... ✅
+[torch.onnx] Obtain model graph for `QuestionBranch([...]` with `torch.export.export(..., strict=False)`...
+[torch.onnx] Obtain model graph for `QuestionBranch([...]` with `torch.export.export(..., strict=False)`... ✅
+[torch.onnx] Run decompositions...
+[torch.onnx] Run decompositions... ✅
+[torch.onnx] Translate the graph into ONNX...
+[torch.onnx] Translate the graph into ONNX... ✅
+[torch.onnx] Optimize the ONNX graph...
+[torch.onnx] Optimize the ONNX graph... ✅
+exported to runs/onnx-wide: head.bin 0.75 MiB · question.onnx 5.87 MiB · state_step.onnx 0.88 MiB · tokenizer.json 0.1 MiB · weights.bin 54.35 MiB
+weights: ONE shared weights.bin of 54.35 MiB — 57 distinct regions, 34 of them read by both graphs, so 33.90 MiB transfers once instead of twice (268 references alias a region inside their own graph). One copy per graph would transfer 99.5 MiB; the artifact transfers 61.95 MiB
+meta: chunk 256 scanned in 64-token tiles (12.0 MiB peak per call), 2 questions x 1152 tokens, opset 18, exporter dynamo, 6 layers, 14.45M params, state 576 KiB, head 0.75 MiB, tokenizer 0.1 MiB
+widest real request (banking77/intent: 1067 tokens, 77 options) through the same graphs: decision |Δ| 4.25e-07
+chained scan of 597 tokens over 3 chunks (padded tail): |Δ| 1.22e-03 = 4.25e-06 relative on a state of scale 287.3
+question branch, 1 real + 1 padded rows: |Δ| 7.13e-05 = 1.12e-05 relative on hidden states of scale 6.3
+isolation — question 0 run beside 1 masked rows: |Δ| 0.00e+00
+decision parity through the pointer head, 3 question(s) (probabilities, bounded by 1): |Δ| 4.25e-07
+onnxruntime state_step: 205.1 ms per 256-token chunk on this box
+PASS: worst unit-scale |Δ| 4.25e-07 against 1e-04, and worst relative 1.12e-05 against 1e-04
+wrote runs/onnx_parity_widest.json
+exit=0

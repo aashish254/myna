@@ -23,6 +23,7 @@ name said out loud rather than passing quietly.
 from __future__ import annotations
 
 import importlib.util
+import hashlib
 import json
 import random
 from pathlib import Path
@@ -34,8 +35,9 @@ import torch
 from myna.data import generate
 from myna.engine import Myna
 from myna.model import MynaConfig, MynaModel
-from myna.onnx_export import chain_state, export, parity, state_shapes
-from myna.tokenizer import train_tokenizer
+from myna.onnx_export import (WEIGHTS, chain_state, export, parity, pointer_probs,
+                             read_head, state_shapes)
+from myna.tokenizer import build_question, train_tokenizer
 
 HAS_ORT = importlib.util.find_spec("onnxruntime") is not None
 
@@ -82,30 +84,230 @@ def bundle(small, tmp_path_factory):
     return small, out, meta
 
 
-def test_both_graphs_load_and_report_their_weights(bundle):
+ITEMSIZE = {1: 4, 6: 4, 7: 8, 9: 1, 10: 2, 11: 8, 12: 8}   # onnx TensorProto dtypes
+
+
+def _inits(path, min_bytes=0):
+    """name -> (bytes, external?) for every initializer a graph declares.
+
+    Read from the graph with `load_external_data=False`, so the sizes are what the
+    artifact says about itself, and the sharing contract is checked where it is
+    declared: an initializer at or above `min_bytes` must be external, because an inline
+    trunk weight is a copy the browser downloads twice; an external one must point into
+    `weights.bin` and carry no bytes of its own.
+    """
+    import onnx
+
+    g = onnx.load(path, load_external_data=False)
+    out = {}
+    for i in g.graph.initializer:
+        nbytes = int(np.prod(i.dims)) * ITEMSIZE.get(i.data_type, 0)
+        external = i.data_location == onnx.TensorProto.EXTERNAL
+        if external:
+            ed = {e.key: e.value for e in i.external_data}
+            assert ed.get("location") == "weights.bin", (path.name, i.name, ed)
+            assert not i.HasField("raw_data") and not len(i.float_data), i.name
+        else:
+            assert i.HasField("raw_data"), (path.name, i.name)
+            assert nbytes < min_bytes, (
+                f"{path.name}:{i.name} keeps {nbytes} bytes inline, above the "
+                f"{min_bytes}-byte sharing threshold — the trunk is duplicated again")
+        out[i.name] = (nbytes, external)
+    return out
+
+
+def _extents(path):
+    """(offset, length) per external initializer name, as the graph declares them."""
+    import onnx
+
+    g = onnx.load(path, load_external_data=False)
+    extents = {}
+    for i in g.graph.initializer:
+        if i.data_location != onnx.TensorProto.EXTERNAL:
+            continue
+        ed = {e.key: e.value for e in i.external_data}
+        assert ed.get("location") == "weights.bin", (path.name, i.name)
+        assert not i.HasField("raw_data") and not len(i.float_data), i.name
+        extents[i.name] = (int(ed["offset"]), int(ed["length"]))
+    return extents
+
+
+def _content(t):
+    """SHA-256 of a parameter's bytes, in either layout it could have been written in.
+
+    `dynamo` exports `F.linear` with the weight transposed relative to the state dict,
+    so matching only the training layout reports every weight as missing.
+    """
+    a = np.ascontiguousarray(t.detach().cpu().numpy())
+    return {hashlib.sha256(a.tobytes()).hexdigest(),
+            hashlib.sha256(np.ascontiguousarray(a.T).tobytes()).hexdigest()}
+
+
+def _hashes(blob, extents):
+    """Content per name, read back out of the one file both graphs point into."""
+    return {n: hashlib.sha256(blob[o:o + ln]).hexdigest() for n, (o, ln) in extents.items()}
+
+
+def test_both_graphs_load_and_report_their_weights(bundle, small):
+    """The bounds the byte budget rests on, read off the artifact rather than assumed.
+
+    The first two passes of this test used a size heuristic and still let a byte-budget
+    lie through (§9.26), and the shape of the lie kept moving: a graph skeleton is a few
+    hundred KiB whatever it carries, a file *list* can leave the weights out, and the
+    weight names dynamo writes (`val_N`) are per-graph counters, so no name-based check
+    can say whether a weight shipped. So here: every trunk weight at or above the
+    sharing threshold must be physically present in `weights.bin` — byte-identical, in
+    either layout — the extents both graphs declare must sit inside that file, and the
+    reported transfer must cover the furthest byte either graph reaches plus the head
+    and the tokenizer, which no listing of the directory can quietly omit.
+    """
     _, out, meta = bundle
-    for graph in ("state_step.onnx", "question.onnx"):
-        assert (out / graph).exists(), graph
-        # The exporter keeps initializers in a sibling `*.onnx.data`, so a listing of
-        # the graphs alone would call a 36 MB model a few hundred KiB — and a loose
-        # threshold would not notice, which is exactly how the first pass of
-        # `bench/mutation_onnx.py` scored 11/12. The bound has to be the size the
-        # weights *are*: an artifact cannot be smaller than what it carries.
-        # The property is "the reported size covers the weights the graph references",
-        # so read the graph and add up what it says it needs. A size heuristic cannot
-        # catch this — a graph skeleton is a few hundred KiB either way, which is why
-        # the first two passes of this test still let the mutation through.
-        import onnx
-        g = onnx.load(out / graph, load_external_data=False)
-        # mixed dtypes: the weights are float32 (1) and the graph constants are int64
-        # (7), so the itemsize comes from the tensor, not from an assumption.
-        itemsize = {1: 4, 6: 4, 7: 8, 9: 1, 10: 2, 11: 8, 12: 8}
-        init_bytes = sum(int(np.prod(i.dims)) * itemsize[i.data_type]
-                         for i in g.graph.initializer if i.data_type in itemsize)
-        assert meta["files_mib"][graph] * 2**20 >= init_bytes * 0.99, (
-            graph, meta["files_mib"], init_bytes)
+    mb = meta["weight_sharing"]["min_bytes"]
+    step, question = _inits(out / "state_step.onnx", mb), _inits(out / "question.onnx", mb)
+    assert step and question
+    blob = (out / "weights.bin").read_bytes()
+    extents = _extents(out / "state_step.onnx") | _extents(out / "question.onnx")
+    reach = max(o + ln for o, ln in extents.values())
+    assert reach <= len(blob), (reach, len(blob))
+    align = meta["weight_sharing"]["align"]
+    assert all(o % align == 0 for o, _ in extents.values()), "a region the page reads misaligned"
+    present = {h for h in _hashes(blob, extents).values()}
+    trunk = {n: p for n, p in Myna(small).trunk.state_dict().items()
+             if p.numel() * p.element_size() >= mb}
+    missing = sorted(n for n, p in trunk.items() if not _content(p) & present)
+    assert not missing, f"weights absent from {WEIGHTS}: {missing}"
+    # The accounting in meta has to describe this file, not a number the writer liked:
+    # `per_graph_bytes` is a sum over *references*, so it exceeds the file exactly where
+    # a graph aliases a region twice (the zero-initialised gates) and nowhere else.
+    sh = meta["weight_sharing"]
+    assert sh["weights_bytes"] == len(blob)
+    for g, inits in (("state_step.onnx", step), ("question.onnx", question)):
+        declared = sum(b for b, ext in inits.values() if b >= mb and ext)
+        assert sh["per_graph_bytes"][g] == declared, (g, sh["per_graph_bytes"][g], declared)
+    assert sh["per_reference_bytes"] == sum(sh["per_graph_bytes"].values())
+    assert meta["transfer_mib"] * 2**20 >= (reach + meta["head"]["head_bytes"]
+                                            + meta["head"]["tokenizer_bytes"])
     assert meta["state_bytes_total"] == 4 * 16 * 16 * 4 * 3
     assert json.loads((out / "meta.json").read_text())["exporter"] == "dynamo"
+
+
+def test_the_two_graphs_reference_one_copy_of_the_trunk(bundle):
+    """6a shipped 93.7 MiB fp32 for a 14.45M-parameter model: the same trunk, twice.
+
+    Sharing has to be structural, or the byte claim is a sentence — and it has to be
+    checked by *content*, because dynamo names each graph's initializers `val_N` from a
+    per-graph counter. Measured on this artifact the two graphs share every region the
+    state graph reads, while their name sets overlap by two, so a name intersection
+    reports the counter rather than the sharing. So: the state graph's weight regions are
+    a subset of the question graph's (by bytes, not labels), the question graph has
+    regions the state graph lacks (the backward scan and the final norm), nothing
+    survives as a per-graph `*.onnx.data`, and the file on disk is smaller than both
+    graphs' claims.
+    """
+    _, out, meta = bundle
+    mb = meta["weight_sharing"]["min_bytes"]
+    sh = meta["weight_sharing"]
+    blob = (out / "weights.bin").read_bytes()
+    step_ext = _extents(out / "state_step.onnx")
+    ques_ext = _extents(out / "question.onnx")
+    step = _hashes(blob, step_ext)
+    question = _hashes(blob, ques_ext)
+    # the state graph is a strict subset of the question graph's content
+    st, qu = set(step.values()), set(question.values())
+    assert st and qu
+    assert st - qu == set(), f"weights only state_step reads: {sorted(st - qu)}"
+    assert qu - st, ("the question graph carries no weight the state graph lacks — "
+                     "the backward scan is missing from the artifact")
+    assert not list(out.glob("*.onnx.data")), "a per-graph copy survived the rewrite"
+    assert meta["shared_weights"] is True
+    assert sh["shared_regions"] == len(st), (sh, len(st))
+    # deduplicated by region, not by name: several of state_step's initializers alias one
+    # extent (every zero-initialised gate), and that is a fraction of the file's bytes.
+    assert sh["shared_bytes"] == sum(ln for _, ln in set(step_ext.values())), sh
+    twice = sum(b for b, ext in _inits(out / "state_step.onnx", mb).values()
+                if b >= mb and ext) + sum(
+        b for b, ext in _inits(out / "question.onnx", mb).values() if b >= mb and ext)
+    assert len(blob) < twice, "one file holding both graphs' bytes counted twice over"
+    assert meta["transfer_mib"] < meta["unshared_transfer_mib"], meta
+
+
+def test_no_share_reproduces_the_duplicated_baseline(bundle, tmp_path, small):
+    """The flag that measures what sharing bought has to be honest about its own size."""
+    _, _, shared_meta = bundle
+    out = export(small, tmp_path / "dup", chunk=32, n_questions=4, q_len=96, share=False)
+    assert out["shared_weights"] is False
+    assert out["transfer_mib"] > shared_meta["transfer_mib"], (
+        out["transfer_mib"], shared_meta["transfer_mib"])
+    assert sorted(f.name for f in (tmp_path / "dup").glob("*.onnx.data")) == \
+        ["question.onnx.data", "state_step.onnx.data"]
+
+
+def test_the_head_blob_answers_the_same_question(bundle, small):
+    """The page does the pointer head in JavaScript, so the shipped blob has to be
+    enough to reproduce the engine's probabilities without torch's modules."""
+    _, out, meta = bundle
+    fields, meta = read_head(out)
+    for name, lay in meta["head"]["head_layout"].items():
+        want = [meta["d_ptr"], meta["d_model"]] if "weight" in name else [meta["d_ptr"]]
+        assert lay["shape"] == want, (name, lay)
+    assert meta["head"]["head_bytes"] == 2 * (meta["d_ptr"] * meta["d_model"] + meta["d_ptr"]) * 4
+
+    m = Myna(small)
+    ex = generate(1, "support", random.Random(0))[0]
+    spec = {"type": "choice", "instructions": "x",
+            "criteria": {"billing": "b", "tech": "t", "sales": "s"}}
+    opts = m._options(spec)
+    qrow, spans, dec = build_question(m.tok, "Which team?", opts)
+    obs = m.observe(ex.state)
+    with torch.no_grad():
+        hq = m.trunk.encode_questions([torch.tensor([qrow])], obs.S_cache,
+                                      len(obs.ids))[0][0]
+    want = m._readout(spec, opts, hq, dec, spans)["probabilities"]
+    got = pointer_probs(fields, m.cfg.d_ptr, m.temperature, hq.numpy(), spans, dec)
+    assert max(abs(w - g) for w, g in zip(list(want.values()), got)) < 1e-6, (want, got)
+
+
+def test_a_smaller_scan_tile_is_the_same_answer_at_less_memory(tmp_path, small):
+    """`--scan-chunk` is the tab's memory knob, not an accuracy knob.
+
+    The parallel scan allocates a `[rows, heads, chunk, chunk, d_k]` tile per layer, so
+    the exported width is what a request costs: at the engine's inference chunk of 256
+    and 8 questions the tile is hundreds of MB, which is a crashed tab rather than a
+    slow one. The arithmetic is identical at any chunk size
+    (`tests/test_trunk_numerics.py`), so what this test holds is that the *exported*
+    graph still passes parity at the small tile, and that the tile the metadata reports
+    is the one that was asked for.
+    """
+    wide = export(small, tmp_path / "wide", chunk=32, n_questions=4, q_len=96, scan_chunk=32)
+    tight = export(small, tmp_path / "tight", chunk=32, n_questions=4, q_len=96, scan_chunk=4)
+    assert wide["peak_tile_bytes"] > tight["peak_tile_bytes"], (wide, tight)
+    # tiles scale with chunk^2: 32 -> 4 is eight steps down, sixty-four times smaller.
+    # Exact, not approximate -- the key is reported in bytes for this reason.
+    assert wide["peak_tile_bytes"] == tight["peak_tile_bytes"] * 64, (wide, tight)
+    # and it is the tile that was actually asked for, recomputed from the geometry in
+    # the same file rather than trusted from the writer.
+    for m, s in ((wide, 32), (tight, 4)):
+        assert m["peak_tile_bytes"] == max(
+            r * m["n_heads"] * s * s * m["d_k"] * 4 for r in (1, m["n_questions"])), m
+    assert wide["scan_chunk"] == 32 and tight["scan_chunk"] == 4
+    for d, m in ((tmp_path / "wide", wide), (tmp_path / "tight", tight)):
+        res = parity(small, d, n_chunks=2)
+        assert res["pass"] is True, (d, res)
+        assert res["decision_max_abs_error"] < 1e-4
+
+
+def test_the_scan_tile_must_fit_inside_the_graph_width(tmp_path, small):
+    """A tile wider than the input is a shape the graph was never traced at."""
+    with pytest.raises(SystemExit, match="scan-chunk"):
+        export(small, tmp_path / "bad", chunk=32, n_questions=4, q_len=96, scan_chunk=64)
+
+
+def test_the_tokenizer_travels_with_the_artifact(bundle, small):
+    """A page cannot answer what it cannot tokenize, and the byte budget must say so."""
+    _, out, meta = bundle
+    assert (out / "tokenizer.json").read_bytes() == (small / "tokenizer.json").read_bytes()
+    assert meta["files_mib"]["tokenizer.json"] > 0
+    assert meta["head"]["tokenizer_bytes"] == (out / "tokenizer.json").stat().st_size
 
 
 def test_parity_passes_within_the_bound(bundle):

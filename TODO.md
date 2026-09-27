@@ -206,11 +206,23 @@ So every "train" item below is split into *prepare/verify the Kaggle path locall
       Witness: `runs/onnx_parity.json`, `runs/onnx_export.log`, `tests/test_onnx_export.py` (8),
       `bench/mutation_onnx.py` (**12/12**; its first pass caught the byte-budget lie that two
       rounds of size assertions had let through)
-- [ ] **6b** In-Chrome measurement via onnxruntime-web: download bytes fp32/int8, cold-load ms,
-      p50 per decision on a real page (screenshot-verified at desktop + mobile widths). Carries two
-      things 6a proved necessary: share or drop the duplicated trunk, and reach parity at the
-      widest real request (`banking77/intent`, 1,067 tokens) which today's 256-wide graph cannot
-      carry — `runs/onnx_parity.json` records that comparison as `"measured": false`
+- [x] **6b** In-Chrome measurement via onnxruntime-web: download bytes fp32/int8, cold-load ms,
+      p50 per decision on a real page (screenshot-verified at desktop + mobile widths). Both things
+      6a proved necessary are closed: the trunk is **shared** (`share_weights`, dedup by content
+      hash → one 54.32 MiB `weights.bin`, artifact **93.7 → 59.32 MiB**, requested exactly once in
+      all four Chrome rows), and the widest real request — `banking77/intent`, **1,067 tokens / 77
+      options** at graph width 1152 — reaches parity at **4.25e-07** on option probabilities
+      (`runs/onnx_parity_widest.json`, `"measured": true`). The page re-implements the tokenizer
+      (`browser/bpe.js`, from `tokenizer.json` alone) and the pointer head + abstention gate
+      (`browser/head.js`, from `head.bin`), and `browser/parity.mjs` is the one witness the node
+      gate (7 checks) and the tab (6) both import. Chrome 153, cold cache, `bench/browser_g3.mjs`:
+      wire **73.09 MiB** with the **13.58 MiB** wasm runtime counted apart from the model, cold load
+      254–394 ms, p50 **436/426 ms** on 10 threads vs **742/743 ms** single-thread, load average
+      recorded beside every millisecond. int8: **18.56 MiB** artifact — inside ≤ 20 MB — and
+      **6.48e-02** probability error against a 1e-4 bound, so bytes yes, agreement no (§9.28).
+      Witness: `runs/browser_g3{,_int8}.{json,log}`, `docs/screenshots/`, `runs/int8_quantize.log`,
+      `node browser/selftest.mjs` 7/7, `bench/mutation_browser.py` **24/24** (`runs/mutation_browser.log`;
+      its first pass caught three survivors, two of them the instrument's own blind spots — §9.27)
 
 ## P7 — Long-context proof (G4)
 - [x] **7a** Needle recall-vs-length curve on an existing checkpoint (inference) — swept

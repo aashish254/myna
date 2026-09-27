@@ -1,0 +1,209 @@
+<!doctype html>
+<!-- The G3 artifact's front door: no server, no build, no API key.
+
+     Everything here is either a byte this tab fetched, a millisecond this tab measured, or
+     a line from `browser/parity.mjs` — the same checks `node browser/selftest.mjs` gates
+     the build on. The legend at the bottom of the page keeps those three apart, because a
+     demo that blurs "downloaded", "observed" and "verified" is how an artifact ends up
+     believed on the wrong evidence. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>myna · system-1 typed decisions</title>
+<style>
+  :root {
+    --paper: #efece4;
+    --panel: #f7f5ef;
+    --ink: #16150f;
+    --muted: #6f6a5c;
+    --rule: #cdc7b8;
+    --signal: #14654a;
+    --warn: #8f5700;
+    --bad: #96201c;
+    --probe: #2c5a80;
+    --mono: ui-monospace, "SF Mono", "Menlo", "Cascadia Mono", monospace;
+    --display: "Iowan Old Style", "Palatino Linotype", Palatino, "Times New Roman", serif;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    color: var(--ink);
+    font: 15px/1.5 var(--mono);
+    font-variant-numeric: tabular-nums;
+    background:
+      repeating-linear-gradient(0deg, rgba(22, 21, 15, .035) 0 1px, transparent 1px 6px),
+      repeating-linear-gradient(90deg, rgba(22, 21, 15, .035) 0 1px, transparent 1px 6px),
+      var(--paper);
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 18px 64px; }
+
+  /* masthead: a wordmark and a status line, not a hero */
+  header.masthead {
+    display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 18px;
+    padding: 26px 0 14px; border-bottom: 2px solid var(--ink);
+  }
+  .wordmark { font: 400 34px/1 var(--display); letter-spacing: -.02em; margin: 0; }
+  .wordmark em { font-style: normal; color: var(--signal); }
+  .tagline { color: var(--muted); font-size: 12px; max-width: 46ch; }
+  .phase { margin-left: auto; font-size: 12px; }
+  .phase b { font-weight: 400; color: var(--probe); }
+
+  form.pick { display: flex; gap: 8px; align-items: center; padding: 12px 0 0; width: 100%; }
+  form.pick label { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+  form.pick input { font: inherit; background: var(--panel); border: 1px solid var(--rule); padding: 4px 8px; width: 22ch; }
+  form.pick button { font: inherit; background: var(--ink); color: var(--paper); border: 0; padding: 5px 12px; }
+
+  .banner { margin: 14px 0 0; padding: 9px 12px; border-left: 3px solid var(--probe); background: var(--panel); font-size: 13px; }
+  .banner.bad { border-color: var(--bad); color: var(--bad); }
+
+  /* the working surface: document + decisions, then the instrument rack */
+  .grid { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(300px, .85fr); gap: 0 34px; margin-top: 26px; }
+  @media (max-width: 860px) { .grid { grid-template-columns: minmax(0, 1fr); } }
+
+  h2 { font: 400 11px/1 var(--mono); text-transform: uppercase; letter-spacing: .1em;
+       color: var(--muted); margin: 0 0 8px; padding-bottom: 6px; border-bottom: 1px solid var(--rule); }
+  section { margin: 0 0 26px; }
+
+  textarea { width: 100%; min-height: 190px; resize: vertical; font: inherit; color: var(--ink);
+             background: var(--panel); border: 1px solid var(--rule); border-top: 2px solid var(--ink);
+             padding: 10px 12px; }
+  textarea:focus { outline: 2px solid var(--probe); outline-offset: -1px; }
+  .actions { display: flex; align-items: center; gap: 14px; margin-top: 10px; font-size: 12px; color: var(--muted); }
+  .actions button { font: inherit; background: var(--signal); color: #fff; border: 0; padding: 6px 16px; cursor: pointer; }
+  .actions button:disabled { background: var(--rule); color: var(--muted); cursor: progress; }
+
+  article.q { border-top: 1px solid var(--rule); padding: 14px 0 16px; }
+  article.q header { display: flex; align-items: baseline; gap: 10px; }
+  article.q h3 { margin: 0; font: 400 20px/1.2 var(--display); letter-spacing: -.01em; }
+  .type { font-size: 10px; text-transform: uppercase; letter-spacing: .1em; color: var(--probe); }
+  .instr { margin: 6px 0 12px; color: var(--muted); font-size: 13px; max-width: 62ch; }
+  .verdict { font: 400 22px/1.25 var(--display); }
+  .verdict.abstain { color: var(--warn); }
+  .why { display: block; font-size: 12px; color: var(--muted); margin-top: 2px; }
+  ul.bars { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 5px; }
+  ul.bars li { display: grid; grid-template-columns: minmax(72px, 22ch) 1fr 62px; align-items: center; gap: 10px; font-size: 12px; }
+  ul.bars li.dim { opacity: .45; }
+  ul.bars i { display: block; height: 8px; background:
+    linear-gradient(90deg, var(--signal) 0 var(--w, 0%), rgba(22,21,15,.09) var(--w, 0%) 100%); }
+  ul.bars .n { text-align: right; }
+
+  details.layout { margin-top: 12px; font-size: 12px; }
+  details.layout summary { cursor: pointer; color: var(--muted); }
+  .chips { display: flex; flex-wrap: wrap; gap: 2px 3px; margin-top: 8px; line-height: 1.35; }
+  .chip { background: rgba(22,21,15,.05); padding: 1px 3px; }
+  .chip.opt { color: var(--muted); background: none; }
+  .chip.decide { color: #fff; background: var(--ink); }
+  .chip.tok { border-bottom: 2px solid var(--probe); }
+  .probe { color: var(--probe); padding: 0 6px 0 2px; font-size: 11px; }
+
+  /* the rack */
+  dl, ul.plain { margin: 0; padding: 0; font-size: 12px; }
+  ul.plain li { display: flex; justify-content: space-between; gap: 14px; padding: 5px 0; border-bottom: 1px dotted var(--rule); }
+  ul.plain .k { color: var(--muted); }
+  ul.plain .v { text-align: right; }
+  ul.plain li.sum { border-bottom: 0; border-top: 1px solid var(--ink); margin-top: 3px; padding-top: 6px; }
+  ul.plain li.probe .v { color: var(--probe); }
+  ul.plain li + li { border-top: 0; }
+  .note { font-size: 11px; color: var(--muted); margin: 8px 0 0; max-width: 54ch; }
+
+  ul#witness { list-style: none; margin: 0; padding: 0; font-size: 12px; display: grid; gap: 6px; }
+  ul#witness li { display: grid; grid-template-columns: 42px 1fr; gap: 0 8px; }
+  ul#witness .mark { font-weight: 700; }
+  ul#witness li.ok .mark { color: var(--signal); }
+  ul#witness li.bad { color: var(--bad); }
+  ul#witness li.bad .mark { color: var(--bad); }
+  ul#witness .det { grid-column: 2; color: var(--muted); font-size: 11px; }
+  li.bad .det { color: var(--bad); }
+
+  #report-panel { margin-top: 26px; }
+  #report { background: #16150f; color: #e8e4d8; padding: 14px; overflow: auto; max-height: 60vh;
+            font: 11px/1.45 var(--mono); white-space: pre; }
+
+  footer.legend { border-top: 2px solid var(--ink); margin-top: 34px; padding-top: 12px;
+                  display: flex; flex-wrap: wrap; gap: 8px 26px; font-size: 11px; color: var(--muted); }
+  footer.legend b { font-weight: 400; color: var(--ink); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="masthead">
+    <h1 class="wordmark">myna<em>.</em></h1>
+    <p class="tagline">A System-1 typed-decision model running entirely in this tab: one
+      fixed-size state, pointer probes over option spans, no vocabulary readout and no
+      server.</p>
+    <p class="phase" id="phase">booting</p>
+    <form class="pick" id="artifact-form" autocomplete="off">
+      <label for="artifact">artifact</label>
+      <input id="artifact" name="artifact" value="runs/onnx" spellcheck="false">
+      <button type="submit">load</button>
+    </form>
+  </header>
+
+  <p class="banner" id="banner" hidden></p>
+
+  <div class="grid">
+    <main>
+      <section>
+        <h2>The document</h2>
+        <textarea id="document" spellcheck="false" aria-label="document text"></textarea>
+        <div class="actions">
+          <button id="ask" type="button" disabled>Ask all three</button>
+          <span id="hint">one graph call per chunk of the document; the state never grows</span>
+        </div>
+      </section>
+
+      <section>
+        <h2>Typed decisions</h2>
+        <div id="questions"></div>
+      </section>
+
+      <section id="report-panel" hidden>
+        <h2>Machine-readable report</h2>
+        <pre id="report"></pre>
+      </section>
+    </main>
+
+    <aside>
+      <section>
+        <h2>What this artifact is</h2>
+        <ul class="plain" id="profile"></ul>
+      </section>
+
+      <section>
+        <h2>Bytes this tab fetched</h2>
+        <ul class="plain" id="bytes"></ul>
+        <p class="note" id="bytes-note"></p>
+      </section>
+
+      <section>
+        <h2>Cost of this request</h2>
+        <ul class="plain" id="scan"></ul>
+        <p class="note">Every millisecond here was observed by this tab on this machine,
+          with <span id="threads">the wasm runtime</span> on the thread count it actually
+          got.</p>
+      </section>
+
+      <section>
+        <h2>Parity witness</h2>
+        <ul id="witness"></ul>
+        <p class="note" id="witness-note"></p>
+        <label class="note"><input type="checkbox" id="report-toggle"> show the JSON report</label>
+      </section>
+    </aside>
+  </div>
+
+  <footer class="legend">
+    <span><b>fetched</b> — bytes counted per file as they arrive, in <code>myna.js</code>.</span>
+    <span><b>measured</b> — wall-clock this tab observed.</span>
+    <span><b>witnessed</b> — checks from <code>parity.mjs</code>, the same module
+      <code>node browser/selftest.mjs</code> gates on.</span>
+    <span><b>not claimed</b> — anything about a device this page is not running on.</span>
+  </footer>
+</div>
+
+<script type="module" src="./app.js"></script>
+</body>
+</html>

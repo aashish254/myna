@@ -1,0 +1,18 @@
+
+profile      /Users/aashish/next ko ne next gen model/runs/onnx
+             chunk 256 x tile 16, 8 questions x 64 tokens, 6 layers, temperature 3
+cold load    248 ms  (both graphs, one weights.bin mount)
+transfer     59.32 MiB across 6 files
+             meta.json 0.00  weights.bin 54.32  state_step.onnx 2.49  question.onnx 1.66  tokenizer.json 0.10  head.bin 0.75
+decision     525 tokens, 3 scan calls, p50 397.8 ms over 15 runs on this box
+             scan 193.6 ms + branch 206.4 ms
+ok    32 strings / 1243 tokens tokenized identically
+ok    3 question layouts identical
+ok    chained state over 525 tokens in 3 calls matches 6 layer fingerprints (the engine's own chain: 3 calls): worst relative 2.86e-5 against 0.0001
+ok    an empty document costs one padded scan call rather than hanging the tab: 1 calls for 0 tokens
+ok    3 decisions agree with the engine: worst |Δp| 1.03e-6 against 0.0001
+ok    abstention: 9 answers at the 0.6/0.9/0.9995 floors and 3 gate cases match the engine (5 abstain, 4 commit)
+ok    every fetched file is the file on disk, and the total is their sum (59.32 MiB across 6 files)
+
+7 checks passed
+exit=0

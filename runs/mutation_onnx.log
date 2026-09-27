@@ -1,29 +1,49 @@
-  note: interpreter aborted after a green summary (recursive_mutex lock failed); treated as green, see the docstring
 baseline copy: green (1 test file)
 
-[ 1/12] caught      the state graph ignores its mask, so padded tokens decay the memory
-            FAILED tests/test_onnx_export.py::test_a_question_too_wide_for_the_graph_fails_instead_of_passing_on_nothing
-[ 2/12] caught      the chain marks every padded position as a real token
-            FAILED tests/test_onnx_export.py::test_parity_passes_within_the_bound - Asser...
-[ 3/12] caught      the padded question ids are left as unmasked garbage
-            FAILED tests/test_onnx_export.py::test_parity_passes_within_the_bound - Asser...
-[ 4/12] caught      the chain over-reads the document, advancing by the padded width
-            FAILED tests/test_onnx_export.py::test_parity_passes_within_the_bound - Asser...
-[ 5/12] caught      the chain throws away the state between chunks
-            FAILED tests/test_onnx_export.py::test_parity_passes_within_the_bound - Asser...
-[ 6/12] caught      the byte budget counts the graph but not its weights file
+[ 1/22] caught      the state graph ignores its mask, so padded tokens decay the memory
+            FAILED tests/test_onnx_export.py::test_a_smaller_scan_tile_is_the_same_answer_at_less_memory
+[ 2/22] caught      the chain marks every padded position as a real token
+            FAILED tests/test_onnx_export.py::test_a_smaller_scan_tile_is_the_same_answer_at_less_memory
+[ 3/22] caught      the padded question ids are left as unmasked garbage
+            FAILED tests/test_onnx_export.py::test_a_smaller_scan_tile_is_the_same_answer_at_less_memory
+[ 4/22] caught      the chain over-reads the document, advancing by the padded width
+            FAILED tests/test_onnx_export.py::test_a_smaller_scan_tile_is_the_same_answer_at_less_memory
+[ 5/22] caught      the chain throws away the state between chunks
+            FAILED tests/test_onnx_export.py::test_a_smaller_scan_tile_is_the_same_answer_at_less_memory
+[ 6/22] caught      the byte budget totals only the graph skeletons, not the weight files
+            FAILED tests/test_onnx_export.py::test_no_share_reproduces_the_duplicated_baseline
+[ 7/22] caught      the state geometry claims one layer's worth for the whole stack
             FAILED tests/test_onnx_export.py::test_both_graphs_load_and_report_their_weights
-[ 7/12] caught      the state geometry claims one layer's worth for the whole stack
+[ 8/22] caught      the exporter flag is a label instead of the thing that ran
+            FAILED tests/test_onnx_export.py::test_no_share_reproduces_the_duplicated_baseline
+[ 9/22] caught      the dedup key is the graph's own name, so both graphs write their own copy
+            FAILED tests/test_onnx_export.py::test_the_two_graphs_reference_one_copy_of_the_trunk
+[10/22] caught      the dedup never fires: every reference gets a fresh region
+            FAILED tests/test_onnx_export.py::test_the_two_graphs_reference_one_copy_of_the_trunk
+[11/22] caught      every initializer is pushed to the external file, shape-inference constants too
             FAILED tests/test_onnx_export.py::test_both_graphs_load_and_report_their_weights
-[ 8/12] caught      the exporter flag is a label instead of the thing that ran
-            FAILED tests/test_onnx_export.py::test_parity_passes_within_the_bound - onnxr...
-[ 9/12] caught      the relative half of the gate is dropped
+[12/22] caught      the external pointer keeps its inline bytes, so `onnx.save` rewrites the shared file
+            FAILED tests/test_onnx_export.py::test_a_smaller_scan_tile_is_the_same_answer_at_less_memory
+[13/22] caught      the per-graph `.onnx.data` copies survive the rewrite
+            FAILED tests/test_onnx_export.py::test_the_two_graphs_reference_one_copy_of_the_trunk
+[14/22] caught      the head layout records where the blob started instead of where each field is
+            FAILED tests/test_onnx_export.py::test_the_head_blob_answers_the_same_question
+[15/22] caught      the shipped head's option pooling stops being a mean
+            FAILED tests/test_onnx_export.py::test_the_head_blob_answers_the_same_question
+[16/22] caught      the tile knob is read for the metadata but not for the graph
+            FAILED tests/test_onnx_export.py::test_a_smaller_scan_tile_is_the_same_answer_at_less_memory
+[17/22] caught      a tile wider than the graph it feeds is accepted
+            FAILED tests/test_onnx_export.py::test_the_scan_tile_must_fit_inside_the_graph_width
+[18/22] caught      the reported peak tile counts one row whatever the request carries
+            FAILED tests/test_onnx_export.py::test_a_smaller_scan_tile_is_the_same_answer_at_less_memory
+[19/22] caught      the relative half of the gate is dropped
             FAILED tests/test_onnx_export.py::test_each_half_of_the_gate_can_be_the_one_that_fails
-[10/12] caught      the absolute half of the gate is dropped
+[20/22] caught      the absolute half of the gate is dropped
             FAILED tests/test_onnx_export.py::test_each_half_of_the_gate_can_be_the_one_that_fails
-[11/12] caught      relative error is reported as the absolute error
+[21/22] caught      relative error is reported as the absolute error
             FAILED tests/test_onnx_export.py::test_parity_passes_within_the_bound - Asser...
-[12/12] caught      a request too wide for the graph passes on zero comparisons
+[22/22] caught      a request too wide for the graph passes on zero comparisons
             FAILED tests/test_onnx_export.py::test_a_question_too_wide_for_the_graph_fails_instead_of_passing_on_nothing
 
-12/12 mutations caught
+22/22 mutations caught
+exit=0

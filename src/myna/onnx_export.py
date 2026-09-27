@@ -37,16 +37,31 @@ Three properties this makes the exported files prove rather than assert:
   einsum-and-flip scan), so a build that "worked" under the old flag would fail on the
   reader's machine. Both graphs here are exported with the new path and loaded back.
 
-Not here yet: int8 quantization and the in-Chrome measurement (6b/6c). G3's byte budget
+Not here yet: int8 quantization and the in-Chrome measurement (6b). G3's byte budget
 belongs to the artifact as shipped, so this reports fp32 sizes and leaves the quantized
 figure to be compared against something honest.
+
+What 6b adds to the artifact, because 6a's byte figure was two copies of one trunk:
+
+* **one weights file.** `share_weights` rewrites both graphs' initializers to point into
+  a single `weights.bin`, deduplicated by the SHA-256 of each tensor's bytes. The two
+  graphs still load independently — this is a statement about what the browser fetches,
+  not about how ONNX Runtime allocates: two sessions still hold two copies in RAM, and
+  `meta.json` reports both numbers.
+* **the pointer head and the tokenizer, shipped.** `head.bin` is the wq/wk matrices as
+  raw float32 in a fixed field order, and `tokenizer.json` is copied next to the graphs.
+  Neither is decorative: the page has to turn text into ids and hidden states into
+  probabilities, so an artifact without them cannot answer anything, and G3's byte
+  budget has to include them.
 """
 
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import random
+import shutil
 import time
 from pathlib import Path
 
@@ -65,6 +80,12 @@ CHUNK = 256
 QUESTIONS = 8
 OPSET = 18   # 17 is below what this torch build implements: the exporter
            # warns, writes 18 anyway, and the version-converter fallback aborts
+GRAPHS = ("state_step.onnx", "question.onnx")
+#: One file holds the initializers of every graph, deduplicated by content.
+WEIGHTS = "weights.bin"
+#: The pointer head is not in either graph (it belongs beside the option spans), so it
+#: ships as its own raw float32 blob in this field order.
+HEAD_FIELDS = ("wq_weight", "wq_bias", "wk_weight", "wk_bias")
 
 
 class StateStep(nn.Module):
@@ -74,32 +95,46 @@ class StateStep(nn.Module):
     weights must work at any depth in the document, and the caller is the one that knows
     how far it has read. `mask` is 1.0 on real tokens — a padded one must contribute
     nothing to the memory and must not decay it either.
+
+    `width` and `scan` are two different things and have to stay that way. `width` is
+    the graph's fixed input shape — how many tokens one call carries. `scan` is the
+    chunk the parallel form accumulates within the call, and it sets the size of the
+    `[rows, heads, scan, scan, d_k]` tile the runtime allocates: at width 256, scan 256
+    that tile is 67 MB per layer for one row, and 537 MB for the 8-question batch. A
+    tab cannot hold that, so the browser build asks for scan 16 — the same arithmetic,
+    proven equivalent at every chunk size by `tests/test_trunk_numerics.py`, at a tile
+    of a few hundred KiB.
     """
 
-    def __init__(self, trunk, chunk: int):
+    def __init__(self, trunk, chunk: int, scan: int | None = None):
         super().__init__()
         self.trunk = trunk
-        self.chunk = chunk
+        self.width = chunk
+        self.scan = scan or chunk
 
     def forward(self, ids, mask, pos_offset, *S_in):
-        pos = pos_offset + torch.arange(self.chunk, device=ids.device)
+        pos = pos_offset + torch.arange(self.width, device=ids.device)
         m = mask[:, None, :, None]
         h = self.trunk.tok(ids)
         new_S = []
         for layer, S in zip(self.trunk.layers, S_in):
             h, S_next = layer.scan_state(h, pos, init_S=S, parallel=True, mask=m,
-                                         chunk=self.chunk)
+                                         chunk=self.scan)
             new_S.append(S_next)
         return tuple(new_S)
 
 
 class QuestionBranch(nn.Module):
-    """Question tokens + the cached state -> hidden states for the pointer head."""
+    """Question tokens + the cached state -> hidden states for the pointer head.
 
-    def __init__(self, trunk, chunk: int):
+    Same `width`/`scan` split as `StateStep`: the width is the request shape the graph
+    is compiled for, the scan chunk is what the runtime allocates per step.
+    """
+
+    def __init__(self, trunk, scan: int):
         super().__init__()
         self.trunk = trunk
-        self.chunk = chunk
+        self.scan = scan
 
     def forward(self, q_ids, q_mask, pos_offset, *S_in):
         N, Lq = q_ids.shape
@@ -108,7 +143,7 @@ class QuestionBranch(nn.Module):
         h = self.trunk.tok(q_ids)
         for layer, S in zip(self.trunk.layers, S_in):
             h = layer.scan_question(h, pos, S.expand(N, -1, -1, -1), parallel=True,
-                                    mask=m, chunk=self.chunk)
+                                   mask=m, chunk=self.scan)
         return self.trunk.norm(h)
 
 
@@ -116,32 +151,223 @@ def state_shapes(cfg) -> list[tuple[int, ...]]:
     return [(1, cfg.n_heads, cfg.d_k, cfg.d_v)] * cfg.n_layers
 
 
+def share_weights(out_dir: str | Path, graphs: tuple[str, ...] = GRAPHS,
+                  location: str = WEIGHTS, align: int = 16,
+                  min_bytes: int = 4096) -> dict:
+    """Rewrite every graph to read its initializers from ONE external-data file.
+
+    6a measured the cost of the naive split: 93.7 MiB fp32 for a 14.45M-parameter model,
+    because `state_step` and `question` are the same trunk and torch gave each graph its
+    own copy of every weight (§9.26). Sharing is not a packing trick — the two copies
+    hold identical bytes, so the artifact can reference one region and transfer the
+    trunk once.
+
+    Deduplication is keyed on the SHA-256 of the tensor's bytes, which is sound for
+    initializers specifically because they are constants: no node writes to one, so two
+    tensors with equal content may alias freely. What is *not* deduplicated is names —
+    each graph still references its own initializer list, so a graph that needs fewer
+    weights (`state_step` has no backward scan) simply points at fewer regions.
+
+    The per-graph `*.onnx.data` siblings are deleted once the rewrite is on disk:
+    leaving them would both double the download and make the byte accounting in
+    `meta.json` a lie about what the browser fetches.
+
+    `min_bytes` keeps the small constants inline, because `onnxruntime` refuses to load
+    a graph whose shape-inference inputs live in an external file ("Cannot parse data
+    from external tensors"), and those inputs are axis lists and position vectors of a
+    few hundred bytes. The threshold is reported in `meta.json` so the test can assert
+    the property that matters: every initializer at or above it is shared, so no weight
+    is duplicated while the accounting claims otherwise.
+    """
+    import onnx
+    from onnx import external_data_helper, numpy_helper
+
+    out = Path(out_dir)
+    protos = {g: onnx.load(out / g) for g in graphs}
+
+    buf = bytearray()
+    placed: dict[bytes, tuple[int, int]] = {}
+    refs: dict[str, dict[str, tuple[int, int]]] = {}
+    inline = 0
+    for g, model in protos.items():
+        new_inits, refs[g] = [], {}
+        for t in model.graph.initializer:
+            if t.data_type == onnx.TensorProto.STRING:
+                new_inits.append(t)      # nothing to deduplicate by numeric bytes
+                inline += 1
+                continue
+            arr = numpy_helper.to_array(t)
+            raw = np.ascontiguousarray(arr).tobytes()
+            if len(raw) < min_bytes:
+                # onnxruntime will not run shape inference off an external file, so the
+                # small constants (positions, axis lists) stay inline where they are
+                # tens of bytes and change nothing about the byte budget.
+                small = onnx.TensorProto()
+                small.CopyFrom(numpy_helper.from_array(arr, name=t.name))
+                new_inits.append(small)
+                inline += 1
+                continue
+            key = hashlib.sha256(raw).digest()
+            got = placed.get(key)
+            if got is None:
+                off = len(buf) + (-len(buf) % align)
+                buf.extend(b"\x00" * (off - len(buf)))
+                buf.extend(raw)
+                got = (off, len(raw))
+                placed[key] = got
+            off, ln = got
+            nt = numpy_helper.from_array(arr, name=t.name)
+            external_data_helper.set_external_data(nt, location=location, offset=off,
+                                                   length=ln)
+            # onnx.save re-serializes any external tensor that still carries inline
+            # bytes, which would rewrite `weights.bin` from whichever graph saved last
+            # and make the offsets a guess. The blob on disk is the one written above.
+            nt.ClearField("raw_data")
+            new_inits.append(nt)
+            refs[g][t.name] = got
+        del model.graph.initializer[:]
+        model.graph.initializer.extend(new_inits)
+
+    (out / location).write_bytes(bytes(buf))
+    for g, model in protos.items():
+        onnx.save(model, out / g)
+    for f in out.glob("*.onnx.data"):
+        f.unlink()
+
+    # Counted by CONTENT region, never by name. `dynamo` names initializers `val_N` per
+    # graph and the numbering says nothing about what a tensor holds — the two graphs
+    # share all 12 of the state graph's weight regions and their name sets overlap by
+    # two, so an intersection of names measures the counter, not the sharing.
+    regions: dict[tuple[int, int], set[str]] = {}
+    aliases = 0
+    for g, r in refs.items():
+        for off_ln in r.values():
+            if off_ln in regions:
+                aliases += 1
+            regions.setdefault(off_ln, set()).add(g)
+    shared = {k for k, v in regions.items() if len(v) > 1}
+    return {"weights_bytes": len(buf), "align": align,
+            "unique_regions": len(regions), "inline_tensors": inline,
+            "min_bytes": min_bytes,
+            # every reference's bytes added up, which is what a per-graph copy costs:
+            # it counts a within-graph alias (the zero-initialised gates all share one
+            # region) as many times as the graph asks for it.
+            "per_reference_bytes": sum(sum(ln for _, ln in r.values())
+                                       for r in refs.values()),
+            "shared_regions": len(shared),
+            "shared_bytes": sum(ln for _, ln in shared),
+            "aliased_references": aliases,
+            "per_graph_bytes": {g: sum(ln for _, ln in r.values()) for g, r in refs.items()},
+            "per_graph_tensors": {g: len(r) for g, r in refs.items()}}
+
+
+def export_head(out_dir: str | Path, myna: Myna, ckpt_dir: str | Path) -> dict:
+    """Write the pointer head and the tokenizer beside the graphs.
+
+    The head is deliberately outside both graphs: it is a few matvecs over option-span
+    means, and the spans are a property of the *text* the page already has. Shipping it
+    as raw float32 in a fixed field order (see HEAD_FIELDS) keeps the browser from
+    parsing a JSON array of 200k numbers — and the sizes here are part of G3's byte
+    budget, so they are reported rather than assumed.
+    """
+    out = Path(out_dir)
+    m = myna.model
+    blob = bytearray()
+    layout = {}
+    for name, tensor in (("wq_weight", m.wq.weight), ("wq_bias", m.wq.bias),
+                        ("wk_weight", m.wk.weight), ("wk_bias", m.wk.bias)):
+        arr = tensor.detach().cpu().numpy()
+        if arr.dtype != np.float32:
+            raise SystemExit(f"pointer head {name} is {arr.dtype}, not float32: the raw blob "
+                             f"would be read as float32 by the page and silently change value")
+        layout[name] = {"shape": list(arr.shape), "offset": len(blob),
+                        "bytes": arr.nbytes}
+        blob.extend(np.ascontiguousarray(arr).tobytes())
+    (out / "head.bin").write_bytes(bytes(blob))
+    shutil.copyfile(Path(ckpt_dir) / "tokenizer.json", out / "tokenizer.json")
+    return {"head_bytes": len(blob), "head_layout": layout, "head_fields": list(HEAD_FIELDS),
+            "tokenizer_bytes": (out / "tokenizer.json").stat().st_size}
+
+
+def read_head(out_dir: str | Path) -> tuple[dict, dict]:
+    """Rebuild the pointer head from `head.bin` + `meta.json` — the path the page takes.
+
+    Reading it back through the recorded layout is the only check that the layout is
+    about the file that exists: a blob written from the right tensors but described
+    wrongly would still be a valid artifact for nothing but Python. `<f4` is the
+    browser's `DataView.getFloat32(..., true)`, so this mirrors the JS read exactly.
+    """
+    out = Path(out_dir)
+    meta = json.loads((out / "meta.json").read_text())
+    raw = (out / "head.bin").read_bytes()
+    fields = {}
+    for name in meta["head"]["head_fields"]:
+        lay = meta["head"]["head_layout"][name]
+        end = lay["offset"] + lay["bytes"]
+        if end > len(raw):
+            raise SystemExit(f"{name} claims bytes {lay['offset']}..{end} of a "
+                             f"{len(raw)}-byte blob")
+        fields[name] = np.frombuffer(raw, dtype="<f4", count=lay["bytes"] // 4,
+                                     offset=lay["offset"]).reshape(lay["shape"])
+    return fields, meta
+
+
+def pointer_probs(fields, d_ptr: int, temperature: float, h, spans, dec: int) -> list[float]:
+    """The head in numpy from the shipped blob: the arithmetic the page will run.
+
+    Same as `Myna._readout`'s two matvecs, mean-pool, scaled dot and softmax — kept
+    separate so a test can prove the *artifact* (not the Python object) reproduces the
+    engine's probabilities.
+    """
+    h = np.asarray(h, dtype=np.float32)
+    decide = h[dec] @ fields["wq_weight"].T + fields["wq_bias"]
+    pooled = np.stack([h[s:e].mean(0) for s, e in spans]).astype(np.float32)
+    keys = pooled @ fields["wk_weight"].T + fields["wk_bias"]
+    logits = keys @ decide / (d_ptr ** 0.5) / temperature
+    e = np.exp(logits - logits.max())
+    return list(e / e.sum())
+
+
 def export(ckpt_dir: str | Path, out_dir: str | Path, chunk: int = CHUNK,
-           n_questions: int = QUESTIONS, opset: int = OPSET, q_len: int = 64) -> dict:
-    """Write the two graphs + meta.json and return the metadata."""
+           n_questions: int = QUESTIONS, opset: int = OPSET, q_len: int = 64,
+           share: bool = True, scan_chunk: int | None = None) -> dict:
+    """Write the two graphs + head + meta.json and return the metadata."""
     myna = Myna(ckpt_dir, device="cpu")
     cfg = myna.cfg
     L, out = cfg.n_layers, Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
     trunk = myna.trunk.eval()
+    # the default keeps 6a's shape: one tile per call for the narrower of the two graphs
+    scan = scan_chunk or min(chunk, q_len)
+    if not 1 <= scan <= min(chunk, q_len):
+        raise SystemExit(f"--scan-chunk must be in 1..{min(chunk, q_len)} (the narrower "
+                         f"graph width), got {scan}")
     zero_S = tuple(torch.zeros(sh) for sh in state_shapes(cfg))
     names = [f"S_in_{i}" for i in range(L)]
     off = torch.tensor(0, dtype=torch.int64)
     kw = {"dynamo": True, "opset_version": opset}   # see the module docstring
 
-    torch.onnx.export(StateStep(trunk, chunk),
+    # .eval() on the wrapper, not only the trunk: a fresh nn.Module defaults to training,
+    # and torch warns about exporting in that mode whether or not anything is mode-dependent.
+    torch.onnx.export(StateStep(trunk, chunk, scan).eval(),
                       (torch.randint(0, cfg.vocab, (1, chunk), dtype=torch.int64),
                        torch.ones(1, chunk), off, *zero_S),
                       str(out / "state_step.onnx"),
                       input_names=["ids", "mask", "pos_offset"] + names,
                       output_names=[f"S_out_{i}" for i in range(L)], **kw)
 
-    torch.onnx.export(QuestionBranch(trunk, chunk),
+    torch.onnx.export(QuestionBranch(trunk, scan).eval(),
                       (torch.randint(0, cfg.vocab, (n_questions, q_len), dtype=torch.int64),
                        torch.ones(n_questions, q_len), off, *zero_S),
                       str(out / "question.onnx"),
                       input_names=["q_ids", "q_mask", "pos_offset"] + names,
                       output_names=["h_q"], **kw)
+
+    # 6a shipped the same trunk twice (35.6 + 58.13 MiB fp32, §9.26). Both graphs are
+    # written, then their initializers are deduplicated into one external-data file that
+    # they both reference, so the browser downloads the weights once.
+    shared = share_weights(out, GRAPHS) if share else None
+    head = export_head(out, myna, ckpt_dir)
 
     # The requested opset is not necessarily the exported one: opset 17 is below what
     # this torch build implements, the exporter says so in a warning and writes 18. A
@@ -149,36 +375,76 @@ def export(ckpt_dir: str | Path, out_dir: str | Path, chunk: int = CHUNK,
     actual = {}
     try:
         import onnx
-        for g in ("state_step.onnx", "question.onnx"):
+        for g in GRAPHS:
             m = onnx.load(out / g, load_external_data=False)
             actual[g] = m.opset_import[0].version
     except ImportError:  # onnx ships with the browser extra; without it we cannot read back
-        actual = {g: None for g in ("state_step.onnx", "question.onnx")}
+        actual = {g: None for g in GRAPHS}
     for g, v in actual.items():
         if v is not None and v != opset:
             print(f"note: {g} carries opset {v}, not the requested {opset} — the exporter "
                   f"fell back and said so on stderr")
 
     per_layer = int(cfg.n_heads * cfg.d_k * cfg.d_v * 4)
+    # Everything a page fetches, measured on disk rather than derived from params*4:
+    # the graph skeletons, the weights (one shared file, or one per graph when
+    # --no-share asks for 6a's shape), the pointer head, the tokenizer. A directory
+    # listing is the honest unit here — `meta.json` is the only file in it that is not
+    # fetched, and it is added from its own serialized length below.
+    sizes = {f.name: f.stat().st_size for f in out.iterdir()
+             if f.is_file() and f.name != "meta.json"}
     meta = {"ckpt": str(ckpt_dir), "opset_actual": actual, "chunk": chunk, "q_len": q_len,
             "n_questions": n_questions, "opset": opset, "exporter": "dynamo",
             "n_layers": L, "n_heads": cfg.n_heads, "d_model": cfg.d_model,
             "d_k": cfg.d_k, "d_v": cfg.d_v, "d_ptr": cfg.d_ptr, "vocab": cfg.vocab,
-            "temperature": myna.temperature, "params_m": round(myna.n_params / 1e6, 2),
+            "temperature": myna.temperature, "abstain_below": myna.abstain_below,
+            "params_m": round(myna.n_params / 1e6, 2),
             "state_bytes_per_layer": per_layer, "state_bytes_total": per_layer * L,
-            # dynamo's exporter keeps the weights in a sibling `*.onnx.data`, so a
-            # file listing of the graphs alone would report 0.4 MiB for a 37 MB model.
-            "files_mib": {g["stem"]: round(
-                sum(f.stat().st_size for f in out.glob(g["stem"] + "*")) / 2**20, 2)
-                for g in ({"stem": "state_step.onnx"}, {"stem": "question.onnx"})},
-            "shared_weights": False}
+            "scan_chunk": scan,
+            # the `[rows, heads, scan, scan, d_k]` tile the parallel form allocates per
+            # layer per call: the number that decides whether a tab survives, not just
+            # how long it takes. At the engine's inference chunk (256) and the exported
+            # question width this is hundreds of MB for one request. Bytes, not MiB —
+            # rounding a 16 KiB tile to two decimals of a MiB destroys the ratio a
+            # reader would check the knob against.
+            "peak_tile_bytes": max(
+                1 * cfg.n_heads * scan * scan * cfg.d_k * 4,
+                n_questions * cfg.n_heads * scan * scan * cfg.d_k * 4),
+            "files_mib": {f: round(b / 2**20, 2) for f, b in sorted(sizes.items())},
+            "shared_weights": bool(share),
+            "weight_sharing": shared, "head": head,
+            "artifact_bytes_total": sum(sizes.values())}
+    # transfer = every distinct file the browser fetches, counted once, plus meta.json
+    # itself. `len()` of the serialization undercounts by the two accounting keys added
+    # below (~50 bytes), against 58 MiB of weights — the figure is reported to
+    # hundredths of a MiB, so the difference is not a rounding decision.
+    raw = len(json.dumps(meta, indent=2).encode())
+    meta["transfer_mib"] = round((meta["artifact_bytes_total"] + raw) / 2**20, 2)
+    if share:
+        meta["unshared_transfer_mib"] = round(
+            (sum(sizes[g] for g in GRAPHS) + shared["per_reference_bytes"]
+             + sizes["head.bin"] + sizes["tokenizer.json"] + raw) / 2**20, 2)
     (out / "meta.json").write_text(json.dumps(meta, indent=2) + "\n")
-    print(f"exported to {out}: " + " · ".join(f"{k[:-5]} {v} MiB"
-                                              for k, v in meta["files_mib"].items())
-          + " (each graph carries its own copy of the trunk weights)")
-    print(f"meta: chunk {chunk}, {n_questions} questions x {q_len} tokens, opset {opset}, "
+    print(f"exported to {out}: " + " · ".join(f"{k} {v} MiB" for k, v in
+                                              meta["files_mib"].items()))
+    if share:
+        print(f"weights: ONE shared {WEIGHTS} of {meta['files_mib'][WEIGHTS]} MiB — "
+              f"{shared['unique_regions']} distinct regions, {shared['shared_regions']} "
+              f"of them read by both graphs, so {shared['shared_bytes'] / 2**20:.2f} MiB "
+              f"transfers once instead of twice ({shared['aliased_references']} references "
+              f"alias a region inside their own graph). One copy per graph would transfer "
+              f"{meta['unshared_transfer_mib']} MiB; the artifact transfers "
+              f"{meta['transfer_mib']} MiB")
+    else:
+        print(f"weights: each graph carries its own copy (--no-share, 6a's shape); "
+              f"artifact transfers {meta['transfer_mib']} MiB")
+    print(f"meta: chunk {chunk} scanned in {scan}-token tiles "
+          f"({meta['peak_tile_bytes'] / 2**20:.1f} MiB peak per call), {n_questions} questions x "
+          f"{q_len} tokens, opset {opset}, "
           f"exporter dynamo, {L} layers, {meta['params_m']}M params, "
-          f"state {meta['state_bytes_total']/1024:.0f} KiB")
+          f"state {meta['state_bytes_total']/1024:.0f} KiB, "
+          f"head {meta['files_mib']['head.bin']} MiB, "
+          f"tokenizer {meta['files_mib']['tokenizer.json']} MiB")
     return meta
 
 
@@ -257,6 +523,10 @@ def parity(ckpt_dir: str | Path, out_dir: str | Path, max_abs_error: float = 1e-
     decision that comes out the end."""
     meta = json.loads((Path(out_dir) / "meta.json").read_text())
     chunk, L, N, q_len = meta["chunk"], meta["n_layers"], meta["n_questions"], meta["q_len"]
+    # torch compares at the same accumulation granularity the graph was built with: the
+    # chunk sizes are proven exactly equivalent in tests/test_trunk_numerics.py, but the
+    # floating-point order is not, and the browser's tile size is set here too.
+    scan = meta.get("scan_chunk", chunk)
     torch.manual_seed(seed)
     myna = Myna(ckpt_dir, device="cpu")
     cfg = myna.cfg
@@ -268,7 +538,7 @@ def parity(ckpt_dir: str | Path, out_dir: str | Path, max_abs_error: float = 1e-
     real = (n_chunks - 1) * chunk + max(1, chunk // 3)
     ids = torch.randint(0, cfg.vocab, (1, real), dtype=torch.int64)[0].tolist()
     with torch.no_grad():
-        _, S_torch = myna.trunk.encode_state(torch.tensor([ids]), parallel=True, chunk=chunk)
+        _, S_torch = myna.trunk.encode_state(torch.tensor([ids]), parallel=True, chunk=scan)
     t0 = time.perf_counter()
     carried, fed = chain_state(step, ids, chunk, L, shapes)
     chain_ms = (time.perf_counter() - t0) * 1000 / max(len(range(0, real, chunk)), 1)
@@ -287,7 +557,7 @@ def parity(ckpt_dir: str | Path, out_dir: str | Path, max_abs_error: float = 1e-
                              **{f"S_in_{i}": S_stack[i].numpy() for i in range(L)}})[0]
     with torch.no_grad():
         h_torch = myna.trunk.encode_question_batch(q_ids[:n_real], q_mask[:n_real],
-                                                   S_stack, real, chunk=chunk)
+                                                   S_stack, real, chunk=scan)
     q_err = float(np.abs(yq[:n_real] - h_torch.numpy()).max())
 
     # --- 3: isolation — the same question beside garbage must not move -----------
@@ -419,7 +689,10 @@ def parity(ckpt_dir: str | Path, out_dir: str | Path, max_abs_error: float = 1e-
                     and max(chain_rel, q_rel) <= max_rel_error),
            "state_tokens": real, "n_chunks": n_chunks, "chunk": chunk,
            "n_questions_real": n_real, "n_questions_padded": N,
-           "state_step_ms_per_chunk": round(chain_ms, 2), "fp32_mib": meta["files_mib"]}
+           "state_step_ms_per_chunk": round(chain_ms, 2),
+           "files_mib": meta["files_mib"], "shared_weights": meta["shared_weights"],
+           "transfer_mib": meta["transfer_mib"],
+           "unshared_transfer_mib": meta.get("unshared_transfer_mib")}
     print(f"chained scan of {real} tokens over {n_chunks} chunks (padded tail): "
           f"|Δ| {chain_err:.2e} = {chain_rel:.2e} relative on a state of scale "
           f"{state_scale:.1f}")
@@ -446,6 +719,10 @@ def main(argv=None) -> int:
     ap.add_argument("--questions", type=int, default=QUESTIONS,
                     help="fixed question width of the answer graph; smaller requests pad")
     ap.add_argument("--q-len", type=int, default=64)
+    ap.add_argument("--scan-chunk", type=int, default=None,
+                    help="tile width the parallel scan accumulates inside a call; smaller "
+                         "means a smaller peak allocation in a tab (the arithmetic is "
+                         "identical either way, tests/test_trunk_numerics.py)")
     ap.add_argument("--opset", type=int, default=OPSET)
     ap.add_argument("--n-chunks", type=int, default=3,
                     help="how many chunks the composition check chains")
@@ -458,6 +735,9 @@ def main(argv=None) -> int:
                     help="bound on the chained state scan, relative to the state's own scale "
                          "(its entries reach ~5e2, where an absolute 1e-4 asks two BLAS "
                          "implementations to agree bitwise)")
+    ap.add_argument("--no-share", action="store_true",
+                    help="give each graph its own copy of the trunk (6a's shape) so the "
+                         "cost of sharing is measured rather than asserted")
     ap.add_argument("--no-verify", action="store_true",
                     help="export without running the parity check (G3 stays open)")
     ap.add_argument("--report", default="runs/onnx_parity.json")
@@ -472,7 +752,8 @@ def main(argv=None) -> int:
             raise SystemExit(f"--{name} must be in (0, 1), got {val}")
 
     export(args.ckpt, args.out, chunk=args.chunk, n_questions=args.questions,
-           opset=args.opset, q_len=args.q_len)
+           opset=args.opset, q_len=args.q_len, share=not args.no_share,
+           scan_chunk=args.scan_chunk)
     if args.no_verify:
         print("--no-verify: parity unmeasured")
         return 0

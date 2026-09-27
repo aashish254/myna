@@ -7,7 +7,7 @@ fooled by itself*: it writes graphs and then prints a number saying the graphs a
 with torch. A parity harness that always agrees is worse than no parity harness,
 because it converts an unverified artifact into a certified one.
 
-The mutations cluster in three places where a lie fits:
+The mutations cluster in five places where a lie fits:
 
 * **the mask.** Both graphs are fixed-width, so everything is padded, and a padded
   token that contributes to the memory is a wrong answer that only appears on
@@ -15,7 +15,15 @@ The mutations cluster in three places where a lie fits:
 * **the accounting.** The chained loop must consume the document once, carry the
   state forward, and count the weights it actually wrote (`dynamo` stores initializers
   in a sibling `*.onnx.data`, so a graph listing alone reports a few hundred KiB for a
-  36 MB model).
+  36 MB model — and once the two graphs share one file, the listing can leave *that*
+  file out, which is the same lie in a new shape).
+* **the sharing.** 6b's whole claim is that the trunk crosses the network once. A
+  dedup keyed on the wrong thing (names, which `dynamo` numbers per graph), a rewrite
+  that leaves the per-graph copies behind on disk, or an initializer that keeps its
+  inline bytes next to an external pointer all leave an artifact that loads, answers,
+  and is twice the size it reports.
+* **the tab's memory.** The scan tile is a separate knob from the graph width, and its
+  reported peak is the only number that says whether a request survives in a browser.
 * **the two bounds.** The state's entries reach ~4e2, so its error is gated relatively
   while probabilities are gated absolutely. Either half can be dropped, and dropping
   one is exactly how a gate becomes decorative.
@@ -71,15 +79,48 @@ MUTATIONS = [
     ("the chain throws away the state between chunks", OX,
      "        carried = [y[i] for i in range(L)]\n        fed += len(take)",
      "        carried = [np.zeros_like(y[i]) for i in range(L)]\n        fed += len(take)"),
-    ("the byte budget counts the graph but not its weights file", OX,
-     '                sum(f.stat().st_size for f in out.glob(g["stem"] + "*")) / 2**20, 2)',
-     '                sum(f.stat().st_size for f in out.glob(g["stem"])) / 2**20, 2)'),
+    ("the byte budget totals only the graph skeletons, not the weight files", OX,
+     '            "artifact_bytes_total": sum(sizes.values())}',
+     '            "artifact_bytes_total": sum(v for k, v in sizes.items() if k.endswith(".onnx"))}'),
     ("the state geometry claims one layer's worth for the whole stack", OX,
      '"state_bytes_per_layer": per_layer, "state_bytes_total": per_layer * L,',
      '"state_bytes_per_layer": per_layer, "state_bytes_total": per_layer,'),
     ("the exporter flag is a label instead of the thing that ran", OX,
      '    kw = {"dynamo": True, "opset_version": opset}',
      '    kw = {"dynamo": False, "opset_version": opset}'),
+    # --- the sharing: one copy of the trunk, and the bytes to prove it -------------
+    ("the dedup key is the graph's own name, so both graphs write their own copy", OX,
+     "            key = hashlib.sha256(raw).digest()",
+     "            key = t.name.encode()"),
+    ("the dedup never fires: every reference gets a fresh region", OX,
+     "            got = placed.get(key)",
+     "            got = None"),
+    ("every initializer is pushed to the external file, shape-inference constants too", OX,
+     "            if len(raw) < min_bytes:",
+     "            if False:"),
+    ("the external pointer keeps its inline bytes, so `onnx.save` rewrites the shared file", OX,
+     '            nt.ClearField("raw_data")\n            new_inits.append(nt)',
+     "            new_inits.append(nt)"),
+    ("the per-graph `.onnx.data` copies survive the rewrite", OX,
+     '    for f in out.glob("*.onnx.data"):\n        f.unlink()',
+     '    for f in out.glob("*.onnx.data"):\n        continue'),
+    # --- the head: the artifact has to answer, not just load -----------------------
+    ("the head layout records where the blob started instead of where each field is", OX,
+     '        layout[name] = {"shape": list(arr.shape), "offset": len(blob),',
+     '        layout[name] = {"shape": list(arr.shape), "offset": 0,'),
+    ("the shipped head's option pooling stops being a mean", OX,
+     "    pooled = np.stack([h[s:e].mean(0) for s, e in spans]).astype(np.float32)",
+     "    pooled = np.stack([h[s:e].max(0) for s, e in spans]).astype(np.float32)"),
+    # --- the tile: the knob the tab's memory is decided by -------------------------
+    ("the tile knob is read for the metadata but not for the graph", OX,
+     "    scan = scan_chunk or min(chunk, q_len)",
+     "    scan = 32"),
+    ("a tile wider than the graph it feeds is accepted", OX,
+     "    if not 1 <= scan <= min(chunk, q_len):",
+     "    if not 1 <= scan:"),
+    ("the reported peak tile counts one row whatever the request carries", OX,
+     "                n_questions * cfg.n_heads * scan * scan * cfg.d_k * 4),",
+     "                cfg.n_heads * scan * scan * cfg.d_k * 4),"),
     # --- the bounds -------------------------------------------------------------
     ("the relative half of the gate is dropped", OX,
      '           "pass": (worst_abs <= max_abs_error\n'
