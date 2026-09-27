@@ -258,3 +258,16 @@ def test_the_registry_itself_is_part_of_g7s_proof():
     ok, detail = G.registry_green()
     assert ok, detail
     assert f"{len(BY_ID)}/{len(BY_ID)}" in detail and "figures" in detail
+
+
+def test_make_gates_is_the_check_and_the_prose_promises_it_by_that_name():
+    """SPEC §2.2 and README both say `make gates`, so the target has to exist and have to
+    run the check rather than print a table — a promise the docs make needs one test on the
+    other side of the file."""
+    mk = (REPO / "Makefile").read_text()
+    assert "\ngates:" in mk, "the Makefile lost the target the docs promise"
+    recipe = mk.split("\ngates:")[1].split("\n\n")[0]
+    assert "bench/gates.py --check" in recipe
+    assert "--print" not in recipe and "--readme-block" not in recipe
+    for doc in ("README.md", "SPEC.md"):
+        assert "make gates" in (REPO / doc).read_text(), doc

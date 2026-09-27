@@ -353,7 +353,7 @@ So every "train" item below is split into *prepare/verify the Kaggle path locall
       means a missing artifact, never a measurement nobody took. That last rule is what keeps
       G1 honest: the control's 0.346 sits under its threshold and G1 is still `open`, because
       the checkpoint that decides it has no witness in this repo (§9.30).
-      Instrument: `tests/test_gates.py` (**25** tests) and `bench/mutation_gates.py`
+      Instrument: `tests/test_gates.py` (**26** tests) and `bench/mutation_gates.py`
       (**17/17 caught, exit 0** — `runs/mutation_gates.log`). This battery had to link `.git`
       and the four docs into its scratch copy, because the checker under test reads the git
       index and the prose rather than only its own argv. One entry survived its first pass
@@ -371,7 +371,7 @@ So every "train" item below is split into *prepare/verify the Kaggle path locall
       generated block. TODO 8b and §5's release line stay unticked on purpose: 8b is the
       one-target-runs-everything gap (Kaggle-side), and the release itself still waits on P0's
       push, on G1/G4's checkpoints and on any trained artifact for G6.
-      Suite at this tick: **382 passed, 1 skipped**.
+      Suite at this tick: **383 passed, 1 skipped**.
 
 ## Cross-cutting
 - [ ] Every new gate mutation-checked, witness quoted in the commit message (SPEC §7.1)
