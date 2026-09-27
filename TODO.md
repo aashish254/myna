@@ -223,6 +223,24 @@ So every "train" item below is split into *prepare/verify the Kaggle path locall
       Witness: `runs/browser_g3{,_int8}.{json,log}`, `docs/screenshots/`, `runs/int8_quantize.log`,
       `node browser/selftest.mjs` 7/7, `bench/mutation_browser.py` **24/24** (`runs/mutation_browser.log`;
       its first pass caught three survivors, two of them the instrument's own blind spots — §9.27)
+- [x] **6c** MLX int8 path for Apple silicon, measured on this box (inference only) —
+      `MynaMLX.quantized_()` / `save()` / `from_mlx_dir()` + `_linear` dispatch in
+      `src/myna/mlx_model.py`. **Bytes: met** — `params.safetensors` 55.13 → **17.40 MiB**
+      (**3.17×**, 50/51 weights at group 64 / bits 8, `trunk.tok.weight` left fp32 because it is
+      gathered), reloaded bit-identical. **Latency: not moved** — MLX over torch-MPS, per-row
+      minimum of two committed runs, fp32 **1.76–2.22×** and int8 **1.79–2.41×**, and the int8−fp32
+      sign flips between runs on 4 of 7 state lengths while fp32's own spread reaches 15.2%, so no
+      speed claim is made. **Agreement cost**: port 1.20e-03, quantisation 9.24e-03 (same device),
+      1 flip in 20 choices on a 0.0008 reference margin. **Mechanism, measured**:
+      `bench/diag_mlx_int8_gem.py` → 5/6 of the model's own linear shapes are *slower* quantised
+      (0.43–1.06×) at 10–37 GB/s of weight read vs fp32's 55–257 — the linears are 99.4% of the
+      per-state-token MACs and weight-only int8 changes none of them (§9.29).
+      **Null result**: keeping `.gate.weight` in fp32 moves the drift 9.24e-03 → 9.53e-03, flips
+      the same row, and costs the byte target (22.25 MiB).
+      Witness: `runs/bench_mlx_int8.{md,json,log}` + `_run2` + `_keepgate`,
+      `runs/mlx_int8_gem_probe.{md,log}`; gate `tests/test_mlx_int8.py` (8) and
+      `bench/mutation_mlx.py` → **14/14 caught** (`runs/mutation_mlx.log`). fp32 remains the
+      shipping artifact on both the browser and the Apple path; re-measure after parameter growth
 
 ## P7 — Long-context proof (G4)
 - [x] **7a** Needle recall-vs-length curve on an existing checkpoint (inference) — swept

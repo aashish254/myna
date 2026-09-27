@@ -1,0 +1,17 @@
+ckpt runs/myna-v0  params 14.4M  device torch=mps mlx=metal
+quantization bits=8 group_size=64 on 38/51 Linear weights, kept fp32: ['.gate.weight', 'trunk.tok.weight'] (the token embedding is gathered, not matmulled)
+    MLX fp32:   55.13 MiB on disk (55.12 MiB of tensors)
+    MLX int8:   22.25 MiB on disk (22.24 MiB of tensors)
+  int8/fp32 file ratio: 2.48x
+  reload of runs/myna-v0-mlx-int8-keepgate: logits identical = True (max |d| 0.0e+00)
+
+ state tokens |  torch ms |     mlx_fp32 |     mlx_int8 | best MLX speedup
+          128 |     24.86 |        10.30 |        10.56 |   2.41x
+
+drift against the mps engine on 14 calibration rows (20 questions, real state and question widths):
+    engine |        against |   max |dp| | max |dscalar| | flips (reference top-two margin)
+  mlx_fp32 |   vs_torch_mps |   1.20e-03 |      1.20e-03 | 0/20
+  mlx_int8 |   vs_torch_mps |   9.77e-03 |      9.77e-03 | 1/20 [0.0008]
+  mlx_int8 |    vs_mlx_fp32 |   9.53e-03 |      9.53e-03 | 1/20 [0.0001]
+
+wrote runs/bench_mlx_int8_keepgate.md and runs/bench_mlx_int8_keepgate.json

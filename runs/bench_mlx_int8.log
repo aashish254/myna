@@ -1,0 +1,23 @@
+ckpt runs/myna-v0  params 14.4M  device torch=mps mlx=metal
+quantization bits=8 group_size=64 on 50/51 Linear weights, kept fp32: ['trunk.tok.weight'] (the token embedding is gathered, not matmulled)
+    MLX fp32:   55.13 MiB on disk (55.12 MiB of tensors)
+    MLX int8:   17.40 MiB on disk (17.39 MiB of tensors)
+  int8/fp32 file ratio: 3.17x
+  reload of runs/myna-v0-mlx-int8: logits identical = True (max |d| 0.0e+00)
+
+ state tokens |  torch ms |     mlx_fp32 |     mlx_int8 | best MLX speedup
+          128 |     29.25 |        13.16 |        10.64 |   2.75x
+          512 |     60.44 |        25.20 |        24.80 |   2.44x
+         1024 |    102.44 |        46.51 |        45.24 |   2.26x
+         2048 |    188.09 |        96.64 |        97.82 |   1.95x
+         4096 |    380.06 |       184.87 |       189.69 |   2.06x
+         8192 |    751.83 |       410.05 |       372.19 |   2.02x
+        16384 |   1434.36 |       816.49 |       802.24 |   1.79x
+
+drift against the mps engine on 14 calibration rows (20 questions, real state and question widths):
+    engine |        against |   max |dp| | max |dscalar| | flips (reference top-two margin)
+  mlx_fp32 |   vs_torch_mps |   1.20e-03 |      1.20e-03 | 0/20
+  mlx_int8 |   vs_torch_mps |   9.48e-03 |      9.48e-03 | 1/20 [0.0008]
+  mlx_int8 |    vs_mlx_fp32 |   9.24e-03 |      9.24e-03 | 1/20 [0.0001]
+
+wrote runs/bench_mlx_int8.md and runs/bench_mlx_int8.json

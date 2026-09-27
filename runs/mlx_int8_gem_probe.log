@@ -1,0 +1,11 @@
+device=metal  shapes=6  iters=200  trials=7  int8 group 64 bits 8  load 4.18/4.29/4.55
+
+    K     N  rows  fp32 KiB  int8 KiB  queued fp32  queued int8  q ratio  fp32 GB/s  int8 GB/s  synced fp32  synced int8  s ratio
+  384  1152    16      1728       486      19.9 us      25.4 us     0.79         89         20     217.0 us     215.7 us     1.01
+  384  1152   128      1728       486      21.4 us      49.4 us     0.43         83         10     211.9 us     232.2 us     0.91
+  384  1024    16      1536       432       6.1 us      12.9 us     0.47        257         34     203.7 us     198.9 us     1.02
+ 1024   384    16      1536       432      12.5 us      11.8 us     1.06        126         37     200.2 us     192.5 us     1.04
+ 1024   384   128      1536       432      28.7 us      41.9 us     0.68         55         11     211.0 us     246.8 us     0.85
+  384   384    16       576       162       3.3 us       6.0 us     0.55        179         28     199.1 us     184.8 us     1.08
+
+5/6 shapes are NOT faster in int8 while queued (the regime the scan runs in); int8 reads 3.6x fewer bytes for the first weight.

@@ -5,17 +5,29 @@ trained torch checkpoint answers questions on the Metal GPU/NPU path with no
 torch dependency at inference. Weights are loaded straight from the torch
 `state_dict` (Linear stores [out, in] in both frameworks, so it is a cast).
 
+An int8 path sits beside the fp32 one (`quantized_`, `save`): every Linear
+weight becomes MLX's group-wise packed-quantised form and `_linear` routes it
+through `mx.quantized_matmul`. It is a *serving* path only — nothing re-trains
+here, and the drift it costs is measured rather than assumed.
+
 Correctness is the whole point: `tests/test_mlx_parity.py` checks the MLX
 forward matches the torch forward on random weights to 1e-3, and the same
-harness runs on the real checkpoint. Nothing here re-trains; it only serves.
+harness runs on the real checkpoint.
 """
 
 from __future__ import annotations
 
+import json
 import math
+from pathlib import Path
 
 import mlx.core as mx
 import mlx.nn as nn
+
+# The token embedding is gathered, not matmulled, so quantising it buys nothing at
+# the op and puts error into the first thing every token touches. Everything else
+# named `.weight` is a Linear and is fair game for `quantized_`.
+QUANT_KEEP = ("trunk.tok.weight",)
 
 
 # ---------------------------------------------------------------- rope
@@ -76,23 +88,93 @@ def gla_chunked(q, k, v, gate, init_S=None, chunk: int = 16):
 class MynaMLX:
     """Inference engine. Holds an mlx param tree and a forward mirroring MynaModel."""
 
-    def __init__(self, cfg: dict, params: dict):
+    def __init__(self, cfg: dict, params: dict, quant: dict | None = None):
         self.cfg = cfg
         self.p = params
         self.d_ptr = cfg["d_ptr"]
+        self.quant = quant
 
     @classmethod
-    def from_checkpoint(cls, path) -> "MynaMLX":
+    def from_checkpoint(cls, path, *, quantize: bool = False,
+                        group_size: int = 64, bits: int = 8,
+                        keep=QUANT_KEEP) -> "MynaMLX":
         import torch
         ck = torch.load(path, map_location="cpu", weights_only=False)
         cfg = dict(ck["cfg"])
         sd = {k: v.detach().float().numpy() for k, v in ck["state_dict"].items()}
-        return cls(cfg, _build_params(cfg, sd))
+        eng = cls(cfg, _build_params(cfg, sd))
+        if quantize:
+            eng.quantized_(group_size=group_size, bits=bits, keep=keep)
+        return eng
+
+    @classmethod
+    def from_mlx_dir(cls, directory) -> "MynaMLX":
+        """Load the self-describing artifact `save` writes: params.safetensors +
+        meta.json. The metadata is the only place group size and bit depth exist,
+        so `quantized_matmul` cannot silently be told the wrong shape of them."""
+        d = Path(directory)
+        meta = json.loads((d / "meta.json").read_text(encoding="utf-8"))
+        q = meta.get("quantization")
+        if q is not None and q.get("bits") not in (4, 8):
+            raise ValueError(f"{d / 'meta.json'} declares bits={q.get('bits')!r}, "
+                             f"which mx.quantized_matmul does not implement")
+        p = dict(mx.load(d / "params.safetensors"))
+        return cls(meta["cfg"], p, quant=q)
+
+    def quantized_(self, *, group_size: int = 64, bits: int = 8,
+                   keep=QUANT_KEEP) -> int:
+        """Replace every quantisable Linear weight with MLX's packed int8/int4 form.
+        `keep` holds substrings of param names to leave in fp32 — the embedding by
+        default, and whatever a measurement says is carrying the error.
+
+        Returns the number of weights quantised, because a filter that silently
+        matches nothing still leaves a working fp32 engine: the count is the only
+        witness that the byte figure came from quantised weights."""
+        keep = tuple(keep)
+        n = 0
+        for name in sorted(k for k, v in self.p.items()
+                           if k.endswith(".weight") and v.ndim == 2
+                           and not any(s in k for s in keep)):
+            w = self.p[name]
+            if w.shape[-1] % group_size:
+                raise ValueError(
+                    f"{name}: {w.shape[-1]} input features is not a multiple of "
+                    f"group_size {group_size}, so it cannot be quantised in place")
+            scope = name[: -len(".weight")]
+            self.p.pop(name)
+            self.p[f"{scope}.weight_q"], self.p[f"{scope}.weight_scales"], \
+                self.p[f"{scope}.weight_biases"] = mx.quantize(w, group_size=group_size, bits=bits)
+            n += 1
+        self.quant = {"group_size": int(group_size), "bits": int(bits),
+                      "keep": sorted(keep), "n_quantized": n}
+        return n
+
+    def param_bytes(self) -> int:
+        return sum(int(v.nbytes) for v in self.p.values())
+
+    def save(self, directory) -> Path:
+        """Write params.safetensors + meta.json next to it, the form `from_mlx_dir`
+        reads back. The byte figure this artifact is judged on is the file's size on
+        disk, not the sum of tensor nbytes."""
+        d = Path(directory)
+        d.mkdir(parents=True, exist_ok=True)
+        mx.save_safetensors(str(d / "params.safetensors"), self.p)
+        meta = {"cfg": dict(self.cfg), "quantization": self.quant,
+                "param_bytes_file": (d / "params.safetensors").stat().st_size,
+                "param_bytes_tensors": self.param_bytes()}
+        (d / "meta.json").write_text(json.dumps(meta, indent=2, sort_keys=True) + "\n",
+                                     encoding="utf-8")
+        return d
 
     def _linear(self, scope, x):
-        w = self.p[f"{scope}.weight"]
+        q = self.p.get(f"{scope}.weight_q")
+        if q is None:
+            y = x @ self.p[f"{scope}.weight"].T
+        else:
+            y = mx.quantized_matmul(x, q, self.p[f"{scope}.weight_scales"],
+                                    self.p[f"{scope}.weight_biases"], transpose=True,
+                                    group_size=self.quant["group_size"], bits=self.quant["bits"])
         b = self.p.get(f"{scope}.bias")
-        y = x @ w.T
         return y if b is None else y + b
 
     def _embed(self, ids):

@@ -51,6 +51,7 @@ to clear, not a gap to reframe around. Where we lose, we print the loss.
 | calibration ECE | **0.081** after temperature fit (their measured) | **≤ 0.02**; 0.0076 on v0 **dev**, whose temperature was fit on those rows — read as optimistic (§9.11) | measured (v0), level disputed |
 | refusing a decision | nothing in the response shape refuses: `system_one` returns a choice for every question, and a caller can only threshold `confidence` itself | `Myna(abstain_below=t)` withholds the commitment with a measured `reason`; risk/coverage on `calibration.jsonl` runs 0.349 → 0.596 as coverage falls 1.00 → 0.10, and **no rung reaches G5's 0.95** on v0 (§9.24) | measured (5a/5b), gate not met |
 | browser artifact | ~1.7 GB fp32 / ~420 MB int8 (arithmetic) | measured in real Chrome, cold cache: **59.32 MiB fp32** artifact — the trunk shared, `weights.bin` fetched **once** — answering a live page with **6/6 parity checks green**, and **73.09 MiB** on the wire once the 13.58 MiB wasm runtime is counted. Dynamic int8 gets the artifact to **18.56 MiB** (inside the ≤ 20 MB target) and moves option probabilities by **6.48e-02** = 648× the fp32 bound, so it buys bytes and not agreement (§9.28) | measured (6b) |
+| on-device serving, Apple silicon | no MLX path — laya's published numbers are a T4 and the 4a harness ran it here on the CPU | **MLX port on the M5 against torch-MPS on the same checkpoint: 1.76–2.22× fp32, 1.79–2.41× int8**, each cell the per-row minimum of two committed runs. int8 gets the artifact to **17.40 MiB** (3.17× smaller, same container) and buys **no milliseconds**: 5 of the 6 linear shapes the model actually uses are *slower* quantised, at 10–37 GB/s of weight read against fp32's 55–257 (§9.29) | measured (6c) |
 
 The latency cells are one process on one M5 laptop, `device=cpu`, both engines fp32. An absolute p50
 from that laptop is a range, not a point — two committed runs of the same harness differ by up to
@@ -65,7 +66,7 @@ Quote the ratio, never the millisecond figure.
 |---|---|---|---|
 | **G1** | Accuracy beats the witness | macro decision-v2 test ≥ 0.70 on the frozen split, per-source table published, ≥ 0.4331 majority floor by ≥ +0.15 | open |
 | **G2** | Latency claim survives equal-footing re-measurement | same box, same window, same question count, direct `Agent` call not `Router`; published ratio recomputed from that or withdrawn | **met** (4a/4c): one M5 process, both fp32, `Agent.system_one`, ladder capped inside laya's 1024 window — **3.04×/3.21×/4.12×/3.60×** at 1/5/10/50 questions end-to-end and **6.78×/4.67×/4.75×/3.65×** on the ask-only path, each the minimum of two committed runs, `runs/latency_matched*.md`. G1 is *not* implied: v0's accuracy still fails (§4.2) |
-| **G3** | Deployment works for real | ONNX browser build answers a live page's decisions; bytes + p50 + cold-load measured in Chrome | **met, as a mechanics gate only.** `browser/index.html` runs the exported artifact in real Chrome 153 and answers three typed decisions with the same probabilities the torch engine prints (6/6 parity checks, both isolation modes, desktop and mobile widths, `runs/browser_g3.json`); bytes, cold-load and p50 are measured there with the box's load average recorded beside them. What this does **not** say: the artifact it deploys is v0, which still fails G1 and G5, and the ≤ 20 MB int8 route is open at the byte level and closed at the agreement level (§9.28) |
+| **G3** | Deployment works for real | ONNX browser build answers a live page's decisions; bytes + p50 + cold-load measured in Chrome | **met, as a mechanics gate only.** `browser/index.html` runs the exported artifact in real Chrome 153 and answers three typed decisions with the same probabilities the torch engine prints (6/6 parity checks, both isolation modes, desktop and mobile widths, `runs/browser_g3.json`); bytes, cold-load and p50 are measured there with the box's load average recorded beside them. What this does **not** say: the artifact it deploys is v0, which still fails G1 and G5, the ≤ 20 MB int8 route is open at the byte level and closed at the agreement level (§9.28), and the Apple-silicon int8 route closes for the opposite reason — 17.40 MiB at 9.24e-03 and **no** latency win at all, so fp32 is the artifact on both paths (§9.29) |
 | **G4** | Long-context is *correct*, not just cheap | needle-style typed decision ≥ 0.90 at 4k and ≥ 0.85 at 16k state | **not met, and not yet measurable on this box.** v0's needle curve (`runs/needle_myna-v0.md`) reads 0.188 at 128 tokens against a 0.167 floor — at chance on the shortest rung — so the longer rows are decay of nothing, and the harness now says so itself rather than printing a table (§9.25). The 16k *state* is measured and cheap (§9.22); the 16k *decision* needs the long-context checkpoint, which is 7b / `KAGGLE` |
 | **G5** | Useful confidence, with abstention | risk/coverage curve on `calibration.jsonl`; ≥ 0.95 accuracy at ≥ 60% coverage on banking77 + dbpedia14 + trec | **harness met, gate not met.** Abstention ships: `Myna(ckpt, abstain_below=t)` withholds the commitment and prints the measured reason, the fallback seam labels every answer with the engine that committed, and the curve is a committed artifact (`runs/risk_coverage.md`, 448 rows / 568 questions). Accuracy on v0 climbs **0.349 → 0.535** as coverage falls 1.00 → 0.20 — the confidence ranks the answers, on a checkpoint that cannot do the task — and setting the 0.693 floor on the engine abstains on **227** questions where the curve withheld **227**. But **no rung reaches 0.95** (max 0.596, at 10% coverage) and G5's own three sources sit at 0.000 / 0.025 / 0.150, so the pass needs the `KAGGLE` checkpoint (§9.24) |
 | **G6** | No regression on what already worked | synthetic v0 test ≥ 0.94 (was 0.951 measured) | open |
@@ -155,18 +156,31 @@ risk/coverage curve, its floor re-run and the G5 verdict) and its gate `mutation
 (49 mutations across the engine's commitment, the seam's labels, the transport and the curve),
 `eval_needle.py` (the 7a recall ladder — `--lengths` so the published ladder *is* the command that
 ran it, and `baseline_verdict`, which refuses to let a curve that starts at the uniform floor be
-read as decay) and its gate `mutation_longctx.py` (20 mutations).
+read as decay) and its gate `mutation_longctx.py` (20 mutations),
+`bench_mlx.py` (the 6c Apple harness: both engines over one checkpoint at real state/question
+widths, artifact bytes read from disk, and the drift table with a name beside every maximum),
+`diag_mlx_int8_gem.py` (the 6c mechanism probe: myna's own linear shapes, 200 matmuls queued per
+sync, with the effective-GB/s column that tells the reader whether the loop measured a kernel or
+Python), and their gate `mutation_mlx.py` (14 mutations over what gets quantised, how it dispatches,
+and which byte figure the manifest quotes). `browser_g3.mjs` measures the artifact in real Chrome
+(bytes, cold load, p50, screenshots) with `quantize_int8.py` producing its int8 row and
+`mutation_browser.py` (24 mutations) as its gate.
 `src/myna/onnx_export.py` is the G3 export path — two fixed-width graphs, the chained-scan
-composition check, and a parity report — with its gate `bench/mutation_onnx.py` (12 mutations).
+composition check, and a parity report — with its gate `bench/mutation_onnx.py` (22 mutations).
 `kaggle/`: `run.py` (one-command entrypoint: corpus discovery, the measured flag set, `--resume` only
 when a snapshot exists, tee to `train.log`, `run.json`, non-zero propagation), `package_dataset.py`
 (stage the pilot corpus, verify every byte against the corpus, print the upload command, never run
 it), `requirements.txt`.
-`tests/`: **289 passing + 1 skipped** — the skip is the KEV-gated parity test, green wherever
+`tests/`: **307 passing + 1 skipped** — the skip is the KEV-gated parity test, green wherever
 `kev` is installed. The ONNX gate's 8 tests are inside that count (they skip unless the optional
 `browser` extra is present), and their session fixture tears the runtime down deliberately: a live
 onnxruntime pool can abort the interpreter *after* a green summary, which reads as a broken
-baseline to any harness that trusts an exit code. The P5 gate is `test_abstain.py` (the flag against the distribution the same answer
+baseline to any harness that trusts an exit code. The MLX int8 gate is `test_mlx_int8.py` (8 — the
+quantised tree really holds packed uint32 and exactly the linear count, quantising one engine leaves
+a second bit-identical, the artifact round-trips against the file's own byte count and *unequal* to
+the tensor sum, the two refusals `mx.quantize` cannot make itself (`bits=6`, a group size that does
+not divide the input), `--keep` honoured, and the drift bound sized under the smallest top-two
+spread). The P5 gate is `test_abstain.py` (the flag against the distribution the same answer
 prints, monotonicity in the floor, noul's confident "no", the reason's measured numbers, the
 policy echo), `test_fallback.py` (only the abstained questions reach the secondary, the label
 follows the decider rather than a literal, both-refused reported, the laya schema shim held equal
@@ -676,7 +690,68 @@ are counted, and if nothing is left the run refuses. See §9.14.
       into the wasm heap, so no total-tab memory figure is claimed here; plain mode has no memory
       API at all, which is printed as `n/a (API absent in this browser)` rather than as zero; and
       every probability above is v0's, so a green G3 is a working artifact, not a shippable model.
-- [ ] **6c** MLX int8 path for Apple, re-measured after any parameter growth.
+- [x] **6c** MLX int8 path for Apple, re-measured after any parameter growth — the path is
+      built, and the measured verdict is **bytes yes, milliseconds no**:
+      * **The artifact.** `MynaMLX.quantized_()` runs `mx.quantize` over every 2-D weight the
+        engine *multiplies by* — `trunk.tok.weight` stays fp32 because it is gathered, not
+        matmulled — `_linear` dispatches on the presence of `weight_q` to `mx.quantized_matmul`,
+        and `save()` writes a self-describing directory (`params.safetensors` + a `meta.json`
+        carrying `{group_size, bits, keep, n_quantized}` and both byte figures). `from_mlx_dir`
+        refuses a `bits` outside {4, 8} — the only two `mx.quantized_matmul` implements — naming
+        the file and the value it read, so a hand-edited manifest fails at load instead of
+        answering with the wrong dequantisation. 50 of 51 weights quantised at group 64 / bits 8.
+      * **Bytes: met.** `params.safetensors` goes **55.13 → 17.40 MiB** (57,805,835 →
+        18,248,977 B), **3.17×** smaller in the same container, and the reloaded artifact is
+        bit-identical to the engine that wrote it (`max |d| 0.0e+00` on logits, printed by the
+        bench and asserted by the test).
+      * **Latency: not moved.** MLX over torch-MPS on the same checkpoint and the same box,
+        per-row *minimum* across two committed runs (`runs/bench_mlx_int8.md`,
+        `runs/bench_mlx_int8_run2.md`; load average 4.55 and 3.94 at print, §9.23):
+        fp32 **1.76–2.22×**, int8 **1.79–2.41×**. int8 − fp32 changes sign between the two runs on
+        4 of the 7 state lengths (+2.6% → −9.3% at 4096, −1.6% → +1.9% at 512) while fp32's own
+        run-to-run spread reaches **15.2%** on that 4096 row, so no "int8 is faster" claim survives
+        the two files and none is made.
+      * **Why, measured rather than argued.** `bench/diag_mlx_int8_gem.py` times the model's own
+        six linear shapes with 200 matmuls queued and one sync (holding every node: evaluating
+        only the last array leaves the other 199 unreferenced and unrun, and the broken probe read
+        0.4–3.1 µs/op with int8 up to 1.31× ahead where the fixed one reads 3.3–28.7 µs/op).
+        **5 of 6 shapes are slower quantised** —
+        ratios fp32/int8 **0.43–1.06** — while reading 3.6× fewer weight bytes. The kernel gets
+        **10–37 GB/s** of weight read against fp32's **55–257 GB/s** on the same box at the same
+        load, so the unpack costs more than the smaller read saves. Weight-only int8 removes bytes
+        from the weight traffic and no MACs; at 16–128 rows per call these GEMMs are not waiting
+        on the bytes it removes.
+      * **Agreement cost.** 14 `calibration.jsonl` rows / 20 questions answered at their own state
+        and question widths (no padding to a fixed shape): port error (fp32 vs torch-MPS)
+        **1.20e-03**, quantisation error (int8 vs fp32, same device and same stream) **9.24e-03**,
+        int8 vs torch **9.48e-03**, and **1 flip in 20 choices**. The flipped row is a 2-option
+        boolq question at 283 tokens whose reference top-two margin is **0.0008** against torch and
+        **0.0001** against fp32 — quantisation moved a coin, which is exactly what a
+        probability-error bound alone cannot see.
+      * **One null result, stated.** The gate projections were the obvious suspect (their output
+        feeds a sigmoid carried multiplicatively across the whole state). Keeping `.gate.weight`
+        in fp32 quantises 38/51 weights instead of 50, takes the artifact back up to 22.25 MiB —
+        outside the byte target — and moves the drift from **9.24e-03** to **9.53e-03** while
+        flipping **the same row** (`runs/bench_mlx_int8_keepgate.md`). The gate weights are not
+        the carriers, so there is no cheap subset that buys the agreement back.
+      * **Consequence for the gates: none of them ships on int8.** G3's parity bound is 1e-4;
+        MLX int8 sits at 9.24e-03, ~92× over — about 7× tighter than the wasm int8 of §9.28 — and
+        refused for a different reason: wasm int8 lost on agreement, Apple int8 buys nothing at all.
+        fp32 is the artifact on both paths.
+      * **Gate.** `tests/test_mlx_int8.py` (8 — the quantised tree really holds packed uint32 and
+        exactly `_n_linear` tensors; quantising one engine leaves another bit-identical; the
+        artifact round-trips bit-exact with `meta["param_bytes_file"]` equal to the file's own
+        byte count and *unequal* to the tensor sum; `bits=6` refused; group 64 on a 96-wide input
+        refused; `--keep` honoured; and the closeness bound `max|dp| < 2e-2` sitting under the
+        smallest top-two spread on the tiny model) plus `bench/mutation_mlx.py` **14/14**
+        (`runs/mutation_mlx.log`) across five clusters — filter, dispatch (`transpose`, and
+        `group_size`/`bits` read from the artifact rather than hard-coded), the divisibility
+        guard, the manifest and its loader, and the two byte figures swapped in both directions.
+      One label was fixed on the way: `bench_mlx.py`'s markdown header said "token embedding kept
+      fp32" in prose while `--keep` was a real list, so the first run that moved the flag would
+      have printed the old default — the §9.26 class of defect, now printing what it ran with.
+      **Re-measure trigger stands:** the ratios above are v0's 14.4M-parameter artifact, and §2.1
+      carries them as such.
 
 ### P7 — Long-context proof *(gates G4)*
 - [x] **7a** `bench/eval_needle.py` recall-vs-length curve, swept 128 → 16,384 on the checkpoint
@@ -1108,3 +1183,39 @@ Kept permanently, because the value of this project's claims is that they surviv
     inherited from the fp32 export's bound.
 
 
+
+29. **int8 on MLX: 3.17× the bytes, 0× the milliseconds, and 9.24e-03 of agreement — and the
+    reasoning that predicted a win was wrong twice.** Two earlier drafts of this finding were both
+    wrong in the same direction, and both were killed by arithmetic rather than by the clock.
+    (a) "the linears are a small share of the model, so quantising them cannot matter":
+    they are **99.4%** of the per-state-token work — 13,565,952 MACs through the matmul'd weights
+    against 82,944 in the attention (the state read/update and the causal intra-chunk piece,
+    counted at chunk 16 from the shapes in `runs/myna-v0/model.pt`; the split is not sensitive to
+    how generously the attention terms are counted). (b) "then it must be
+    bandwidth-bound and int8 will win": weight-only int8 removes bytes from the *weight* read and
+    no MACs, so the whole claim rests on the kernel being starved, and `bench/diag_mlx_int8_gem.py`
+    says it is not — at myna's own shapes the fp32 matmul already runs at 55–257 GB/s of weight
+    read on this box and the quantised one at **10–37 GB/s**, so `mx.quantized_matmul` spends more
+    unpacking group-64 int8 than `x @ w.T` spends reading fp32, and 5 of the 6 shapes are outright
+    slower (ratios fp32/int8 0.43–1.06). Between (a) and (b) sits a measurement bug worth naming:
+    the first version of that probe enqueued 200 matmuls and evaluated only the last array, so the
+    other 199 nodes were unreferenced, never ran, and the probe printed 0.4–3.1 µs/op with int8 up
+    to 1.31× ahead. Holding every node and syncing once costs 3.3–28.7 µs/op and reverses the
+    sign. A microbenchmark whose nodes can be garbage collected is measuring Python.
+    The engine-level result is the honest version of all this: **no latency claim on the int8
+    path**, sign of the int8 − fp32 delta flipping between two committed runs on 4 of 7 state
+    lengths while fp32's own spread reaches 15.2% (§5 P6 6c). So the artifact that ships for Apple
+    is fp32 — 55.13 MiB, 1.76–2.22× over torch-MPS — and 17.40 MiB int8 stays in the tree as a
+    measured option for whoever needs the bytes for a different reason (a memory-constrained
+    unified buffer, say), not as a speed route.
+    Second correction, about the target rather than the number: **"`≤ 20 MB int8`" was one cell and
+    is now two.** §2.1 carried it as *the* int8 target; §9.28 killed it on wasm agreement
+    (6.48e-02 = 648× the fp32 bound) and this pass kills it on Apple latency, for the opposite
+    reason — MLX int8 reaches 9.24e-03, ~7× tighter than wasm's, and is refused because it is not
+    faster. A single "int8 status" line would have hidden that: the two paths fail differently, so
+    each now has its own row and its own §9 entry. And the reopen condition is not "find a better
+    quantiser" — it is that a *latency* route needs a kernel whose dequant pass is not the
+    bottleneck, at which point the agreement question has to be re-argued against the decision
+    suite anyway (the 1 flip in 20 above sits on a 0.0008 reference margin, so probability-error
+    bounds alone would not have caught it, and keeping `.gate.weight` in fp32 changes 9.24e-03 to
+    9.53e-03 and flips the same row).

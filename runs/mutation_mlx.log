@@ -1,0 +1,32 @@
+baseline copy: green (2 test files)
+
+[ 1/14] caught      nothing is quantised, and the engine still forwards in fp32 behind an int8 label
+            FAILED tests/test_mlx_int8.py::test_quantized_engine_actually_holds_quantized_weights
+[ 2/14] caught      the keep list is ignored, so the gathered token embedding is packed too
+            FAILED tests/test_mlx_int8.py::test_quantized_engine_actually_holds_quantized_weights
+[ 3/14] caught      the count recorded in the metadata is the number of groups, not of weights
+            FAILED tests/test_mlx_int8.py::test_quantized_engine_actually_holds_quantized_weights
+[ 4/14] caught      `_linear` never looks for quantised weights, so the int8 path is dead code
+            FAILED tests/test_mlx_int8.py::test_quantizing_one_engine_leaves_the_fp32_one_alone
+[ 5/14] caught      the quantised matmul reads the weight in the wrong orientation
+            FAILED tests/test_mlx_int8.py::test_quantizing_one_engine_leaves_the_fp32_one_alone
+[ 6/14] caught      the group size is a constant instead of what the weights were packed with
+            FAILED tests/test_mlx_int8.py::test_quantizing_one_engine_leaves_the_fp32_one_alone
+[ 7/14] caught      the bit depth is a constant instead of what the weights were packed with
+            FAILED tests/test_mlx_int8.py::test_quantizing_one_engine_leaves_the_fp32_one_alone
+[ 8/14] caught      the fp32 branch transposes the wrong factor
+            FAILED tests/test_mlx_int8.py::test_quantizing_one_engine_leaves_the_fp32_one_alone
+[ 9/14] caught      a group size that does not divide the input dimension is accepted anyway
+            FAILED tests/test_mlx_int8.py::test_group_size_that_does_not_divide_is_an_error_not_silent_fp32
+[10/14] caught      the metadata stops recording the quantisation, so the load unpacks as fp32
+            FAILED tests/test_mlx_int8.py::test_artifact_round_trip_answers_bit_identically
+[11/14] caught      the loader assumes a group size and bit depth instead of reading the metadata
+            FAILED tests/test_mlx_int8.py::test_artifact_round_trip_answers_bit_identically
+[12/14] caught      a declared bit depth MLX cannot implement is loaded instead of refused
+            FAILED tests/test_mlx_int8.py::test_meta_lying_about_bits_is_refused - Failed...
+[13/14] caught      the metadata quotes the tensor sum as the file size
+            FAILED tests/test_mlx_int8.py::test_artifact_round_trip_answers_bit_identically
+[14/14] caught      the metadata's tensor figure is the file size, so both columns are one number
+            FAILED tests/test_mlx_int8.py::test_artifact_round_trip_answers_bit_identically
+
+14/14 mutations caught

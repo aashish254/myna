@@ -119,7 +119,8 @@ MiB now, with Chrome's network log as the witness rather than a sum in a README.
 And it says the ≤ 20 MB int8 route is a **byte win and an agreement loss**: dynamic
 quint8 lands at 18.56 MiB and moves option probabilities 648× past the bound the
 fp32 artifact meets, for 5% latency on a box that was busier during the int8 run —
-so int8 ships nowhere (SPEC §9.28). What the table does *not* say is anything about
+so int8 ships nowhere (SPEC §9.28; §9.29 is the same verdict on the Apple path, for
+the opposite reason). What the table does *not* say is anything about
 accuracy: the checkpoint in that artifact is v0, which still fails the real-corpus
 gate below.
 
@@ -136,6 +137,36 @@ Absolute milliseconds from this laptop are a range, not a point, so the witness
 files carry `uptime`'s load average next to every number (SPEC §9.23), and the tab's
 own memory reading (176 MiB) counts JS-managed heap only — it does not attribute the
 54 MiB mounted into the wasm heap, which is why no total-tab memory figure is claimed.
+
+## On an Apple silicon Mac, measured
+
+The same checkpoint serves natively through MLX: `src/myna/mlx_model.py` is a port of
+the torch forward over identical weights, so there is no conversion step and no
+re-export. One M5, both engines, same tensors, median of 20 reps, per-row **minimum**
+of two committed runs (`bench/bench_mlx.py` → `runs/bench_mlx_int8.md` and
+`runs/bench_mlx_int8_run2.md`, load average 4.55 and 3.94 at print):
+
+| engine | vs PyTorch on MPS, 128 → 16,384-token state | artifact on disk |
+|---|---|---|
+| MLX fp32 | **1.76–2.22×** | 55.13 MiB |
+| MLX int8, group 64 | **1.79–2.41×** | **17.40 MiB** |
+
+int8 is 3.17× smaller and **not faster** — the sign of the int8 − fp32 difference flips
+between the two runs on 4 of the 7 state lengths, and fp32's own run-to-run spread
+reaches 15.2% on the widest row. `bench/diag_mlx_int8_gem.py` prices that at the kernel:
+5 of the 6 linear shapes this model actually uses are *slower* quantised (0.43–1.06×
+fp32/int8) even though int8 reads 3.6× fewer weight bytes, because the quantised pass
+gets 10–37 GB/s of weight read against fp32's 55–257 on the same box. And it is not free
+in agreement — over 20 real `calibration.jsonl` questions the port moves option
+probabilities 1.20e-03 while quantisation moves them 9.24e-03 and changes one argmax, on
+a question whose top two options sat 0.0008 apart. So fp32 is what ships on this path
+too, and the int8 artifact stays in the tree for whoever needs the bytes for a reason
+other than speed (SPEC §9.29).
+
+```bash
+uv run python -m bench.bench_mlx --ckpt runs/myna-v0 --reps 20 --drift-rows 12  # both tables
+uv run python bench/diag_mlx_int8_gem.py --iters 200 --trials 7                 # the kernel price
+```
 
 ## Trained v0 — accuracy on held-out data
 

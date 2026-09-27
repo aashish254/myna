@@ -1,0 +1,28 @@
+interpreter: /opt/homebrew/bin/python3.11  (python 3.11, torch 2.6.0)
+claim:    requires-python = ">=3.11"
+checking 3.11 compatibility (this interpreter is 3.13)
+ok    -c import sys; assert sys.version_info[1] == 11, sys.version; import myna.train, myna.paraphrase, myna.real_data, myna.model, myna.serve, myna.data, myna.tokenizer; print('package imports clean')
+ok    -m py_compile /Users/aashish/next ko ne next gen model/kaggle/package_dataset.py
+ok    -m py_compile /Users/aashish/next ko ne next gen model/kaggle/run.py
+ok    -m py_compile /Users/aashish/next ko ne next gen model/src/myna/__init__.py
+ok    -m py_compile /Users/aashish/next ko ne next gen model/src/myna/data.py
+ok    -m py_compile /Users/aashish/next ko ne next gen model/src/myna/engine.py
+ok    -m py_compile /Users/aashish/next ko ne next gen model/src/myna/fallback.py
+ok    -m py_compile /Users/aashish/next ko ne next gen model/src/myna/longctx.py
+ok    -m py_compile /Users/aashish/next ko ne next gen model/src/myna/mlx_model.py
+ok    -m py_compile /Users/aashish/next ko ne next gen model/src/myna/model.py
+ok    -m py_compile /Users/aashish/next ko ne next gen model/src/myna/onnx_export.py
+ok    -m py_compile /Users/aashish/next ko ne next gen model/src/myna/paraphrase.py
+ok    -m py_compile /Users/aashish/next ko ne next gen model/src/myna/real_data.py
+ok    -m py_compile /Users/aashish/next ko ne next gen model/src/myna/report.py
+ok    -m py_compile /Users/aashish/next ko ne next gen model/src/myna/rlcd.py
+ok    -m py_compile /Users/aashish/next ko ne next gen model/src/myna/serve.py
+ok    -m py_compile /Users/aashish/next ko ne next gen model/src/myna/tokenizer.py
+ok    -m py_compile /Users/aashish/next ko ne next gen model/src/myna/train.py
+ok    -m py_compile /Users/aashish/next ko ne next gen model/src/myna/trunk.py
+ok    -m myna.train --suite
+ok    trained 2 updates and wrote metrics (dev macro on 3.11)
+ok    /Users/aashish/next ko ne next gen model/kaggle/run.py --corpus /var/folders/jn/pnnpl_cn0gx93p8v1yf8jb080000gn/T/tmp7fkw1u1d/suite
+ok    kaggle/run.py --check under 3.11: 3.11.15, torch 2.6.0
+
+PASS: the package imports, compiles and trains on python 3.11
