@@ -68,7 +68,10 @@ exactly, with zero drift.
     differentiable in it. Correct objective: `max E[Brier(p, gold)] − β·KL(p‖ref)`
     → acc 0.9626 → 0.9657, mean ECE 0.0191 → 0.0076, mean Brier 0.0258 →
     0.0232, every one of 9 questions improved or held. Lesson: transplant the
-    objective, not the optimizer folklore.
+    objective, not the optimizer folklore. (`runs/rlcd_v0.log`, measured. The
+    sample is the dev split `rlcd.py` regenerates at 600 rows per workflow, so
+    0.9626 is a different dev draw than the train log's 0.9599 — the claim is
+    the before/after pair, not either level.)
 
 ## Benchmarks
 
@@ -116,6 +119,13 @@ Why it is withdrawn, against its own numbers:
 | 10 | 506.3 ms | 120.8 ms | 4.19x | 98.2 ms | 5.15x |
 | 50 | 3,589.5 ms | 870.0 ms | 4.13x | 787.1 ms | 4.56x |
 
+Every cell is *m*: this table is run 2 transcribed from `runs/latency_matched.md`, where each
+millisecond is a p50 the harness printed, and its `meta` records the platform, device, thread
+counts, 3 warm-ups / 10 reps, both checkpoints by path and commit, both dtypes and laya's
+1024/256 window. Run 1 is `runs/latency_matched_run1_superseded.md`. What neither records is
+the box's load average — §9.23's convention postdates them — so these two runs are reproducible
+but not restatable under it (§9.30).
+
 Shipped claim = per-row minimum over the two committed runs: **3.04 / 3.21 / 4.12 / 3.60×** and
 **6.78 / 4.67 / 4.75 / 3.65×**. Cost fits on the ladder: ask is 10.1 ms + 9.6 ms/question with a
 state slope of −10.3 µs/token (zero — the fixed-size state, measured), observe is 360 µs/token with
@@ -140,14 +150,28 @@ label-prior entropy) through 1000 steps and was stopped. Two findings:
 
 The open question from the post-mortem — *does generalization stay far behind
 memorization at scale?* — is answered for v0: it does not, once the data has
-enough surface variety. The gate fix plus expanding the noun pools to ~50 per
-split (with 15% generic-noun dropout to force template keying) produced:
+enough surface variety. The gate fix plus 50 disjoint nouns per split (verified
+by counting `SPLIT_NOUNS`, and 15% generic-noun dropout inside `generate`)
+produced, from `runs/train-v0.log`:
 
-**v0 final: dev 0.968 / test 0.951 overall** (9000 steps, batch 32, MPS,
-~3.7 h on M5). Per-question test accuracy 0.928–0.974, ECE 0.012–0.042 with a
-single refit temperature of 3.0, noul Brier 0.028–0.046. The dev→test gap is
-1.7 points on fully disjoint nouns, so the model reads templates, not nouns.
-dev-mid trajectory: 0.468 @500 → 0.921 @1500 (the grokking knee) → 0.968 @8000.
+**v0 final: dev 0.960 / test 0.952 overall** — macros of the nine per-question
+rows the log prints under `=== dev ===` and `=== test ===` (0.9599 / 0.9523) —
+after 9,000 steps at batch 32 on MPS, last step line `15693s`, i.e. 4.4 h.
+Per-question test accuracy 0.928–0.974, test ECE 0.0115–0.0415 with the single
+refit temperature the log prints as 3.0, test noul Brier 0.0278–0.0461. The
+dev→test gap is **0.76 of a point** on fully disjoint nouns, so the model reads
+templates, not nouns. dev-mid trajectory: 0.4682 @500 → 0.9207 @1500 (the
+grokking knee) → 0.9682 @7500/8000/8500 — a prefix subset of dev scored every
+500 steps, so it is a trajectory, not an overall.
+
+Two cells that used to sit in this paragraph are dead and are named in
+SPEC §9.30: "dev 0.968" was the @8000 mid-run probe, not the final dev macro,
+and "test 0.951" is printed by no artifact in this repo. The split sizes are
+also not in the log: each printed test accuracy rounds to its 4-dp value at
+1200 rows per workflow (3,600 test rows) and at no smaller n up to 4000, but
+that is arithmetic on printed rounding, so it is *p* and not a measurement;
+`train.py` now logs the split sizes so the next run does not need the
+inference.
 
 ## Open questions / next
 

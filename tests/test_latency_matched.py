@@ -18,6 +18,7 @@ and known in advance.
 """
 
 import math
+import os
 import sys
 from pathlib import Path
 
@@ -260,6 +261,28 @@ def test_a_laya_less_run_writes_ratio_null_and_exits_zero(tmp_path):
     assert res["ratio"] is None and res["meta"]["laya_version"] is None
     assert res["meta"]["inference_only"] is True
     assert "not measured" in md.read_text()
+
+
+def test_a_run_records_the_box_and_its_own_command(tmp_path):
+    """§9.23: a millisecond is only restatable with the load beside it, and the
+    two committed P4 runs predate that convention (SPEC §9.30), so the harness
+    now writes both itself rather than relying on whoever typed the table."""
+    import json
+    out, md = tmp_path / "l.json", tmp_path / "l.md"
+    assert main(["--no-laya", "--ns", "1", "--ladder", "64", "--reps", "1",
+                 "--warmup", "0", "--state-reps", "1", "--out", str(out), "--md", str(md)]) == 0
+    m = json.loads(out.read_text())["meta"]
+    assert len(m["load_avg_after"]) == 3 and all(
+        isinstance(x, float) and x >= 0 for x in m["load_avg_after"])
+    # a stubbed `[0.0, 0.0, 0.0]` is the failure this guards against, so compare
+    # against the box rather than against zero: the 1-minute average still
+    # carries the run that just finished
+    live = os.getloadavg()
+    assert all(abs(r - l) < 0.9 for r, l in zip(m["load_avg_after"], live)), \
+        f"recorded {m['load_avg_after']} is not what this box reports ({live})"
+    assert "--no-laya" in m["cmd"], "the command that made the numbers is not recorded"
+    text = md.read_text()
+    assert "load average after the run" in text and "--no-laya" in text
 
 
 def test_help_documents_the_matched_axes():

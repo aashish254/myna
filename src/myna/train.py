@@ -8,6 +8,7 @@ from __future__ import annotations
 import argparse
 import json
 import random
+import sys
 import time
 from pathlib import Path
 
@@ -359,6 +360,20 @@ def temperature_source(data):
     return (calib, "calibration") if calib else (data["dev"], "dev")
 
 
+def split_report(split, groups):
+    """The row counts have to ride with the split's name.
+
+    Every corpus size quoted in a doc was retyped from a line like this one;
+    `runs/train-v0.log` printed no such line, so the "3,000 synthetic examples"
+    that sat next to the v0 table could not be checked and is dead (SPEC §9.30).
+    """
+    rows = [len(v[1]) for v in groups.values()]
+    if not rows:
+        return f"split {split}: 0 rows over 0 groups"
+    return (f"split {split}: {sum(rows)} rows over {len(rows)} groups, "
+            f"per-group {min(rows)}-{max(rows)}")
+
+
 def resolve_device(name):
     """`auto` prefers MPS, then CUDA, then CPU.
 
@@ -572,6 +587,9 @@ def main():
             for split, groups in data.items()
         }
     print("tokenizer trained:", tok.get_vocab_size())
+    print("cmd:", " ".join(["python", "-m", "myna.train", *sys.argv[1:]]), flush=True)
+    for _split, _groups in data.items():
+        print(split_report(_split, _groups), flush=True)
 
     cfg = MynaConfig(vocab=tok.get_vocab_size())
     model = MynaModel(cfg).to(device)

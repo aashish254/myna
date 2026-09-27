@@ -40,12 +40,12 @@ to clear, not a gap to reframe around. Where we lose, we print the loss.
 
 | axis | laya typed-decisions | myna target | label |
 |---|---|---|---|
-| parameters | 421.29M (enc 394.78M + head 26.51M) — *their published figure* | **15.35M measured**, ≤ 32M allowed | measured |
+| parameters | 421.29M (enc 394.78M + head 26.51M) — *their published figure* | **14.45M in the shipped v0 artifact** (`n_params` 14,449,280, `runs/bench_mlx_int8.json`), **15.35M** at the default `MynaConfig` (vocab 4096 vs v0's 1740) — the same count, two configs; ≤ 32M allowed | measured |
 | accuracy, kev decision-v2 **test** | **0.6319** (our own seeded witness, n=546) | **≥ 0.70** gate · 0.75 stretch | projected |
 | accuracy, their own typed-decisions bench | 0.766 (2,000 decisions) | not comparable — different suite; do not quote side by side | — |
-| p50 latency, 1 question (87-token state) | **100.7–117.7 ms** measured here on the M5 CPU · 39.5 ms on their T4 (their measured) | **33.1 ms** myna on the same box and process = **3.04×**, and inside their T4 number | measured (§5 P4 4a, `runs/latency_matched.md`) |
-| p50 latency, 50 questions | **2,923–3,589 ms** here · 771.3 ms T4 (their measured) | **812 ms = 3.60×** same box; against their *T4* number myna takes 5–13% *longer* (812–870 ms vs 771.3), so the ≥ 5× projection did **not** hold (§9.21) | measured (4a) |
-| p50 latency, 1 question, state already scanned | no such API — every call re-reads the state | **14.9 ms = 6.78×** laya's same call | measured (4a) |
+| p50 latency, 1 question (87-token state) | **100.7–117.7 ms** measured here on the M5 CPU · 39.5 ms on their T4 (their measured) | **33.1–38.3 ms** myna on the same box and process (two runs) = **3.04×** at the per-row minimum, and inside their T4 number | measured (§5 P4 4a, `runs/latency_matched.md`) |
+| p50 latency, 50 questions | **2,923–3,589 ms** here · 771.3 ms T4 (their measured) | **812–870 ms = 3.60×** same box; against their *T4* number myna takes 5–13% *longer* (812–870 ms vs 771.3), so the ≥ 5× projection did **not** hold (§9.21) | measured (4a) |
+| p50 latency, 1 question, state already scanned | no such API — every call re-reads the state | **14.9–17.3 ms = 6.78×** laya's same call | measured (4a) |
 | input window | **512 tokens** english / **1024** typed-decisions (`max_len` 1024 + `head_max_len` 256, read from the checkpoint config by the 4a harness) | the *state* is measured to 16,384 tokens — scanned, held at 576 KiB, answered from, at cost that grows only in the scan (§9.22). The *decision* at that length is not: v0's needle accuracy is 0.312 at 1k and 0.062 at 16k against a 0.167 floor (§9.25) | measured (state), **not met** (accuracy, G4) |
 | retained state | KV-free but re-encodes; window-bounded | **576 KiB fixed, independent of length** | measured |
 | calibration ECE | **0.081** after temperature fit (their measured) | **≤ 0.02**; 0.0076 on v0 **dev**, whose temperature was fit on those rows — read as optimistic (§9.11) | measured (v0), level disputed |
@@ -69,7 +69,7 @@ Quote the ratio, never the millisecond figure.
 | **G3** | Deployment works for real | ONNX browser build answers a live page's decisions; bytes + p50 + cold-load measured in Chrome | **met, as a mechanics gate only.** `browser/index.html` runs the exported artifact in real Chrome 153 and answers three typed decisions with the same probabilities the torch engine prints (6/6 parity checks, both isolation modes, desktop and mobile widths, `runs/browser_g3.json`); bytes, cold-load and p50 are measured there with the box's load average recorded beside them. What this does **not** say: the artifact it deploys is v0, which still fails G1 and G5, the ≤ 20 MB int8 route is open at the byte level and closed at the agreement level (§9.28), and the Apple-silicon int8 route closes for the opposite reason — 17.40 MiB at 9.24e-03 and **no** latency win at all, so fp32 is the artifact on both paths (§9.29) |
 | **G4** | Long-context is *correct*, not just cheap | needle-style typed decision ≥ 0.90 at 4k and ≥ 0.85 at 16k state | **not met, and not yet measurable on this box.** v0's needle curve (`runs/needle_myna-v0.md`) reads 0.188 at 128 tokens against a 0.167 floor — at chance on the shortest rung — so the longer rows are decay of nothing, and the harness now says so itself rather than printing a table (§9.25). The 16k *state* is measured and cheap (§9.22); the 16k *decision* needs the long-context checkpoint, which is 7b / `KAGGLE` |
 | **G5** | Useful confidence, with abstention | risk/coverage curve on `calibration.jsonl`; ≥ 0.95 accuracy at ≥ 60% coverage on banking77 + dbpedia14 + trec | **harness met, gate not met.** Abstention ships: `Myna(ckpt, abstain_below=t)` withholds the commitment and prints the measured reason, the fallback seam labels every answer with the engine that committed, and the curve is a committed artifact (`runs/risk_coverage.md`, 448 rows / 568 questions). Accuracy on v0 climbs **0.349 → 0.535** as coverage falls 1.00 → 0.20 — the confidence ranks the answers, on a checkpoint that cannot do the task — and setting the 0.693 floor on the engine abstains on **227** questions where the curve withheld **227**. But **no rung reaches 0.95** (max 0.596, at 10% coverage) and G5's own three sources sit at 0.000 / 0.025 / 0.150, so the pass needs the `KAGGLE` checkpoint (§9.24) |
-| **G6** | No regression on what already worked | synthetic v0 test ≥ 0.94 (was 0.951 measured) | open |
+| **G6** | No regression on what already worked | synthetic v0 test ≥ 0.94 | open — v0's measured test macro is **0.9523** (`runs/train-v0.log`, macro of its nine `=== test ===` rows), so the level clears today; the gate stays open until a v1 checkpoint is run against it, and a draft of this row cited "0.951", which no artifact prints (§9.30) |
 | **G7** | Reproducibility | one command per result, seeds pinned, witness JSONs committed, `pytest` green | open |
 
 ### 2.3 Non-goals (deliberate exclusions)
@@ -151,7 +151,8 @@ split, instruction-derived strata, laya's own accuracies joined by cell, G1 verd
 `mutation_kaggle_bundle.py` (the entrypoint + packager gate), `check_python311.py` (the 3.11 witness
 that runs the package on a real 3.11 interpreter and exits 2 rather than skipping),
 `bench_latency_matched.py` (the 4a/4b harness: one process, both engines, matched inputs, `flock`ed
-output) and its gate `mutation_latency_matched.py` (34 mutations), `risk_coverage.py` (the 5b
+output, and since 8a a `meta` that carries its own argv and the box's load average at the end of
+the run) and its gate `mutation_latency_matched.py` (34 mutations), `risk_coverage.py` (the 5b
 risk/coverage curve, its floor re-run and the G5 verdict) and its gate `mutation_p5.py`
 (49 mutations across the engine's commitment, the seam's labels, the transport and the curve),
 `eval_needle.py` (the 7a recall ladder — `--lengths` so the published ladder *is* the command that
@@ -171,8 +172,12 @@ composition check, and a parity report — with its gate `bench/mutation_onnx.py
 when a snapshot exists, tee to `train.log`, `run.json`, non-zero propagation), `package_dataset.py`
 (stage the pilot corpus, verify every byte against the corpus, print the upload command, never run
 it), `requirements.txt`.
-`tests/`: **307 passing + 1 skipped** — the skip is the KEV-gated parity test, green wherever
-`kev` is installed. The ONNX gate's 8 tests are inside that count (they skip unless the optional
+`tests/`: **312 passing + 1 skipped** — the skip is the KEV-gated parity test, green wherever
+`kev` is installed. The 8a label pass added `test_train_logging.py` (4: `split_report`'s four
+figures pinned, a lopsided split distinguishable from an even one at the same total, the empty
+group set logging rather than raising) and one end-to-end `--no-laya` case in
+`test_latency_matched.py` that reads the box's live `getloadavg()` against the
+`meta.load_avg_after` the harness just wrote, so a stubbed zero triple fails on a working machine. The ONNX gate's 8 tests are inside that count (they skip unless the optional
 `browser` extra is present), and their session fixture tears the runtime down deliberately: a live
 onnxruntime pool can abort the interpreter *after* a green summary, which reads as a broken
 baseline to any harness that trusts an exit code. The MLX int8 gate is `test_mlx_int8.py` (8 — the
@@ -478,7 +483,9 @@ optimization.** boolq and mnli are the permanent half of it — their instructio
       histograms because the chance floor is row-weighted over them. Gate: `bench/mutation_report.py`
       — **54 mutations over `src/myna/report.py`, all caught, exit 0**, run against a frozen repo
       (§9.18 is the process correction that bought that discipline).
-- [ ] **3h** 15.35M vs ~32M head-to-head on identical data — `KAGGLE`.
+- [ ] **3h** The default-config model (**15.35M** at vocab 4096; v0's artifact is **14.45M** at its
+      1,740-entry tokenizer — §2.1 names both) against the ≤ 32M allowance, head-to-head on
+      identical data — `KAGGLE`.
 - [ ] **3i** G1 verdict: decision-v2 **test ≥ 0.70** macro, ≥ +0.15 over the 0.4331 majority floor,
       per-source table published — `KAGGLE` result, reported as measured or as a loss.
 
@@ -778,8 +785,12 @@ are counted, and if nothing is left the run refuses. See §9.14.
       and only if its 128-token rung clears the floor by the margin the guard requires.
 
 ### P8 — Write it up
-- [ ] README + PLAN headline tables from committed artifacts only, each cell labelled
-      measured/projected/gated.
+- [x] README + PLAN headline tables from committed artifacts only, each cell labelled
+      measured/projected/gated. Every headline cell now carries its own ***m***/***p***/***g*** tag
+      and the file it was copied from, and eight cells that had no artifact behind them died in the
+      pass — §9.30 lists each with the arithmetic that buried it, and §4.2's floors, §2.1's two
+      parameter counts and the fitted-vs-read distinction are stated so a derived number can never
+      again stand in for a measured one.
 - [ ] Reproduction script per table.
 - [ ] Public release gate: P0 push + G1–G7 all pass or all explicitly marked not met.
 
@@ -1032,7 +1043,7 @@ Kept permanently, because the value of this project's claims is that they surviv
     length-independence result (§9.22).
 22. **"The cost is flat in context length" is true of the answer and false of the scan.** Both
     committed runs fit the `ask` path's state slope to **−10.3 [−4.0] µs/token** — indistinguishable
-    from zero — and answering one question from a cached state costs 14.7–17.4 ms p50 whether that
+    from zero — and answering one question from a cached state costs 14.5–17.4 ms p50 whether that
     state is 66 or 1,060 tokens. That is the fixed-size-state claim with a witness rather than an
     architectural assertion, and it is the result that survives every retraction in this section. The
     *scan* is the other half, and §2.1's old "flat cost" cell was simply wrong: within a 256-token
@@ -1219,3 +1230,72 @@ Kept permanently, because the value of this project's claims is that they surviv
     suite anyway (the 1 flip in 20 above sits on a 0.0008 reference margin, so probability-error
     bounds alone would not have caught it, and keeping `.gate.weight` in fp32 changes 9.24e-03 to
     9.53e-03 and flips the same row).
+
+30. **The headline cells were copied from prose, so eight of them were wrong — the labelling pass
+    (P8 8a) killed them all.** Not one bad number but seven, in three files, and they share a
+    mechanism: a figure was *typed into* README/PLAN/SPEC from a run's summary rather than *copied
+    from* the artifact, and each retyping was allowed to round, merge or misremember. The dead
+    cells, each with the line that buries it:
+    - **"v0 dev 0.968 / test 0.951 overall."** Neither number is an overall. `runs/train-v0.log`
+      prints no overall at all — it prints nine per-question rows under `=== dev ===` and nine
+      under `=== test ===`, whose macros are **0.9599** and **0.9523**. 0.9682 is a `dev-mid`
+      probe line (steps 7500, 8000 *and* 8500 print it), and `dev_probe` is the first
+      `--eval-n` rows of that same dev split — 192 by default, so a subset scored every 500 steps,
+      not an overall. And "0.951" is printed by no artifact in this repo. The macros are now
+      computed from the log's own rows, and the sentence that quotes them says "macro of the nine
+      rows", which is the only honest way to average what is actually committed. (The probe's row
+      count is itself unrecorded — the log carries no argv, so 192 is read off the current default
+      and cited only to say the probe is a subset, not the final eval.)
+    - **"dev→test gap is 1.7 points."** It is **0.76** (0.9599 − 0.9523). 1.7 was 0.968 − 0.951 —
+      arithmetic on two numbers that were themselves wrong, which is the fastest way to compound
+      an error: a derived cell looks more precise than its inputs and inherits both mistakes.
+    - **"~3.7 h."** The log's elapsed counter at step 8999 reads **15,693 s** = 4.4 h. The earlier
+      figure was hours-by-eyeball from a partial line, and it appeared as "~3.7 h" in one file and
+      "~3 h" in another.
+    - **"3,000 synthetic examples."** Deleted rather than corrected, because *nothing records the
+      corpus size* — `train.py` logged the vocab and the parameter count and not the row counts.
+      The nine printed test accuracies each round to their 4-dp value at 1200 rows per workflow
+      (3,600 test rows) and at no smaller n — searched over n = 50…4000, the only solutions are
+      1200, 2400, 3600, 4000 — but that is arithmetic on printed rounding, so it is tagged *p* in
+      PLAN.md and not quoted as a measurement. Fixed forward: the trainer prints its own `cmd:` and
+      one `split <name>: N rows over M groups, per-group lo-hi` line per split, guarded by
+      `tests/test_train_logging.py`.
+    - **"14.7–17.4 ms to answer one question from a cached state."** The 1-question `ask` p50s on
+      the published ladder are 17.433 / 16.082 / 14.52 / 14.59 / 14.70 ms, so the band is
+      **14.5–17.4** — the low end was the 1,060-token row mistaken for the minimum, which is a
+      one-keystroke error that survives any amount of rereading and dies to one `min()` over the
+      ladder. Same pass: "R² 0.74 vs myna's 0.99" now quotes all three fits from the witness's own
+      `fit` block (laya 0.7356, myna end-to-end 0.9915, myna ask-only 0.9619), because two rounded
+      R²s in one sentence read as one number restated.
+    - **"ECE ≤ 0.04 everywhere."** Test ECE runs **0.0115–0.0415** and dev **0.0080–0.0438**; both
+      maxima exceed 0.04, so the sentence was false in the direction that flatters. Related and
+      subtler: §9.11 quotes the dead claim it corrects as "v0's dev ECE ≤ 0.042" — 0.042 is the
+      *test* max, with dev's 0.0438 not reachable at all (dev's temperature fit is what makes it
+      optimistic). The §9.11 correction still stands on its own point; only its number was
+      labelled with the wrong split.
+    - **"15.35M measured" in §2.1.** True of the default `MynaConfig` (15,353,984 params at
+      vocab 4096) and false of the artifact the project ships: v0 has **14,449,280** params,
+      because its tokenizer learned 1,740 entries. `runs/bench_mlx_int8.json`'s `n_params` says so
+      and `runs/train-v0.log` printed both at the time. §2.1 now carries both counts with their
+      configs; "measured" was never the issue, *which configuration* was.
+    - **"dev accuracy up to 0.9657" from the RLCD pass.** The number is real
+      (`runs/rlcd_v0.log`: 0.9626 → 0.9657, mean ECE 0.0191 → 0.0076, mean Brier 0.0258 → 0.0232)
+      but it is not *this* dev: `rlcd.py` regenerates the split at 600 rows per workflow under its
+      own rng stream, so 0.9626 and the headline 0.9599 are different samples of the same
+      distribution and their difference is sampling, not training. The publishable claim is the
+      before/after pair inside one draw, which is what README now says.
+    Two instrumentation gaps came out of the same pass. `runs/latency_matched.md` and its run-1
+    sibling record platform, device, thread counts, reps, both checkpoints by path and commit, and
+    both dtypes — and no load average and no argv, because §9.23 was written after they ran. That
+    is disclosed in PLAN.md rather than quietly re-run (a third run could only lower a minimum, and
+    §2.1's ratios are minima), and `bench_latency_matched.py` now writes
+    `meta.load_avg_after`/`meta.cmd` and prints them in the markdown header, so the next P4 run is
+    restatable. And a "~0.6 MB" in an API docstring became 576 KiB once measured: the S stack is
+    589,824 B (the `state_bytes_total` every `runs/browser_g3.json` row prints), while the saved
+    file for a 51-token thread is 592,533 B — the token list is the difference, and unit drift
+    ("~0.6 MB", "~100 KB") is exactly what a measured figure in the same sentence prevents.
+    The structural lesson is the convention §2.1 now uses everywhere: every headline cell carries
+    its own tag — ***m*** measured from a file in this repo, ***p*** projected by arithmetic from a
+    model we did not open, ***g*** gated — and the artifact it came from, because a table can only
+    be audited cell by cell. A whole-table "all numbers measured" label is what let nine wrong cells
+    ride together.

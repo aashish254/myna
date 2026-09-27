@@ -131,7 +131,8 @@ So every "train" item below is split into *prepare/verify the Kaggle path locall
 - [x] **3g process rule**: a mutation battery runs against a frozen repo. Two earlier passes of the same
       battery reported 42/53 and 53/54 because `src` and `tests` were being edited mid-flight and the
       harness re-copies them per mutation. SPEC §9.18.
-- [ ] **3h** 15.35M vs ~32M head-to-head on identical data — `KAGGLE`
+- [ ] **3h** Default-config model (15.35M at vocab 4096; v0's artifact is 14.45M — SPEC §2.1) vs the
+      ≤ 32M allowance, head-to-head on identical data — `KAGGLE`
 - [ ] **3i** G1 verdict: decision-v2 **test ≥ 0.70** macro, ≥ +0.15 over the 0.4331 majority floor,
       per-source table published — `KAGGLE` result, reported here as measured or as a loss
 
@@ -256,8 +257,32 @@ So every "train" item below is split into *prepare/verify the Kaggle path locall
       guard's margin
 
 ## P8 — Write it up
-- [ ] **8a** README headline table built only from committed artifacts, every cell labelled
-      measured / projected / gated
+- [x] **8a** README headline table built only from committed artifacts, every cell labelled
+      measured / projected / gated. README's architecture, latency, browser, MLX and v0-accuracy
+      tables and PLAN's benchmark tables now carry per-cell ***m***/***p***/***g*** tags with the
+      artifact each came from (`runs/bench_mlx_int8.json` `n_params` + `sizes.*.file_bytes`,
+      `runs/browser_g3.json` `state_bytes_total: 589824`, `runs/latency_matched.md`,
+      `runs/train-v0.log`, `runs/rlcd_v0.log`, `runs/risk_coverage.md`). Eight headline cells died
+      in the process and SPEC §9.30 names each one with the arithmetic that killed it: "dev 0.968 /
+      test 0.951 overall" (a 192-row mid-run prefix probe and a number no artifact prints — the
+      macros of the nine committed rows are **0.9599 / 0.9523**), "1.7 points" of dev→test gap
+      (**0.76**), "~3.7 h" (**15,693 s**, and "~3 h" elsewhere), "3,000 synthetic examples"
+      (recorded nowhere; the printed rounding admits n = 1200/workflow as the smallest solution and
+      that is tagged *p*), "ECE ≤ 0.04 everywhere" (test max **0.0415**, dev max **0.0438**),
+      "15.35M measured" (the default config's count at vocab 4096; the artifact is **14,449,280** at
+      vocab 1740), "dev accuracy up to 0.9657" (a different dev draw — `rlcd.py` regenerates it at
+      600 rows/workflow, so only the before/after *pair* is a claim), and "14.7–17.4 ms" (the ladder
+      minimum is **14.52**; 14.7 was the longest row, not the shortest). §9.11's quoted "dev ECE
+      ≤ 0.042" was found to be the *test* max wearing the dev label.
+      Two instrumentation gaps fixed forward: `train.py` prints its own argv and one
+      `split <name>: N rows over M groups, per-group lo-hi` line per split
+      (`tests/test_train_logging.py`, 4 tests, **4/4 mutations caught**: drop the sum, drop the
+      range, delete the empty guard, swap min/max), and `bench_latency_matched.py` writes
+      `meta.cmd` + `meta.load_avg_after` and prints them in its header, checked against a live
+      `os.getloadavg()` so a stubbed zero triple fails (the two committed P4 runs predate §9.23 and
+      are disclosed as such in PLAN.md rather than quietly re-run, because a third run could only
+      lower a published minimum). `Observation.save_state`'s "~0.6 MB" is 576 KiB of state and
+      592,533 B on disk, measured. Suite: **312 passed, 1 skipped**
 - [ ] **8b** One reproduction command per table row, and a `make` / script target that runs them
 - [ ] **8c** Disclose the upstream-data comparison prominently (myna-scratch, myna-trained, laya
       as three rows)

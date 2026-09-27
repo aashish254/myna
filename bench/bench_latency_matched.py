@@ -280,6 +280,9 @@ def markdown(res: dict) -> str:
                      f"({m.get('laya_autocast')}).")
     else:
         lines.append("- laya **not measured in this run** — no ratio is reported (G2, §9.1).")
+    if m.get("cmd"):
+        lines.append(f"- `{m['cmd']}`, load average after the run "
+                     f"{'/'.join(str(x) for x in m['load_avg_after'])} (§9.23).")
     lines.append("")
     if res["ratio"]:
         lines.append(table(res["ratio"], "## p50, same box, same process, same inputs"))
@@ -486,6 +489,10 @@ def main(argv=None) -> int:
         res["drift"]["laya_repeat"] = s0
         res["drift"]["laya_first"] = base["laya"]
 
+    # §9.23: a millisecond without the box's load beside it is not restatable.
+    res["meta"]["load_avg_after"] = [round(x, 2) for x in os.getloadavg()]
+    res["meta"]["cmd"] = " ".join(["bench_latency_matched.py",
+                                   *(argv if argv is not None else sys.argv[1:])])
     Path(args.out).parent.mkdir(parents=True, exist_ok=True)
     Path(args.out).write_text(json.dumps(res, indent=2, default=str))
     Path(args.md).write_text(markdown(res))

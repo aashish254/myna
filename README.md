@@ -14,7 +14,8 @@ short. Myna is an architecture built for that shape from the ground up.
 ## The architecture
 
 1. **Gated linear attention trunk.** Each layer carries a fixed-size matrix
-   state `S ∈ R^{H×d_k×d_v}` (~100KB/layer), not a KV cache that grows with
+   state `S ∈ R^{H×d_k×d_v}` (96 KiB/layer at production width), not a KV cache
+   that grows with
    context. Three execution forms — recurrent (streaming), chunked (training,
    linear memory), quadratic (reference) — are proven numerically identical,
    in float64, in CI.
@@ -34,19 +35,25 @@ short. Myna is an architecture built for that shape from the ground up.
 
 <div align="center">
 
-| | params | checkpoint | state memory | context |
+| | params | weights on disk | state memory | context |
 |---|---|---|---|---|
-| **myna-v0** | 14.4M | ~58 MB fp32 | ~0.6 MB | linear — 16k+ |
-| laya | 421M | ~1.7 GB | n/a (re-encode) | 512–8192 |
-| kev-4B | 4B | ~8 GB | ~GB-scale KV | — |
+| **myna-v0** | 14.45M · *m* | 55.13 MiB fp32 · *m* | 576 KiB, 128 or 16,384 tokens alike · *m* | 16,384 scanned and answered from · *m* |
+| laya | 421.29M, read from their checkpoint · *m* | ~1.7 GB fp32 · *p* | holds none — re-encodes per request | 1,024 + 256 head, from their `config.json` · *m* |
+| kev-4B | ~4B, published | ~8 GB fp32 · *p* | KV grows with the context · *p* | — |
 
-That last column is a **cost** statement, and the only 16k number this repo has
-measured: the state is scanned once, held at fixed size, and answered from out to
-16,384 tokens. It is not a comprehension claim. The needle test — one decisive
-sentence buried in filler — puts v0 at 0.188 accuracy on a 128-token state against a
-0.167 floor, i.e. at chance before length even enters, and `runs/needle_myna-v0.md`
-prints `G4: NOT MEASURED here` rather than a decay curve. Long-context *correctness*
-is a separate gate, and it waits on the checkpoint trained for it
+Every cell above carries its own tag. ***m*** measured here, from a file in this
+repo: myna's parameter count and artifact size are `n_params` and
+`sizes.mlx_fp32.file_bytes` in `runs/bench_mlx_int8.json`, the 576 KiB is the
+`state_bytes_total: 589824` that `runs/browser_g3.json` prints on every one of its
+four Chrome rows, and laya's two cells are the line `runs/latency_matched.md`
+prints when it opens their snapshot. ***p*** projected — arithmetic from a
+parameter count against a model we did not open, which is why it is not a
+comparison cell. The decision *accuracy* at long context is a third thing again
+and it is **gated**: the needle test puts v0 at 0.188 on a 128-token state against
+a 0.167 floor, i.e. at chance before length even enters, and
+`runs/needle_myna-v0.md` prints `G4: NOT MEASURED here` rather than a decay curve.
+The context column is a **cost** statement, and the only 16k number this repo has
+measured. Long-context *correctness* waits on the checkpoint trained for it
 ([SPEC.md](SPEC.md) §2.2 G4, §9.25).
 
 </div>
@@ -68,7 +75,11 @@ after 3 warm-ups:
 | 50 | 3,589.5 ms | 870.0 ms | 4.13× | 787.1 ms | 4.56× |
 
 Reproduce: `PYTHONPATH="<laya checkout>" .venv/bin/python -m
-bench.bench_latency_matched` → `runs/latency_matched.md`. That table is one run;
+bench.bench_latency_matched` → `runs/latency_matched.md`. Every cell in this table
+is *m* — measured, on this box, by the command above, and the numbers after it
+("14.5–17.4 ms", "−10 µs/token", "R² 0.74") are least-squares fits over the same
+run's ladder, which is why they are quoted as fitted rather than as read. That
+table is one run;
 **the claim shipped in `SPEC.md` §2.1 is the per-row minimum across the two
 committed runs — 3.04× / 3.21× / 4.12× / 3.60× end-to-end and 6.78× / 4.67× /
 4.75× / 3.65× streaming** — because two runs of this command on this laptop differ
@@ -77,13 +88,14 @@ conservative number is the only one that belongs in a README (SPEC §9.23).
 Accuracy is not measured by this table and nothing here implies it.
 
 What the *shape* of the cost says, fitted over a state ladder capped inside laya's
-1024-token window: answering from a cached state costs **14.7–17.4 ms whether that
+1024-token window: answering from a cached state costs **14.5–17.4 ms whether that
 state is 66 or 1,060 tokens** (fitted state slope −10 µs/token, i.e. zero) — the
 fixed-size state, measured rather than drawn. The scan is **not** flat: within a
 256-token chunk it is quadratic, so the sub-40 ms decision is a short-state result
 (SPEC §9.22). laya's cost is state × questions — one sequence carrying the whole
-state, once per question — which is why its additive fit lands at R² 0.74 while
-myna's lands at 0.99.
+state, once per question — which is why its additive fit lands at R² 0.7356 while
+myna's end-to-end fit lands at 0.9915 (the ask-only fit is 0.9619, and the three
+numbers are the harness's own `fit` block, not restatements of each other).
 
 *An earlier version of this section published 33×–239× speedups against a "~500 ms
 laya floor". The floor was `Router` truncating the state at 1,024 tokens while
@@ -101,7 +113,8 @@ typed decisions the Python engine answers — checked against the Python engine 
 (7 checks in node, 6 in the tab, which has no filesystem to compare bytes against).
 
 Google Chrome 153, headless, cold cache, throwaway profile, 15 decisions per row
-(`bench/browser_g3.mjs` → `runs/browser_g3.json`):
+(`bench/browser_g3.mjs` → `runs/browser_g3.json`, and `runs/browser_g3_int8.json`
+for the right-hand column). Every cell is *m*:
 
 | | fp32 — what ships | int8 — attempted |
 |---|---|---|
@@ -114,8 +127,9 @@ Google Chrome 153, headless, cold cache, throwaway profile, 15 decisions per row
 | Chrome's own parity checks | **6/6** | 4/6 |
 
 Two things that table says and one it does not. It says the trunk really is
-transferred once — 93.7 MiB of duplicated fp32 weights in the first export, 59.32
-MiB now, with Chrome's network log as the witness rather than a sum in a README.
+transferred once — 93.7 MiB of duplicated fp32 weights in the first export (at its own
+8 × 256-token shape, per SPEC §5 P6 6a), 59.32 MiB now, with Chrome's network log as
+the witness rather than a sum in a README.
 And it says the ≤ 20 MB int8 route is a **byte win and an agreement loss**: dynamic
 quint8 lands at 18.56 MiB and moves option probabilities 648× past the bound the
 fp32 artifact meets, for 5% latency on a box that was busier during the int8 run —
@@ -144,7 +158,8 @@ The same checkpoint serves natively through MLX: `src/myna/mlx_model.py` is a po
 the torch forward over identical weights, so there is no conversion step and no
 re-export. One M5, both engines, same tensors, median of 20 reps, per-row **minimum**
 of two committed runs (`bench/bench_mlx.py` → `runs/bench_mlx_int8.md` and
-`runs/bench_mlx_int8_run2.md`, load average 4.55 and 3.94 at print):
+`runs/bench_mlx_int8_run2.md`, load average 4.55 and 3.94 at print). Every cell is
+*m*, including the ratio ranges, which are per-row minima rather than best cases:
 
 | engine | vs PyTorch on MPS, 128 → 16,384-token state | artifact on disk |
 |---|---|---|
@@ -170,9 +185,17 @@ uv run python bench/diag_mlx_int8_gem.py --iters 200 --trials 7                 
 
 ## Trained v0 — accuracy on held-out data
 
-9,000 steps (~3.7 h on an M5, batch 32, MPS), 3,000 synthetic examples, dev
-and test splits using nouns never seen in training. Overall accuracy:
-**0.968 dev / 0.951 test** — generalization is real, not memorization.
+9,000 steps on the synthetic typed-decisions corpus, batch 32, MPS, one M5 — the
+log's own elapsed counter reads **15,693 s (4.4 h) at step 8999** — and dev and
+test use noun pools the trainer never showed the model. Every cell below is *m*,
+copied from `runs/train-v0.log`'s final `=== test ===` block; the overall figures
+are the **macro over those nine rows**, which is also the only way to average them
+honestly from what the log prints:
+
+**test 0.952 · dev 0.960** (the `dev-mid` probe line prints 0.9682 at steps 7500, 8000 and 8500 —
+on a prefix subset of that same dev split, not on all of it — and an earlier draft of this section
+quoted *that* as the dev overall next to a test figure of 0.951 that no committed artifact prints —
+[SPEC.md](SPEC.md) §9.30).
 
 | workflow / question | type | test acc | Brier | ECE |
 |---|---|---|---|---|
@@ -186,10 +209,16 @@ and test splits using nouns never seen in training. Overall accuracy:
 | support/department | choice | 0.947 | — | 0.029 |
 | support/urgency | score | 0.928 | — | 0.042 |
 
-ECE ≤ 0.04 everywhere with a single refit temperature (3.0). A short RLCD
+Generalization is real, not memorization: the dev→test gap is 0.76 of a point
+(0.9599 − 0.9523) on fully disjoint nouns. Test ECE runs 0.0115–0.0415 with the
+single refit temperature (3.0) that `runs/train-v0.log` prints. A short RLCD
 pass — 800 steps maximizing the Brier proper score under a KL leash to the
-supervised model — then **halved it: mean ECE 0.0191 → 0.0076, dev accuracy
-up to 0.9657**, every question improved or held. The policy here *is* the
+supervised model — then **halved it: mean ECE 0.0191 → 0.0076, mean Brier 0.0258
+→ 0.0232, dev accuracy 0.9626 → 0.9657** (`runs/rlcd_v0.log`, every one of the 9
+questions improved or held). Note what that dev accuracy is: `rlcd.py`
+regenerates the dev split at 600 rows per workflow, so 0.9626 is a *different
+dev draw* than the 0.9599 above — the published claim is the before/after pair
+inside one draw, not either level. The policy here *is* the
 reported distribution, so the score is optimized differentiably, no REINFORCE
 (PLAN.md decision 10 has the post-mortem of trying it the generative way).
 
@@ -235,7 +264,8 @@ withdrew. `myna.serve --abstain-below 0.693` puts the same policy behind HTTP, a
 `/v1/health` names it.
 
 The curve below is every question in `calibration.jsonl` (448 rows, 568 questions),
-ranked by the probability of the side committed to. `floor` is the value you would
+ranked by the probability of the side committed to — every cell *m*, from
+`runs/risk_coverage.md`. `floor` is the value you would
 hand the engine, and the run re-runs the engine at that floor to check it abstains
 on exactly the rows the curve withheld — 227 against 227 at the 0.693 floor.
 
@@ -275,7 +305,7 @@ uv run python -m bench.risk_coverage --ckpt runs/myna-v0 --out runs/risk_coverag
 
 ```bash
 uv sync
-uv run python -m myna.train          # ~3 h on an M5, no GPU required
+uv run python -m myna.train          # 4,000 steps by default; v0's 9,000 took 15,693 s on an M5
 uv run pytest                        # equivalence + isolation proofs
 ```
 
@@ -296,7 +326,7 @@ answers = obs.ask({
 # the thread continues — only the new message is encoded
 obs2 = obs.append("And the second charge is still showing on my card this morning.")
 
-# the observation itself is portable: ~0.6 MB, resume it tomorrow
+# the observation itself is portable: 576 KiB of state, resume it tomorrow
 obs2.save_state("session.pt")  # ... myna.restore("session.pt")
 ```
 
@@ -342,7 +372,7 @@ Honest limits: word-order-heavy tasks can be partly solved bag-of-cues style;
 mid-state edits (not appends) fall back to a full re-encode — linear in the
 state's length asymptotically, but with a quadratic factor inside each 256-token
 chunk, so short states are cheaper than long ones (§9.22); the question
-branch's fixed cost (**10.1 ms** fitted, 14.7–17.4 ms to answer one question
+branch's fixed cost (**10.1 ms** fitted, 14.5–17.4 ms to answer one question
 regardless of state length) is kernel work, not architecture work; and
 abstention is a *routing* feature, not an accuracy one — it can decline to
 answer, it cannot answer a question the checkpoint never learned (§9.24).
