@@ -703,7 +703,14 @@ def main():
     # --- the memory plan, printed before the first allocation (SPEC P3 3d) ----
     sample = row_items if row_items is not None else [
         (qs, ex) for qs, exs in data["train"].values() for ex in exs]
-    p95 = state_token_p95(tok, sample, rng=random.Random(args.seed))
+    # NOT random.Random(args.seed): the p95 is a property of the corpus, and the
+    # sampler draws 4000 rows from a bigger pool, so seeding it with the experiment
+    # made the experiment's size depend on it. Measured — two seeds of one command
+    # on the full pilot gave p95 267/batch 15 and p95 274/batch 14, which means a
+    # replication changed the batch and not just the data order. `state_token_p95`
+    # already defaults to a fixed Random(0), so this restores the intended
+    # behaviour and changes nothing for the seed-0 runs this repo has published.
+    p95 = state_token_p95(tok, sample)
     free = None if args.free_gib is None else int(args.free_gib * 1024 * MI)
     if free is None:
         free = free_device_bytes(device)
