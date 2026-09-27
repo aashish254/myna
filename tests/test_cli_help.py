@@ -35,6 +35,7 @@ def _help(*argv):
     ("myna.train", "--paraphrase"),
     ("myna.train", "--max-q-cells"),
     ("myna.train", "--score-loss"),
+    ("myna.train", "--warm-start"),
     ("myna.rlcd", "--score"),
     ("myna.serve", "--port"),
     ("myna.serve", "--abstain-below"),

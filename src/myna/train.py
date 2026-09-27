@@ -551,6 +551,12 @@ def main():
                          "state, and the step counter. The data RNG is re-seeded from --seed, so a "
                          "resumed run is a continuation, not a bit-identical replay, and the "
                          "resume line says which")
+    ap.add_argument("--warm-start", default=None, metavar="MODEL_PT",
+                    help="load only the WEIGHTS of an existing checkpoint and train on from "
+                         "here, with a fresh optimizer and schedule over --steps. What an "
+                         "ablation needs: --resume would also restore the saved scheduler's "
+                         "T_max, which leaves the learning rate at ~0 past the original run's "
+                         "last step and silently trains nothing.")
     ap.add_argument("--stop-factor", type=float, default=1.5,
                     help="hard-stop when one update takes more than this x the median of the "
                          "last 20, or free bytes fall under the projected need")
@@ -563,6 +569,16 @@ def main():
     ap.add_argument("--init", default=None,
                     help="with --long-context: checkpoint dir to warm-start weights + tokenizer from")
     args = ap.parse_args()
+
+    # `--seed` named the data order and nothing else: model init came from whatever
+    # torch's global RNG held, so two runs of the identical command differed by
+    # init noise. Any A/B — and every witness artifact this repo publishes — needs
+    # the weights to start in the same place, or the difference being measured is
+    # the wrong difference. 9a's own note records the workaround this replaces:
+    # three of its loss tests push one update through a `typed_loss` spy in a
+    # single process, because across processes the init differed for a reason
+    # nobody was testing.
+    torch.manual_seed(args.seed)
 
     rng = random.Random(args.seed)
     device = resolve_device(args.device)
@@ -722,6 +738,23 @@ def main():
     args.batch = planned
     projected = planned * p95 * STATE_MIB_PER_POSITION * MI + reserve
     start_step = 0
+    if args.warm_start:
+        ckpt = Path(args.warm_start)
+        if not ckpt.exists():
+            raise SystemExit(f"--warm-start: no {ckpt}")
+        if args.resume:
+            raise SystemExit("--warm-start and --resume are different things: one restarts "
+                             "the optimizer on a trained model, the other continues it")
+        # weights ONLY, on purpose. `--resume` restores the saved optimizer and
+        # scheduler too, and a restored CosineAnnealingLR carries its own T_max, so
+        # continuing a finished schedule leaves the learning rate at ~0 and the
+        # "experiment" trains nothing. A fresh schedule over --steps is what an
+        # ablation needs; strict=True is what says the shapes really matched.
+        blob = torch.load(ckpt, map_location="cpu", weights_only=False)
+        model.load_state_dict(blob["state_dict"])
+        print(f"warm-start: weights from {ckpt} (trained at step {blob.get('step', 'n/a')}); "
+              f"optimizer and scheduler are fresh over {args.steps} updates, "
+              f"lr {args.lr}", flush=True)
     if args.resume:
         ckpt = Path(args.out) / "model_last.pt"
         if not ckpt.exists():

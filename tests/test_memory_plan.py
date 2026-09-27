@@ -433,6 +433,63 @@ def test_resume_without_a_snapshot_fails_loud(tmp_path):
     assert "Traceback" not in r.stderr, "an expected condition must not surface as a crash"
 
 
+# ---- --warm-start: the weights carry, the schedule does not -----------------
+
+def _weights(path):
+    return torch.load(path, map_location="cpu", weights_only=False)["state_dict"]
+
+
+def test_warm_start_actually_moves_the_weights(tmp_path):
+    """The discriminator a no-op flag cannot survive.
+
+    Two cold runs of the same command must be bit-identical — that is the seeding
+    `--seed` always promised and did not give. Given that, a warm-started run that
+    still lands on the cold weights has loaded nothing, and one that lands
+    elsewhere can only have got there from the checkpoint."""
+    _r1, out = _run(tmp_path, ["--steps", "2", "--save-every", "2"])
+    src = out / "model_last.pt"
+    assert src.exists()
+    _r2, warm = _run(tmp_path / "warm", ["--steps", "2", "--warm-start", str(src)])
+    _r3, cold = _run(tmp_path / "cold", ["--steps", "2"])
+    _r4, cold2 = _run(tmp_path / "cold2", ["--steps", "2"])
+    w, c, c2 = (_weights(p / "model.pt") for p in (warm, cold, cold2))
+    assert w.keys() == c.keys() == c2.keys()
+    assert all(torch.equal(c[k], c2[k]) for k in c), \
+        "two cold runs must be bit-identical or no A/B from this trainer means anything"
+    assert any(not torch.equal(w[k], c[k]) for k in w), \
+        "a warm start that lands on identical weights loaded nothing"
+
+
+def test_warm_start_keeps_the_step_counter_and_the_optimizer(tmp_path):
+    _r, out = _run(tmp_path, ["--steps", "2", "--save-every", "2"])
+    r2, out2 = _run(tmp_path / "w", ["--steps", "3", "--warm-start", str(out / "model_last.pt")])
+    line = [ln for ln in r2.stdout.splitlines() if ln.startswith("warm-start:")][0]
+    assert "trained at step 1" in line, line          # the source really was opened
+    assert "scheduler are fresh" in line
+    assert "resume:" not in r2.stdout                 # not the other path
+    m = json.loads((out2 / "metrics.json").read_text())
+    assert m["resumed_from_step"] == 0 and m["last_step"] == 2, \
+        "a warm start restarts the schedule, so it owns steps 0..2"
+
+
+def test_warm_start_and_resume_together_is_refused(tmp_path):
+    """They mean opposite things about the optimizer state, and whichever one won
+    silently, a future reader of the log would not be able to tell what ran."""
+    _r, out = _run(tmp_path, ["--steps", "2", "--save-every", "2"])
+    r, _o = _run(tmp_path / "both",
+                 ["--warm-start", str(out / "model_last.pt"), "--resume"],
+                 expect_zero=False)
+    assert r.returncode != 0
+    text = r.stderr + r.stdout
+    assert "different things" in text and "Traceback" not in text
+
+
+def test_warm_start_with_a_missing_file_fails_loud(tmp_path):
+    r, _o = _run(tmp_path, ["--warm-start", str(tmp_path / "nowhere.pt")], expect_zero=False)
+    assert r.returncode != 0
+    assert "no " in r.stderr + r.stdout and "Traceback" not in r.stderr
+
+
 def test_row_batch_subtracts_the_question_branch_from_the_plan(tmp_path):
     """Same arithmetic as the state clamp, but the step holds a second allocation
     too, so a plan that ignores `--max-q-cells` over-sizes the batch by exactly the
