@@ -36,6 +36,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import shlex
+import sys
 from collections import defaultdict
 from pathlib import Path
 
@@ -236,6 +238,11 @@ def main(argv=None) -> int:
     fname = {"calibration": "calibration.jsonl", "development": "development.jsonl",
              "test": "test.jsonl"}[args.split]
     path = Path(args.suite) / fname
+    # §9.30: a witness that does not name its command cannot be re-run, so a table
+    # row quietly becomes a copy of a copy. Flags only, so the line is pasteable
+    # regardless of how a particular checkout was invoked.
+    flags = list(argv if argv is not None else sys.argv[1:])
+    cmd = shlex.join(["python", "-m", "bench.risk_coverage", *flags])
     if not path.exists():
         raise SystemExit(f"--suite {args.suite} has no {fname}")
     groups = load_split(path)
@@ -252,6 +259,7 @@ def main(argv=None) -> int:
         print(line)
         report.append(line)
 
+    emit("$ " + cmd)
     emit(f"{args.split}: {n_rows} rows / {n_q} questions over {len(groups)} question-sets")
 
     myna = Myna(args.ckpt, device=args.device)
@@ -309,7 +317,8 @@ def main(argv=None) -> int:
             return 1
     out_json = Path(str(args.out).rsplit(".", 1)[0] + ".json")
     out_json.parent.mkdir(parents=True, exist_ok=True)
-    out_json.write_text(json.dumps({"ckpt": str(args.ckpt), "suite": str(args.suite),
+    out_json.write_text(json.dumps({"cmd": cmd,
+                                    "ckpt": str(args.ckpt), "suite": str(args.suite),
                                     "split": args.split, "file": fname,
                                     "temperature": myna.temperature,
                                     "n_rows": n_rows, "n_questions": n_q,

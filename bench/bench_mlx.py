@@ -20,6 +20,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import shlex
 import statistics
 import sys
 import time
@@ -175,7 +176,7 @@ def size_of(eng, directory, label):
             "quantization": eng.quant}
 
 
-def main():
+def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("--ckpt", default="runs/myna-v0")
     ap.add_argument("--reps", type=int, default=20)
@@ -195,7 +196,9 @@ def main():
     ap.add_argument("--drift-rows", type=int, default=12)
     ap.add_argument("--out", default="runs/bench_mlx.md")
     ap.add_argument("--out-json", default=None)
-    args = ap.parse_args()
+    args = ap.parse_args(argv)
+    cmd = shlex.join(["python", "-m", "bench.bench_mlx",
+                                 *(argv if argv is not None else sys.argv[1:])])
 
     ckpt_dir = Path(args.ckpt)
     args.fp32_out = args.fp32_out or f"runs/{ckpt_dir.name}-mlx-fp32"
@@ -312,7 +315,8 @@ def main():
     out_json = Path(args.out_json or (args.out[:-3] + ".json" if args.out.endswith(".md")
                                       else args.out + ".json"))
     payload = {"ckpt": str(ckpt_dir), "n_params": n_params, "device": {"torch": dev, "mlx": "metal"},
-               "reps": args.reps, "questions": len(QUESTIONS), "argv": list(sys.argv),
+               "reps": args.reps, "questions": len(QUESTIONS),
+               "cmd": cmd,
                "quantization": {"bits": args.bits, "group_size": args.group_size,
                                 "keep": list(args.keep),
                                 "enabled": args.quantize == "int8",

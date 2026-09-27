@@ -26,6 +26,7 @@ from __future__ import annotations
 import argparse
 import collections
 import json
+import shlex
 import shutil
 import subprocess
 import sys
@@ -69,7 +70,7 @@ def quantize(src: Path, out: Path, weight_type: str) -> tuple[dict, dict]:
 
 
 def write_meta(src: Path, out: Path, weight_type: str, shared: dict,
-               before: dict, gate: dict) -> dict:
+               before: dict, gate: dict, cmd: str) -> dict:
     """Write the quantised artifact's meta.json.
 
     Called twice when the gate runs: once before it (the gate loads this file, so it has
@@ -80,6 +81,7 @@ def write_meta(src: Path, out: Path, weight_type: str, shared: dict,
              if f.is_file() and f.name != "meta.json"}
     raw = len(json.dumps(base, indent=2).encode())  # close enough for a 2 KiB file
     meta = {**base,
+            "cmd": cmd,
             "quantization": {
                 "scheme": f"onnxruntime dynamic ({weight_type} weights)",
                 "weight_type": weight_type,
@@ -127,9 +129,12 @@ def main(argv=None) -> int:
     if not (src / "meta.json").exists():
         raise SystemExit(f"{src} is not an exported artifact (no meta.json)")
     before, shared = quantize(src, out, args.weight_type)
-    write_meta(src, out, args.weight_type, shared, before, {"ran": False, "reason": "pending"})
+    cmd = shlex.join(["python", "bench/quantize_int8.py",
+                     *(argv if argv is not None else sys.argv[1:])])
+    write_meta(src, out, args.weight_type, shared, before,
+               {"ran": False, "reason": "pending"}, cmd)
     gate = {"ran": False, "reason": "--no-gate"} if args.no_gate else run_gate(out)
-    meta = write_meta(src, out, args.weight_type, shared, before, gate)
+    meta = write_meta(src, out, args.weight_type, shared, before, gate, cmd)
 
     fp32 = json.loads((src / "meta.json").read_text())
     mib = lambda b: b / 2**20  # noqa: E731

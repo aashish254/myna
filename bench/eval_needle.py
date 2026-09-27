@@ -17,6 +17,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import shlex
+import sys
 from pathlib import Path
 
 from myna.engine import Myna
@@ -58,6 +60,10 @@ def main(argv=None):
                     help="state lengths to sweep; each one is a row of the curve")
     ap.add_argument("--out", default=None)
     args = ap.parse_args(argv)
+    # §9.30: --lengths 128 is a rung the defaults never sweep, and --n 16 is not
+    # --n 40, so a curve quoted without its command is a curve nobody can re-draw.
+    flags = list(argv if argv is not None else sys.argv[1:])
+    cmd = shlex.join(["python", f"bench/{Path(__file__).name}", *flags])
     if not args.lengths or min(args.lengths) < 1:
         raise SystemExit(f"--lengths must be positive token counts, got {args.lengths}")
     if args.n < 1:
@@ -84,6 +90,7 @@ def main(argv=None):
     Path(out).parent.mkdir(parents=True, exist_ok=True)
     with open(out, "w") as f:
         f.write(f"# Needle recall vs context length — {name}\n\n")
+        f.write(f"`{cmd}`\n\n")
         f.write(f"{args.n} needles per length, decisive sentence at a random position, "
                 f"seed {args.seed} on `{args.device}`. Flat accuracy = the trunk still reads "
                 f"the whole observation. The `ms` column is a mean over these samples on a "
@@ -102,7 +109,8 @@ def main(argv=None):
     # G7 commits the witness, not just the rendering: the numbers a reader audits
     # are the ones the run produced, in the file the run wrote.
     js = Path(str(out).rsplit(".", 1)[0] + ".json")
-    js.write_text(json.dumps({"ckpt": str(args.ckpt), "device": args.device, "seed": args.seed,
+    js.write_text(json.dumps({"cmd": cmd,
+                             "ckpt": str(args.ckpt), "device": args.device, "seed": args.seed,
                              "n_per_length": args.n, "lengths": args.lengths,
                              "params_m": round(myna.n_params / 1e6, 2),
                              "temperature": myna.temperature,

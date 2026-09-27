@@ -58,6 +58,21 @@ measured. Long-context *correctness* waits on the checkpoint trained for it
 
 </div>
 
+Reproduce the params and weights columns — `n_params`, and both `file_bytes` — with the
+MLX harness that owns the checkpoint. It is also the run whose `--drift-rows 12` prints
+the 576 KiB row at every state length from 128 to 16,384:
+
+```bash
+uv run python -m bench.bench_mlx --ckpt runs/myna-v0 --reps 20 --drift-rows 12 --out runs/bench_mlx_int8.md
+```
+
+and the context column with the needle run that the 0.188-against-0.167 pair came from
+(`runs/needle_myna-v0.md`, and its `G4: NOT MEASURED` line):
+
+```bash
+uv run python bench/eval_needle.py --ckpt runs/myna-v0 --device cpu --n 16 --seed 0 --lengths 128 1024 4096 8192 16384
+```
+
 ## Measured on an Apple M5 (10-core, 32 GB)
 
 One process, both engines resident, `device=cpu`, both fp32 — the same Python
@@ -141,11 +156,19 @@ gate below.
 ```bash
 uv run python -m myna.onnx_export --ckpt runs/myna-v0 --out runs/onnx \
     --scan-chunk 16 --n-chunks 4 --suite data/decision-v2-pilot   # → runs/onnx_parity.json
+uv run python -m myna.onnx_export --ckpt runs/myna-v0 --out runs/onnx-wide --questions 2 --q-len 1152 --scan-chunk 64 --report runs/onnx_parity_widest.json
 uv run python bench/browser_expected.py                            # → browser/expected.json
 npm ci && npm run selftest                                         # 7 checks, node
 npm run g3                                                         # Chrome: bytes, cold, p50, shots
+npm run g3 -- --artifact runs/onnx_int8 --out runs/browser_g3_int8.json   # the int8 column
 uv run python bench/quantize_int8.py                               # the int8 row above
 ```
+
+The second export is the widest real request in the suite — 2 questions × 1,152 tokens
+over a 16k state, 1,067 tokens after the state is folded in — and it is the parity cell
+that the `≤ 1e-3` bound is actually measured on; the first line's `--suite` export is
+what backs the probabilities row. The two `npm run g3` lines are the same harness
+pointed at the two artifacts, left and right column of the table above.
 
 Absolute milliseconds from this laptop are a range, not a point, so the witness
 files carry `uptime`'s load average next to every number (SPEC §9.23), and the tab's
@@ -179,9 +202,16 @@ too, and the int8 artifact stays in the tree for whoever needs the bytes for a r
 other than speed (SPEC §9.29).
 
 ```bash
-uv run python -m bench.bench_mlx --ckpt runs/myna-v0 --reps 20 --drift-rows 12  # both tables
-uv run python bench/diag_mlx_int8_gem.py --iters 200 --trials 7                 # the kernel price
+uv run python -m bench.bench_mlx --ckpt runs/myna-v0 --reps 20 --drift-rows 12 --out runs/bench_mlx_int8.md
+uv run python -m bench.bench_mlx --ckpt runs/myna-v0 --reps 3 --lengths 128 --drift-rows 12 --keep trunk.tok.weight .gate.weight --fp32-out runs/myna-v0-mlx-fp32-keepgate --int8-out runs/myna-v0-mlx-int8-keepgate --out runs/bench_mlx_int8_keepgate.md
+uv run python bench/diag_mlx_int8_gem.py --iters 200 --trials 7 --out runs/mlx_int8_gem_probe.md
 ```
+
+The first line is both ratio tables (`runs/bench_mlx_int8.md` and its `_run2` twin are
+two runs of it, and `runs/bench_mlx_int8.json` is the `n_params` / `file_bytes` witness
+the architecture table quotes). The second keeps `trunk.tok.weight` and `.gate.weight`
+in fp32 — the one row of the six that flips sign when they are, which is why it is run
+separately rather than folded into the first. The third prices the claim at the kernel.
 
 ## Trained v0 — accuracy on held-out data
 
@@ -221,6 +251,15 @@ dev draw* than the 0.9599 above — the published claim is the before/after pair
 inside one draw, not either level. The policy here *is* the
 reported distribution, so the score is optimized differentiably, no REINFORCE
 (PLAN.md decision 10 has the post-mortem of trying it the generative way).
+
+These two are the only tables here whose reproduction is a training run, so
+`bench/reproduce.py --run` refuses them and `runs/train-v0.log` / `runs/rlcd_v0.log` are
+the witnesses instead:
+
+```bash
+uv run python -m myna.train --steps 9000 --batch 32 --device mps --out runs/myna-v0
+uv run python -m myna.rlcd --ckpt runs/myna-v0 --steps 800 --out runs/myna-v0-rlcd
+```
 
 ## Knowing when not to answer — risk / coverage
 
@@ -301,6 +340,75 @@ moves when — and only when — the claim behind it stops holding. Reproduce:
 uv run python -m bench.risk_coverage --ckpt runs/myna-v0 --out runs/risk_coverage.md
 ```
 
+## Every table, and the command that made it
+
+SPEC §9.30 buried eight headline cells that had been copied out of an artifact into
+prose and then copied again. This is the repair pointed the other way: one line per
+published table, the command that regenerates it, and the file its numbers came from.
+`bench/reproduce.py` holds the pairs, and either of
+
+```bash
+make repro                                               # or:
+uv run python bench/reproduce.py --check     # every row, or it says which one drifted
+```
+
+proves, for each row, that its witness is still committed, still contains the figure the
+docs quote from it, and that the prose around the table — not this index, which is this
+file's own registry echoed back and is cut out before matching — still prints the
+command. `tests/test_reproduce.py` (25 tests) pins the block below to the registry, so a
+row cannot appear here without being added there, and
+`bench/mutation_reproduce.py` breaks the checker one promise
+at a time — a witness that stopped existing, a figure the artifact no longer prints, an
+index that counts as its own evidence — and requires the tests to go red: **21/21, all
+caught**, in `runs/mutation_reproduce.log`. Rows tagged
+`external-*` need something this repo does not carry (a laya checkout, Google Chrome);
+the `gated-kaggle` row has **no witness on purpose** — that figure does not exist yet,
+and no local run may invent it. `make repro-show ROW=ID` prints what a row would do and
+`make repro-run ROW=ID` does it, overwriting a committed witness the README quotes —
+hence the two-step.
+
+<!-- reproduce:registry:begin -->
+```bash
+# README architecture table · SPEC §2.1 (params, weights on disk)  [here]
+uv run python -m bench.bench_mlx --ckpt runs/myna-v0 --reps 20 --drift-rows 12 --out runs/bench_mlx_int8.md
+# README 'Measured on an Apple M5' · SPEC §2.1 G2  [external-laya]
+PYTHONPATH="<laya checkout>" .venv/bin/python -m bench.bench_latency_matched
+# README 'Trained v0' · SPEC §2.1 G6  [retrain]
+uv run python -m myna.train --steps 9000 --batch 32 --device mps --out runs/myna-v0
+# PLAN v1 · TODO 4 (RLCD scoring pass)  [retrain]
+uv run python -m myna.rlcd --ckpt runs/myna-v0 --steps 800 --out runs/myna-v0-rlcd
+# README abstention table · SPEC §2.2 G5  [here]
+uv run python -m bench.risk_coverage --ckpt runs/myna-v0 --out runs/risk_coverage.md
+# SPEC §2.2 G4 · README context column  [here]
+uv run python bench/eval_needle.py --ckpt runs/myna-v0 --device cpu --n 16 --seed 0 --lengths 128 1024 4096 8192 16384
+# SPEC §2.1 G1 competitor row · README real-corpus table  [external-laya]
+uv run python bench/eval_laya_real.py --split test --n-per-source 40 --seed 0 --out runs/laya_decision_v2_test.json
+# SPEC §2.2 G3 (torch↔onnxruntime) · README browser section  [here]
+uv run python -m myna.onnx_export --ckpt runs/myna-v0 --out runs/onnx --scan-chunk 16 --n-chunks 4 --suite data/decision-v2-pilot
+# SPEC §5 P6 6b (the 1,067-token request)  [here]
+uv run python -m myna.onnx_export --ckpt runs/myna-v0 --out runs/onnx-wide --questions 2 --q-len 1152 --scan-chunk 64 --report runs/onnx_parity_widest.json
+# SPEC §5 P6 (the node gate that backs every browser cell)  [external-chrome]
+npm run selftest
+# README in-tab table, left column · SPEC §2.2 G3  [external-chrome]
+npm run g3
+# README in-tab table, right column  [external-chrome]
+npm run g3 -- --artifact runs/onnx_int8 --out runs/browser_g3_int8.json
+# SPEC §5 P6 (the int8 attempt, and the node gate going red)  [here]
+uv run python bench/quantize_int8.py
+# README 'On an Apple silicon Mac' · SPEC §5 P6 6c  [here]
+uv run python -m bench.bench_mlx --ckpt runs/myna-v0 --reps 20 --drift-rows 12 --out runs/bench_mlx_int8.md
+# SPEC §5 P6 6c (the one row that flips when the gates are kept fp32)  [here]
+uv run python -m bench.bench_mlx --ckpt runs/myna-v0 --reps 3 --lengths 128 --drift-rows 12 --keep trunk.tok.weight .gate.weight --fp32-out runs/myna-v0-mlx-fp32-keepgate --int8-out runs/myna-v0-mlx-int8-keepgate --out runs/bench_mlx_int8_keepgate.md
+# README 'and it prices that at the kernel' · SPEC §5 P6 6c  [here]
+uv run python bench/diag_mlx_int8_gem.py --iters 200 --trials 7 --out runs/mlx_int8_gem_probe.md
+# SPEC §4.2 (the majority-label floors the accuracy gates are set against)  [here]
+uv run pytest tests/test_report.py -q
+# SPEC §5 P3 3c (the Kaggle image is python 3.12/3.11, this box is 3.13)  [here]
+uv run python bench/check_python311.py
+# SPEC §2.1 G1 myna row · TODO 3i  [gated-kaggle]
+# no local command: no witness exists and none may be added by a local run: the corpus is trained on Kaggle, so a figure here would be a projection wearing a measurement's clothes.
+```
+<!-- reproduce:registry:end -->
 ## Quickstart
 
 ```bash

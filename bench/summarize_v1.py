@@ -13,6 +13,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import shlex
+import sys
 from collections import defaultdict
 
 
@@ -68,12 +70,14 @@ def cell(byt, t, show_brier=False):
     return s
 
 
-def main():
+def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("--myna", default="runs/myna-v1/metrics.json")
     ap.add_argument("--laya", default="runs/laya_decision_v2.json")
     ap.add_argument("--out", default="runs/v1_vs_laya.md")
-    args = ap.parse_args()
+    args = ap.parse_args(argv)
+    cmd = shlex.join(["python", "bench/summarize_v1.py",
+                     *(argv if argv is not None else sys.argv[1:])])
 
     mj = json.load(open(args.myna))
     lj = json.load(open(args.laya))
@@ -114,6 +118,7 @@ def main():
 
     with open(args.out, "w") as f:
         f.write("# myna-v1 vs laya Router — kev decision-v2\n\n")
+        f.write(f"`{cmd}`\n\n")
         f.write(f"myna test split (temperature {mj['temperature']:.2f}); laya {lj['split']} split "
                 f"subsampled to {lj['n_per_source']}/source. Cells are accuracy; noul adds Brier.\n\n")
         f.write("| source | " + " | ".join(f"{t} (myna/laya)" for t in types) + " |\n")

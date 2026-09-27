@@ -284,6 +284,21 @@ So every "train" item below is split into *prepare/verify the Kaggle path locall
       lower a published minimum). `Observation.save_state`'s "~0.6 MB" is 576 KiB of state and
       592,533 B on disk, measured. Suite: **312 passed, 1 skipped**
 - [ ] **8b** One reproduction command per table row, and a `make` / script target that runs them
+      Command side done: `bench/reproduce.py` holds **19 rows**, each binding one published table
+      to one canonical command, its committed witness(es), and the literal figures the prose
+      quotes out of them — **32 figures tied to a committed artifact, 1 row gated with no witness
+      on purpose** (`g1-v1`; a gated number with a file behind it is how a projection gets read
+      as a measurement). Every harness that writes a witness now prints the command that wrote it
+      (`$ …` as the markdown/json header), so no artifact's provenance is hand-typed again
+      (§9.30 forward). Gate: `tests/test_reproduce.py` (**25**) and
+      `bench/mutation_reproduce.py` → **21/21** (`runs/mutation_reproduce.log`) — the pass that
+      caught this item's own doc check being vacuous, logged as §9.31. `make repro` /
+      `make repro-run ROW=id` are the target. **Still open:** one target cannot *run* the whole
+      registry — 11 of the 19 rows are `here` and re-runnable on this box, while 2 retrain a
+      checkpoint, 2 need a laya checkout on `PYTHONPATH`, 3 need Google Chrome and 1 is `KAGGLE`
+      — so "a target that runs them all" is a Kaggle-side item, not a
+      `make` line, and ticking it here would claim a one-command rebuild this repo cannot do.
+      Suite at this tick: **337 passed, 1 skipped**.
 - [ ] **8c** Disclose the upstream-data comparison prominently (myna-scratch, myna-trained, laya
       as three rows)
 - [ ] **8d** Release gate: G1–G7 each pass or each explicitly marked not met

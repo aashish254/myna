@@ -14,6 +14,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import shlex
+import sys
 import random
 from collections import defaultdict
 from pathlib import Path
@@ -68,7 +70,7 @@ def run(records, router, rng):
     return acc
 
 
-def main():
+def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("--suite", default="/Users/aashish/github contribution /GIT/kev/evals/decision-v2")
     ap.add_argument("--split", default="development")
@@ -77,7 +79,12 @@ def main():
     ap.add_argument("--device", default=None,
                     help="cpu/cuda/mps; default auto. Pin to cpu to run alongside MPS training")
     ap.add_argument("--out", default="runs/laya_decision_v2.json")
-    args = ap.parse_args()
+    args = ap.parse_args(argv)
+    # The command the witness answers to, without --suite: that default is a local
+    # checkout of someone else's repo, and a published command must not depend on it
+    # (§9.30 — SPEC §4.2's laya figures are quoted with the suite named in prose).
+    flags = list(argv if argv is not None else sys.argv[1:])
+    cmd = shlex.join(["python", "bench/eval_laya_real.py", *flags])
 
     from laya import Router
     router = Router(device=args.device) if args.device else Router()
@@ -127,7 +134,7 @@ def main():
 
     Path(args.out).parent.mkdir(parents=True, exist_ok=True)
     with open(args.out, "w") as f:
-        json.dump({"split": args.split, "n_per_source": args.n_per_source,
+        json.dump({"cmd": cmd, "split": args.split, "n_per_source": args.n_per_source,
                    "seed": args.seed, "overall_acc": overall, "n": N,
                    "by_type": {t: agg(lambda r, t=t: r["type"] == t)[0] for t in ("choice", "score", "noul")},
                    "rows": rows}, f, indent=2)

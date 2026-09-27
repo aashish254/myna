@@ -219,6 +219,15 @@ intent; an earlier draft of this section said the opposite and meant it).
 dbpedia14 0.775 · mnli 0.675 · contrastive 0.625 · boolq 0.575 · imdb 0.550 · sst5 0.425 ·
 amazon 0.325 · banking77 0.250.
 
+Reproduce with the same seed and the same 40-per-source slice — it needs a laya checkout
+on `PYTHONPATH`, which is why the row is `external-laya` in `bench/reproduce.py`:
+
+```bash
+uv run python bench/eval_laya_real.py --split test --n-per-source 40 --seed 0 --out runs/laya_decision_v2_test.json
+```
+
+The witness is that file, and the first line of its json is the command that wrote it.
+
 ### 4.2 The floors, so "better" means something
 Computed from the same splits, pooled per (source, question), n ≥ 30:
 **macro majority-class 0.4331 · macro uniform-chance 0.3321.**
@@ -236,6 +245,14 @@ instructions over 80 boolq rows, 80 over 116 mnli slots) — while the other nin
 schemas across every row (agnews: 8 distinct instructions over 300 labelled slots, all repeated)
 even though the adapter's group signature splits them into 113 near-singleton sets. That distinction
 is what makes "groupable vs not" a measured fact instead of a naming exercise; see §9.17.
+
+Reproduce the two floors with the test that recomputes them out of the shipped rows and
+asserts both literals — `uv run python -m myna.report` prints the same numbers for a
+human, and this is the version that cannot be edited into agreement:
+
+```bash
+uv run pytest tests/test_report.py -q
+```
 
 
 ### 4.3 laya's own published numbers (from its repo, for context only — different suites)
@@ -446,6 +463,14 @@ optimization.** boolq and mnli are the permanent half of it — their instructio
       `feature_version=(3, 11)`, and `bench/check_python311.py` runs the whole thing on a real 3.11
       interpreter: prints **`PASS: the package imports, compiles and trains on python 3.11`** on
       3.11.15 / torch 2.6.0, and exits 2 rather than skipping if no 3.11 is found.
+      Witness: `runs/python311_check.log`, whose first line is the command that wrote it.
+      Reproduce (`MYNA_PY311` points at the interpreter; it refuses rather than reporting a
+      silent skip, and the GPU half of the same check stays `KAGGLE`):
+
+      ```bash
+      uv run python bench/check_python311.py
+      ```
+
 - [x] **3d** Memory-safe sizing as a computed startup line. `state_token_p95()` measures p95 over a
       4,000-row sample of the rows the loop will draw (p95, not the mean, because the batch pads to
       its longest row); `rows_that_fit()` divides `safety × free` by `p95 × 0.8 MiB` **after**
@@ -792,6 +817,10 @@ are counted, and if nothing is left the run refuses. See §9.14.
       parameter counts and the fitted-vs-read distinction are stated so a derived number can never
       again stand in for a measured one.
 - [ ] Reproduction script per table.
+      The registry side is done — `bench/reproduce.py` binds every published row to one canonical
+      command and one committed witness, `make repro` checks all of them, and the counts and the
+      one thing still open (a target that *runs* them, which 8 of the 19 commands cannot do on
+      this box) are in TODO 8b. §9.31 is what the mutation battery caught on the way.
 - [ ] Public release gate: P0 push + G1–G7 all pass or all explicitly marked not met.
 
 ---
@@ -1299,3 +1328,30 @@ Kept permanently, because the value of this project's claims is that they surviv
     model we did not open, ***g*** gated — and the artifact it came from, because a table can only
     be audited cell by cell. A whole-table "all numbers measured" label is what let nine wrong cells
     ride together.
+31. **The reproduction registry's own doc check was vacuous, and the mutation battery said so
+    before it ever printed a red row.** P8 8b added `bench/reproduce.py`: 19 rows, each binding one
+    published table to the command that regenerates it and to the committed artifact whose bytes the
+    prose quotes. One of its three assertions was "a doc still prints this command" — and README's
+    new *Every table* section is generated from `ROWS`, so it prints all 19 commands by construction.
+    The assertion could not fail; `--check` was green on 19/19 the day it was written and would have
+    stayed green if every one of those commands had been deleted from the prose around its table.
+    Caught only because `bench/mutation_reproduce.py` was about to be run and the entry
+    *"the docs are read one file at a time, so only README counts"* looked like it would survive —
+    which was the signal that README alone was already sufficient, i.e. that the whole `DOCS` tuple
+    was decorative. Fix: `doc_text()` cuts everything between two markers around the generated block
+    before matching, so only hand-written prose counts as evidence, and the assertion immediately
+    went **7/19** — twelve rows' commands lived nowhere but in the index that echoed them. Those
+    twelve are now printed next to the tables they belong to (README's architecture, browser, MLX
+    and trained-v0 sections; §4.1, §4.2 and §5 P3 3c here), one of which —
+    `bench/check_python311.py` — had to be re-run to rewrite its log, because the harness gained its
+    `$ <cmd>` provenance line *after* `runs/python311_check.log` was committed, and §4.2's sentence
+    about that first line was true of the file only from the rerun onward. Two sibling invariants
+    moved from test assertions into `check_row()` for the same reason: a row quoting no falsifiable
+    figure, and the runner's refusal to launch a `gated-kaggle` or `retrain` row. A rule that lives
+    only in a test is a rule the source can drop without anything noticing. Battery:
+    **21/21 caught** (`runs/mutation_reproduce.log`, 25 tests in `tests/test_reproduce.py`), and
+    every `--run` mutation is paired with a test that passes `--dry-run` — the scratch repo symlinks
+    `runs/`, so a battery that launched a real harness would overwrite the witnesses it is checking.
+    The general form, which is the one to look for next time: *when a checker generates part of what
+    it checks, the generated part is not evidence.* The count it produced was green, and green was
+    the sound of it reading its own output back.

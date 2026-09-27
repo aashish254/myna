@@ -27,6 +27,8 @@ Read `fp32/int8` as "how many times faster int8 is"; below 1.0 int8 is slower.
 import argparse
 import os
 import statistics
+import shlex
+import sys
 import time
 
 import mlx.core as mx
@@ -121,6 +123,7 @@ def main():
     if args.out:
         with open(args.out, "w", encoding="utf-8") as f:
             f.write("# int8 vs fp32 at the matmul — myna's own shapes\n\n")
+            f.write("`" + shlex.join(["python", "bench/diag_mlx_int8_gem.py", *sys.argv[1:]]) + "`\n\n")
             f.write(f"MLX on metal, `group_size={args.group_size} bits={args.bits}`, "
                     f"{args.iters} matmuls per sync, median of {args.trials} trials, "
                     f"load average {'/'.join(f'{x:.2f}' for x in os.getloadavg())}.\n\n")

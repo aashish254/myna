@@ -34,6 +34,8 @@ from __future__ import annotations
 import argparse
 import json
 import random
+import shlex
+import sys
 from pathlib import Path
 
 import torch
@@ -220,15 +222,20 @@ def build(ckpt: Path, artifact: Path) -> dict:
     }
 
 
-def main() -> int:
+def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--ckpt", default="runs/myna-v0")
     ap.add_argument("--artifact", default="runs/onnx")
     ap.add_argument("--out", default="browser/expected.json")
-    args = ap.parse_args()
+    args = ap.parse_args(argv)
+    # §9.30: this file is the expectation the browser has to hit, so it owes the
+    # reader which checkpoint and which artifact the expectations came from.
+    cmd = shlex.join(["python", "bench/browser_expected.py",
+                     *(argv if argv is not None else sys.argv[1:])])
     data = build(Path(args.ckpt), Path(args.artifact))
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
+    data = {"cmd": cmd, **data}
     out.write_text(json.dumps(data, indent=1) + "\n")
     n = len(data["tokenizer"]["strings"])
     print(f"wrote {out}: {n} strings ({sum(len(s['ids']) for s in data['tokenizer']['strings'])} "

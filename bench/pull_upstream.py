@@ -36,6 +36,7 @@ import argparse
 import hashlib
 import json
 import os
+import shlex
 import shutil
 import sys
 from collections import Counter
@@ -193,7 +194,7 @@ def token_stats(records, tokenizer):
             "p95": lens[int(0.95 * (len(lens) - 1))], "max": lens[-1], "sum": sum(lens)}
 
 
-def main():
+def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("--suite", default=os.environ.get("DECISION_V2_DIR", DEFAULT_SUITE),
                     help="frozen decision-v2 directory (manifest + partitions)")
@@ -207,7 +208,11 @@ def main():
                     help="do not copy the frozen train partition into the output")
     ap.add_argument("--only", help="comma-separated source subset (each upstream repo downloads in full; "
                                    "use this to exercise one converter before pulling the whole slice)")
-    args = ap.parse_args()
+    args = ap.parse_args(argv)
+    # the manifest is this pull's provenance (SPEC §4.1 reads it rather than a log),
+    # and --per-source/--contrastive-pairs decide how many rows exist
+    cmd = shlex.join(["python", "bench/pull_upstream.py",
+                     *(argv if argv is not None else sys.argv[1:])])
 
     data, model, suite, contrastive = import_kev(args.kev_root)
     suite_dir = Path(args.suite).resolve()
@@ -313,6 +318,7 @@ def main():
 
     toks = token_stats(train, tokenizers[0])
     (out / "upstream_manifest.json").write_text(json.dumps({
+        "cmd": cmd,
         "derived_from": str(suite_dir),
         "seed": seed,
         "converters": "kev.data.build + kev.contrastive.generate at the pinned suite above",

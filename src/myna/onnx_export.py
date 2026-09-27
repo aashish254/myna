@@ -60,6 +60,8 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import shlex
+import sys
 import random
 import shutil
 import time
@@ -762,7 +764,12 @@ def main(argv=None) -> int:
                  suite=args.suite)
     p = Path(args.report)
     p.parent.mkdir(parents=True, exist_ok=True)
-    p.write_text(json.dumps({"ckpt": str(args.ckpt), "out": str(args.out), **res},
+    # §9.30: --chunk/--questions/--scan-chunk all change the byte figure this report
+    # is quoted for, so the report without its command is a size with no shape.
+    cmd = shlex.join(["python", "-m", "myna.onnx_export",
+                      *(argv if argv is not None else sys.argv[1:])])
+    p.write_text(json.dumps({"cmd": cmd, "ckpt": str(args.ckpt),
+                             "out": str(args.out), **res},
                             indent=2) + "\n")
     print(f"wrote {p}")
     return 0 if res["pass"] else 1

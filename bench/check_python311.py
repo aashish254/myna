@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import json
 import os
+import shlex
 import shutil
 import subprocess
 import sys
@@ -58,7 +59,11 @@ def run(py, argv, cwd=REPO, env_extra=None):
     return r
 
 
-def main():
+def main(argv=None):
+    # the log is a witness, so it names the command and the interpreter it
+    # actually used rather than leaving the reader to guess which python ran it
+    print("$ " + shlex.join(["python", "bench/check_python311.py",
+                              *(argv if argv is not None else sys.argv[1:])]))
     py = find_py311()
     claim = [ln for ln in (REPO / "pyproject.toml").read_text().splitlines()
              if ln.startswith("requires-python")]

@@ -288,6 +288,9 @@ async function main() {
   }
 
   const payload = {
+    // §9.30: --artifact runs/onnx vs runs/onnx_int8 is the whole int8 row, and
+    // --mode/--widths change which of the four rows a reader is looking at.
+    cmd: ["node", path.relative(ROOT, process.argv[1]), ...process.argv.slice(2)].join(" "),
     note: "written by bench/browser_g3.mjs; every number is Chrome's or the page's own, "
         + "from a cold cache on this box",
     chrome: version, chrome_headless: "new",

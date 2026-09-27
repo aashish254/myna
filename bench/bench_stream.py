@@ -24,6 +24,8 @@ from __future__ import annotations
 
 import argparse
 import random
+import shlex
+import sys
 import time
 
 from myna.data import WORKFLOWS, generate
@@ -95,14 +97,16 @@ def bench_full_states(myna, states, questions):
     return sum(lat) / len(lat)
 
 
-def main():
+def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("--ckpt", default="runs/myna-v0")
     ap.add_argument("--n", type=int, default=12)
     ap.add_argument("--steps", type=int, default=8)
     ap.add_argument("--laya", action="store_true")
     ap.add_argument("--device", default="cpu")
-    args = ap.parse_args()
+    args = ap.parse_args(argv)
+    cmd = shlex.join(["python", "bench/bench_stream.py",
+                     *(argv if argv is not None else sys.argv[1:])])
 
     myna = Myna(args.ckpt, device=args.device)
     cfg = myna.cfg
@@ -200,6 +204,8 @@ def main():
 
     with open("runs/bench_stream.md", "w") as f:
         laya_by_len = dict(laya_rows)
+        f.write(f"`{cmd}` — superseded by the matched harness (SPEC §9.23), kept "
+                f"for the streaming/full-predict ratio it still shows.\n\n")
         f.write("| state tokens | myna-stream ms | myna-full (re-encode) ms | speedup | laya re-encode ms |\n|---|---|---|---|---|\n")
         for target, s, fl in scale_rows:
             ly = laya_by_len.get(target)
