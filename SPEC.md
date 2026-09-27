@@ -215,9 +215,18 @@ intent; an earlier draft of this section said the opposite and meant it).
 
 ### 4.1 laya, on kev decision-v2 (our seeded witness)
 `bench/eval_laya_real.py`, n=546, 40 per source, seed 0.
-**test 0.6319 · development 0.6392.** Per-source test: agnews 0.950 · trec 0.825 · yelp 0.825 ·
-dbpedia14 0.775 · mnli 0.675 · contrastive 0.625 · boolq 0.575 · imdb 0.550 · sst5 0.425 ·
-amazon 0.325 · banking77 0.250.
+**test 0.6319 · development 0.6392** — row-weighted over the 546 sampled answers, printed by the
+harness itself. Per-source **test**, computed from that witness's own rows under the same
+weighting: agnews 0.915 · trec 0.825 · dbpedia14 0.775 · mnli 0.675 · yelp 0.650 ·
+boolq 0.575 · imdb 0.550 · contrastive 0.500 · sst5 0.425 · amazon 0.325 · banking77 0.250.
+
+Three of the eleven cells that list used to carry were not per-source at all: they were
+per-*question* rows read out of `runs/laya_witness_test.log` and lifted into a source list —
+`agnews 0.950` is `agnews/topic`, one of that source's five questions (the source is 0.915);
+`yelp 0.825` is `yelp/recommend`, one of two (0.650); and `contrastive 0.625` is the *noul*
+row of a qid that the suite also asks as a choice, 16 of that source's 40 answers (0.500).
+Only a source with one question was safe to quote that way, which is eight of eleven cells and
+exactly the coverage that lets a bad list survive a proofread (§9.32).
 
 Reproduce with the same seed and the same 40-per-source slice — it needs a laya checkout
 on `PYTHONPATH`, which is why the row is `external-laya` in `bench/reproduce.py`:
@@ -506,8 +515,10 @@ optimization.** boolq and mnli are the permanent half of it — their instructio
       instructions over 300 labelled slots while its 116 rows sit in 113 exact-signature sets — §9.17),
       and the six cells whose option counts differ across their sets are printed with their full
       histograms because the chance floor is row-weighted over them. Gate: `bench/mutation_report.py`
-      — **54 mutations over `src/myna/report.py`, all caught, exit 0**, run against a frozen repo
-      (§9.18 is the process correction that bought that discipline).
+      — **67 mutations over `src/myna/report.py`, all caught, exit 0**, run against a frozen repo
+      (§9.18 is the process correction that bought that discipline; 54 of the 67 are 3g's, and
+      P8 8c added the 13 that cover the competitor line and the §9.32 merge, which is also why
+      the laya per-cell figures below moved by 0.008–0.009).
 - [ ] **3h** The default-config model (**15.35M** at vocab 4096; v0's artifact is **14.45M** at its
       1,740-entry tokenizer — §2.1 names both) against the ≤ 32M allowance, head-to-head on
       identical data — `KAGGLE`.
@@ -819,8 +830,19 @@ are counted, and if nothing is left the run refuses. See §9.14.
 - [ ] Reproduction script per table.
       The registry side is done — `bench/reproduce.py` binds every published row to one canonical
       command and one committed witness, `make repro` checks all of them, and the counts and the
-      one thing still open (a target that *runs* them, which 8 of the 19 commands cannot do on
+      one thing still open (a target that *runs* them, which 8 of the 22 commands cannot do on
       this box) are in TODO 8b. §9.31 is what the mutation battery caught on the way.
+- [x] **The upstream-corpus comparison, published as three rows** — the §8 risk line's mandate.
+      README's *On the upstream corpus* section prints laya **0.667**, myna's untrained control
+      **0.346 / 0.351 (mean 0.348)**, and myna-trained as **gated**, over the same 16
+      (source, question) cells with the 0.433 and 0.332 floors beside them, and discloses that
+      the one local checkpoint that ever saw the corpus scores **0.338** — below its own control
+      and void under §5 P1 — which is the sentence that settles what has and has not been
+      measured about this architecture. `bench/eval_scratch.py` is the control harness
+      (11 tests, 13 mutations of it all caught by `bench/mutation_scratch.py`); `--metrics-out`
+      is what lets `myna.report` read the control through the same code path a checkpoint comes
+      in by, so the two witnesses have to agree to the printed digit — and §9.32 is the
+      competitor-side bug that join found on the way.
 - [ ] Public release gate: P0 push + G1–G7 all pass or all explicitly marked not met.
 
 ---
@@ -881,7 +903,7 @@ are counted, and if nothing is left the run refuses. See §9.14.
 |---|---|---|
 | 15.35M cannot learn instruction-following well enough to clear G1 | **high** | both prerequisites are now built — P1 data (4.25M tokens) and P2's per-row contract — so this risk is finally testable rather than arguable; if G1 still fails, the honest product is abstention (G5), not accuracy |
 | Latency advantage evaporates under equal-footing measurement (P4) | **high** | the size, window, calibration and browser-memory claims stand independently; the pitch must survive without the ratio |
-| Upstream-data comparison reads as unfair | medium | disclose prominently; publish myna-scratch, myna-trained, laya as three rows |
+| Upstream-data comparison reads as unfair | medium | **disclosed, P8 8c**: README prints myna-scratch (0.348 mean over two seeds), myna-trained (**gated**), and laya (0.667) as three rows over the same 16 cells, with the 0.433/0.332 floors and the void-checkpoint disclosure (0.338, below its own control) beside them |
 | Another machine crash mid-run | medium | cloud training, checkpoint every ≤ 50 updates, observed-rate stop rule |
 | ONNX export can't express the recurrent scan efficiently | medium | prototype the export before committing to G3; fallback is wasm-only fp16 with a measured caveat |
 | Parameter growth quietly voids the speed claims | low | re-run the latency ladder after any size change, in the same commit |
@@ -1355,3 +1377,49 @@ Kept permanently, because the value of this project's claims is that they surviv
     The general form, which is the one to look for next time: *when a checker generates part of what
     it checks, the generated part is not evidence.* The count it produced was green, and green was
     the sound of it reading its own output back.
+32. **A competitor cell the suite asks two ways was scored by whichever row its JSON wrote
+    last, and that inflated every published laya figure by about 0.008.** P8 8c joins
+    `bench/eval_laya_real.py`'s witness to myna's table inside `src/myna/report.py`
+    (`laya_cells()`), and the two sides do not share a key: myna's cell is
+    `(source, question)`, laya's row is `(source, qid, type)` — because the suite asks
+    `contrastive/decision` *both* as a 4-way choice and as a noul. Seventeen rows, sixteen
+    cells, and `laya_cells()` was a dict comprehension over the rows, so the 24-answer
+    choice row (0.417) was silently overwritten by the 16-answer noul row (0.625) and the
+    cell was published as **0.625 over 40 answers**. Which row survives is the one whose
+    `type` sorts last (`eval_laya_real.py` writes `sorted(acc.items())`), and on this
+    witness that happened to be the higher-scoring one — an accident of the alphabet, not
+    a bias, and the kind that reads as a result. Merging by answers instead
+    ((0.416667×24 + 0.625×16)/40 = **0.500**) moves, recomputed from the same committed
+    witness: the 16-cell MACRO over the cells both sides scored **0.674628 → 0.666815**,
+    the *shared-instruction* stratum's laya column (14 cells) **0.681718 → 0.672789**, and
+    the control's published gap **−0.3285 → −0.3207** against myna's 0.3462. The
+    *per-row-instruction* stratum moved by exactly nothing — two cells, neither of them
+    contrastive — which is the signature of this bug class: one bad cell, and every
+    average that contains it carries the error without being able to name it.
+    What caught it was a test written for an adjacent reason: one that deletes a cell the
+    competitor never scored and re-derives the 15-cell intersection from `data["rows"]` by
+    hand (`test_a_cell_the_competitor_never_scored_moves_the_floor_too`) rather than reading
+    the figure back out of the function under test. Two implementations of the same average
+    disagreed by more than a deleted cell can explain, and the disagreement was in the one
+    that was shipping. Fix: `laya_cells()` indexes a *list* per cell and merges by answer
+    count, returns the `rows`/`parts` it merged, `main()` prints the merged cell in full
+    (`contrastive/decision is 2 rows of that JSON over 40 answers: choice 0.417 (24) +
+    noul 0.625 (16) → merged by rows to 0.500`), and `--out` carries `laya_merged` so the
+    prose that quotes 0.500 has a field to quote. `bench/mutation_report.py` grew four
+    entries for it — restore last-row accuracy, restore last-row `n`, empty `laya_merged`,
+    drop two-row cells from the join instead of merging — and the battery went 54 → 67 with
+    all 67 caught (`runs/mutation_report.log`).
+    The same mistake, one file over: §4.1's per-source list had three cells that were not
+    per-source. `agnews 0.950` is `agnews/topic`, one question of that source's five, whose
+    row-weighted figure is **0.915**; `yelp 0.825` is `yelp/recommend`, one of two, against
+    **0.650**; and `contrastive 0.625` is this entry's 16-answer noul row, against **0.500**
+    for the source. Only a single-question source was safe to quote that way — eight of
+    eleven cells, so the list was 73% correct and read as if it were 100%. The eleven
+    figures now printed are recomputed from the witness's own rows and their weights sum to
+    the 546 answers whose row-weighted mean the harness itself prints (0.6319), which is the
+    check that a per-source list is a *partition* and not a selection.
+    The general form: *a join is a claim about keys.* Either the right-hand side is unique
+    per key, and something asserts it, or the join aggregates — and then the aggregation has
+    to be printed, because a merged cell is a different quantity from either row and a
+    reader cannot tell which one they are being shown. A comprehension over rows is how a
+    uniqueness assumption hides: it cannot fail, it just keeps the last one.

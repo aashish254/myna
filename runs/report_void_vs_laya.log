@@ -1,0 +1,50 @@
+$ python -m myna.report --suite data/decision-v2-pilot --split test --metrics runs/myna-v1-rich/metrics.json --laya runs/laya_decision_v2_test.json --out runs/report_void_vs_laya.json
+laya: runs/laya_decision_v2_test.json (test split, n=546, <= 40/source) — read its own per-cell accuracies
+  contrastive/decision is 2 rows of that JSON over 40 answers: choice 0.417 (24) + noul 0.625 (16) → merged by rows to 0.500 (§9.32)
+suite data/decision-v2-pilot / test.jsonl: 1440 rows over 16 cells, 16 kept at n>=30
+6 cell(s) mix option counts across their sets agnews/topic {4: 104, 5: 12}; banking77/intent {77: 104, 78: 12}; contrastive/decision {2: 80, 3: 104, 4: 12}; dbpedia14/category {14: 104, 15: 12}; mnli/relation {3: 104, 4: 12}; trec/answer_type {6: 104, 7: 12} — the uniform floor is row-weighted over them
+stratified test — one row per (source, question) cell, n = rows in it
+
+shared-instruction — 9 source(s): agnews, amazon, banking77, contrastive, dbpedia14, imdb, sst5, trec, yelp
+source/question              type     n  sets   model    laya     maj    unif    -maj
+agnews/is_business           noul    43    41   0.442   0.786   0.698   0.500  -0.256
+agnews/is_scitech            noul    49    48   0.429   1.000   0.653   0.500  -0.224
+agnews/is_sports             noul    47    46   0.489   1.000   0.809   0.500  -0.319
+agnews/is_world              noul    45    43   0.489   0.733   0.778   0.500  -0.289
+agnews/topic               choice   116   113   0.172   0.950   0.328   0.245  -0.155
+amazon/stars                score    80     1   0.163   0.325   0.263   0.200  -0.100
+banking77/intent           choice   116   116   0.026   0.250   0.043   0.013  -0.017
+contrastive/decision         noul   196    29   0.500   0.500   0.454   0.396   0.046
+dbpedia14/category         choice   116    37   0.086   0.775   0.129   0.071  -0.043
+imdb/positive                noul    80     1   0.512   0.550   0.537   0.500  -0.025
+sst5/sentiment              score    80     4   0.250   0.425   0.250   0.200   0.000
+trec/answer_type           choice   116    37   0.224   0.825   0.284   0.164  -0.060
+yelp/rating                 score    80     4   0.300   0.475   0.275   0.200   0.025
+yelp/recommend               noul    80     4   0.525   0.825   0.537   0.500  -0.012
+  macro over its 14 scored cells                      0.329   0.673   0.431   0.321  -0.102
+
+per-row-instruction — 2 source(s): boolq, mnli
+source/question              type     n  sets   model    laya     maj    unif    -maj
+boolq/answer                 noul    80    80   0.463   0.575   0.537   0.500  -0.075
+mnli/relation              choice   116   112   0.336   0.675   0.353   0.325  -0.017
+  macro over its 2 scored cells                      0.399   0.625   0.445   0.412  -0.046
+
+strata, measured on this split (the class is derived, never listed by name):
+  agnews          shared-instruction  1.00 of slots repeat an instruction (8 distinct over 300 slots / 116 rows, 113 exact-signature sets, 0.05 of rows in a reused set)
+  amazon          shared-instruction  1.00 of slots repeat an instruction (1 distinct over 80 slots / 80 rows, 1 exact-signature sets, 1.00 of rows in a reused set)
+  banking77       shared-instruction  0.99 of slots repeat an instruction (4 distinct over 116 slots / 116 rows, 116 exact-signature sets, 0.00 of rows in a reused set)
+  boolq          per-row-instruction  0.00 of slots repeat an instruction (80 distinct over 80 slots / 80 rows, 80 exact-signature sets, 0.00 of rows in a reused set)
+  contrastive     shared-instruction  1.00 of slots repeat an instruction (4 distinct over 196 slots / 196 rows, 29 exact-signature sets, 0.91 of rows in a reused set)
+  dbpedia14       shared-instruction  1.00 of slots repeat an instruction (1 distinct over 116 slots / 116 rows, 37 exact-signature sets, 0.69 of rows in a reused set)
+  imdb            shared-instruction  1.00 of slots repeat an instruction (1 distinct over 80 slots / 80 rows, 1 exact-signature sets, 1.00 of rows in a reused set)
+  mnli           per-row-instruction  0.41 of slots repeat an instruction (80 distinct over 116 slots / 116 rows, 112 exact-signature sets, 0.07 of rows in a reused set)
+  sst5            shared-instruction  1.00 of slots repeat an instruction (4 distinct over 80 slots / 80 rows, 4 exact-signature sets, 1.00 of rows in a reused set)
+  trec            shared-instruction  1.00 of slots repeat an instruction (1 distinct over 116 slots / 116 rows, 37 exact-signature sets, 0.69 of rows in a reused set)
+  yelp            shared-instruction  1.00 of slots repeat an instruction (5 distinct over 160 slots / 80 rows, 4 exact-signature sets, 1.00 of rows in a reused set)
+
+MACRO over the 16 scored cells: model 0.338 · majority floor 0.433 · uniform floor 0.332
+
+MACRO over the 16 of 16 cells BOTH scored (per-cell, unweighted — not the row-weighted overall each harness prints):
+  myna 0.338 · laya 0.667 · gap -0.329 · majority floor 0.433 · laya over the floor 0.234
+G1: target 0.7 → not met; +0.15 over the floor (not met, observed -0.095)
+wrote runs/report_void_vs_laya.json

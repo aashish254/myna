@@ -1,0 +1,263 @@
+{
+  "cmd": "python bench/eval_scratch.py --split test --seeds 0 1 --out runs/scratch_decision_v2_test.md --metrics-out runs/scratch_metrics_test.json",
+  "load_avg": [
+    15.98876953125,
+    10.658203125,
+    7.21630859375
+  ],
+  "suite": "data/decision-v2-pilot",
+  "split": "test",
+  "tokenizer": "data/decision-v2-pilot/tokenizer-8192.json",
+  "device": "cpu",
+  "weights": "random-init",
+  "min_rows": 30,
+  "temperature": 1.0,
+  "seeds": [
+    0,
+    1
+  ],
+  "per_seed": {
+    "0": {
+      "cells": {
+        "agnews/is_business": 0.46511627906976744,
+        "agnews/is_scitech": 0.5714285714285714,
+        "agnews/is_sports": 0.5319148936170213,
+        "agnews/is_world": 0.6222222222222222,
+        "agnews/topic": 0.27586206896551724,
+        "amazon/stars": 0.175,
+        "banking77/intent": 0.008620689655172414,
+        "boolq/answer": 0.5,
+        "contrastive/decision": 0.37244897959183676,
+        "dbpedia14/category": 0.09482758620689655,
+        "imdb/positive": 0.4375,
+        "mnli/relation": 0.3706896551724138,
+        "sst5/sentiment": 0.125,
+        "trec/answer_type": 0.13793103448275862,
+        "yelp/rating": 0.2875,
+        "yelp/recommend": 0.5625
+      },
+      "macro": 0.3461601237757611,
+      "n_scored": 16
+    },
+    "1": {
+      "cells": {
+        "agnews/is_business": 0.4418604651162791,
+        "agnews/is_scitech": 0.5306122448979592,
+        "agnews/is_sports": 0.5531914893617021,
+        "agnews/is_world": 0.4888888888888889,
+        "agnews/topic": 0.2413793103448276,
+        "amazon/stars": 0.1875,
+        "banking77/intent": 0.0,
+        "boolq/answer": 0.6125,
+        "contrastive/decision": 0.4387755102040816,
+        "dbpedia14/category": 0.04310344827586207,
+        "imdb/positive": 0.525,
+        "mnli/relation": 0.3448275862068966,
+        "sst5/sentiment": 0.2375,
+        "trec/answer_type": 0.21551724137931033,
+        "yelp/rating": 0.225,
+        "yelp/recommend": 0.525
+      },
+      "macro": 0.350666011542238,
+      "n_scored": 16
+    }
+  },
+  "macro_mean": 0.34841306765899954,
+  "macro_spread": 0.004505887766476868,
+  "majority_floor": 0.4330647953941198,
+  "uniform_floor": 0.3321192559493052,
+  "cells": [
+    {
+      "source": "agnews",
+      "question": "is_business",
+      "type": "noul",
+      "n": 43,
+      "options": 2,
+      "sets": 41,
+      "majority": 0.6976744186046512,
+      "uniform": 0.5,
+      "acc": 0.46511627906976744,
+      "n_scored": 43
+    },
+    {
+      "source": "agnews",
+      "question": "is_scitech",
+      "type": "noul",
+      "n": 49,
+      "options": 2,
+      "sets": 48,
+      "majority": 0.6530612244897959,
+      "uniform": 0.5,
+      "acc": 0.5714285714285714,
+      "n_scored": 49
+    },
+    {
+      "source": "agnews",
+      "question": "is_sports",
+      "type": "noul",
+      "n": 47,
+      "options": 2,
+      "sets": 46,
+      "majority": 0.8085106382978723,
+      "uniform": 0.5,
+      "acc": 0.5319148936170213,
+      "n_scored": 47
+    },
+    {
+      "source": "agnews",
+      "question": "is_world",
+      "type": "noul",
+      "n": 45,
+      "options": 2,
+      "sets": 43,
+      "majority": 0.7777777777777778,
+      "uniform": 0.5,
+      "acc": 0.6222222222222222,
+      "n_scored": 45
+    },
+    {
+      "source": "agnews",
+      "question": "topic",
+      "type": "choice",
+      "n": 116,
+      "options": 5,
+      "sets": 113,
+      "majority": 0.3275862068965517,
+      "uniform": 0.24482758620689649,
+      "acc": 0.27586206896551724,
+      "n_scored": 116
+    },
+    {
+      "source": "amazon",
+      "question": "stars",
+      "type": "score",
+      "n": 80,
+      "options": 5,
+      "sets": 1,
+      "majority": 0.2625,
+      "uniform": 0.2,
+      "acc": 0.175,
+      "n_scored": 80
+    },
+    {
+      "source": "banking77",
+      "question": "intent",
+      "type": "choice",
+      "n": 116,
+      "options": 78,
+      "sets": 116,
+      "majority": 0.04310344827586207,
+      "uniform": 0.01296978883185777,
+      "acc": 0.008620689655172414,
+      "n_scored": 116
+    },
+    {
+      "source": "boolq",
+      "question": "answer",
+      "type": "noul",
+      "n": 80,
+      "options": 2,
+      "sets": 80,
+      "majority": 0.5375,
+      "uniform": 0.5,
+      "acc": 0.5,
+      "n_scored": 80
+    },
+    {
+      "source": "contrastive",
+      "question": "decision",
+      "type": "noul",
+      "n": 196,
+      "options": 4,
+      "sets": 29,
+      "majority": 0.45408163265306123,
+      "uniform": 0.39625850340136043,
+      "acc": 0.37244897959183676,
+      "n_scored": 196
+    },
+    {
+      "source": "dbpedia14",
+      "question": "category",
+      "type": "choice",
+      "n": 116,
+      "options": 15,
+      "sets": 37,
+      "majority": 0.12931034482758622,
+      "uniform": 0.07093596059113294,
+      "acc": 0.09482758620689655,
+      "n_scored": 116
+    },
+    {
+      "source": "imdb",
+      "question": "positive",
+      "type": "noul",
+      "n": 80,
+      "options": 2,
+      "sets": 1,
+      "majority": 0.5375,
+      "uniform": 0.5,
+      "acc": 0.4375,
+      "n_scored": 80
+    },
+    {
+      "source": "mnli",
+      "question": "relation",
+      "type": "choice",
+      "n": 116,
+      "options": 4,
+      "sets": 112,
+      "majority": 0.35344827586206895,
+      "uniform": 0.32471264367816083,
+      "acc": 0.3706896551724138,
+      "n_scored": 116
+    },
+    {
+      "source": "sst5",
+      "question": "sentiment",
+      "type": "score",
+      "n": 80,
+      "options": 5,
+      "sets": 4,
+      "majority": 0.25,
+      "uniform": 0.2,
+      "acc": 0.125,
+      "n_scored": 80
+    },
+    {
+      "source": "trec",
+      "question": "answer_type",
+      "type": "choice",
+      "n": 116,
+      "options": 7,
+      "sets": 37,
+      "majority": 0.28448275862068967,
+      "uniform": 0.16420361247947457,
+      "acc": 0.13793103448275862,
+      "n_scored": 116
+    },
+    {
+      "source": "yelp",
+      "question": "rating",
+      "type": "score",
+      "n": 80,
+      "options": 5,
+      "sets": 4,
+      "majority": 0.275,
+      "uniform": 0.2,
+      "acc": 0.2875,
+      "n_scored": 80
+    },
+    {
+      "source": "yelp",
+      "question": "recommend",
+      "type": "noul",
+      "n": 80,
+      "options": 2,
+      "sets": 4,
+      "majority": 0.5375,
+      "uniform": 0.5,
+      "acc": 0.5625,
+      "n_scored": 80
+    }
+  ]
+}

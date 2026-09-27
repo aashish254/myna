@@ -1,0 +1,405 @@
+{
+  "cmd": "python -m myna.report --suite data/decision-v2-pilot --split test --metrics runs/myna-v1-rich/metrics.json --laya runs/laya_decision_v2_test.json --out runs/report_void_vs_laya.json",
+  "metrics_file": "runs/myna-v1-rich/metrics.json",
+  "laya_file": "runs/laya_decision_v2_test.json",
+  "laya_merged": {
+    "contrastive/decision": {
+      "acc": 0.5,
+      "n": 40,
+      "rows": 2,
+      "parts": [
+        {
+          "type": "choice",
+          "acc": 0.4166666666666667,
+          "n": 24
+        },
+        {
+          "type": "noul",
+          "acc": 0.625,
+          "n": 16
+        }
+      ]
+    }
+  },
+  "suite": "data/decision-v2-pilot",
+  "split": "test",
+  "file": "test.jsonl",
+  "min_rows": 30,
+  "dropped_cells": [],
+  "unmatched_sets": [],
+  "strata": {
+    "banking77": {
+      "rows": 116,
+      "sets": 116,
+      "slots": 116,
+      "distinct_instructions": 4,
+      "multi_row_set_share": 0.0,
+      "repeated_instruction_share": 0.9913793103448276,
+      "class": "shared-instruction"
+    },
+    "boolq": {
+      "rows": 80,
+      "sets": 80,
+      "slots": 80,
+      "distinct_instructions": 80,
+      "multi_row_set_share": 0.0,
+      "repeated_instruction_share": 0.0,
+      "class": "per-row-instruction"
+    },
+    "agnews": {
+      "rows": 116,
+      "sets": 113,
+      "slots": 300,
+      "distinct_instructions": 8,
+      "multi_row_set_share": 0.05172413793103448,
+      "repeated_instruction_share": 1.0,
+      "class": "shared-instruction"
+    },
+    "mnli": {
+      "rows": 116,
+      "sets": 112,
+      "slots": 116,
+      "distinct_instructions": 80,
+      "multi_row_set_share": 0.06896551724137931,
+      "repeated_instruction_share": 0.41379310344827586,
+      "class": "per-row-instruction"
+    },
+    "sst5": {
+      "rows": 80,
+      "sets": 4,
+      "slots": 80,
+      "distinct_instructions": 4,
+      "multi_row_set_share": 1.0,
+      "repeated_instruction_share": 1.0,
+      "class": "shared-instruction"
+    },
+    "yelp": {
+      "rows": 80,
+      "sets": 4,
+      "slots": 160,
+      "distinct_instructions": 5,
+      "multi_row_set_share": 1.0,
+      "repeated_instruction_share": 1.0,
+      "class": "shared-instruction"
+    },
+    "trec": {
+      "rows": 116,
+      "sets": 37,
+      "slots": 116,
+      "distinct_instructions": 1,
+      "multi_row_set_share": 0.6896551724137931,
+      "repeated_instruction_share": 1.0,
+      "class": "shared-instruction"
+    },
+    "dbpedia14": {
+      "rows": 116,
+      "sets": 37,
+      "slots": 116,
+      "distinct_instructions": 1,
+      "multi_row_set_share": 0.6896551724137931,
+      "repeated_instruction_share": 1.0,
+      "class": "shared-instruction"
+    },
+    "amazon": {
+      "rows": 80,
+      "sets": 1,
+      "slots": 80,
+      "distinct_instructions": 1,
+      "multi_row_set_share": 1.0,
+      "repeated_instruction_share": 1.0,
+      "class": "shared-instruction"
+    },
+    "imdb": {
+      "rows": 80,
+      "sets": 1,
+      "slots": 80,
+      "distinct_instructions": 1,
+      "multi_row_set_share": 1.0,
+      "repeated_instruction_share": 1.0,
+      "class": "shared-instruction"
+    },
+    "contrastive": {
+      "rows": 196,
+      "sets": 29,
+      "slots": 196,
+      "distinct_instructions": 4,
+      "multi_row_set_share": 0.9132653061224489,
+      "repeated_instruction_share": 1.0,
+      "class": "shared-instruction"
+    }
+  },
+  "cells": [
+    {
+      "source": "agnews",
+      "question": "is_business",
+      "type": "noul",
+      "n": 43,
+      "options": 2,
+      "options_by_size": {
+        "2": 43
+      },
+      "sets": 41,
+      "majority": 0.6976744186046512,
+      "uniform": 0.5,
+      "acc": 0.4418604651162791,
+      "n_scored": 43
+    },
+    {
+      "source": "agnews",
+      "question": "is_scitech",
+      "type": "noul",
+      "n": 49,
+      "options": 2,
+      "options_by_size": {
+        "2": 49
+      },
+      "sets": 48,
+      "majority": 0.6530612244897959,
+      "uniform": 0.5,
+      "acc": 0.42857142857142855,
+      "n_scored": 49
+    },
+    {
+      "source": "agnews",
+      "question": "is_sports",
+      "type": "noul",
+      "n": 47,
+      "options": 2,
+      "options_by_size": {
+        "2": 47
+      },
+      "sets": 46,
+      "majority": 0.8085106382978723,
+      "uniform": 0.5,
+      "acc": 0.48936170212765956,
+      "n_scored": 47
+    },
+    {
+      "source": "agnews",
+      "question": "is_world",
+      "type": "noul",
+      "n": 45,
+      "options": 2,
+      "options_by_size": {
+        "2": 45
+      },
+      "sets": 43,
+      "majority": 0.7777777777777778,
+      "uniform": 0.5,
+      "acc": 0.4888888888888889,
+      "n_scored": 45
+    },
+    {
+      "source": "agnews",
+      "question": "topic",
+      "type": "choice",
+      "n": 116,
+      "options": 5,
+      "options_by_size": {
+        "4": 104,
+        "5": 12
+      },
+      "sets": 113,
+      "majority": 0.3275862068965517,
+      "uniform": 0.24482758620689649,
+      "acc": 0.1724137931034483,
+      "n_scored": 116
+    },
+    {
+      "source": "amazon",
+      "question": "stars",
+      "type": "score",
+      "n": 80,
+      "options": 5,
+      "options_by_size": {
+        "5": 80
+      },
+      "sets": 1,
+      "majority": 0.2625,
+      "uniform": 0.2,
+      "acc": 0.1625,
+      "n_scored": 80
+    },
+    {
+      "source": "banking77",
+      "question": "intent",
+      "type": "choice",
+      "n": 116,
+      "options": 78,
+      "options_by_size": {
+        "77": 104,
+        "78": 12
+      },
+      "sets": 116,
+      "majority": 0.04310344827586207,
+      "uniform": 0.01296978883185777,
+      "acc": 0.02586206896551724,
+      "n_scored": 116
+    },
+    {
+      "source": "boolq",
+      "question": "answer",
+      "type": "noul",
+      "n": 80,
+      "options": 2,
+      "options_by_size": {
+        "2": 80
+      },
+      "sets": 80,
+      "majority": 0.5375,
+      "uniform": 0.5,
+      "acc": 0.4625,
+      "n_scored": 80
+    },
+    {
+      "source": "contrastive",
+      "question": "decision",
+      "type": "noul",
+      "n": 196,
+      "options": 4,
+      "options_by_size": {
+        "2": 80,
+        "3": 104,
+        "4": 12
+      },
+      "sets": 29,
+      "majority": 0.45408163265306123,
+      "uniform": 0.39625850340136043,
+      "acc": 0.5,
+      "n_scored": 196
+    },
+    {
+      "source": "dbpedia14",
+      "question": "category",
+      "type": "choice",
+      "n": 116,
+      "options": 15,
+      "options_by_size": {
+        "14": 104,
+        "15": 12
+      },
+      "sets": 37,
+      "majority": 0.12931034482758622,
+      "uniform": 0.07093596059113294,
+      "acc": 0.08620689655172414,
+      "n_scored": 116
+    },
+    {
+      "source": "imdb",
+      "question": "positive",
+      "type": "noul",
+      "n": 80,
+      "options": 2,
+      "options_by_size": {
+        "2": 80
+      },
+      "sets": 1,
+      "majority": 0.5375,
+      "uniform": 0.5,
+      "acc": 0.5125,
+      "n_scored": 80
+    },
+    {
+      "source": "mnli",
+      "question": "relation",
+      "type": "choice",
+      "n": 116,
+      "options": 4,
+      "options_by_size": {
+        "3": 104,
+        "4": 12
+      },
+      "sets": 112,
+      "majority": 0.35344827586206895,
+      "uniform": 0.32471264367816083,
+      "acc": 0.33620689655172414,
+      "n_scored": 116
+    },
+    {
+      "source": "sst5",
+      "question": "sentiment",
+      "type": "score",
+      "n": 80,
+      "options": 5,
+      "options_by_size": {
+        "5": 80
+      },
+      "sets": 4,
+      "majority": 0.25,
+      "uniform": 0.2,
+      "acc": 0.25,
+      "n_scored": 80
+    },
+    {
+      "source": "trec",
+      "question": "answer_type",
+      "type": "choice",
+      "n": 116,
+      "options": 7,
+      "options_by_size": {
+        "6": 104,
+        "7": 12
+      },
+      "sets": 37,
+      "majority": 0.28448275862068967,
+      "uniform": 0.16420361247947457,
+      "acc": 0.22413793103448276,
+      "n_scored": 116
+    },
+    {
+      "source": "yelp",
+      "question": "rating",
+      "type": "score",
+      "n": 80,
+      "options": 5,
+      "options_by_size": {
+        "5": 80
+      },
+      "sets": 4,
+      "majority": 0.275,
+      "uniform": 0.2,
+      "acc": 0.3,
+      "n_scored": 80
+    },
+    {
+      "source": "yelp",
+      "question": "recommend",
+      "type": "noul",
+      "n": 80,
+      "options": 2,
+      "options_by_size": {
+        "2": 80
+      },
+      "sets": 4,
+      "majority": 0.5375,
+      "uniform": 0.5,
+      "acc": 0.525,
+      "n_scored": 80
+    }
+  ],
+  "macro": {
+    "acc": 0.33787562943194704,
+    "majority": 0.4330647953941198,
+    "uniform": 0.3321192559493052,
+    "cells_scored": 16,
+    "cells_kept": 16,
+    "both": {
+      "cells": 16,
+      "cells_scored": 16,
+      "myna": 0.33787562943194704,
+      "laya": 0.6668154761904762,
+      "majority": 0.4330647953941198,
+      "gap": -0.32893984675852916
+    }
+  },
+  "g1": {
+    "target": 0.7,
+    "margin": 0.15,
+    "meets_target": false,
+    "meets_margin": false,
+    "pass": false,
+    "macro_acc": 0.33787562943194704,
+    "macro_majority": 0.4330647953941198,
+    "margin_observed": -0.09518916596217275
+  }
+}

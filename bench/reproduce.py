@@ -234,6 +234,46 @@ ROWS = [
         [("runs/python311_check.log", "PASS: the package imports, compiles and trains on python 3.11")],
         "needs a 3.11 interpreter with torch (MYNA_PY311); it refuses to report a silent skip."),
 
+    row("scratch-control", "README upstream table, control row · SPEC §8's disclosure",
+        "uv run python bench/eval_scratch.py --split test --seeds 0 1 "
+        "--out runs/scratch_decision_v2_test.md "
+        "--metrics-out runs/scratch_metrics_test.json",
+        HERE,
+        ["runs/scratch_decision_v2_test.md", "runs/scratch_decision_v2_test.json",
+         "runs/scratch_metrics_test.json"],
+        [("runs/scratch_decision_v2_test.md", "mean **0.348**, spread 0.005"),
+         ("runs/scratch_decision_v2_test.json", '"macro_mean": 0.34841306765899954'),
+         ("runs/scratch_decision_v2_test.json", '"uniform_floor": 0.3321192559493052')],
+        "The row exists to be beaten. A random init at the 0.332 chance floor is the "
+        "architecture's floor and not its ceiling; --metrics-out is what lets myna.report "
+        "read the control through the same code path a checkpoint comes in by."),
+
+    row("scratch-vs-laya", "README upstream table, the gap line · SPEC §8",
+        "uv run python -m myna.report --suite data/decision-v2-pilot --split test "
+        "--metrics runs/scratch_metrics_test.json --laya runs/laya_decision_v2_test.json "
+        "--out runs/report_scratch_vs_laya.json",
+        HERE,
+        ["runs/report_scratch_vs_laya.json", "runs/report_scratch_vs_laya.log",
+         "runs/laya_decision_v2_test.json"],
+        [("runs/report_scratch_vs_laya.log", "myna 0.346 · laya 0.667 · gap -0.321"),
+         ("runs/report_scratch_vs_laya.json", '"laya": 0.6668154761904762')],
+        "16 cells both sides scored, unweighted. laya's row-weighted overall (0.6319, in "
+        "its own JSON) is a different statistic over a different sample and never appears "
+        "in this line; its contrastive/decision cell is two rows of that JSON merged by "
+        "rows (§9.32)."),
+
+    row("void-vs-laya", "README upstream table's disclosure row · SPEC §5 P1, §9.23",
+        "uv run python -m myna.report --suite data/decision-v2-pilot --split test "
+        "--metrics runs/myna-v1-rich/metrics.json --laya runs/laya_decision_v2_test.json "
+        "--out runs/report_void_vs_laya.json",
+        HERE,
+        ["runs/report_void_vs_laya.json", "runs/report_void_vs_laya.log"],
+        [("runs/report_void_vs_laya.log", "myna 0.338 · laya 0.667 · gap -0.329")],
+        "The input is the one local checkpoint that ever saw the upstream corpus, and it "
+        "is uncommitted and void as evidence (§5 P1: trained before the 385e06c batching "
+        "fix). It witnesses a disclosure — 0.338 against a control of 0.346 — and not a "
+        "ceiling in either direction."),
+
     row("g1-v1", "SPEC §2.1 G1 myna row · TODO 3i",
         "KAGGLE: train on decision-v2 per kaggle/PLAN, then "
         "uv run python bench/eval_laya_real.py's myna twin on the test split",

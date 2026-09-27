@@ -23,13 +23,15 @@ from the laptop with the split that shipped beside it.
 Usage:
     python -m myna.report --suite data/decision-v2-pilot --split test \\
         --metrics runs/myna-v1-rich/metrics.json
-    python -m myna.report ... --laya runs/laya_decision_v2_test.json --out runs/strata.md
+    python -m myna.report ... --laya runs/laya_decision_v2_test.json --out runs/report.json
 """
 
 from __future__ import annotations
 
 import argparse
 import json
+import shlex
+import sys
 from collections import defaultdict
 from pathlib import Path
 
@@ -177,15 +179,32 @@ def macro(rows: list[dict], field: str) -> float | None:
     return sum(vals) / len(vals) if vals else None
 
 
-def laya_cells(path) -> dict:
-    """`bench/eval_laya_real.py`'s JSON -> {(source, qname): {"acc": ..., "n": ...}}.
+def laya_cells(path) -> tuple[dict, dict]:
+    """`bench/eval_laya_real.py`'s JSON -> {(source, qname): {"acc", "n", "rows", "parts"}}.
 
-    Its rows are already per (source, qid) with the sample size attached, so the
-    join needs no weighting here — but the split has to match, and `main()` prints
-    which laya split it read for exactly that reason.
+    Its rows are keyed on `(source, qid, type)`, and one qid can be asked two ways inside
+    one sample: `contrastive/decision` is a four-way choice in some records and a noul in
+    others — 24 and 16 rows of that source's 40. myna's cell key is `(source, question
+    name)`, so those two phrasings are *one* cell here, and the competitor's two rows have
+    to be merged the same way `accuracy_cells` merges its per-set rows: by rows. Indexing
+    the row list by key instead keeps whichever row came last and publishes a 16-row
+    figure as if it were the cell's (§9.32).
     """
     data = json.loads(Path(path).read_text())
-    return {(r["source"], r["qid"]): {"acc": r["acc"], "n": r["n"]} for r in data["rows"]}, data
+    cells: dict[tuple[str, str], dict] = {}
+    for r in data["rows"]:
+        c = cells.setdefault((r["source"], r["qid"]), {"acc": 0.0, "n": 0, "rows": 0,
+                                                       "parts": []})
+        c["rows"] += 1
+        c["n"] += r["n"]
+        c["acc"] += r["acc"] * (r["n"] or 0)
+        c["parts"].append({"type": r["type"], "acc": r["acc"], "n": r["n"]})
+    for c in cells.values():
+        if c["n"]:
+            c["acc"] /= c["n"]
+        else:
+            c["acc"] = sum(p["acc"] for p in c["parts"]) / len(c["parts"])
+    return cells, data
 
 
 def g1_verdict(macro_acc: float | None, macro_majority: float | None, target=0.70,
@@ -256,6 +275,11 @@ def main(argv=None) -> int:
     ap.add_argument("--min-rows", type=int, default=MIN_CELL_ROWS)
     ap.add_argument("--out", default=None, help="write the json report here")
     args = ap.parse_args(argv)
+    # §9.30: this report is the witness for every "model vs floor" cell published from
+    # it, and which metrics.json and which laya split it joined are part of the claim.
+    cmd = shlex.join(["python", "-m", "myna.report", *(argv if argv is not None
+                                                      else sys.argv[1:])])
+    print("$ " + cmd)
     if not (0 < args.min_rows):
         raise SystemExit(f"--min-rows must be positive, got {args.min_rows}")
 
@@ -283,10 +307,17 @@ def main(argv=None) -> int:
     acc, unmatched = accuracy_cells(metrics[key], groups)
     rows = roll_up(stats, acc, args.min_rows)
     laya = None
+    laya_merged: dict = {}
     if args.laya:
         laya, ldata = laya_cells(args.laya)
         print(f"laya: {args.laya} ({ldata['split']} split, n={ldata['n']}, "
               f"<= {ldata['n_per_source']}/source) — read its own per-cell accuracies")
+        laya_merged = {f"{s}/{q}": c for (s, q), c in laya.items() if c["rows"] > 1}
+        for key, c in sorted(laya_merged.items()):
+            print(f"  {key} is {c['rows']} rows of that JSON over "
+                  f"{c['n']} answers: " + " + ".join(
+                      f"{p['type']} {p['acc']:.3f} ({p['n']})" for p in c["parts"])
+                  + f" → merged by rows to {c['acc']:.3f} (§9.32)")
     dropped = [f"{s}/{q}" for (s, q) in sorted(stats)
                if stats[(s, q)]["n"] < args.min_rows]
     scored = [r for r in rows if r["acc"] is not None]
@@ -325,6 +356,28 @@ def main(argv=None) -> int:
         f" · uniform {_fmt(macro(rows, 'uniform'))})")
     print(f"\nMACRO over the {len(scored)} scored cells: model {_fmt(ma)} · "
           f"majority floor {_fmt(mm)} · uniform floor {_fmt(mu)}{extra}")
+    # The competitor line is computed over the intersection, never over each side's
+    # own best set of cells: two macros over two different cell sets are not a gap,
+    # and "laya 0.63 vs myna 0.34" from the two harnesses' own summaries is exactly
+    # how that mistake gets published. Row-weighted n and cell-macro are different
+    # statistics too, so this line names which one it is.
+    both = None
+    if laya:
+        shared = [r for r in scored if (r["source"], r["question"]) in laya]
+        la = {k: v["acc"] for k, v in laya.items()}
+        mb, lb = macro(shared, "acc"), _macro_with(shared, la)
+        fb = macro(shared, "majority")
+        both = {"cells": len(shared), "cells_scored": len(scored),
+                "myna": mb, "laya": lb, "majority": fb,
+                "gap": None if (mb is None or lb is None) else mb - lb}
+        print(f"\nMACRO over the {len(shared)} of {len(scored)} cells BOTH scored "
+              f"(per-cell, unweighted — not the row-weighted overall each harness prints):")
+        print(f"  myna {_fmt(mb)} · laya {_fmt(lb)} · gap {_fmt(both['gap'])} · "
+              f"majority floor {_fmt(fb)} · laya over the floor "
+              f"{_fmt(None if lb is None else lb - fb)}")
+        if len(shared) != len(scored):
+            print(f"  note: {len(scored) - len(shared)} scored cell(s) are absent from the "
+                  f"laya JSON, so this line is not the {len(scored)}-cell macro either side")
     print(f"G1: target {v['target']} → {'PASS' if v['meets_target'] else 'not met'}; "
           f"+{v['margin']} over the floor "
           f"({'PASS' if v['meets_margin'] else 'not met'}, observed "
@@ -332,12 +385,15 @@ def main(argv=None) -> int:
     if args.out:
         out = Path(args.out)
         out.parent.mkdir(parents=True, exist_ok=True)
-        out.write_text(json.dumps({"suite": str(args.suite), "split": args.split,
+        out.write_text(json.dumps({"cmd": cmd, "metrics_file": str(metrics_path),
+                                   "laya_file": args.laya, "laya_merged": laya_merged,
+                                   "suite": str(args.suite), "split": args.split,
                                    "file": fname, "min_rows": args.min_rows,
                                    "dropped_cells": dropped, "unmatched_sets": unmatched,
                                    "strata": cls, "cells": rows,
                                    "macro": {"acc": ma, "majority": mm, "uniform": mu,
-                                             "cells_scored": len(scored), "cells_kept": len(rows)},
+                                             "cells_scored": len(scored), "cells_kept": len(rows),
+                                             "both": both},
                                    "g1": v}, indent=2) + "\n")
         print(f"wrote {out}")
     return 0

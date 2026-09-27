@@ -73,6 +73,55 @@ and the context column with the needle run that the 0.188-against-0.167 pair cam
 uv run python bench/eval_needle.py --ckpt runs/myna-v0 --device cpu --n 16 --seed 0 --lengths 128 1024 4096 8192 16384
 ```
 
+## On the upstream corpus: three rows, including the one nobody likes
+
+G1 is an accuracy gate on `kev`'s frozen `decision-v2` **test** split, and the
+checkpoint that answers it trains on Kaggle. Three numbers on that split are
+printable from this box today without training a model, and [SPEC.md](SPEC.md) §8
+requires all three rather than the flattering pair:
+
+| row | test MACRO over the 16 (source, question) cells both sides score | footing |
+|---|---|---|
+| laya 421M — their engine, their suite, 40 rows/source | **0.667** · *m* | `runs/laya_decision_v2_test.json`, joined cell by cell |
+| **myna, untrained control** — random init, the suite's own tokenizer, current code | seed 0 **0.346** · seed 1 **0.351** · mean **0.348** · *m* | `runs/scratch_decision_v2_test.md` |
+| myna trained on this corpus (G1) | **gated** — no local number exists, and one would be a projection | `kaggle/`, TODO 3i |
+| majority-label floor, same 16 cells | 0.433 · *m* | `runs/report_scratch_vs_laya.log` |
+| uniform-chance floor, same 16 cells | 0.332 · *m* | same |
+
+The disclosure in the middle. The one checkpoint this repo ever trained on the
+upstream corpus scores **0.338** on those same 16 cells
+(`runs/report_void_vs_laya.log`, from
+`uv run python -m myna.report --suite data/decision-v2-pilot --split test --metrics runs/myna-v1-rich/metrics.json --laya runs/laya_decision_v2_test.json --out runs/report_void_vs_laya.json`)
+— *below* its own control, by 0.008, which is the
+same order as the control's 0.005 seed spread, and void as evidence regardless
+because it predates the `385e06c` batching fix (§5 P1). Read together, the honest
+sentence is the uncomfortable one: **nothing about myna's architecture has been
+measured on this corpus yet, in either direction.** What the control does prove is
+the one falsification that mattered — a probe head or an answer head that leaked the
+label would sit above the 0.332 chance floor, and it sits on it.
+
+Reproduce the control (1,440 rows scored on CPU; no gradient step, on any corpus):
+
+```bash
+uv run python bench/eval_scratch.py --split test --seeds 0 1 --out runs/scratch_decision_v2_test.md --metrics-out runs/scratch_metrics_test.json
+```
+
+and the join that puts it beside laya's per-cell numbers:
+
+```bash
+uv run python -m myna.report --suite data/decision-v2-pilot --split test --metrics runs/scratch_metrics_test.json --laya runs/laya_decision_v2_test.json --out runs/report_scratch_vs_laya.json
+```
+
+Two statistics that must never be subtracted from each other. The table is the
+*unweighted mean over the 16 cells both sides scored*; laya's own harness prints a
+*row-weighted* overall of 0.6319 over its 546 sampled answers, which is a different
+statistic over a different sample — a cell counted by rows and a cell counted once
+are not comparable, and arithmetic across the two is how §9.30's eight dead cells
+were born. The join also merges the competitor's two `contrastive/decision` rows (one
+qid asked as a 4-way choice over 24 answers and as a noul over 16) into that cell at
+**0.500** by rows; until §9.32 the report kept whichever row came last — 0.625 — which
+had inflated every per-cell laya figure here by 0.008–0.009.
+
 ## Measured on an Apple M5 (10-core, 32 GB)
 
 One process, both engines resident, `device=cpu`, both fp32 — the same Python
@@ -405,6 +454,12 @@ uv run python bench/diag_mlx_int8_gem.py --iters 200 --trials 7 --out runs/mlx_i
 uv run pytest tests/test_report.py -q
 # SPEC §5 P3 3c (the Kaggle image is python 3.12/3.11, this box is 3.13)  [here]
 uv run python bench/check_python311.py
+# README upstream table, control row · SPEC §8's disclosure  [here]
+uv run python bench/eval_scratch.py --split test --seeds 0 1 --out runs/scratch_decision_v2_test.md --metrics-out runs/scratch_metrics_test.json
+# README upstream table, the gap line · SPEC §8  [here]
+uv run python -m myna.report --suite data/decision-v2-pilot --split test --metrics runs/scratch_metrics_test.json --laya runs/laya_decision_v2_test.json --out runs/report_scratch_vs_laya.json
+# README upstream table's disclosure row · SPEC §5 P1, §9.23  [here]
+uv run python -m myna.report --suite data/decision-v2-pilot --split test --metrics runs/myna-v1-rich/metrics.json --laya runs/laya_decision_v2_test.json --out runs/report_void_vs_laya.json
 # SPEC §2.1 G1 myna row · TODO 3i  [gated-kaggle]
 # no local command: no witness exists and none may be added by a local run: the corpus is trained on Kaggle, so a figure here would be a projection wearing a measurement's clothes.
 ```

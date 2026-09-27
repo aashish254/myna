@@ -119,12 +119,15 @@ So every "train" item below is split into *prepare/verify the Kaggle path locall
 - [x] **3g** Stratified reporting harness: per source × question-type table, groupable (9/11) vs
       per-row-instruction (boolq, mnli), majority/uniform floors in the same table — runnable on
       the v0 + any Kaggle checkpoint (inference here is allowed). `src/myna/report.py` + `tests/test_report.py`
-      (26 tests) + `bench/mutation_report.py` (**54 mutations, all caught, exit 0**). Witnesses printed
+      (**29 tests**, three added by 8c) + `bench/mutation_report.py` (**67 mutations, all caught,
+      exit 0** — `runs/mutation_report.log`; the 54→67 step is 8c's competitor line and the §9.32
+      merge). Witnesses printed
       by the harness on the frozen pilot test split: 1440 rows over 16 cells, 16 kept at n≥30;
       **majority macro 0.433** (re-derives SPEC §4.2's published 0.4331 through the adapter) and
       **uniform macro 0.332** (row-weighted; §9.16 corrects the 0.3292 published figure and lists the
-      three alternative weightings it could have been); laya joined per cell (0.682 macro over the
-      shared-instruction stratum) reproducing its +0.0125 imdb / +0.0375 boolq margins; the stratum
+      three alternative weightings it could have been); laya joined per cell (0.673 macro over the
+      shared-instruction stratum, 0.667 over all sixteen — §9.32 corrects the 0.682 this tick first
+      printed, which came from a two-row cell being scored by its last row) reproducing its +0.0125 imdb / +0.0375 boolq margins; the stratum
       class measured from instruction strings — agnews 8 distinct instructions over 300 slots inside
       113 exact-signature sets, boolq 80/80, mnli 80/116 (§9.17); MACRO line model 0.338 vs floor 0.433
       → **G1 not met** on the void v1-rich checkpoint, which is the point of running it here.
@@ -284,9 +287,9 @@ So every "train" item below is split into *prepare/verify the Kaggle path locall
       lower a published minimum). `Observation.save_state`'s "~0.6 MB" is 576 KiB of state and
       592,533 B on disk, measured. Suite: **312 passed, 1 skipped**
 - [ ] **8b** One reproduction command per table row, and a `make` / script target that runs them
-      Command side done: `bench/reproduce.py` holds **19 rows**, each binding one published table
+      Command side done: `bench/reproduce.py` holds **22 rows**, each binding one published table
       to one canonical command, its committed witness(es), and the literal figures the prose
-      quotes out of them — **32 figures tied to a committed artifact, 1 row gated with no witness
+      quotes out of them — **38 figures tied to a committed artifact, 1 row gated with no witness
       on purpose** (`g1-v1`; a gated number with a file behind it is how a projection gets read
       as a measurement). Every harness that writes a witness now prints the command that wrote it
       (`$ …` as the markdown/json header), so no artifact's provenance is hand-typed again
@@ -294,13 +297,43 @@ So every "train" item below is split into *prepare/verify the Kaggle path locall
       `bench/mutation_reproduce.py` → **21/21** (`runs/mutation_reproduce.log`) — the pass that
       caught this item's own doc check being vacuous, logged as §9.31. `make repro` /
       `make repro-run ROW=id` are the target. **Still open:** one target cannot *run* the whole
-      registry — 11 of the 19 rows are `here` and re-runnable on this box, while 2 retrain a
+      registry — 14 of the 22 rows are `here` and re-runnable on this box, while 2 retrain a
       checkpoint, 2 need a laya checkout on `PYTHONPATH`, 3 need Google Chrome and 1 is `KAGGLE`
       — so "a target that runs them all" is a Kaggle-side item, not a
       `make` line, and ticking it here would claim a one-command rebuild this repo cannot do.
       Suite at this tick: **337 passed, 1 skipped**.
-- [ ] **8c** Disclose the upstream-data comparison prominently (myna-scratch, myna-trained, laya
-      as three rows)
+- [x] **8c** Disclose the upstream-data comparison prominently, as three rows. README's new
+      second section — *On the upstream corpus: three rows, including the one nobody likes* —
+      carries **laya 0.667** (cell macro over the 16 cells both sides score, row-weighted merge
+      per §9.32), **myna-scratch 0.346 / 0.351, mean 0.348** (the control: myna's default
+      architecture, `torch.manual_seed`, the suite's own `tokenizer-8192.json`, frozen `test`
+      split, no gradient step on any corpus), **myna-trained gated** on the Kaggle checkpoint,
+      and the two floors (majority **0.433**, uniform **0.332**) beside every model number, plus
+      the void pre-`385e06c` checkpoint's **0.338** printed *below its own control* in the same
+      table rather than in a footnote. The control is falsifiable in one direction only: if a
+      head or the pointer probe were reading the answer, a random init would sit above the
+      uniform floor. `bench/eval_scratch.py` writes the trainer's `metrics.json` shape through
+      `--metrics-out`, so `python -m myna.report` reaches the control by the *same* code path as
+      a checkpoint and the two witnesses must print the same figure — they do, to the third
+      decimal, and that agreement is a test rather than a sentence.
+      Instrument: `tests/test_scratch.py` (**11**, ~8 s) and `bench/mutation_scratch.py`
+      (**13/13 caught, exit 0** — `runs/mutation_scratch.log`). Four of those thirteen initially
+      survived, and the reason was the fixture rather than the tests: question-sets of 1, 2 and 4
+      rows can only score multiples of 0.1, and seeds 0 and 1 produced *identical accuracy maps*
+      (different weights, same argmaxes), so "which draw did this artifact come from" and "the
+      stored figure is rounded" were facts the data could not express. The fixture is twenty rows
+      with a 7-row set now, the two per-seed tests run three draws, and both conditions are
+      asserted as guards so the battery cannot silently go green again if they lapse. Two bugs
+      came out of writing the tests to re-derive instead of restate: the §9.32 two-row merge, and
+      a competitor line that averaged myna over all scored cells while averaging laya over the
+      intersection.
+      Witnesses: `runs/scratch_decision_v2_test.{md,json,log}`, `runs/scratch_metrics_test.json`,
+      `runs/report_scratch_vs_laya.{json,log}`, `runs/report_void_vs_laya.{json,log}`,
+      `runs/mutation_scratch.log`, `runs/mutation_report.log`. Three registry rows added
+      (`scratch-control`, `scratch-vs-laya`, `void-vs-laya`) → **22 rows, 38 figures**; the row
+      for the void checkpoint says so in its note, because an artifact whose input is uncommitted
+      cannot be quoted as evidence.
+      Suite at this tick: **354 passed, 1 skipped**.
 - [ ] **8d** Release gate: G1–G7 each pass or each explicitly marked not met
 
 ## Cross-cutting

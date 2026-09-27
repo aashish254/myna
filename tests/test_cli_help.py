@@ -61,6 +61,8 @@ def test_module_help_renders(module, flag):
     ("bench/bench_mlx.py", "--quantize"),
     ("bench/diag_mlx_int8_gem.py", "--iters"),
     ("bench/mutation_mlx.py", "Mutation battery"),
+    ("bench/eval_scratch.py", "--seeds"),
+    ("bench/mutation_scratch.py", "Mutation battery"),
 ])
 def test_bench_script_help_renders(script, expect):
     """The diag scripts took `sys.argv[1]` positionally, so `--help` was parsed as a
@@ -88,6 +90,7 @@ def test_percent_in_a_help_string_survives_argparse_formatting():
     "bench/mutation_longctx.py",
     "bench/mutation_onnx.py",
     "bench/mutation_mlx.py",
+    "bench/mutation_scratch.py",
 ])
 def test_mutation_help_does_not_run_the_battery(script):
     """Each run is ~30 pytest passes; `--help` must not be one of them."""

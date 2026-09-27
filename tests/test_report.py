@@ -27,8 +27,8 @@ from pathlib import Path
 import pytest
 
 from myna.data import Example, Question
-from myna.report import (MIN_CELL_ROWS, accuracy_cells, cell_stats, g1_verdict, macro, main,
-                         roll_up, strata, table_text)
+from myna.report import (MIN_CELL_ROWS, accuracy_cells, cell_stats, g1_verdict, laya_cells,
+                         macro, main, roll_up, strata, table_text)
 
 REPO = Path(__file__).resolve().parent.parent
 PILOT = REPO / "data" / "decision-v2-pilot"
@@ -326,7 +326,123 @@ def test_the_laya_witness_rides_in_the_same_table(tmp_path, capsys):
                  "--laya", str(witness), "--out", str(tmp_path / "s.json")]) == 0
     out = capsys.readouterr().out
     assert "test split, n=546" in out, out[:400]
-    assert "0.682" in out, "the laya macro over the shared-instruction stratum"
+    assert "0.673" in out, "the laya macro over the shared-instruction stratum"
+
+
+def test_a_competitor_cell_asked_two_ways_is_merged_by_rows(tmp_path):
+    """The competitor keys its own rows on `(source, qid, type)`, and one qid can be a
+    choice in some records and a noul in others. myna's cell key carries no type, so the
+    two rows are *one* cell here — and keeping whichever row came last prices a 16-answer
+    figure as if it were the 40-answer cell's (SPEC §9.32, which this replaced).
+    """
+    rows = [{"source": "contrastive", "qid": "decision", "type": "choice", "acc": 0.25,
+             "n": 24},
+            {"source": "contrastive", "qid": "decision", "type": "noul", "acc": 1.0,
+             "n": 16},
+            {"source": "agnews", "qid": "topic", "type": "choice", "acc": 0.5, "n": 40},
+            {"source": "trec", "qid": "answer_type", "type": "choice", "acc": 0.0, "n": 0},
+            {"source": "trec", "qid": "answer_type", "type": "choice", "acc": 1.0, "n": 0}]
+    p = tmp_path / "laya.json"
+    p.write_text(json.dumps({"split": "test", "n": 80, "n_per_source": 40, "rows": rows}))
+    cells, _data = laya_cells(p)
+    c = cells[("contrastive", "decision")]
+    assert c["acc"] == pytest.approx(0.55), \
+        f"last-wins again: {c['acc']} is the noul row alone, not (0.25*24 + 1.0*16)/40"
+    assert c["n"] == 40 and c["rows"] == 2, c
+    assert [q["type"] for q in c["parts"]] == ["choice", "noul"], "the note needs both"
+    assert cells[("agnews", "topic")]["rows"] == 1
+    assert cells[("trec", "answer_type")]["acc"] == pytest.approx(0.5), \
+        "two rows that report no sample size are averaged, not turned into a zero"
+
+
+# ---- the competitor line: one cell set, or no gap at all -----------------------
+
+CONTROL = REPO / "runs" / "scratch_metrics_test.json"
+LAYA_WITNESS = REPO / "runs" / "laya_decision_v2_test.json"
+
+
+@pytest.mark.skipif(not (PILOT / "test.jsonl").exists(), reason="pilot corpus not on disk")
+def test_the_competitor_line_averages_one_cell_set_not_two(tmp_path):
+    """SPEC §8's three rows are only comparable if the gap is over *the same cells*.
+
+    Each harness's own summary is a different statistic on a different sample: laya's
+    `overall_acc` is row-weighted over its own 40-rows-per-source draw, myna's MACRO is
+    unweighted over 16 (source, question) cells of all 1,440 test rows. Subtracting one
+    from the other is the mistake this pins shut — so the line must print the
+    intersection's numbers and the row-weighted overall must appear nowhere in the run.
+    """
+    if not (CONTROL.exists() and LAYA_WITNESS.exists()):
+        pytest.skip("the control witness or the laya witness is not on disk")
+    committed = (REPO / "runs" / "report_scratch_vs_laya.log").read_text().splitlines()
+    want = [ln for ln in committed if ln.strip().startswith("myna ")]
+    assert len(want) == 1, committed[-6:]
+    out = tmp_path / "joined.json"
+    r = _cli(["--suite", str(PILOT), "--split", "test", "--metrics", str(CONTROL),
+              "--laya", str(LAYA_WITNESS), "--out", str(out)])
+    assert "MACRO over the 16 of 16 cells BOTH scored" in r.stdout, r.stdout[-800:]
+    assert want[0] in r.stdout, \
+        f"the committed witness says {want[0]!r}; this run says otherwise"
+    both = json.loads(out.read_text())["macro"]["both"]
+    assert both["gap"] == pytest.approx(both["myna"] - both["laya"])
+    assert both["cells"] == 16 and both["cells_scored"] == 16, both
+    assert "per-cell, unweighted" in r.stdout and "row-weighted overall" in r.stdout
+    assert "contrastive/decision is 2 rows of that JSON over 40 answers" in r.stdout, \
+        "a cell assembled from two competitor rows has to say so where the gap is printed"
+    assert "0.6319" not in r.stdout and "overall_acc" not in r.stdout, \
+        "the row-weighted overall leaked into a per-cell comparison"
+    assert not any(ln.startswith("  note:") and "absent from the laya JSON" in ln
+                   for ln in r.stdout.splitlines()), \
+        "both sides scored all 16 cells, so the note must stay silent"
+
+
+@pytest.mark.skipif(not (PILOT / "test.jsonl").exists(), reason="pilot corpus not on disk")
+def test_a_cell_the_competitor_never_scored_moves_the_floor_too(tmp_path):
+    """Drop one laya cell and the intersection shrinks — *including its floors*.
+
+    The floor beside a competitor number has to be the floor of the cells in that
+    number. Reusing the 16-cell floor next to a 15-cell gap would flatter whichever side
+    lost the harder cell, which is exactly the shape of the error §9.30 buried.
+    """
+    if not (CONTROL.exists() and LAYA_WITNESS.exists()):
+        pytest.skip("the control witness or the laya witness is not on disk")
+    data = json.loads(LAYA_WITNESS.read_text())
+    dropped = ("imdb", "positive")
+    data["rows"] = [row for row in data["rows"]
+                    if (row["source"], row["qid"]) != dropped]
+    assert len(data["rows"]) == 16, "the witness changed shape; find the row again"
+    laya = tmp_path / "laya_minus_one.json"
+    laya.write_text(json.dumps(data))
+    out = tmp_path / "joined.json"
+    r = _cli(["--suite", str(PILOT), "--split", "test", "--metrics", str(CONTROL),
+              "--laya", str(laya), "--out", str(out)])
+    assert "MACRO over the 15 of 16 cells BOTH scored" in r.stdout, r.stdout[-800:]
+    assert "note: 1 scored cell(s) are absent from the laya JSON" in r.stdout
+    j = json.loads(out.read_text())
+    both = j["macro"]["both"]
+    shared = [c for c in j["cells"] if c["acc"] is not None
+              and (c["source"], c["question"]) != dropped]
+    assert both["cells"] == 15 and both["cells_scored"] == 16, both
+    assert both["majority"] == pytest.approx(
+        sum(c["majority"] for c in shared) / len(shared)), \
+        "the floor beside the gap is not the gap's own floor"
+    assert both["myna"] == pytest.approx(
+        sum(c["acc"] for c in shared) / len(shared)), \
+        "myna's side of the gap is averaged over cells laya never scored"
+    by_cell = {}
+    for row in data["rows"]:
+        by_cell.setdefault((row["source"], row["qid"]), []).append(row)
+
+    def merged(key):
+        parts = by_cell[key]
+        tot = sum(p["n"] for p in parts)
+        return (sum(p["acc"] * p["n"] for p in parts) / tot if tot
+                else sum(p["acc"] for p in parts) / len(parts))
+
+    assert both["laya"] == pytest.approx(
+        sum(merged((c["source"], c["question"])) for c in shared) / len(shared)), \
+        "laya's side of the gap is not the merged value of the cells it shares with mine"
+    assert both["majority"] != pytest.approx(j["macro"]["majority"]), \
+        "the 15-cell floor came out identical to the 16-cell one: nothing was dropped"
 
 
 @pytest.mark.skipif(not (PILOT / "test.jsonl").exists(), reason="pilot corpus not on disk")
