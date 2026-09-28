@@ -2057,8 +2057,8 @@ Kept permanently, because the value of this project's claims is that they surviv
    (§9.44's decay, in a doc that had no read-back over it; the registry's counts do, the map's do
    not, and this tick updated it by hand for the same reason it updated the others). The 51-vs-54
    mutation count this pass first "found" was itself wrong — `grep` against `HEAD` showed the line
-   never existed — which is the §7.2 half of the same rule: a count is quoted from the artifact, and
-   the artifact here is `git diff`.
+   never existed — which is §9.44's rule turned on the instruments reading them: a count is quoted
+   from the artifact, and the artifact here is `git diff`.
    The general form: **tests written beside a harness in one sitting inherit the harness's blind
    spots — they pin the numbers that were interesting and skip the plumbing that decides what gets
    printed. Read a battery's survivors by which half of the file they sit in: 8/8 in the pure
