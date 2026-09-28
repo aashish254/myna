@@ -57,8 +57,10 @@ STAGED = "/kaggle/working/myna"
 EXPERIMENTS = {
     "extended_ce_s0": {
         "steps": 10_000, "loss": "ce", "seed": 0, "open": True,
-        "target": "G1: dev was flat from step 2250 of the 3600-step run, so what is on "
-                  "the table is dose, not loss",
+        "target": "G1 not met, measured: 0.4893 (runs/v1b_kaggle_3600b.report.json). "
+                  "That run's dev tail still gains +0.0072 per 1,000 updates, which at "
+                  "10k projects ~+0.05 against the +0.211 G1 needs: this lane is here to "
+                  "falsify the dose reading, not to hope in it (SPEC §9.38)",
     },
     "extended_ce_s1": {
         "steps": 10_000, "loss": "ce", "seed": 1, "open": True,

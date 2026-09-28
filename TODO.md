@@ -447,8 +447,11 @@ So every "train" item below is split into *prepare/verify the Kaggle path locall
       `os.walk(followlinks=True)` because datasets arrive as **symlinks** and `Path.glob("**")`
       does not descend into them, refuses to guess the owner, prices every cell from the measured
       5.62 s/update, keeps the four measured-dead ablation cells out of the default lane, and
-      writes `is_private: true` with nothing pushed. `tests/test_kaggle_bundle.py` is 27 tests and
-      `bench/mutation_kaggle_bundle.py` carries **39 mutants, 39 caught**. `kaggle/run.py` gained
+      writes `is_private: true` with nothing pushed — and the reason its open lane now states a
+      measured slope instead of a remembered one is §9.38. `tests/test_kaggle_bundle.py` is **29
+      tests** and `bench/mutation_kaggle_bundle.py` carries **42 mutants, 42 caught, exit 0**
+      (`runs/mutation_kaggle_bundle.log`): the two figures this line used to carry — 27 tests, 39/39
+      — described a battery that had never run to completion, which §9.40 is about. `kaggle/run.py` gained
       `--free-gib` (the T4 memory plan reads free bytes *before* the model loads) and
       `--warm-start`, and it now **refuses** `--resume` onto a snapshot that already reached its
       requested step — SPEC §5 P9 9e measured what that costs: a spent cosine schedule trains at
@@ -469,11 +472,37 @@ So every "train" item below is split into *prepare/verify the Kaggle path locall
       `baseline copy: green` logs witnessed a tree that no longer existed (§9.39). Both scratches
       now derive the top-level file set from the filesystem, and both logs regenerate green:
       **gates 17/17, reproduce 21/21, exit 0 each**.
-      Two remembered claims died on the way and are logged as **§9.37** (one run printed two      "test macro" numbers — 0.3983 from the diagnostic's roll-up, 0.4893 from the committed
+      Two remembered claims died on the way and are logged as **§9.37** (one run printed two
+      "test macro" numbers — 0.3983 from the diagnostic's roll-up, 0.4893 from the committed
       report's; the gate quotes the one whose command is re-runnable) and **§9.38** ("dev was flat
       from step 2,250" — the committed log's tail is +0.0072 per 1,000 updates and 0.4355 is the
       run's high, so dose is still not the answer but for a measured reason: the 10k pair projects
       ≈ +0.046 for ≈ 31.2 GPU h against a 30 h/week quota).
+- [x] **9g** A mutation battery that had never finished, and the reason its `39/39` was in the
+      entry above. *(this tick)*
+      `bench/mutation_kaggle_bundle.py` has carried `the dry run runs the job` since its first
+      commit, and its docstring explained that the probe is cheap because a test asks for one
+      update. The *first* `--dry-run` test did not ask for one update: it called the entrypoint at
+      the default dose, so breaking the short-circuit made the checker launch a real 10,000-update
+      CPU run. Measured, not inferred: the battery stopped after `[13/40]` with `myna.train …
+      --steps 10000 --batch 32 --vocab 8192` alive inside it at 11 minutes, killed by exact PID, and
+      `pytest_in`'s `timeout=1800` had no handler — so the end state of that mutant is either an
+      hour of the MacBook's fan or a traceback that orphans the trainer. `_run_py` now appends
+      `MINI_DOSE` (`--steps 1 --batch 1 --vocab 128`) to any `--dry-run` that did not name a dose,
+      and `pytest_in` gives pytest its own process group and `killpg`s it on timeout (600 s).
+      Capping the print removed `--steps 10000`, `--batch 32` and `--vocab 8192` from the
+      command-line assertion, so `test_the_default_dose_is_the_one_the_docs_price` reads
+      `run.DEFAULTS` without launching anything, and two new mutants (`"steps": 10_000`→`500`,
+      `"batch": 32`→`512`) exist because a check that replaced a check has to be paid for — both are
+      caught by that test and nothing else. Battery: **42 mutants, 42 caught, exit 0**, witnessed in
+      the repo for the first time as `runs/mutation_kaggle_bundle.log`; `the dry run runs the job`
+      fails at `[16/42]` in seconds. The same entry fixed the open lane's `target`, which was still
+      printing "dev was flat from step 2250" as the reason to spend 31 GPU hours — §9.38's own
+      finding, one screen away. Suite: **436 passed, 1 skipped**, and that is not 19 tests of new
+      work: 17 of them skip when their extra or artifact is absent (`onnxruntime` alone is 14, and
+      the worktree's venv does not have it — verified by importing from it), so a suite count only
+      compares with the tree it was measured in. `make gates` 7/7 with **3 met / 3 not met / 1
+      open**; `make repro` **26/26 rows, 55 figures**. Logged as **§9.40**.
 - [ ] **9d** `banking77/intent` and `mnli/relation` are inside or outside G1's scope — a decision
       for the user, recorded so a later run does not silently average them back in.
 

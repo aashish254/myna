@@ -155,7 +155,8 @@ split, instruction-derived strata, laya's own accuracies joined by cell, G1 verd
 `mutation_paraphrase.py` (the P1 gate's mutation battery, 29/29),
 `mutation_memory_plan.py` (the P3 sizing/stop/resume gate, 44 mutations),
 `mutation_report.py` (the 3g reporting gate: every floor, weight and stratum in the table),
-`mutation_kaggle_bundle.py` (the entrypoint + packager gate), `check_python311.py` (the 3.11 witness
+`mutation_kaggle_bundle.py` (the entrypoint + packager gate, 42 mutations — and §9.40 is the reason
+its catching test is capped to one update rather than a training run), `check_python311.py` (the 3.11 witness
 that runs the package on a real 3.11 interpreter and exits 2 rather than skipping),
 `bench_latency_matched.py` (the 4a/4b harness: one process, both engines, matched inputs, `flock`ed
 output, and since 8a a `meta` that carries its own argv and the box's load average at the end of
@@ -473,7 +474,10 @@ optimization.** boolq and mnli are the permanent half of it — their instructio
       staged byte, and prints the upload command instead of running it.
       Witness: `16 passed` in `tests/test_kaggle_bundle.py`, including a real 2-update CPU training
       through the entrypoint and a lossy-copy build that exits non-zero. Gate:
-      `bench/mutation_kaggle_bundle.py` → **25/25** (first pass 21/25; §9.15).
+      `bench/mutation_kaggle_bundle.py` → **25/25** (first pass 21/25; §9.15). That figure is the
+      state of P3's list, not a re-runnable number: the harness could not reach the end of its own
+      `the dry run runs the job` mutant until §9.40 capped what the catching test was willing to
+      launch. Current: **42/42, exit 0**, in `runs/mutation_kaggle_bundle.log`.
 - [x] **3c** Python 3.11. `requires-python` is `>=3.11` (it was `>=3.13`, which made the box's own
       interpreter a *silent fallback*), every file under `src/ tests/ bench/ kaggle/` parses under
       `feature_version=(3, 11)`, and `bench/check_python311.py` runs the whole thing on a real 3.11
@@ -1772,7 +1776,42 @@ Kept permanently, because the value of this project's claims is that they surviv
    `Makefile`) instead of a second list, and re-running them writes logs that are **byte-identical
    to the committed ones** — the same 17 mutants, the same 21, all caught, exit 0 — which is the
    evidence that the checker under test never changed and only the harness had been quietly
-   disabled: **gates 17/17, reproduce 21/21**, alongside `mutation_kaggle_bundle.py`'s
-   39/39. The general form: **a guard that aborts is only as good as the habit of checking that it
+   disabled: **gates 17/17, reproduce 21/21**. That sentence is where this entry's own rule bites:
+   it ends `alongside mutation_kaggle_bundle.py's 39/39`, and that third figure was inherited rather
+   than re-run — which entry 40 turns out to be a story about a battery that could not have printed
+   it. The general form: **a guard that aborts is only as good as the habit of checking that it
    fired** — a battery that refuses is honest, but an unfixed refusal turns every later green
    claim about it into a report about the past.
+40. **The mutant that entry 39's own last line quoted had never been survived — because the test
+   that catches it was ready to run the job.** `bench/mutation_kaggle_bundle.py` carries
+   `the dry run runs the job` (`if args.dry_run: return 0` → `if args.dry_run and False:`), and its
+   docstring explained that the probe is cheap: *"a test that asks for one update so the mutant
+   costs one update"*. That was true of one of the seven `--dry-run` call sites in
+   `tests/test_kaggle_bundle.py` and false of the first one. `pytest -x` reaches
+   `test_dry_run_prints_the_exact_command_and_nothing_else` before the cheap one, and that test
+   invoked the entrypoint at the **default dose** — so the mutant does not cost one update, it
+   costs ten thousand on the CPU of whoever is checking. Measured 2026-09-28: the battery stopped
+   after `[13/40]`, and `ps` inside it showed `myna.train … --steps 10000 --batch 32 --vocab 8192`
+   alive at 11 minutes, which I killed by PID. Worse, `pytest_in` had carried `timeout=1800` with no
+   handler since the file's first commit (`e032bd3`, where the mutant and the uncapped test already
+   coexisted): past half an hour that battery's end state is a `TimeoutExpired` traceback, and
+   `subprocess.run`'s timeout kills only the child it spawned, so the trainer is left reparented
+   and the MacBook hot. Which of the two the run would have become, nobody found out, because the
+   wait ended by hand at 11 minutes — and that is the whole epistemics of this entry: the figures
+   quoted for the battery (`25/25` at §5 P3 3b, `39/39` in entry 39) were neither observed nor
+   refuted, they were inherited. Two fixes. `_run_py` now appends `MINI_DOSE` (`--steps 1 --batch 1
+   --vocab 128`) to any `--dry-run` that did not name a dose — steps alone is not a cap, the batch
+   and the vocabulary are what the seconds go to — and `pytest_in` runs pytest in its own process
+   group (`start_new_session`) and `killpg`s it, so a hang costs 600 s and leaves nothing running.
+   Capping the print has a price the repo should not have paid twice: the printed command stopped
+   carrying the defaults, so `"--steps 10000"`, `"--batch 32"` and `"--vocab 8192"` left the
+   assertion loop. A test that reads `run.DEFAULTS` without launching anything took their place,
+   and two new mutants (`"steps": 10_000`→`500`, `"batch": 32`→`512`) exist to prove it bites, and
+   both are caught by that test and by nothing else. The battery is now **42/42 caught, exit 0**,
+   logged to `runs/mutation_kaggle_bundle.log` and committed, because §9.30 is the rule this entry
+   exists to learn from; `the dry run runs the job` is caught at `[16/42]` by the test it was always
+   meant to fail.
+   The general form: **a probe has to be affordable by the test that answers it** — a mutation
+   whose honest cost is a training run is a mutation nobody re-runs, so the figure decays into
+   inheritance. And entry 39's rule applies to entry 39: it named the habit of checking that a
+   battery finished, then quoted this battery's `39/39` from the record rather than from a run.

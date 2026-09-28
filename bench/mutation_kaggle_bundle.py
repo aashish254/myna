@@ -13,14 +13,25 @@ Same harness as `mutation_paraphrase.py`: `src`, `tests`, `kaggle` and
 the mutation under test is the one being imported. `data/` is symlinked because
 the packaging tests hash the real pilot corpus.
 
-Two holes are named rather than probed: `if args.dry_run: return 0` mutating to
-`if False` *is* caught, by a test that asks for one update so the mutant costs one
-update; and the worst upload bug — a literal `subprocess.run(["kaggle",
-...])` in the packager — is never installed, because the `kaggle` package *is*
-present in this venv and a battery has no right to risk publishing to a real
+One hole is named rather than probed: the worst upload bug — a literal `subprocess.run(
+["kaggle`, ...])` in the packager — is never installed, because the `kaggle` package
+*is* present in this venv and a battery has no right to risk publishing to a real
 account. The "claims it uploaded" mutant stands in for it, and the same test
 catches both halves of the promise: the command must be printed, and the word
 "uploaded" must not appear.
+
+The other hole used to be described as cheap, and that was wrong. `if args.dry_run:
+return 0` mutating to `if args.dry_run and False: return 0` *is* probed, and on
+2026-09-28 the battery stopped at 13/40 with a real 10,000-update CPU training run
+inside it: the mutant is caught by a test that asserts on the printed command, but the
+first such test asked for the *default* dose, so breaking the short-circuit made it
+launch what it was checking the print of. The 30-minute timeout then fired, killed
+pytest and left the trainer as an orphan on a fan-noising MacBook. Two fixes, both in
+this pair of files: `MINI_DOSE` in the test helper caps every uncapped `--dry-run`
+(so the mutant now costs one update, which is what the old comment claimed), and
+`pytest_in` runs pytest in its own process group so a timeout kills the trainer too.
+The cost of the lesson is the two `DEFAULTS` mutants below — a capped print cannot
+check the printed defaults, so those moved to a test that reads the module.
 
 `--corpus` discovery used to be on that list too, on the reasoning that
 `/kaggle/input` only exists on the box. It is probed now: `find_corpus` reads the
@@ -39,7 +50,9 @@ because every test staged a *successful* copy. Three tests now cover exactly
 those, and they are the reason the packager's promises are worth quoting.
 """
 
+import os
 import shutil
+import signal
 import subprocess
 import sys
 import tempfile
@@ -47,6 +60,10 @@ from pathlib import Path
 
 ROOT = Path.cwd()
 TESTS = ["tests/test_kaggle_bundle.py"]
+# The unmutated copy takes ~36s, so ten minutes is ~16x the honest run: enough for a
+# mutant that costs one real update, short enough that a hang is reported rather than
+# slept through.
+PYTEST_TIMEOUT = 600
 RUN = "kaggle/run.py"
 PKG = "kaggle/package_dataset.py"
 CAMP = "kaggle/campaign.py"
@@ -64,6 +81,14 @@ MUTATIONS = [
      '"group_sample": "pool",', '"group_sample": "uniform",'),
     ("the cadence on the box becomes 500 updates", RUN,
      '"save_every": 25,', '"save_every": 500,'),
+    # The printed command now carries a capped dose (MINI_DOSE in the test file), so
+    # the defaults themselves are asserted off the module. These two mutants exist to
+    # prove that test bites: without them, capping the print would have quietly
+    # removed the only check on 10,000 steps and a 32-row batch.
+    ("the default dose stops being the 10,000 updates the launch docs price", RUN,
+     '"steps": 10_000,', '"steps": 500,'),
+    ("the default batch forgets it is an upper bound", RUN,
+     '"batch": 32,', '"batch": 512,'),
     ("the drift tolerance on the box becomes 10x", RUN,
      '"stop_factor": 1.5,', '"stop_factor": 10.0,'),
     ("the memory safety margin disappears", RUN,
@@ -137,6 +162,8 @@ MUTATIONS = [
      'STAGED = "/kaggle/working/myna"', 'STAGED = "/kaggle/myna"'),
     ("the generator prices a cell off the guessed rate", CAMP,
      "SECONDS_PER_STEP = 20225 / 3600", "SECONDS_PER_STEP = 1.5"),
+    ("the open lane buys 31 GPU hours off a remembered slope", CAMP,
+     "+0.0072 per 1,000 updates, which at ", "flat from step 2250, which at "),
     ("the generator emits a flag the runner does not accept", CAMP,
      'f"    --free-gib {free_gib:g}"', 'f"    --context-len {free_gib:g}"'),
     ("the measured-dead ablation goes back into the default lane", CAMP,
@@ -168,10 +195,24 @@ def make_scratch(tmp):
 
 
 def pytest_in(repo):
-    env = {k: v for k, v in __import__("os").environ.items() if k != "PYTHONPATH"}
-    return subprocess.run([sys.executable, "-m", "pytest", *TESTS, "-q", "-x", "--no-header",
-                           "-p", "no:cacheprovider"],
-                          capture_output=True, text=True, cwd=repo, env=env, timeout=1800)
+    env = {k: v for k, v in os.environ.items() if k != "PYTHONPATH"}
+    cmd = [sys.executable, "-m", "pytest", *TESTS, "-q", "-x", "--no-header",
+           "-p", "no:cacheprovider"]
+    # `start_new_session`, so the timeout can kill the *group*. A test that launches
+    # training outlives pytest otherwise: on 2026-09-28 the `the dry run runs the job`
+    # mutant left a 10,000-update CPU run burning the MacBook after the battery had
+    # already died on TimeoutExpired — a battery that reports by orphaning a trainer
+    # is a hazard, not a check. A timeout is a caught mutant either way.
+    proc = subprocess.Popen(cmd, cwd=repo, env=env, stdout=subprocess.PIPE,
+                            stderr=subprocess.STDOUT, text=True, start_new_session=True)
+    try:
+        out = proc.communicate(timeout=PYTEST_TIMEOUT)[0]
+        return subprocess.CompletedProcess(cmd, proc.returncode, out, "")
+    except subprocess.TimeoutExpired:
+        os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
+        out = proc.communicate()[0]
+        out += f"\nTIMEOUT after {PYTEST_TIMEOUT}s -- the whole group was killed"
+        return subprocess.CompletedProcess(cmd, 99, out, "")
 
 
 def run_one(rel, old, new, tmp):

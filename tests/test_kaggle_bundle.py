@@ -25,6 +25,9 @@ The rule each test protects:
 * the stage names the account that owns it, and never guesses: no owner, no stage.
   The constant that used to supply one named an account that is not the one holding
   the GPU quota, and the hand-edited metadata on disk is the evidence.
+* a `--dry-run` is a print, never a job — and the *test* for that promise is capped so
+  that breaking the short-circuit costs one update instead of ten thousand on the box
+  that is checking it (`MINI_DOSE`; the mutation battery is what measured the difference).
 * the notebook cells the launch docs paste are *generated*, and the generator is held
   to the box: every flag it emits is one `run.py` accepts, every `/kaggle/...` path it
   emits is a shape the box has, its setup cell stages a mount made of symlinks, and the
@@ -57,7 +60,19 @@ V1B_LOG = REPO / "runs" / "v1b_kaggle_3600b.train.log"
 SPLITS = ("train.jsonl", "development.jsonl", "test.jsonl", "calibration.jsonl")
 
 
+# What a broken `--dry-run` short-circuit is allowed to cost. Measured 2026-09-28:
+# the mutation battery's `the dry run runs the job` mutant hung for half an hour
+# because the first `--dry-run` test asked for the *default* dose — 10,000 real CPU
+# updates — and pytest's own timeout then killed the wrapper but not the trainer it
+# had spawned. One update at one row per group over a 128-token vocabulary is the
+# same proof for seconds. Steps alone is not a cap: batch and vocab are what a CPU
+# box actually spends time on.
+MINI_DOSE = ("--steps", "1", "--batch", "1", "--vocab", "128")
+
+
 def _run_py(argv, name="smoke", env_extra=None, expect_zero=True):
+    if "--dry-run" in argv and "--steps" not in argv:
+        argv = [*argv, *MINI_DOSE]
     env = {**os.environ, "PYTHONPATH": str(REPO / "src")}
     env.pop("EXPERIMENT_NAME", None)
     if name is not None:
@@ -125,20 +140,38 @@ def test_dry_run_prints_the_exact_command_and_nothing_else(tmp_path):
     assert "myna.train" in cmd and "--resume" not in cmd, "nothing to resume yet"
     for flag in ("--row-batch", "--paraphrase on", "--accum-groups 8", "--max-q-cells 2048",
                  "--group-sample pool", "--save-every 25", "--stop-factor 1.5",
-                 "--mem-safety 0.6", "--eval-every 250", "--steps 10000", "--batch 32",
-                 "--seed 0", "--vocab 8192", "--device auto"):
+                 "--mem-safety 0.6", "--eval-every 250", "--seed 0", "--device auto"):
+        assert flag in cmd, f"{flag} missing from the command:\n{cmd}"
+    # what the caller passed must reach the command too, or the printed line is the
+    # defaults rather than the plan. The three numbers a dry run is capped to are the
+    # defaults' own test's subject: `test_the_default_dose_is_the_one_the_docs_price`.
+    for flag in ("--steps 1", "--batch 1", "--vocab 128"):
         assert flag in cmd, f"{flag} missing from the command:\n{cmd}"
     assert f"{tmp_path / 'runs' / 'smoke'}" in cmd
     assert not (tmp_path / "runs" / "smoke").exists(), "a dry run must not create the run"
 
 
+def test_the_default_dose_is_the_one_the_docs_price():
+    """The launch docs and `campaign.py` price a 10,000-update run off these numbers,
+    and the printed command no longer carries them (a dry run is capped so a broken
+    short-circuit cannot burn the box). Read off the module, so nothing is launched."""
+    sys.path.insert(0, str(REPO / "kaggle"))
+    import run as krun
+
+    assert krun.DEFAULTS["steps"] == 10_000
+    assert krun.DEFAULTS["batch"] == 32 and krun.DEFAULTS["vocab"] == 8192
+    assert krun.DEFAULTS["eval_every"] == 250 and krun.DEFAULTS["save_every"] == 25
+
+
 def test_dry_run_launches_nothing_even_with_the_flags_a_real_run_needs(tmp_path):
-    """Cheap on purpose: `--steps 1` means that if the dry-run short-circuit ever
-    breaks, this test spends one update rather than ten thousand."""
+    """The same promise as the test above, made against the dose a real run passes:
+    what keeps either one cheap is `MINI_DOSE`, and the explicit flags here are what
+    `--dry-run` would have to honour if the short-circuit ever broke."""
     suite = _write_suite(tmp_path / "suite")
     root = tmp_path / "runs"
     r = _run_py(["--corpus", str(suite), "--dry-run", "--out-root", str(root),
-                 "--steps", "1", "--batch", "1", "--vocab", "128"])
+                 "--device", "cpu", "--paraphrase", "off", "--score-loss", "ce",
+                 "--save-every", "1", "--stop-factor", "1.5", *MINI_DOSE])
     assert len([ln for ln in r.stdout.splitlines() if ln.strip()]) == 1
     assert not root.exists(), f"--dry-run created {root}"
 
@@ -176,11 +209,14 @@ def test_a_finished_snapshot_is_not_resumed(tmp_path):
     out = tmp_path / "runs" / "smoke"
     out.mkdir(parents=True)
     (out / "model_last.pt").write_bytes(b"x")
+    # a named dose, so `--dry-run`'s cap does not apply — hence a dose this test is
+    # willing to have launched: the refusal is about the *relation* between the two
+    # numbers, and 4-of-8 says it as honestly as 750-of-3600 did.
     argv = ["--corpus", str(suite), "--dry-run", "--out-root", str(tmp_path / "runs"),
-            "--steps", "3600"]
-    (out / "metrics.json").write_text(json.dumps({"last_step": 750}))
+            "--steps", "8", "--batch", "1", "--vocab", "128"]
+    (out / "metrics.json").write_text(json.dumps({"last_step": 4}))
     assert "--resume" in _run_py(argv).stdout, "a killed job is what --resume is for"
-    (out / "metrics.json").write_text(json.dumps({"last_step": 3600}))
+    (out / "metrics.json").write_text(json.dumps({"last_step": 8}))
     r = _run_py(argv, expect_zero=False)
     msg = r.stdout + r.stderr
     assert r.returncode != 0, "a spent schedule must not be continued silently"
@@ -432,6 +468,20 @@ def test_the_priced_cost_is_measured_and_its_witness_is_committed():
     assert camp.SECONDS_PER_STEP == pytest.approx(20225 / 3600)
     assert camp.hours(3600) == pytest.approx(5.62, abs=0.01)
     assert camp.hours(10_000) == pytest.approx(15.6, abs=0.05)
+
+
+def test_the_open_lane_states_a_measured_slope_and_not_a_remembered_one():
+    """The `target` line is what a reader chooses the lane on, and it used to read "dev
+    was flat from step 2250" — a sentence §9.38 disproved out of the committed log
+    (+0.0072 over the last 1,000 updates, and 0.4355 is the run's high). A reason that
+    buys 31 GPU hours owes the same witness as a figure does."""
+    camp = _campaign()
+    for name in ("extended_ce_s0", "extended_ce_s1"):
+        assert "flat" not in camp.EXPERIMENTS[name]["target"].lower(), name
+    out = _campaign_render("--owner", "pilot")
+    assert "+0.0072" in out and "0.4893" in out, "the lane must price itself off the tail"
+    assert "flat from step" not in out
+    assert "§9.38" in out, "the reason has to point at the artifact that corrected it"
 
 
 def test_the_measured_dead_ablation_is_not_in_the_default_lane():

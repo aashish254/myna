@@ -1,0 +1,89 @@
+baseline copy: green (1 test file)
+
+[ 1/42] caught      the entrypoint forgets --row-batch (boolq/mnli would not train)
+            FAILED tests/test_kaggle_bundle.py::test_dry_run_prints_the_exact_command_and_nothing_else
+[ 2/42] caught      the entrypoint trains on the suite wording
+            FAILED tests/test_kaggle_bundle.py::test_dry_run_prints_the_exact_command_and_nothing_else
+[ 3/42] caught      accumulation collapses to one set per update (the interference bug)
+            FAILED tests/test_kaggle_bundle.py::test_dry_run_prints_the_exact_command_and_nothing_else
+[ 4/42] caught      group sampling goes back to uniform (measured: starves the data-rich sets)
+            FAILED tests/test_kaggle_bundle.py::test_dry_run_prints_the_exact_command_and_nothing_else
+[ 5/42] caught      the cadence on the box becomes 500 updates
+            FAILED tests/test_kaggle_bundle.py::test_dry_run_prints_the_exact_command_and_nothing_else
+[ 6/42] caught      the default dose stops being the 10,000 updates the launch docs price
+            FAILED tests/test_kaggle_bundle.py::test_the_default_dose_is_the_one_the_docs_price
+[ 7/42] caught      the default batch forgets it is an upper bound
+            FAILED tests/test_kaggle_bundle.py::test_the_default_dose_is_the_one_the_docs_price
+[ 8/42] caught      the drift tolerance on the box becomes 10x
+            FAILED tests/test_kaggle_bundle.py::test_dry_run_prints_the_exact_command_and_nothing_else
+[ 9/42] caught      the memory safety margin disappears
+            FAILED tests/test_kaggle_bundle.py::test_dry_run_prints_the_exact_command_and_nothing_else
+[10/42] caught      the question branch is unbudgeted
+            FAILED tests/test_kaggle_bundle.py::test_dry_run_prints_the_exact_command_and_nothing_else
+[11/42] caught      the seed is left to chance
+            FAILED tests/test_kaggle_bundle.py::test_dry_run_prints_the_exact_command_and_nothing_else
+[12/42] caught      --eval-every is off, so a long run reports nothing mid-way
+            FAILED tests/test_kaggle_bundle.py::test_dry_run_prints_the_exact_command_and_nothing_else
+[13/42] caught      a run without a name silently picks one
+            FAILED tests/test_kaggle_bundle.py::test_no_experiment_name_is_a_refusal - as...
+[14/42] caught      a half-mounted corpus is accepted
+            FAILED tests/test_kaggle_bundle.py::test_a_half_mounted_corpus_fails_loud - a...
+[15/42] caught      corpus discovery stops following the mount's symlinks
+            FAILED tests/test_kaggle_bundle.py::test_corpus_discovery_follows_a_symlinked_kaggle_mount
+[16/42] caught      the dry run runs the job
+            FAILED tests/test_kaggle_bundle.py::test_dry_run_prints_the_exact_command_and_nothing_else
+[17/42] caught      --resume is never added, so re-running the cell restarts the job
+            FAILED tests/test_kaggle_bundle.py::test_resume_is_added_only_when_a_snapshot_exists
+[18/42] caught      --resume is added blindly, even with nothing to resume
+            FAILED tests/test_kaggle_bundle.py::test_dry_run_prints_the_exact_command_and_nothing_else
+[19/42] caught      a finished run is resumed, so the next cell trains at lr ~0
+            FAILED tests/test_kaggle_bundle.py::test_a_finished_snapshot_is_not_resumed
+[20/42] caught      the memory plan's free-bytes pin is dropped
+            FAILED tests/test_kaggle_bundle.py::test_the_free_gib_pin_reaches_the_plan_but_is_never_invented
+[21/42] caught      --warm-start never reaches the trainer
+            FAILED tests/test_kaggle_bundle.py::test_warm_start_is_a_flag_and_never_a_pair
+[22/42] caught      --warm-start and --resume are emitted together
+            FAILED tests/test_kaggle_bundle.py::test_warm_start_is_a_flag_and_never_a_pair
+[23/42] caught      runs share one directory
+            FAILED tests/test_kaggle_bundle.py::test_dry_run_prints_the_exact_command_and_nothing_else
+[24/42] caught      the output goes somewhere Kaggle does not persist
+            FAILED tests/test_kaggle_bundle.py::test_the_runs_root_is_kaggle_working - As...
+[25/42] caught      the stop rule's non-zero exit is swallowed
+            FAILED tests/test_kaggle_bundle.py::test_a_stopped_run_propagates_nonzero - a...
+[26/42] caught      --check never verifies the imports
+            FAILED tests/test_kaggle_bundle.py::test_check_reports_the_interpreter_it_is_running_under
+[27/42] caught      the staged copy is hashed against itself, not against the corpus
+            FAILED tests/test_kaggle_bundle.py::test_a_lossy_copy_fails_the_build_and_the_manifest_still_records_the_corpu
+[28/42] caught      verification is reduced to file sizes
+            FAILED tests/test_kaggle_bundle.py::test_a_same_size_edit_of_the_stage_is_still_a_problem
+[29/42] caught      a corrupt stage still reports OK
+            FAILED tests/test_kaggle_bundle.py::test_a_lossy_copy_fails_the_build_and_the_manifest_still_records_the_corpu
+[30/42] caught      the packager claims it uploaded
+            FAILED tests/test_kaggle_bundle.py::test_packaging_stages_the_pilot_byte_for_byte
+[31/42] caught      the dataset metadata omits a split
+            FAILED tests/test_kaggle_bundle.py::test_the_stage_names_the_account_and_never_guesses_it
+[32/42] caught      the staged metadata names a hardcoded account
+            FAILED tests/test_kaggle_bundle.py::test_the_stage_names_the_account_and_never_guesses_it
+[33/42] caught      the setup cell cannot see a symlinked mount
+            FAILED tests/test_kaggle_bundle.py::test_the_setup_cell_stages_a_mount_that_is_all_symlinks
+[34/42] caught      a corpus path with no owner in it
+            FAILED tests/test_kaggle_bundle.py::test_no_generated_cell_names_a_path_the_box_does_not_have
+[35/42] caught      the cells run the repo from a directory nothing creates
+            FAILED tests/test_kaggle_bundle.py::test_no_generated_cell_names_a_path_the_box_does_not_have
+[36/42] caught      the generator prices a cell off the guessed rate
+            FAILED tests/test_kaggle_bundle.py::test_the_priced_cost_is_measured_and_its_witness_is_committed
+[37/42] caught      the open lane buys 31 GPU hours off a remembered slope
+            FAILED tests/test_kaggle_bundle.py::test_the_open_lane_states_a_measured_slope_and_not_a_remembered_one
+[38/42] caught      the generator emits a flag the runner does not accept
+            FAILED tests/test_kaggle_bundle.py::test_every_flag_the_generator_emits_the_runner_accepts
+[39/42] caught      the measured-dead ablation goes back into the default lane
+            FAILED tests/test_kaggle_bundle.py::test_the_measured_dead_ablation_is_not_in_the_default_lane
+[40/42] caught      the generated kernel is public
+            FAILED tests/test_kaggle_bundle.py::test_the_nb_route_writes_a_pushable_kernel_and_pushes_nothing
+[41/42] caught      the generated kernel mounts no corpus
+            FAILED tests/test_kaggle_bundle.py::test_every_source_file_parses_under_python_311
+[42/42] caught      the kernel writes its id without the account it was given
+            FAILED tests/test_kaggle_bundle.py::test_the_nb_route_writes_a_pushable_kernel_and_pushes_nothing
+
+42/42 mutations caught
+EXIT=0
