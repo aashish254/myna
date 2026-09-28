@@ -133,7 +133,12 @@ myna wins are the ones a majority classifier wins too, so the margin G1 gates on
 +0.0563 → +0.0668 — eleven-thousandths. Dropping their whole sources is the same 14 cells, and
 even removing all five below-floor cells reaches 0.5526, still 0.147 short of 0.70. No scope
 choice here passes G1 (`runs/scope_pricing.json`); whether those two cells belong in the claim
-at all stays P9: 9d's call, and it is a decision about what the published number means.
+at all stays P9: 9d's call, and it is a decision about what the published number means. The
+table is mutation-checked like everything else this repo publishes
+(`uv run python bench/mutation_scope_pricing.py`, 24 mutants): its first pass caught 10 of them,
+and the 13 survivors were all in the harness's `main()` — the guard's individual comparisons, how
+the witness is assembled, and what the printed table puts under which column heading — not in the
+arithmetic, where 8 of 8 died (SPEC §9.46).
 
 The disclosure in the middle. The one checkpoint this repo ever trained on the
 upstream corpus scores **0.338** on those same 16 cells

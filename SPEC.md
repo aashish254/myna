@@ -158,6 +158,10 @@ split, instruction-derived strata, laya's own accuracies joined by cell, G1 verd
 `mutation_paraphrase.py` (the P1 gate's mutation battery, 29/29),
 `mutation_memory_plan.py` (the P3 sizing/stop/resume gate, 44 mutations),
 `mutation_report.py` (the 3g reporting gate: every floor, weight and stratum in the table),
+`scope_pricing.py` (the 9d scope table: the committed report's cells subset four ways, the
+roll-up *imported* from `myna.report` rather than restated, and the guard that refuses to print
+unless the unfiltered row reproduces the report to the digit) and its gate
+`mutation_scope_pricing.py` (24 mutations; §9.46 is why it exists and what its first pass found),
 `mutation_kaggle_bundle.py` (the entrypoint + packager gate, 42 mutations — and §9.40 is the reason
 its catching test is capped to one update rather than a training run), `check_python311.py` (the 3.11 witness
 that runs the package on a real 3.11 interpreter and exits 2 rather than skipping),
@@ -183,8 +187,11 @@ composition check, and a parity report — with its gate `bench/mutation_onnx.py
 when a snapshot exists, tee to `train.log`, `run.json`, non-zero propagation), `package_dataset.py`
 (stage the pilot corpus, verify every byte against the corpus, print the upload command, never run
 it), `requirements.txt`.
-`tests/`: **312 passing + 1 skipped** — the skip is the KEV-gated parity test, green wherever
-`kev` is installed. The 8a label pass added `test_train_logging.py` (4: `split_report`'s four
+`tests/`: **466 passing + 1 skipped** — the skip is the KEV-gated parity test, green wherever
+`kev` is installed. (A §3.4 map is present tense, so this count is due whenever the suite moves;
+it read **312** until tick 9j, which added the scope harness's 7 tests and 3 in
+`test_cli_help.py`. §9.44 is the rule and §9.46 is the tick that found the stale copy.)
+The 8a label pass added `test_train_logging.py` (4: `split_report`'s four
 figures pinned, a lopsided split distinguishable from an even one at the same total, the empty
 group set logging rather than raising) and one end-to-end `--no-laya` case in
 `test_latency_matched.py` that reads the box's live `getloadavg()` against the
@@ -885,7 +892,7 @@ are counted, and if nothing is left the run refuses. See §9.14.
       writes down, G4 still needs Kaggle, and P0's push is user-gated with no remote yet
       created.
 
-### P9 — The three defects the first valid checkpoint named *(9a shipped; 9b's fix measured dead; 9c local; 9d the user's call, now priced (§9.45); 9e measured dead too; 9f–9i are TODO's ticks: G1 is now `not met` on a committed witness, one mutation battery had never finished, the last unexplained V1-B number resolved into an aggregation, and the §9.40 sweep across all 14 batteries found no second unaffordable probe)*
+### P9 — The three defects the first valid checkpoint named *(9a shipped; 9b's fix measured dead; 9c local; 9d the user's call, now priced (§9.45); 9e measured dead too; 9f–9j are TODO's ticks: G1 is now `not met` on a committed witness, one mutation battery had never finished, the last unexplained V1-B number resolved into an aggregation, the §9.40 sweep across all 14 batteries found no second unaffordable probe, and the 15th battery — 9j's, for 9d's own scope table — found its tests could not see `main()` (§9.46)*
 
 Opened by the diagnostic run against `v1b-kaggle-3600b`'s own logits (TODO 3i's lane), which answers
 the capacity question in the direction that matters: **the mechanism is not broken, the cost
@@ -2010,7 +2017,8 @@ Kept permanently, because the value of this project's claims is that they surviv
    arithmetic is *imported*, never restated, and the unfiltered row has to reproduce the report's
    own published 0.4893 / 0.4331 / `g1.pass` to the digit or the script refuses to print anything.
    A second implementation of a roll-up is how one run gets two "test macro" numbers, and a scope
-   table computed by hand would have been the third. `tests/test_scope_pricing.py` (**11**) holds
+   table computed by hand would have been the third. `tests/test_scope_pricing.py` (**18**; **11**
+   when this entry was written, and §9.46 is what made the difference visible) holds
    the line in both directions — the row-weighted basis over the same 16 cells is asserted *not* to
    reproduce 0.4893, because a control that any aggregation would pass proves nothing — and one test
    edits the report's published macro and requires the guard to raise. Registry: `scope-pricing`,
@@ -2019,3 +2027,39 @@ Kept permanently, because the value of this project's claims is that they surviv
    re-synced.
    The general form: **an open decision the user owns can still be prepared — price every option out
    of committed artifacts, refuse to tick the box, and hand over the arithmetic with the trap named.**
+46. **The scope harness had 11 tests and they could not see two thirds of it.** §9.45 shipped
+   `bench/scope_pricing.py` with a test file beside it, and the repo's §7.1 rule ("a test that cannot
+   fail is not a gate") had nothing to say about the harness until `bench/mutation_scope_pricing.py`
+   ran for the first time: **10 of 24 mutations caught**. The survivors' *shape* is the finding, not
+   the tally — every one of the 8 mutations inside the pure `price()` arithmetic died, and **none** of
+   the 13 elsewhere did: 0/5 against the guard's individual comparisons (drop the `majority`
+   comparison, point the `myna` comparison at the report's `uniform` field, delete the `g1.pass`
+   check, widen `TOLERANCE` from 1e-12 to 0.05 — fifty times the smallest difference the table
+   exists to measure — the script still refused a
+   *doctored macro*, which is the one case the shipped test tried, so a guard that had stopped
+   checking was indistinguishable from a guard that worked), 0/5 in how the witness is assembled
+   (the `cmd` line, the `published` headline row, a `scopes` dict missing its control row, the two
+   cell lists), 0/4 in the printed table — the artifact README and the 9d note actually quote —
+   and 0/1 on the missing-`--report` boundary. `main()` had never been run successfully by anything:
+   no test asserted it exits 0, no test read what it prints, no test compared its output to the
+   witness in `runs/`. A harness that printed three scopes instead of four, or lost the line naming
+   its own command, kept a green suite.
+   Closed the same tick, in the order §7.1 prescribes: the battery reported, seven tests were written
+   against the reported holes (guard per compared field, verdict, the not-on-disk boundary, a clean
+   `main()` run whose regenerated JSON must equal the committed witness byte for byte minus its own
+   `--out`, and a `capsys` test that each row line carries that row's own cells, floor, margin and
+   verdict under the headers that name them), and the second pass is **24/24 caught, exit 0** in
+   **17 s** (`runs/mutation_scope_pricing.log`, baseline copy green with 18 tests). Suite:
+   **466 passed / 1 skipped in 193.95 s**; `test_cli_help.py` gained the harness and its battery, so
+   `--help` cannot become a run.
+   The pass also corrected one hand-copied count it did not cause: §3.4's map said **312 passing**
+   where the repo now collects 467 — 154 tests behind, in the one section written in present tense
+   (§9.44's decay, in a doc that had no read-back over it; the registry's counts do, the map's do
+   not, and this tick updated it by hand for the same reason it updated the others). The 51-vs-54
+   mutation count this pass first "found" was itself wrong — `grep` against `HEAD` showed the line
+   never existed — which is the §7.2 half of the same rule: a count is quoted from the artifact, and
+   the artifact here is `git diff`.
+   The general form: **tests written beside a harness in one sitting inherit the harness's blind
+   spots — they pin the numbers that were interesting and skip the plumbing that decides what gets
+   printed. Read a battery's survivors by which half of the file they sit in: 8/8 in the pure
+   function and 0/13 everywhere else is a sentence about the tests, not about the mutants.**

@@ -1,0 +1,53 @@
+baseline copy: green (1 test file) 18 passed in 0.36s
+
+[ 1/24] caught      the report-comparison tolerance is widened to a tenth
+            FAILED tests/test_scope_pricing.py::test_a_report_that_disagrees_with_the_control_refuses_to_print_a_table[acc
+[ 2/24] caught      the field comparison never fires
+            FAILED tests/test_scope_pricing.py::test_a_report_that_disagrees_with_the_control_refuses_to_print_a_table[acc
+[ 3/24] caught      the majority floor is no longer compared to the report
+            FAILED tests/test_scope_pricing.py::test_a_report_that_disagrees_with_the_control_refuses_to_print_a_table[maj
+[ 4/24] caught      the level is checked against the report's uniform floor
+            FAILED tests/test_scope_pricing.py::test_a_report_whose_verdict_disagrees_is_refused_too
+[ 5/24] caught      the verdict comparison is dropped
+            FAILED tests/test_scope_pricing.py::test_a_report_whose_verdict_disagrees_is_refused_too
+[ 6/24] caught      a subset row is priced against the published floor
+            FAILED tests/test_scope_pricing.py::test_every_witness_row_is_rederived_from_the_committed_cells
+[ 7/24] caught      a subset row reports the published level, not its own
+            FAILED tests/test_scope_pricing.py::test_every_witness_row_is_rederived_from_the_committed_cells
+[ 8/24] caught      the uniform floor is carried over instead of recomputed
+            FAILED tests/test_scope_pricing.py::test_every_witness_row_is_rederived_from_the_committed_cells
+[ 9/24] caught      option A keys on source, so it drops nothing
+            FAILED tests/test_scope_pricing.py::test_every_witness_row_is_rederived_from_the_committed_cells
+[10/24] caught      the below-floor scope excludes cells sitting exactly on their floor
+            FAILED tests/test_scope_pricing.py::test_every_witness_row_is_rederived_from_the_committed_cells
+[11/24] caught      the dropped count is the kept count
+            FAILED tests/test_scope_pricing.py::test_every_witness_row_is_rederived_from_the_committed_cells
+[12/24] caught      the verdict is computed with level and floor swapped
+            FAILED tests/test_scope_pricing.py::test_every_witness_row_is_rederived_from_the_committed_cells
+[13/24] caught      the margin shortfall is measured against the level
+            FAILED tests/test_scope_pricing.py::test_every_witness_row_is_rederived_from_the_committed_cells
+[14/24] caught      the witness stops naming the command that writes it
+            FAILED tests/test_scope_pricing.py::test_the_committed_report_writes_the_committed_witness
+[15/24] caught      the published headline row is replaced by the most filtered row
+            FAILED tests/test_scope_pricing.py::test_the_committed_report_writes_the_committed_witness
+[16/24] caught      the control row disappears from the witness's scopes
+            FAILED tests/test_scope_pricing.py::test_the_committed_report_writes_the_committed_witness
+[17/24] caught      the named cells print question/source instead of source/question
+            FAILED tests/test_scope_pricing.py::test_the_committed_report_writes_the_committed_witness
+[18/24] caught      the listed below-floor cells include the ones exactly on their floor
+            FAILED tests/test_scope_pricing.py::test_the_committed_report_writes_the_committed_witness
+[19/24] caught      the headline calls the uniform floor the macro
+            FAILED tests/test_scope_pricing.py::test_the_printed_table_prints_each_rows_own_level_floor_margin_and_verdict
+[20/24] caught      the headline calls the uniform floor the majority floor
+            FAILED tests/test_scope_pricing.py::test_the_printed_table_prints_each_rows_own_level_floor_margin_and_verdict
+[21/24] caught      the margin column prints a shortfall
+            FAILED tests/test_scope_pricing.py::test_the_printed_table_prints_each_rows_own_level_floor_margin_and_verdict
+[22/24] caught      the verdict column is printed from the cell count
+            FAILED tests/test_scope_pricing.py::test_the_printed_table_prints_each_rows_own_level_floor_margin_and_verdict
+[23/24] caught      the printed table drops the published scope row
+            FAILED tests/test_scope_pricing.py::test_the_printed_table_prints_each_rows_own_level_floor_margin_and_verdict
+[24/24] caught      a missing report is not reported
+            FAILED tests/test_scope_pricing.py::test_a_report_that_is_not_on_disk_says_so
+
+24/24 mutations caught
+EXIT=0 (watched to completion 2026-09-29 in the foreground: 15 s wall, 24 mutants, baseline copy green with 18 tests; this is the log of the FINAL battery file, after its docstring gained the deliberately-absent and __main__ paragraphs. The FIRST pass, against the 11 tests this harness shipped with, scored 10/24 and left 13 survivors plus one BAD-PATTERN (a pattern mis-indented by four spaces, which the battery reported instead of passing over); the holes are closed in this same commit and named in SPEC §9.46. An earlier 17 s run of the same 24 mutants is what §9.46 quotes, and the two logs differ only in the pytest timing the baseline line prints. Against this commit: suite 466 passed / 1 skipped in 193.95 s, `make repro` 28/28 rows / 61 figures, `make gates` 7/7 at 3 met / 3 not met / 1 open — which reads §2.2 counts back against the registry; nothing reads back §3.4, the gap §9.46 states rather than closes.)

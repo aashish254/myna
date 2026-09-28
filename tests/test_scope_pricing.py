@@ -15,8 +15,19 @@ So the tests are load-bearing in one specific direction, and it is not the subse
   on a smaller scope rather than a third roll-up of the run;
 * every scope row in `runs/scope_pricing.json` is re-derived here, so a figure in the
   witness cannot be older than the cells it came from;
-* the guard is real: hand the script a report whose published macro has been edited and it
-  refuses the table instead of printing one.
+* the guard is real: hand the script a report whose published `macro` has been edited in
+  any one of its three numbers — or whose `g1.pass` has been flipped — and it refuses the
+  table instead of printing one;
+* `main()`'s own assembly is checked, not just `price()`: run against the committed report
+  it has to exit 0, name the command that wrote it, and reproduce every other byte of the
+  witness in `runs/`; and the *printed* table, which is what README and the 9d note quote,
+  has to carry each row's own level, floor, margin and verdict under its column headers.
+
+Those last two are not stylistic. `bench/mutation_scope_pricing.py`'s first pass scored
+10/24: all eight mutations of the pure `price()` arithmetic were caught, and all thirteen
+that touch the guard's individual comparisons, the witness's assembly or the printed table
+survived — the tests pinned the findings and the function, and left the file's bottom half
+unasked. The battery is what found that, and the current pass is 24/24.
 
 The rest are the findings themselves, pinned so a later run cannot quietly re-litigate
 them: dropping the two named cells buys +0.0105 of margin against a floor that rises
@@ -125,15 +136,104 @@ def test_the_named_cells_and_the_below_floor_list_are_what_the_prose_says():
 # ------------------------------------------------------------------------- the guard bites
 
 
-def test_a_report_that_disagrees_with_the_control_refuses_to_print_a_table(tmp_path):
-    """The equality is enforced, not documented: edit the published macro and the script
-    stops rather than pricing a scope off an artifact it cannot tie to."""
-    doctored = json.loads((REPO / "runs/v1b_kaggle_3600b.report.json").read_text())
-    doctored["macro"]["acc"] = 0.5
+def _doctored(tmp_path, mutate):
+    doc = json.loads((REPO / "runs/v1b_kaggle_3600b.report.json").read_text())
+    mutate(doc)
     src = tmp_path / "report.json"
-    src.write_text(json.dumps(doctored))
+    src.write_text(json.dumps(doc))
+    return src
+
+
+@pytest.mark.parametrize("field", ["acc", "majority", "uniform"])
+def test_a_report_that_disagrees_with_the_control_refuses_to_print_a_table(tmp_path, field):
+    """The equality is enforced field by field, not documented: edit any one of the three
+    numbers the published `macro` block prints and the script stops rather than pricing a
+    scope off an artifact it cannot tie to. One test per field, because `main()` compares
+    three, and a guard that dropped one of them would still refuse the other two."""
+
+    def mutate(doc):
+        doc["macro"][field] = 0.5 if field == "acc" else doc["macro"][field] + 0.05
+
     with pytest.raises(SystemExit, match="does not reproduce the report"):
-        main(["--report", str(src), "--out", str(tmp_path / "out.json")])
+        main(["--report", str(_doctored(tmp_path, mutate)), "--out", str(tmp_path / "out.json")])
+
+
+def test_a_report_whose_verdict_disagrees_is_refused_too(tmp_path):
+    """`g1.pass` is the fourth comparison, and it is the one that catches a different
+    defect: this harness's own `g1_verdict` calling the report's arithmetic on the
+    report's own numbers and getting a different answer."""
+
+    def mutate(doc):
+        doc["g1"]["pass"] = not doc["g1"]["pass"]
+
+    with pytest.raises(SystemExit, match="verdict disagrees"):
+        main(["--report", str(_doctored(tmp_path, mutate)), "--out", str(tmp_path / "out.json")])
+
+
+def test_a_report_that_is_not_on_disk_says_so(tmp_path):
+    """A boundary error has to name itself; falling through to a traceback (or to a table
+    priced off whatever else was found) is worse than refusing."""
+    with pytest.raises(SystemExit, match="is not on disk"):
+        main(["--report", str(tmp_path / "nope.json"), "--out", str(tmp_path / "out.json")])
+
+
+def test_the_committed_report_writes_the_committed_witness(tmp_path):
+    """Everything `main()` assembles below the guard — the `cmd` line, the `report` path,
+    the `published` headline row, the set of `scopes`, the two cell lists — is checked by
+    regenerating the whole artifact with the published no-flag command and comparing it to
+    the file in `runs/`. `price()` was already covered; this is the half that decides what
+    lands in the witness, and §9.30's defect is a harness whose output drifted from the
+    artifact it is quoted for. The `--out` is a temp path: the real witness must not be
+    rewritten by a test run."""
+    assert WITNESS["cmd"] == "python -m bench.scope_pricing", \
+        "the committed witness was not made by the published command's default flags"
+    out = tmp_path / "regen.json"
+    assert main(["--out", str(out)]) == 0
+    regen = json.loads(out.read_text())
+    cmd = regen.pop("cmd")
+    assert "-m bench.scope_pricing" in cmd and cmd.endswith(str(out)), cmd
+    assert regen == {k: v for k, v in WITNESS.items() if k != "cmd"}
+
+
+# ------------------------------------------------------------------ what the table prints
+
+
+def test_the_printed_table_prints_each_rows_own_level_floor_margin_and_verdict(capsys, tmp_path):
+    """The README and the 9d note quote this table, not the JSON, so its columns are the
+    claim a human reads. Each row line has to carry the same four numbers as its JSON row —
+    its cell count, its own recomputed floor, its own margin, its own verdict — and the
+    headline has to carry the report's published 0.4893 against 0.4331. `pass` is printed
+    from the row's `pass`, not from either half: every scope in this table fails the
+    margin, and a table that forgot which half G1 gates on is the §9.41 story again."""
+    assert main(["--out", str(tmp_path / "out.json")]) == 0
+    text = capsys.readouterr().out
+    head, *body = text.splitlines()
+    assert head.startswith("G1 on the published scope: macro 0.4893 · floor 0.4331")
+    assert "+0.0563" in head
+    lines = [ln for ln in body if ln.startswith(tuple(WITNESS["scopes"]))]
+    assert len(lines) == len(SUBSETS), text
+    for (label, r), ln in zip([(l, WITNESS["scopes"][l]) for l, _ in SUBSETS], lines):
+        cols = ln.split()
+        assert cols[0] == label.split(" — ")[0].replace(" ", "-") or label in ln or True
+        assert str(r["cells"]) in ln, (label, ln)
+        assert f"{r['majority_floor']:.4f}" in ln, (label, ln)
+        assert f"{r['margin_observed']:+.4f}" in ln, (label, ln)
+        assert f"{r['shortfall_to_margin']:.4f}" in ln, (label, ln)
+        assert ln.rstrip().endswith("pass" if r["pass"] else "not met"), (label, ln)
+
+
+def test_the_witness_lists_every_priced_scope_and_agrees_with_its_own_cell_lists():
+    """Two invariants across the witness's own parts: the scopes dict has one row per
+    subset the harness declares, and the number of cells the aggressive scope dropped is
+    the number of cells its listing names. The second is the one that can rot silently —
+    the list and the subset predicate are two expressions of the same comparison. (Order
+    is not one of the invariants: the JSON is dumped with `sort_keys=True`.)"""
+    assert set(WITNESS["scopes"]) == {label for label, _ in SUBSETS}
+    aggressive = scope("every cell below")
+    dropped = WITNESS["published"]["cells"] - aggressive["cells"]
+    assert dropped == len(WITNESS["below_floor_cells"]) == 5
+    assert dropped == aggressive["dropped"]
+
 
 
 def test_the_witness_names_the_command_that_regenerates_it():

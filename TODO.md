@@ -610,6 +610,36 @@ So every "train" item below is split into *prepare/verify the Kaggle path locall
       `BAD-PATTERN`, zero `TIMEOUT`**, summed straight out of `runs/mutation_*.log` (14 files, 441
       caught), eleven of those files written by this session's three sweep parts and each closing with
       an `EXIT=0 (watched …)` line that names its wrapper.
+- [x] **9j** §7.1 applied to the harness 9d added: 24 mutations of `bench/scope_pricing.py`, whose
+      first pass caught 10 of them. *(this tick)*
+      The gate says every new thing that publishes a claim gets mutation-checked, and the scope table
+      publishes one — 9d shipped it with `tests/test_scope_pricing.py` and no battery, while three of
+      its sibling table-harnesses (`risk_coverage`, `eval_scratch`, `bench_latency_matched`) all have
+      one. The 24 mutants split four ways: the guard's individual comparisons, the arithmetic, the
+      witness's assembly, the printed table. **10/24 caught**, and the survivors were not scattered —
+      every arithmetic mutant died (8/8, because `test_every_witness_row_is_rederived` recomputes
+      `price()` from the report's own cells), and 13 lived: 5 of the guard (drop the `majority_floor`
+      comparison, read `myna` off `published["uniform"]`, delete the `g1.pass` check, widen
+      `TOLERANCE` to 0.05 — each still *refuses* a doctored `macro.acc`, which is the only case the
+      11 tests tried), 5 of how the witness is assembled (`cmd`, `published`, a `scopes` dict missing
+      its control row, the two cell lists), 4 of the printed table, 1 of the missing-`--report`
+      boundary. The shape says it: `main()` had never been run successfully by anything — no test
+      checked it exits 0, none read stdout, none compared its JSON to `runs/scope_pricing.json`. A
+      harness printing three rows instead of four, or having lost the line naming its own command,
+      kept a green suite.
+      Seven tests closed them in the reported order: the guard per compared field plus its verdict
+      case, the boundary error by its message, a `main([])` run whose regenerated JSON must match the
+      committed witness on every key except its own `--out`, and a `capsys` test that each row line
+      carries that row's own cells/floor/margin/verdict under the headers naming them — plus the
+      invariant that the dropped-cell count and the listed below-floor cells are the same 5. Second
+      pass **24/24, exit 0** in **17 s** (`runs/mutation_scope_pricing.log`, baseline green with 18
+      tests); `--help` was proven cheap before it joined `test_cli_help.py` (+3 cases), because a
+      battery that runs on `--help` is §9.40 walking back in. Suite **466 passed / 1 skipped in
+      193.95 s**, `make repro` **28/28 rows, 61 figures**, `make gates` 7/7 at **3 met / 3 not met /
+      1 open**. The same pass found §3.4's map saying **312 passing** where `pytest --collect-only`
+      says 467 — 154 tests behind, in the one section written in present tense, and with no read-back
+      over it the way §2.2's counts now have (§9.44's decay, unpoliced where nobody thought to police).
+      Logged as **§9.46**.
       The static audit had already said the same thing: no battery but the kaggle bundle even names
       `myna.train`, `run.py` or `--steps`, so `MINI_DOSE` is the only place a probe could reach
       training. Two batteries handle a timeout — the bundle with its process-group `killpg`, and
