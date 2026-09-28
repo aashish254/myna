@@ -404,6 +404,29 @@ So every "train" item below is split into *prepare/verify the Kaggle path locall
       described a vacuous checker as one where "`--check` still says **19/19**" — a registry size
       three ticks out of date — now 27/27 in place. Logged as **§9.43**.
       Suite at this tick: **444 passed, 1 skipped**.
+- [x] **8f** The registry's counts are counted, and `make gates` reads them back out of SPEC
+      §2.2 — the gate table's one hand-copied row. *(this tick — the seam 8e named and left open)*
+      8e wrote §9.43 into G7's prose in two places at once: `bench/gates.py`'s sentence, pinned by
+      a test against `ROWS`, and this repo's §2.2 row, copied by hand and pinned by nothing. The
+      numbers that now live in that row — `27 registry rows`, `58 quoted figures`, and the split
+      `18 / 3 / 2 / 3 / 1` — are exactly the kind 9f already caught once (`22 rows` written beside
+      a registry of 23), so agreement here was a memory, not a check.
+      `registry_counts()` derives all seven phrases from `ROWS`, `count_phrase()` says the
+      five-status half once and G7's note interpolates it, and `check_gate` — for any gate whose
+      proof *is* the registry, which today is G7 alone — reads §2.2's cell off disk and names every
+      phrase it no longer prints. Falsified in both directions, measured rather than asserted:
+      deleting `58 quoted figures` from the row reds naming that token, and growing `ROWS` by one
+      row reds on `28 registry rows`, which is what the new test does instead of describing — a
+      literal baked into `registry_counts()` would pass the first and fail the second. Committed
+      tree stays green: `make repro` **27/27 rows, 58 figures**, `make gates` 7/7 at
+      **3 met / 3 not met / 1 open**.
+      Instrument: `tests/test_gates.py` **29** (was 28) and `bench/mutation_gates.py`
+      **21/21 caught, exit 0** in **334 s** (`runs/mutation_gates.log`, 4 new — two of them the
+      theatre shapes: the comparison that runs and never reports, and §2.2 read from the wrong
+      column so a count it cannot find is a count that always matches; the first two are each caught
+      by the test written for them). README got one sentence and no re-render: the generated release
+      block is byte-identical, which is the point of interpolating. Suite at this tick:
+      **445 passed, 1 skipped in 219 s**. Logged as **§9.44**.
 
 ## P9 — The three defects the first valid checkpoint named (SPEC §5 P9)
 - [x] **9a** `score` cells are trained with a nominal cost while every other component treats the

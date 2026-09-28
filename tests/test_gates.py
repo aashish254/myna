@@ -22,8 +22,10 @@ check that the gate goes red with the sentence a reader would need:
 * the README block going stale, which is pinned rather than checked: per §9.31 a table
   generated from the same declarations it would verify is not evidence;
 * the row and figure *counts* G7's prose prints, which describe the registry and therefore
-  move every time a figure gets committed — the one place a number in gates.py is checked
-  against the file instead of against an artifact, because the artifact is the file's import.
+  move every time a figure gets committed. Those are counted out of `ROWS` now (§9.44), so what
+  these tests can fail on is the *copy* in SPEC §2.2 — the gate table's one hand-written cell —
+  going stale, and one of them grows the registry to prove the red is real rather than a
+  sentence about a number somebody remembered.
 
 One of these tests is a *positive control* on purpose (`test_an_unmutated_verdict_holds`),
 because four of the seven mutations below assert "problems is non-empty" and would pass
@@ -115,20 +117,28 @@ def test_g7s_prose_prints_the_registry_it_actually_has():
     """The row and figure counts live in three docs and in gates.py, and the registry they
     describe grows a row every time a figure gets committed — this saw `22 rows` written
     while the file held 23. A count in prose is a figure like any other: it needs the
-    artifact, which here is the registry itself."""
-    from collections import Counter
-    from reproduce import CHROME, HERE, KAGGLE, LAYA, RETRAIN
-    c = Counter(r["status"] for r in G.ROWS)
-    figures = sum(len(r["quotes"]) for r in G.ROWS)
+    artifact, which here is the registry itself. `registry_counts()` owns the phrasing now,
+    so what this test can fail on is the prose not using it."""
     g = gate_of("G7")
     prose = g["reads"] + " " + g["note"]
-    for token in (f"{len(G.ROWS)} registry rows", f"{figures} quoted figures",
-                  f"{c[HERE]} rows re-run on this box",
-                  f"{c[RETRAIN]} retrain a checkpoint",
-                  f"{c[LAYA]} need a laya checkout on `PYTHONPATH`",
-                  f"{c[CHROME]} need Google Chrome",
-                  f"{c[KAGGLE]} is `KAGGLE`"):
+    for token in G.registry_counts().values():
         assert token in prose, token
+
+
+def test_specs_g7_row_prints_the_registry_it_actually_has():
+    """SPEC §2.2 is the gate table's one hand-copied cell — README's copy is generated and
+    gates.py's counts now are too — so `--check` reads the numbers back out of it. Proved
+    live rather than asserted: grow the registry and the gate goes red on the stale count,
+    which is the only way to tell a check from a sentence about checking (§9.44)."""
+    g = gate_of("G7")
+    assert "live count" not in messages(g), messages(g)
+    saved = G.ROWS
+    extra = dict(saved[0], id="extra-row", status=G.KAGGLE, quotes=[], witness=[])
+    G.ROWS = saved + [extra]
+    try:
+        assert "live count" in messages(gate_of("G7"))
+    finally:
+        G.ROWS = saved
 
 
 def test_a_gate_citing_nothing_at_all_reds():

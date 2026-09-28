@@ -449,6 +449,9 @@ file's own registry echoed back and is cut out before matching — still prints 
 command. The fourth assertion asks the tool rather than the file: every row whose command
 names a python target gets `--help` from it, and each flag the row publishes has to be in
 the answer, because a renamed flag leaves the other three untouched (§9.43).
+The registry's *size* is counted out of `ROWS` by `bench/gates.py` and read back out of
+SPEC §2.2 — the gate table's one hand-copied row — so `make gates` reds on a stale count
+instead of printing it (§9.44).
 `tests/test_reproduce.py` (33 tests) pins the block below to the registry, so a
 row cannot appear here without being added there, and
 `bench/mutation_reproduce.py` breaks the checker one promise

@@ -14,6 +14,10 @@ tied to something that can contradict it:
 * `met` and `not met` each owe at least one committed witness carrying a figure;
 * `open` is only allowed for a gate that cites a row this box cannot reproduce at all
   (`gated-kaggle` or `retrain`). "open" names a missing artifact, not missing effort.
+* the registry's *size* is counted out of `ROWS` and said once (`registry_counts()`), so
+  G7's sentences cannot disagree with the table they describe; and because SPEC §2.2 is
+  the one gate cell typed by hand, `--check` reads those counts back out of it and reds on
+  a stale number (§9.44).
 
 That last distinction is load-bearing, and G1 is the case that proves it. That gate sat at
 `open` for a session while a real GPU run sat in a notebook output directory: the only
@@ -24,11 +28,14 @@ symmetric temptation is to settle a `not met` on whatever nearby number is lowes
 rows therefore cite the trained run and the control beside it, and pointedly not the void
 pre-`385e06c` checkpoint, which §9.23 already disqualified.
 
-The prose is checked, never generated: `--check` parses SPEC §2.2's status column and
-reds if any cell's leading words disagree with this file, so a verdict has to be changed
-in two places that are not allowed to disagree. README's block *is* generated from here,
-and per §9.31 that block is therefore not evidence — §2.2 and the artifacts are, and those
-are what `--check` reads.
+The verdict prose is checked, never generated: `--check` parses SPEC §2.2's status column
+and reds if any cell's leading words disagree with this file, so a verdict has to be changed
+in two places that are not allowed to disagree. The registry's *counts* are the exception,
+and they went the other way (§9.44) — `ROWS` is counted into `registry_counts()` and both
+this file's G7 sentences and §2.2's hand-copied G7 row have to carry what it says, because a
+row count quoted from memory is a figure with no artifact behind it. README's block *is*
+generated from here, and per §9.31 that block is therefore not evidence — §2.2 and the
+artifacts are, and those are what `--check` reads.
 
     uv run python bench/gates.py --check
     uv run python bench/gates.py --print
@@ -46,7 +53,7 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO / "bench"))
 
-from reproduce import (KAGGLE, RETRAIN, ROWS, check_row)  # noqa: E402
+from reproduce import (CHROME, HERE, KAGGLE, LAYA, RETRAIN, ROWS, check_row)  # noqa: E402
 
 MET, NOT_MET, OPEN = "met", "not met", "open"
 VERDICTS = (NOT_MET, MET, OPEN)          # NOT_MET first: "not met" contains "met"
@@ -73,6 +80,36 @@ def proof(file, path, expect, what):
 def gate(id, name, condition, verdict, rows, proofs, reads, note):
     return {"id": id, "name": name, "condition": condition, "verdict": verdict,
             "rows": list(rows), "proofs": list(proofs), "reads": reads, "note": note}
+
+
+def registry_counts():
+    """The registry's size, computed from the registry (§9.30).
+
+    A row count in prose is a figure like any other, and this one is quoted in three
+    places — G7's own sentences, README's generated table, and SPEC §2.2's hand-copied
+    gate row. Counting here means all three answer to `ROWS` instead of to whoever last
+    edited a sentence.
+    """
+    def by(status):
+        return sum(1 for r in ROWS if r["status"] == status)
+
+    return {
+        "rows": f"{len(ROWS)} registry rows",
+        "figures": f"{sum(len(r['quotes']) for r in ROWS)} quoted figures",
+        HERE: f"{by(HERE)} rows re-run on this box",
+        RETRAIN: f"{by(RETRAIN)} retrain a checkpoint",
+        LAYA: f"{by(LAYA)} need a laya checkout on `PYTHONPATH`",
+        CHROME: f"{by(CHROME)} need Google Chrome",
+        KAGGLE: f"{by(KAGGLE)} is `KAGGLE`",
+    }
+
+
+def count_phrase():
+    """The five status halves as one sentence, so the sentence and the registry cannot
+    part company."""
+    c = registry_counts()
+    head, tail = [c[k] for k in (HERE, RETRAIN, LAYA, CHROME)], c[KAGGLE]
+    return ", ".join(head) + " and " + tail
 
 
 GATES = [
@@ -199,16 +236,16 @@ GATES = [
          [proof(REGISTRY, "", True,
                 "every published table row is bound to a committed witness that still "
                 "contains the figure the prose quotes")],
-         "`make repro` is green at this tick: 27 registry rows bind every published table "
-         "cell to one command and one committed witness, and the 58 quoted figures are "
-         "re-read out of those files rather than out of the prose. The python commands among "
+         f"`make repro` is green at this tick: {registry_counts()['rows']} bind every "
+         "published table cell to one command and one committed witness, and the "
+         f"{registry_counts()['figures']} are re-read out of those files rather than out of "
+         "the prose. The python commands among "
          "those rows are checked against the tool behind them — its `--help` must still print "
          "every flag the row publishes (§9.43). The seeds live inside the "
          "printed commands (`--seed 0`, `--seeds 0 1`), not in sentences about them.",
          "met as a binding, not as a rebuild, and the gap is disclosed rather than absorbed: "
-         "no target *executes* the registry end to end — 18 rows re-run on this box, 3 retrain "
-         "a checkpoint, 2 need a laya checkout on `PYTHONPATH`, 3 need Google Chrome and 1 is "
-         "`KAGGLE`. That is TODO 8b, which stays unticked for exactly this reason."),
+         f"no target *executes* the registry end to end — {count_phrase()}. That is TODO 8b, "
+         "which stays unticked for exactly this reason."),
 ]
 
 VERDICT_WORD = {MET: "met", NOT_MET: "not met", OPEN: "open"}
@@ -261,25 +298,32 @@ def read_proof(p):
     return value == p["expect"], f"{p['path']} is {value!r}, not {p['expect']!r}"
 
 
-def spec_verdicts() -> dict:
-    """The verdict word SPEC §2.2's status column leads with, per gate, read from disk.
+def spec_rows() -> dict:
+    """SPEC §2.2's status cell per gate id, read from disk.
 
-    Leading words only: §2.2's cells carry prose after the verdict, and the whole point is
-    that the cell *starts* with the verdict a reader skims for.
+    The gate table is the one place a verdict is *copied* rather than generated, so it is
+    the last place prose can fall behind without anything asking.
     """
     text = (REPO / SPEC_GATE_TABLE).read_text()
     out = {}
     for line in text.splitlines():
         m = re.match(r"^\|\s*\*\*(G\d)\*\*\s*\|", line)
-        if not m:
-            continue
-        cells = [c.strip() for c in line.strip().strip("|").split("|")]
-        body = cells[-1].lstrip("*").lstrip()
+        if m:
+            out[m.group(1)] = [c.strip() for c in line.strip().strip("|").split("|")][-1]
+    return out
+
+
+def spec_verdicts() -> dict:
+    """The verdict word SPEC §2.2's status column leads with, per gate.
+
+    Leading words only: §2.2's cells carry prose after the verdict, and the whole point is
+    that the cell *starts* with the verdict a reader skims for.
+    """
+    out = {}
+    for gid, cell in spec_rows().items():
+        body = cell.lstrip("*").lstrip()
         v = next((w for w in VERDICTS if body.lower().startswith(w)), None)
-        if v is None:
-            out[m.group(1)] = f"UNPARSEABLE({body[:24]!r})"
-        else:
-            out[m.group(1)] = v
+        out[gid] = v if v is not None else f"UNPARSEABLE({body[:24]!r})"
     return out
 
 
@@ -341,6 +385,15 @@ def check_gate(g, by_id, prose):
         bad.append(f"{SPEC_GATE_TABLE} §2.2 has no {g['id']} row to agree with")
     elif got != g["verdict"]:
         bad.append(f"{SPEC_GATE_TABLE} §2.2 says {got!r}, this file says {g['verdict']!r}")
+    if any(p["file"] == REGISTRY for p in g["proofs"]):
+        # A gate whose proof *is* the registry has to state the registry's size, and §9.30
+        # says that count is a figure: it belongs to the artifact, not to the sentence.
+        # SPEC's row is the one copy that is typed by hand, so the check reads it back.
+        cell = spec_rows().get(g["id"], "")
+        for tok in registry_counts().values():
+            if tok not in cell:
+                bad.append(f"{SPEC_GATE_TABLE} §2.2's {g['id']} row does not print the "
+                           f"registry's live count {tok!r}")
     return bad, notes
 
 

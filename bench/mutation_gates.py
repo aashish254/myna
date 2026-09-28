@@ -11,7 +11,7 @@ all four) and `.git` symlinked, so `git ls-files --error-unmatch` still answers 
 committed witnesses. `runs/` and `data/` are symlinked as elsewhere; nothing here writes a
 witness, because the fixture suite runs entirely on the committed artifacts.
 
-Three of the seventeen are worth naming, because they are the ones a reader would not
+Four of the twenty-one are worth naming, because they are the ones a reader would not
 guess to break:
 
 * `if bad:` → `if False:` inside `registry_green()` — G7's proof *is* the checker, so a
@@ -22,6 +22,12 @@ guess to break:
   keep printing "met".
 * `return value == p["expect"]` → `return True` — the artifact stops being asked. Every
   proof would still print its own sentence, which is what makes this the dangerous one.
+* the four §9.44 entries together — SPEC §2.2 is the gate table's one *hand-copied* cell,
+  README's block is generated and `gates.py`'s own counts now are counted, so the only
+  prose left that can fall behind is the one nobody reads. Two of the four ask it to agree
+  with `ROWS`; the other two are the shapes that check would take if it were theatre: the
+  comparison that never reports, and the table read from the wrong column so a count it
+  cannot find is a count that always matches.
 
 One entry survived its first pass and the fix was to the *test*, not the rule, so it is
 worth the sentence: dropping `r["status"] not in UNREPRODUCIBLE` from the `with_witness`
@@ -79,6 +85,18 @@ MUTATIONS = [
      '    elif got != g["verdict"]:', "    elif False:"),
     ("a gate with no §2.2 row at all passes", GA,
      "    if got is None:", "    if False:"),
+    # --- §9.44: §2.2's hand-copied counts stop answering to the registry ------
+    ("the gate that rests on the registry stops reading its counts back out of §2.2", GA,
+     '    if any(p["file"] == REGISTRY for p in g["proofs"]):', "    if False:"),
+    ("the live-count comparison runs and never reports", GA,
+     "            if tok not in cell:", "            if False:"),
+    ("§2.2 is read for the wrong column, so no count can ever be found in it", GA,
+     "            out[m.group(1)] = [c.strip() for c in "
+     "line.strip().strip(\"|\").split(\"|\")][-1]",
+     "            out[m.group(1)] = [c.strip() for c in "
+     "line.strip().strip(\"|\").split(\"|\")][2]"),
+    ("the registry's size stops being counted and every status reads zero", GA,
+     '        return sum(1 for r in ROWS if r["status"] == status)', "        return 0"),
     ("the release headline counts every verdict as met", GA,
      '    return {v: sum(1 for g in GATES if g["verdict"] == v) for v in VERDICTS}',
      '    return {v: sum(1 for g in GATES if g["verdict"] in VERDICTS) for v in VERDICTS}'),

@@ -70,12 +70,15 @@ Quote the ratio, never the millisecond figure.
 | **G4** | Long-context is *correct*, not just cheap | needle-style typed decision ≥ 0.90 at 4k and ≥ 0.85 at 16k state | **not met, and not yet measurable on this box.** v0's needle curve (`runs/needle_myna-v0.md`) reads 0.188 at 128 tokens against a 0.167 floor — at chance on the shortest rung — so the longer rows are decay of nothing, and the harness now says so itself rather than printing a table (§9.25). The 16k *state* is measured and cheap (§9.22); the 16k *decision* needs the long-context checkpoint, which is 7b / `KAGGLE` |
 | **G5** | Useful confidence, with abstention | risk/coverage curve on `calibration.jsonl`; ≥ 0.95 accuracy at ≥ 60% coverage on banking77 + dbpedia14 + trec | **not met on the level, met on the machinery.** Abstention ships: `Myna(ckpt, abstain_below=t)` withholds the commitment and prints the measured reason, the fallback seam labels every answer with the engine that committed, and the curve is a committed artifact (`runs/risk_coverage.md`, 448 rows / 568 questions). Accuracy on v0 climbs **0.349 → 0.535** as coverage falls 1.00 → 0.20 — the confidence ranks the answers, on a checkpoint that cannot do the task — and setting the 0.693 floor on the engine abstains on **227** questions where the curve withheld **227**. But **no rung reaches 0.95** (max 0.596, at 10% coverage) and G5's own three sources sit at 0.000 / 0.025 / 0.150, so the pass needs the `KAGGLE` checkpoint (§9.24) |
 | **G6** | No regression on what already worked | synthetic v0 test ≥ 0.94 | open — v0's measured test macro is **0.9523** (`runs/train-v0.log`, macro of its nine `=== test ===` rows), so the level clears today; the gate stays open until a v1 checkpoint is run against it, and a draft of this row cited "0.951", which no artifact prints (§9.30) |
-| **G7** | Reproducibility | one command per result, seeds pinned, witness JSONs committed, `pytest` green | **met, as a binding rather than a rebuild.** `bench/reproduce.py` holds 27 rows binding every published table cell to one command and one committed witness each, and `make repro` re-reads the 58 quoted figures out of those artifacts rather than out of the prose; the python commands among those rows are checked against the tool behind them — its `--help` must still print every flag the row publishes (§9.43); the seeds live inside the printed commands (`--seed 0`, `--seeds 0 1`), not in sentences about them. What this does **not** say: no target *executes* the registry end to end — 18 rows re-run on this box, 3 retrain a checkpoint, 2 need a laya checkout, 3 need Chrome, 1 is `KAGGLE` — which is why TODO 8b stays unticked and why G7 is discipline rather than a one-command rebuild |
+| **G7** | Reproducibility | one command per result, seeds pinned, witness JSONs committed, `pytest` green | **met, as a binding rather than a rebuild.** `bench/reproduce.py` holds 27 registry rows, each binding one published table cell to one command and one committed witness, and `make repro` re-reads the 58 quoted figures out of those artifacts rather than out of the prose; the python commands among those rows are checked against the tool behind them — its `--help` must still print every flag the row publishes (§9.43); the seeds live inside the printed commands (`--seed 0`, `--seeds 0 1`), not in sentences about them. What this does **not** say: no target *executes* the registry end to end — 18 rows re-run on this box, 3 retrain a checkpoint, 2 need a laya checkout on `PYTHONPATH`, 3 need Google Chrome and 1 is `KAGGLE` — which is why TODO 8b stays unticked and why G7 is discipline rather than a one-command rebuild. Every count in this cell is now read back against `ROWS` by `bench/gates.py`, so this row — the table's one hand-copied cell — goes red rather than quietly stale (§9.44) |
 
 **This column is not a claim.** `make gates` (`bench/gates.py --check`) re-reads each cell's
 leading verdict word, the registry row that gate cites, and the named field inside a committed
 artifact — and a `met` verdict is refused if the field it rests on prints `false`, while an
-`open` verdict is refused unless the gate names a run this box cannot do. As of P8 8d the tally
+`open` verdict is refused unless the gate names a run this box cannot do. It also reads G7's
+counts back out of this table and compares them with `ROWS`, because §2.2 is the one place a
+gate row is typed by hand rather than generated — a stale number here now goes red instead of
+riding along (§9.44). As of P8 8d the tally
 is **3 met, 3 not met, 1 open**, so the release gate is not clear; README's copy of that table is
 generated from the same file and is therefore *not* evidence (§9.31).
 
@@ -852,6 +855,9 @@ are counted, and if nothing is left the run refuses. See §9.14.
       requires every published flag to be in the answer, which is the half of "a target that runs
       them" that is decidable here — and §9.43 is its measured negative: 20 of 27 rows are python
       commands, all 20 accept their flags, and 7 rows say what kind of command they are instead.
+      TODO 8f closed the seam 8e left open: the registry's counts are counted out of `ROWS` in
+      `bench/gates.py`, and `make gates` reads them back out of §2.2 — the table's one hand-copied
+      row — so a stale number there reds instead of riding along (§9.44).
 - [x] **The upstream-corpus comparison, published as three rows** — the §8 risk line's mandate.
       README's *On the upstream corpus* section prints laya **0.667**, myna's untrained control
       **0.346 / 0.351 (mean 0.348)**, and myna-trained as **gated on its witness rather than on
@@ -1942,3 +1948,35 @@ Kept permanently, because the value of this project's claims is that they surviv
    than inherited: **17/17 in 240 s** (`runs/mutation_gates.log`).
    The general form: **a check that reads files proves what was written, not what still runs — where
    a command is part of the claim, ask the command.**
+44. **Entry 43 named the seam and left it open: §2.2 is the one gate cell typed by hand, and
+   nothing read it back.** `bench/gates.py` counted its own registry — `27 registry rows`,
+   `58 quoted figures`, `18 rows re-run on this box`, and the rest — in two sentences that a test
+   compared with `ROWS`, while SPEC §2.2's G7 row repeated the same numbers in its own words and
+   no test and no gate ever looked at them. The words had already drifted apart once — P9 9f
+   found `22 rows` written in G7's prose beside a registry of 23 — and the only reason the two
+   agreed on 2026-09-28 is that 8e re-synced this row by hand to write §9.43 into it. A number
+   that agrees because somebody remembered it is not a check.
+   `registry_counts()` now derives all seven phrases from `ROWS`, `count_phrase()` says the
+   five-status half once and G7's note interpolates it, and `check_gate` — for any gate whose
+   proof *is* the registry, which today is G7 alone — reads §2.2's cell off disk and reds on each
+   phrase it no longer prints. So the gate that certifies reproducibility is the first one whose
+   own spec row can contradict it. Falsified both ways, in the committed tree and against a live
+   count: deleting `58 quoted figures` from the row goes red naming that token, and growing `ROWS`
+   by one row goes red on `28 registry rows` — which is what
+   `test_specs_g7_row_prints_the_registry_it_actually_has` does rather than what it says, because
+   a literal count baked into `registry_counts()` would pass the first and fail the second.
+   Battery: `bench/mutation_gates.py` **17 → 21** mutants, **21/21 caught, exit 0** in **334 s**
+   (`runs/mutation_gates.log`, re-run rather than inherited because this tick changed the file the
+   battery mutates). Two of the four new entries are the theatre shapes §9.43 warns about — the
+   comparison that runs and never reports, and the table read from the wrong column so a count it
+   cannot find is a count that always matches — and each is caught by that same test.
+   `tests/test_gates.py` **28 → 29**, and the older prose test lost its hand-built token list to
+   `registry_counts()` so the phrasing has one home instead of three. The asymmetry is disclosed
+   rather than tidied: `gates.py` reads its G7 sentences off `ROWS` at import, README's release table
+   renders from them and is therefore not evidence (§9.31), and §2.2 stays typed — it is the prose
+   a human reads, so it is the prose that has to be asked. What still has nothing reading it back
+   is a battery log: `17/17` appears in entries 42 and 43 as what those ticks measured, which is
+   why both are dated, and the rule that keeps such a number honest is the existing one — re-run
+   the battery whose subject changed, and say which one you re-ran.
+   The general form: **a count in prose is either generated from the artifact or read back against
+   it — the third option is a number that decays into an inheritance.**
