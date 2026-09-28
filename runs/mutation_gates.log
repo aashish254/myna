@@ -44,4 +44,4 @@ baseline copy: green (1 test file)
             FAILED tests/test_gates.py::test_check_exits_nonzero_when_a_verdict_breaks - ...
 
 21/21 mutations caught
-EXIT=0 (watched to completion 2026-09-28 in the foreground, 334 s wall, 21 mutants — the four §9.44 entries added with this tick)
+EXIT=0 (watched to completion 2026-09-28 in the foreground, 344 s wall, 21 mutants — re-run because the registry grew a row and §2.2 counts moved, which is what §9.44 reads)

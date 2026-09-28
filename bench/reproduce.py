@@ -352,6 +352,20 @@ ROWS = [
         "on test) is a variance amplifier rather than a measurement, and why §9.41's numbers "
         "are the row-weighted ones — 0.647 dev, 0.457 test, 0.5356 macro."),
 
+    row("scope-pricing", "SPEC §5 P9 9d · TODO 9d",
+        "uv run python -m bench.scope_pricing",
+        HERE,
+        ["runs/scope_pricing.json"],
+        [("runs/scope_pricing.json", '"margin_observed": 0.056262402214293905'),
+         ("runs/scope_pricing.json", '"margin_observed": 0.06676294243209946'),
+         ("runs/scope_pricing.json", '"margin_observed": 0.09488116563239712')],
+        "9d is the one open decision in the repo, and this prices it instead of arguing it: "
+        "the two named cells out buys +0.0105 of margin against a floor that rises 0.0335 "
+        "with them, and no scope in the table reaches 0.70. The subsets are the report's own "
+        "`cells` rows through `myna.report.macro`, and the unfiltered row must reproduce the "
+        "report's published 0.4893 / 0.4331 / `g1.pass` to the digit or the script refuses — "
+        "one roll-up, not a third one (§9.37, §9.45)."),
+
     row("kaggle-wall-clock", "KAGGLE_LAUNCH_INSTRUCTIONS.md cost table · kaggle/campaign.py",
         'grep -E "^step" runs/v1b_kaggle_3600b.train.log | tail -1',
         HERE,

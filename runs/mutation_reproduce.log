@@ -62,4 +62,4 @@ data/runs/.git symlinked (§9.18), so no live tree is being edited.
             FAILED tests/test_reproduce.py::test_a_needle_run_prints_its_command_into_both_witnesses
 
 29/29 mutations caught
-EXIT=0 (watched to completion 2026-09-28 by /tmp/run_repro_battery.zsh, 270 s wall)
+EXIT=0 (watched to completion 2026-09-28 in the foreground, 314 s wall, 29 mutants — re-run because the registry gained the scope-pricing row)

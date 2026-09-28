@@ -622,6 +622,13 @@ So every "train" item below is split into *prepare/verify the Kaggle path locall
       58 figures**. Logged as **§9.42**.
 - [ ] **9d** `banking77/intent` and `mnli/relation` are inside or outside G1's scope — a decision
       for the user, recorded so a later run does not silently average them back in.
+      **Priced on 2026-09-28 so the call has numbers beside it** — `uv run python -m
+      bench.scope_pricing` → `runs/scope_pricing.json`: in-scope 0.4893 / floor 0.4331 / +0.0563;
+      both cells out 0.5334 / 0.4666 / **+0.0668** (the floor rises 0.0335 of the 0.044 level
+      gain, so the gated half moves by 0.0105); their whole sources out is the *same* 14 cells;
+      all 5 below-floor cells out 0.5526 / 0.4577 / +0.0949, still 0.147 short of 0.70. No option
+      passes either half of G1 — so this is a decision about what the claim means, and it is not
+      a reason to spend the ~31.2 GPU h on the expectation of clearing the bar.
 
 ## Cross-cutting
 - [ ] Every new gate mutation-checked, witness quoted in the commit message (SPEC §7.1)

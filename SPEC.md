@@ -70,7 +70,7 @@ Quote the ratio, never the millisecond figure.
 | **G4** | Long-context is *correct*, not just cheap | needle-style typed decision ≥ 0.90 at 4k and ≥ 0.85 at 16k state | **not met, and not yet measurable on this box.** v0's needle curve (`runs/needle_myna-v0.md`) reads 0.188 at 128 tokens against a 0.167 floor — at chance on the shortest rung — so the longer rows are decay of nothing, and the harness now says so itself rather than printing a table (§9.25). The 16k *state* is measured and cheap (§9.22); the 16k *decision* needs the long-context checkpoint, which is 7b / `KAGGLE` |
 | **G5** | Useful confidence, with abstention | risk/coverage curve on `calibration.jsonl`; ≥ 0.95 accuracy at ≥ 60% coverage on banking77 + dbpedia14 + trec | **not met on the level, met on the machinery.** Abstention ships: `Myna(ckpt, abstain_below=t)` withholds the commitment and prints the measured reason, the fallback seam labels every answer with the engine that committed, and the curve is a committed artifact (`runs/risk_coverage.md`, 448 rows / 568 questions). Accuracy on v0 climbs **0.349 → 0.535** as coverage falls 1.00 → 0.20 — the confidence ranks the answers, on a checkpoint that cannot do the task — and setting the 0.693 floor on the engine abstains on **227** questions where the curve withheld **227**. But **no rung reaches 0.95** (max 0.596, at 10% coverage) and G5's own three sources sit at 0.000 / 0.025 / 0.150, so the pass needs the `KAGGLE` checkpoint (§9.24) |
 | **G6** | No regression on what already worked | synthetic v0 test ≥ 0.94 | open — v0's measured test macro is **0.9523** (`runs/train-v0.log`, macro of its nine `=== test ===` rows), so the level clears today; the gate stays open until a v1 checkpoint is run against it, and a draft of this row cited "0.951", which no artifact prints (§9.30) |
-| **G7** | Reproducibility | one command per result, seeds pinned, witness JSONs committed, `pytest` green | **met, as a binding rather than a rebuild.** `bench/reproduce.py` holds 27 registry rows, each binding one published table cell to one command and one committed witness, and `make repro` re-reads the 58 quoted figures out of those artifacts rather than out of the prose; the python commands among those rows are checked against the tool behind them — its `--help` must still print every flag the row publishes (§9.43); the seeds live inside the printed commands (`--seed 0`, `--seeds 0 1`), not in sentences about them. What this does **not** say: no target *executes* the registry end to end — 18 rows re-run on this box, 3 retrain a checkpoint, 2 need a laya checkout on `PYTHONPATH`, 3 need Google Chrome and 1 is `KAGGLE` — which is why TODO 8b stays unticked and why G7 is discipline rather than a one-command rebuild. Every count in this cell is now read back against `ROWS` by `bench/gates.py`, so this row — the table's one hand-copied cell — goes red rather than quietly stale (§9.44) |
+| **G7** | Reproducibility | one command per result, seeds pinned, witness JSONs committed, `pytest` green | **met, as a binding rather than a rebuild.** `bench/reproduce.py` holds 28 registry rows, each binding one published table cell to one command and one committed witness, and `make repro` re-reads the 61 quoted figures out of those artifacts rather than out of the prose; the python commands among those rows are checked against the tool behind them — its `--help` must still print every flag the row publishes (§9.43); the seeds live inside the printed commands (`--seed 0`, `--seeds 0 1`), not in sentences about them. What this does **not** say: no target *executes* the registry end to end — 19 rows re-run on this box, 3 retrain a checkpoint, 2 need a laya checkout on `PYTHONPATH`, 3 need Google Chrome and 1 is `KAGGLE` — which is why TODO 8b stays unticked and why G7 is discipline rather than a one-command rebuild. Every count in this cell is now read back against `ROWS` by `bench/gates.py`, so this row — the table's one hand-copied cell — goes red rather than quietly stale (§9.44) |
 
 **This column is not a claim.** `make gates` (`bench/gates.py --check`) re-reads each cell's
 leading verdict word, the registry row that gate cites, and the named field inside a committed
@@ -885,7 +885,7 @@ are counted, and if nothing is left the run refuses. See §9.14.
       writes down, G4 still needs Kaggle, and P0's push is user-gated with no remote yet
       created.
 
-### P9 — The three defects the first valid checkpoint named *(9a shipped; 9b's fix measured dead; 9c local; 9d the user's call; 9e measured dead too; 9f–9i are TODO's ticks: G1 is now `not met` on a committed witness, one mutation battery had never finished, the last unexplained V1-B number resolved into an aggregation, and the §9.40 sweep across all 14 batteries found no second unaffordable probe)*
+### P9 — The three defects the first valid checkpoint named *(9a shipped; 9b's fix measured dead; 9c local; 9d the user's call, now priced (§9.45); 9e measured dead too; 9f–9i are TODO's ticks: G1 is now `not met` on a committed witness, one mutation battery had never finished, the last unexplained V1-B number resolved into an aggregation, and the §9.40 sweep across all 14 batteries found no second unaffordable probe)*
 
 Opened by the diagnostic run against `v1b-kaggle-3600b`'s own logits (TODO 3i's lane), which answers
 the capacity question in the direction that matters: **the mechanism is not broken, the cost
@@ -1005,6 +1005,15 @@ what this repo can act on without the artifact:
       `mnli/relation`): their association numbers do not beat their own permutation nulls. 9d is a
       scope decision for G1 — in or out — not a fix, and it is the user's call, not a checkbox to
       tick by shipping something. Recorded so the next run does not silently average them back in.
+      **Priced, so the call is not blind** (`uv run python -m bench.scope_pricing`, witness
+      `runs/scope_pricing.json`, §9.45): dropping the two named cells moves the level 0.4893 →
+      0.5334 and the majority floor 0.4331 → 0.4666 with it, so the margin G1 gates on moves
+      +0.0563 → +0.0668 — eleven-thousandths, not forty-four. Dropping their whole sources is the
+      same 14 cells (each contributes exactly one), and dropping *every* cell that answers below
+      its own floor — 5 of 16, a cherry-pick no release would ship — reaches 0.5526 at +0.0949,
+      still 0.147 short of the target. **No scope choice in the table makes G1 pass**, so 9d is a
+      decision about what the published claim means, not a route to clearing the bar, and it should
+      not be argued for with GPU hours on the expectation that the run would then pass.
 - [x] **9e** The ablation 9a opened for, settled on this box for 0 GPU-hours — and the two
       reproducibility defects that had to be fixed before it could be settled. `--score-loss` was
       one flag and one output directory away from a *pair* of runs, which is the only reason 9a
@@ -1980,3 +1989,33 @@ Kept permanently, because the value of this project's claims is that they surviv
    the battery whose subject changed, and say which one you re-ran.
    The general form: **a count in prose is either generated from the artifact or read back against
    it — the third option is a number that decays into an inheritance.**
+45. **9d was the one open decision in the repo, and it had no numbers beside it.** Two cells
+   (`banking77/intent`, `mnli/relation`) answer below their own majority floor and their
+   association numbers do not beat their own permutation nulls, which makes them dead rather than
+   mis-measured; whether they belong inside G1's scope is a call only the user can make. What could
+   be done here was to price it: `bench/scope_pricing.py` subsets the committed report's own `cells`
+   and calls `myna.report.macro` and `g1_verdict` on each scope, so the question "does dropping them
+   help?" answers as arithmetic instead of as hope.
+   It does not, and the reason is the trap in the question. G1 is a level *and* a margin over the
+   floor the surviving cells imply, and the cells myna wins are also the ones a majority classifier
+   wins, so dropping the dead ones lifts both sides: 0.4893 → 0.5334 on the level, 0.4331 → 0.4666
+   on the floor, margin +0.0563 → +0.0668 — **eleven-thousandths of the 0.094 still missing**. "Drop
+   their whole sources" is not a third option, it is the same 14 cells (each of those sources
+   contributes exactly one cell to the published scope), and even the indefensible cherry-pick —
+   every one of the 5 cells below its own floor out, 11 left — lands at 0.5526 / +0.0949, still
+   0.147 short of 0.70. **No scope choice in the table makes G1 pass**, so 9d is a decision about
+   what the published claim means, and nobody should spend GPU hours on the expectation that a
+   scope edit rescues the run.
+   The harness rule that makes the table trustworthy is the one §9.37 and §9.41 taught: the
+   arithmetic is *imported*, never restated, and the unfiltered row has to reproduce the report's
+   own published 0.4893 / 0.4331 / `g1.pass` to the digit or the script refuses to print anything.
+   A second implementation of a roll-up is how one run gets two "test macro" numbers, and a scope
+   table computed by hand would have been the third. `tests/test_scope_pricing.py` (**11**) holds
+   the line in both directions — the row-weighted basis over the same 16 cells is asserted *not* to
+   reproduce 0.4893, because a control that any aggregation would pass proves nothing — and one test
+   edits the report's published macro and requires the guard to raise. Registry: `scope-pricing`,
+   **28 rows / 61 figures**, and this is the first tick where §9.44's read-back bites for real: the
+   added row moved G7's own counts (18 → 19 rows re-run here), and §2.2 went red until it was
+   re-synced.
+   The general form: **an open decision the user owns can still be prepared — price every option out
+   of committed artifacts, refuse to tick the box, and hand over the arithmetic with the trap named.**

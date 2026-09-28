@@ -1,0 +1,86 @@
+{
+  "below_floor_cells": [
+    "agnews/is_business",
+    "amazon/stars",
+    "banking77/intent",
+    "boolq/answer",
+    "mnli/relation"
+  ],
+  "cmd": "python -m bench.scope_pricing",
+  "g1": {
+    "margin": 0.15,
+    "target": 0.7
+  },
+  "named_cells_out_of_scope": [
+    "banking77/intent",
+    "mnli/relation"
+  ],
+  "published": {
+    "cells": 16,
+    "dropped": 0,
+    "majority_floor": 0.4330647953941198,
+    "margin_observed": 0.056262402214293905,
+    "meets_margin": false,
+    "meets_target": false,
+    "myna": 0.4893271976084137,
+    "pass": false,
+    "shortfall_to_margin": 0.093738,
+    "shortfall_to_target": 0.210673,
+    "uniform_floor": 0.3321192559493052
+  },
+  "report": "runs/v1b_kaggle_3600b.report.json",
+  "scopes": {
+    "9d option A \u2014 the two named cells out": {
+      "cells": 14,
+      "dropped": 2,
+      "majority_floor": 0.4666060715834276,
+      "margin_observed": 0.06676294243209946,
+      "meets_margin": false,
+      "meets_target": false,
+      "myna": 0.533369014015527,
+      "pass": false,
+      "shortfall_to_margin": 0.083237,
+      "shortfall_to_target": 0.166631,
+      "uniform_floor": 0.35544469019134745
+    },
+    "9d option B \u2014 their whole sources out": {
+      "cells": 14,
+      "dropped": 2,
+      "majority_floor": 0.4666060715834276,
+      "margin_observed": 0.06676294243209946,
+      "meets_margin": false,
+      "meets_target": false,
+      "myna": 0.533369014015527,
+      "pass": false,
+      "shortfall_to_margin": 0.083237,
+      "shortfall_to_target": 0.166631,
+      "uniform_floor": 0.35544469019134745
+    },
+    "every cell below its own floor out": {
+      "cells": 11,
+      "dropped": 5,
+      "majority_floor": 0.45771005305121226,
+      "margin_observed": 0.09488116563239712,
+      "meets_margin": false,
+      "meets_target": false,
+      "myna": 0.5525912186836094,
+      "pass": false,
+      "shortfall_to_margin": 0.055119,
+      "shortfall_to_target": 0.147409,
+      "uniform_floor": 0.34329324206171496
+    },
+    "published scope \u2014 all cells": {
+      "cells": 16,
+      "dropped": 0,
+      "majority_floor": 0.4330647953941198,
+      "margin_observed": 0.056262402214293905,
+      "meets_margin": false,
+      "meets_target": false,
+      "myna": 0.4893271976084137,
+      "pass": false,
+      "shortfall_to_margin": 0.093738,
+      "shortfall_to_target": 0.210673,
+      "uniform_floor": 0.3321192559493052
+    }
+  }
+}
