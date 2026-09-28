@@ -64,19 +64,19 @@ Quote the ratio, never the millisecond figure.
 
 | # | gate | pass condition | status |
 |---|---|---|---|
-| **G1** | Accuracy beats the witness | macro decision-v2 test ≥ 0.70 on the frozen split, per-source table published, ≥ 0.4331 majority floor by ≥ +0.15 | open — open on a missing **artifact**, not a missing **run**: `v1b-kaggle-3600b` trained 3,600 updates on Kaggle and reported its own metrics, and no witness of it is committed in this repo, which is exactly the case §9.30 refuses a figure for. What is committed is the untrained control (**0.346 / 0.351**, `runs/scratch_decision_v2_test.md`) and the void pre-`385e06c` checkpoint (**0.338**), both far below the bar, and `runs/report_scratch_vs_laya.json` prints `"pass": false` for the control's own G1 check. TODO 3i publishes the verdict from its own artifact |
+| **G1** | Accuracy beats the witness | macro decision-v2 test ≥ 0.70 on the frozen split, per-source table published, ≥ 0.4331 majority floor by ≥ +0.15 | **not met, measured** — it was open on a missing *artifact*, not a missing *run*: `v1b-kaggle-3600b` trained 3,600 updates on Kaggle and its `metrics.json`, report roll-up and `train.log` are now committed (`runs/v1b_kaggle_3600b.*`), so the verdict comes from the artifact rather than from a transcript. Over the 16 cells both harnesses score, per-cell unweighted: **myna 0.4893 · laya 0.6668 · floor 0.4331**, which is +0.056 over the floor against the +0.15 required and 0.211 short of 0.70 — the report's own line reads `target 0.7 → not met`. `bench/reproduce.py`'s `v1b-kaggle-macro` row re-derives it. Still in the row for contrast: the untrained control (**0.346 / 0.351**, `runs/scratch_decision_v2_test.md`) and the void pre-`385e06c` checkpoint (**0.338**). The tail slope of that run's own dev curve is why *dose* is not the answer (§9.38) |
 | **G2** | Latency claim survives equal-footing re-measurement | same box, same window, same question count, direct `Agent` call not `Router`; published ratio recomputed from that or withdrawn | **met** (4a/4c): one M5 process, both fp32, `Agent.system_one`, ladder capped inside laya's 1024 window — **3.04×/3.21×/4.12×/3.60×** at 1/5/10/50 questions end-to-end and **6.78×/4.67×/4.75×/3.65×** on the ask-only path, each the minimum of two committed runs, `runs/latency_matched*.md`. G1 is *not* implied: v0's accuracy still fails (§4.2) |
 | **G3** | Deployment works for real | ONNX browser build answers a live page's decisions; bytes + p50 + cold-load measured in Chrome | **met, as a mechanics gate only.** `browser/index.html` runs the exported artifact in real Chrome 153 and answers three typed decisions with the same probabilities the torch engine prints (6/6 parity checks, both isolation modes, desktop and mobile widths, `runs/browser_g3.json`); bytes, cold-load and p50 are measured there with the box's load average recorded beside them. What this does **not** say: the artifact it deploys is v0, which still fails G1 and G5, the ≤ 20 MB int8 route is open at the byte level and closed at the agreement level (§9.28), and the Apple-silicon int8 route closes for the opposite reason — 17.40 MiB at 9.24e-03 and **no** latency win at all, so fp32 is the artifact on both paths (§9.29) |
 | **G4** | Long-context is *correct*, not just cheap | needle-style typed decision ≥ 0.90 at 4k and ≥ 0.85 at 16k state | **not met, and not yet measurable on this box.** v0's needle curve (`runs/needle_myna-v0.md`) reads 0.188 at 128 tokens against a 0.167 floor — at chance on the shortest rung — so the longer rows are decay of nothing, and the harness now says so itself rather than printing a table (§9.25). The 16k *state* is measured and cheap (§9.22); the 16k *decision* needs the long-context checkpoint, which is 7b / `KAGGLE` |
 | **G5** | Useful confidence, with abstention | risk/coverage curve on `calibration.jsonl`; ≥ 0.95 accuracy at ≥ 60% coverage on banking77 + dbpedia14 + trec | **not met on the level, met on the machinery.** Abstention ships: `Myna(ckpt, abstain_below=t)` withholds the commitment and prints the measured reason, the fallback seam labels every answer with the engine that committed, and the curve is a committed artifact (`runs/risk_coverage.md`, 448 rows / 568 questions). Accuracy on v0 climbs **0.349 → 0.535** as coverage falls 1.00 → 0.20 — the confidence ranks the answers, on a checkpoint that cannot do the task — and setting the 0.693 floor on the engine abstains on **227** questions where the curve withheld **227**. But **no rung reaches 0.95** (max 0.596, at 10% coverage) and G5's own three sources sit at 0.000 / 0.025 / 0.150, so the pass needs the `KAGGLE` checkpoint (§9.24) |
 | **G6** | No regression on what already worked | synthetic v0 test ≥ 0.94 | open — v0's measured test macro is **0.9523** (`runs/train-v0.log`, macro of its nine `=== test ===` rows), so the level clears today; the gate stays open until a v1 checkpoint is run against it, and a draft of this row cited "0.951", which no artifact prints (§9.30) |
-| **G7** | Reproducibility | one command per result, seeds pinned, witness JSONs committed, `pytest` green | **met, as a binding rather than a rebuild.** `bench/reproduce.py` holds 22 rows binding every published table cell to one command and one committed witness each, and `make repro` re-reads the 38 quoted figures out of those artifacts rather than out of the prose; the seeds live inside the printed commands (`--seed 0`, `--seeds 0 1`), not in sentences about them. What this does **not** say: no target *executes* the registry end to end — 14 rows re-run on this box, 2 retrain a checkpoint, 2 need a laya checkout, 3 need Chrome, 1 is `KAGGLE` — which is why TODO 8b stays unticked and why G7 is discipline rather than a one-command rebuild |
+| **G7** | Reproducibility | one command per result, seeds pinned, witness JSONs committed, `pytest` green | **met, as a binding rather than a rebuild.** `bench/reproduce.py` holds 26 rows binding every published table cell to one command and one committed witness each, and `make repro` re-reads the 55 quoted figures out of those artifacts rather than out of the prose; the seeds live inside the printed commands (`--seed 0`, `--seeds 0 1`), not in sentences about them. What this does **not** say: no target *executes* the registry end to end — 17 rows re-run on this box, 3 retrain a checkpoint, 2 need a laya checkout, 3 need Chrome, 1 is `KAGGLE` — which is why TODO 8b stays unticked and why G7 is discipline rather than a one-command rebuild |
 
 **This column is not a claim.** `make gates` (`bench/gates.py --check`) re-reads each cell's
 leading verdict word, the registry row that gate cites, and the named field inside a committed
 artifact — and a `met` verdict is refused if the field it rests on prints `false`, while an
 `open` verdict is refused unless the gate names a run this box cannot do. As of P8 8d the tally
-is **3 met, 2 not met, 2 open**, so the release gate is not clear; README's copy of that table is
+is **3 met, 3 not met, 1 open**, so the release gate is not clear; README's copy of that table is
 generated from the same file and is therefore *not* evidence (§9.31).
 
 ### 2.3 Non-goals (deliberate exclusions)
@@ -474,11 +474,15 @@ optimization.** boolq and mnli are the permanent half of it — their instructio
       Witness: `16 passed` in `tests/test_kaggle_bundle.py`, including a real 2-update CPU training
       through the entrypoint and a lossy-copy build that exits non-zero. Gate:
       `bench/mutation_kaggle_bundle.py` → **25/25** (first pass 21/25; §9.15).
-- [x] **3c** Python 3.11. `requires-python` is `>=3.11` (it was `>=3.13`, which made the Kaggle
-      image a *silent fallback*), every file under `src/ tests/ bench/ kaggle/` parses under
+- [x] **3c** Python 3.11. `requires-python` is `>=3.11` (it was `>=3.13`, which made the box's own
+      interpreter a *silent fallback*), every file under `src/ tests/ bench/ kaggle/` parses under
       `feature_version=(3, 11)`, and `bench/check_python311.py` runs the whole thing on a real 3.11
       interpreter: prints **`PASS: the package imports, compiles and trains on python 3.11`** on
       3.11.15 / torch 2.6.0, and exits 2 rather than skipping if no 3.11 is found.
+      What 3c does **not** claim is the image's own version: the one box that ran printed 3.12 in
+      session output that was never committed, so a version assertion here would be a remembered
+      number, and `run.py --check` prints the interpreter on the box instead — which is what the
+      cell `kaggle/campaign.py` generates now runs.
       Witness: `runs/python311_check.log`, whose first line is the command that wrote it.
       Reproduce (`MYNA_PY311` points at the interpreter; it refuses rather than reporting a
       silent skip, and the GPU half of the same check stays `KAGGLE`):
@@ -856,22 +860,28 @@ are counted, and if nothing is left the run refuses. See §9.14.
       The verdict half is done — P8 8d — and it says **no**. `bench/gates.py` binds each of
       G1–G7 to a registry row *and* to a named field read out of a committed artifact, so no
       verdict can be greener than the witness behind it: **3 met** (G2 on the matched ratios,
-      G3 on the in-Chrome parity, G7 on the checker itself), **2 not met** (G4, whose own
-      harness prints `readable: false`; G5, whose curve prints `g5.pass: false`), **2 open**
-      (G1 and G6, both waiting on artifacts that are not in this repo). `make gates` is the
+      G3 on the in-Chrome parity, G7 on the checker itself), **3 not met** (G1, on the trained
+      run's own committed report rather than on the untrained control that used to be the only
+      architecture number here; G4, whose own harness prints `readable: false`; G5, whose curve
+      prints `g5.pass: false`), **1 open** (G6 — the level clears at 0.9523, but the gate is
+      written against a trained v1 checkpoint and there is nothing to regress against until
+      that run exists). `make gates` is the
       check and SPEC §2.2 is the prose it reads. What keeps this line unticked is the release
-      itself: G1 and G4 need Kaggle, G6 needs any trained v1 artifact, and P0's push is
-      user-gated with no remote yet created.
+      itself: G1 is measured and short by 0.211, raising it is a GPU decision whose price §9.38
+      writes down, G4 still needs Kaggle, and P0's push is user-gated with no remote yet
+      created.
 
-### P9 — The three defects the first valid checkpoint named *(9a shipped; 9b's fix measured dead; 9c local; 9d the user's call)*
+### P9 — The three defects the first valid checkpoint named *(9a shipped; 9b's fix measured dead; 9c local; 9d the user's call; 9e measured dead too)*
 
 Opened by the diagnostic run against `v1b-kaggle-3600b`'s own logits (TODO 3i's lane), which answers
 the capacity question in the direction that matters: **the mechanism is not broken, the cost
 function is.** Option-order permutation tracking shows the pointer head reads option *text* — under
 permutation a cell's accuracy barely moves — so the trunk can find the answer and the training
-signal is what misprices it. **The magnitudes belong to 3i's witness and are deliberately not
-printed here**: the artifact they were read from is a Kaggle checkpoint with no committed witness in
-this repo, and §9.30 is exactly about not letting such a number into prose. What is structural, and
+signal is what misprices it. **The permutation magnitudes belong to 3i's diagnostic and are
+deliberately not printed here.** The checkpoint itself now has a committed witness — its
+`metrics.json`, its roll-up and its `train.log` are in `runs/`, which is what moved G1 from open
+to measured — but the option-order-permutation numbers below came from a diagnostic harness whose
+output was never committed, so §9.30 still bars them from prose. What is structural, and
 what this repo can act on without the artifact:
 
 - [x] **9a** `score` questions are trained with a **nominal** cost. `typed_loss` is
@@ -981,6 +991,51 @@ what this repo can act on without the artifact:
       `mnli/relation`): their association numbers do not beat their own permutation nulls. 9d is a
       scope decision for G1 — in or out — not a fix, and it is the user's call, not a checkbox to
       tick by shipping something. Recorded so the next run does not silently average them back in.
+- [x] **9e** The ablation 9a opened for, settled on this box for 0 GPU-hours — and the two
+      reproducibility defects that had to be fixed before it could be settled. `--score-loss` was
+      one flag and one output directory away from a *pair* of runs, which is the only reason 9a
+      was closable without the account: four CPU arms (`ce`/`emd` × seed 0/1, 250 updates) starting
+      from one shared init. Getting there required two fixes, because the arms were not comparable
+      as written. (i) `--seed` named the data order and nothing else — model init came from whatever
+      torch's global RNG held, so two runs of one command differed by init noise. That is why 9a's
+      own loss tests push a single update through a `typed_loss` spy *inside one process*: across
+      processes the init differed for a reason nobody was testing. (ii) The seed was also resizing
+      the step, because `state_token_p95` drew its sample with `random.Random(args.seed)`, so the
+      experiment's seed decided the batch size (measured, on the full pilot: p95 267/batch 15 and
+      p95 274/batch 14 from one command at two seeds). Fixed both ways it should be:
+      `torch.manual_seed(args.seed)` before the model is built, and the p95 taken from the corpus
+      rather than from the run — which moves no published figure, because every run this repo has
+      published used seed 0, where the two are the same draw. `--warm-start` is a third addition and
+      it is not a synonym for `--resume`: resume restores the saved `CosineAnnealingLR` state
+      including `T_max` *and* AdamW's `param_groups` including `lr`, so continuing a finished cosine
+      schedule trains at LR ≈ 0 while printing a perfectly plausible curve. The load-bearing test is
+      in `tests/test_memory_plan.py`: two cold runs of one command must be bit-identical, *and* a
+      warm start must land on different weights, because a warm start that lands on identical
+      weights loaded nothing.
+      **The verdict: 9a's term does not pay at this dose.** `bench/ordinal_ab.py` judges the arms
+      from their own `cmd:` lines — a pair may differ only in `--score-loss`, `--seed`, `--out`, and
+      it asserts the two arms of a pair share batch, p95 and `last_step`, and that neither stopped
+      early — and `runs/ordinal_ab.json` carries the per-cell rollups, the pairs, and the **churn
+      floor**: the mean |delta| across the 13 cells `emd` cannot price, which move anyway because
+      the trunk is shared. A score-cell delta under that floor is not an effect. Per seed, dev:
+      score-cell mean **+0.008333 / +0.004167** against floors of **0.013982 / 0.010086** (ratio
+      **0.596 / 0.4131**). Per seed, test: **+0.020833 / 0.0** against **0.011843 / 0.011925**
+      (**1.7591 / 0.0**). The headline moves *opposite ways in the two seeds* on both splits (dev
+      **−0.011828** vs **+0.003155**, test **+0.007952** vs **−0.001408**), and sign agreement
+      across seeds on the three priced cells is **2/3** on dev, **1/3** on test. One arm clears
+      its floor and its own replicate is exactly zero, so nothing here separates the term from
+      trunk noise. This also corrects how the same data was first read: the
+      ratios quoted then (**0.52 dev / 0.88 test**) pooled both seeds into a single mean, and
+      pooling is what made *every* ratio look below 1 — an average of a positive draw and a zero one
+      is a statement about neither, and §9.36 keeps the lesson. What the dose cannot say, do not
+      borrow it for: it does not price `emd` at 3,600 updates, and the init every arm warm-started
+      from (`v1b-kaggle-3600b`) has its *figures* committed (`runs/v1b_kaggle_3600b.metrics.json`,
+      so its level is quotable — 0.4893 test macro, §2.1) but not its *weights* (`model.pt` is a
+      65 MB artifact `runs/` does not track), so no local arm can be rebuilt from the same starting
+      point. These stay *relative* movements from that point rather than levels (§9.30's rule,
+      applied to ourselves). `ce` stays the
+      default in `kaggle/run.py`'s `DEFAULTS`, which is what keeps every published number standing. Re-judge the four arms with
+      `python bench/ordinal_ab.py --ab-dir /tmp/ab2`.
 
 ---
 
@@ -1635,3 +1690,89 @@ Kept permanently, because the value of this project's claims is that they surviv
    0/1 printed 0.346/0.351 again, and every per-cell figure matched the copy it replaced.
    Layout moved, nothing scored did, which is what licenses saying the re-rendered
    artifact is the same measurement better drawn.
+35. **"The memory plan is a property of the corpus."** The code made it a property of the *run*.
+   `state_token_p95` sampled its rows with `random.Random(args.seed)`, so changing the experiment's
+   seed changed the p95, which changed the batch the plan approved — measured on the full pilot:
+   p95 267 with batch 15 at seed 0, p95 274 with batch 14 at seed 1, from one command over one
+   corpus. No published figure moves, because every run this repo has published used seed 0, where
+   the seeded draw and the fixed `random.Random(0)` default are the same sample. What nearly
+   happened is an ablation whose two arms trained different batch sizes for a reason no comment
+   mentions, and the assertion that caught it was one a reviewer would call over-strict: a
+   comparison script demanded all four arms share a batch, and it was *right* to fail. The fix went
+   into the call site (`p95 = state_token_p95(tok, sample)` — the function's own default), not into
+   relaxing the assertion. The general form: **a control that differs from its treatment in more
+   than the variable under test has compared two experiments.** Read it off the runs rather than
+   off the launcher — `bench/ordinal_ab.py` reconstructs each arm's flags from that arm's own
+   `cmd:` line and asserts a pair differs only in `{--score-loss, --seed, --out}`, then checks the
+   two arms of a pair on batch, p95, `last_step` and "did not stop early".
+36. **A delta averaged across seeds whose headline moved in opposite directions.** The first read
+   of the `ce` vs `emd` ablation quoted the resolution ratio *pooled over both seeds* (0.5194 dev,
+   0.8765 test) and concluded "below 1, not resolvable". The conclusion stands; the evidence offered
+   for it did not. Pooling three priced cells across two seeds hid the fact that on test, seed 0
+   clears its churn floor (ratio 1.7591) while seed 1's mean is 0.0 — the two draws
+   disagree, which is a different finding from "both small" — and the number that actually carries
+   the verdict is the sign agreement across seeds (2/3 dev, 1/3 test) beside macro deltas of
+   −0.011828/+0.003155 and +0.007952/−0.001408. The pooled arithmetic was not wrong; it was the wrong unit,
+   and it erred *toward* the negative result, which is the direction nobody audits.
+   `runs/ordinal_ab.json` stores the per-pair figures first and the pooled ones under
+   `pooled_over_seeds`, and the judge prints the pooled line labelled as the one to distrust. The
+   general form: **average across replicates only when they agree** — a mean over contradictory
+   draws is a number no arm produced, and it will look like whichever conclusion the averaging
+   accidentally supports.
+37. **One run, two "test macro" numbers, and the launch doc quoted the flattering-to-doubt one.**
+   For a session every sentence about `v1b-kaggle-3600b` said *test macro 0.3983*. That figure is
+   real — `/tmp/kgwork/diag_dev_cells.json` prints `0.3982739096904652` — and it is not the number
+   G1 is written against. It came out of the permutation-diagnostic harness, whose roll-up is over
+   the cells *that* harness chose to score, with *its* filters; the release roll-up over the 16
+   cells both myna and laya score, per-cell unweighted, prints **0.4893271976084137** from the same
+   weights and the same split (`runs/v1b_kaggle_3600b.report.json`, computed by the command
+   `bench/reproduce.py`'s `v1b-kaggle-macro` row re-runs). The gap between them is not rounding and
+   it is not symmetric: 0.3983 says myna is 0.302 under the 0.70 target, 0.4893 says 0.211 under it,
+   and the smaller number made "the gap is a dose problem" look likelier than the artifact supports.
+   What fixed it is not "pick the right one": it is that **a roll-up is a named statistic with a
+   cell set and a weighting, and a gate may quote only the one whose command is committed.** The
+   diagnostic's figure is now quoted in the launch docs solely as the number *not* to quote; the
+   release report prints `macro/acc` beside `macro/cells_scored` (16) and `macro/cells_kept` (16),
+   so the cell set travels with the value instead of living in the prose; and §9.30's rule gets its
+   sharpened form — *the witness has to bind the number and the unit*, because a committed value
+   under an uncommitted roll-up is still a projection about which statistic was taken.
+38. **"Dev was flat from step 2,250" — a slope carried in prose for a session, and the committed
+   log says otherwise.** That claim was in the launch docs and in the reasoning behind them: it is
+   why the 3,600-update run looked converged, why dose was framed as the wrong question, and part
+   of why nobody re-bought the lane. The log does not say flat. `grep -E "dev-mid acc"
+   runs/v1b_kaggle_3600b.train.log | uniq | tail -5` prints the run's own tail — 0.4122 at 2,250,
+   0.4283 at 2,500, 0.4319, 0.4336, 0.4321, and **0.4355 at 3,500, which is the run's high** — so
+   the last 1,000 updates gained **+0.0072** and the curve was still rising when the cosine
+   schedule spent out, and the jump from 2,250 to 2,500 alone is +0.0161, which is not a flat
+   region by any reading. (The `uniq` is load-bearing: the box wrote every progress line twice,
+   and `bench/reproduce.py`'s `kaggle-dev-tail` row commits both the tail and the doubled-log fact.)
+   The correction does not rescue dose, and it is worth being precise about which way it cuts:
+   extrapolating the *measured* tail slope over the 6,400 extra updates per arm in the 10k lane
+   projects ≈ **+0.046**, against the +0.211 G1 needs — so the conclusion "more steps is not the
+   answer" survives, but it survives on a number rather than on a remembered adjective, and the
+   price of testing it is now computable: 5.62 s/update measured from the same log means the pair
+   is ≈31.2 GPU h against a 30 h/week quota.
+   The general form: **a slope is a figure, not a mood.** Before a remembered curve shape prices
+   GPU hours, re-read it from the artifact with the command that prints it committed — because
+   "flat" and "+0.007 per 1,000" imply different decisions, and the second one is a number a
+   reader can check.
+39. **Two mutation batteries had been refusing to run for a tick, and the repo kept citing their
+   logs.** `bench/mutation_gates.py` and `bench/mutation_reproduce.py` both print
+   `baseline (unmutated) copy is RED -- the battery proves nothing` and exit 1 — the guard
+   working correctly — and this went unnoticed because the last thing anyone reads from a battery
+   is its `N/N caught` line, not its exit code. The cause was the scratch, never the checker: each
+   battery builds a temp repo out of `src/ bench/ tests/` plus a **hand-maintained list** of
+   top-level files, and two things changed underneath that list — `tests/test_gates.py` grew a test
+   that reads `Makefile`, which neither list ever contained, and `reproduce.DOCS` grew two launch
+   docs while `mutation_reproduce.py` kept its own copy of the same tuple. So
+   `runs/mutation_gates.log`'s committed `baseline copy: green` line described a tree that no
+   longer existed, which is §9.34's finding wearing a harness: an artifact witnesses one run, not
+   the current one.
+   Both scratches now derive the file set from the filesystem (`*.md` + `pyproject.toml` +
+   `Makefile`) instead of a second list, and re-running them writes logs that are **byte-identical
+   to the committed ones** — the same 17 mutants, the same 21, all caught, exit 0 — which is the
+   evidence that the checker under test never changed and only the harness had been quietly
+   disabled: **gates 17/17, reproduce 21/21**, alongside `mutation_kaggle_bundle.py`'s
+   39/39. The general form: **a guard that aborts is only as good as the habit of checking that it
+   fired** — a battery that refuses is honest, but an unfixed refusal turns every later green
+   claim about it into a report about the past.

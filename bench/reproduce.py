@@ -36,7 +36,12 @@ import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
-DOCS = ("README.md", "SPEC.md", "PLAN.md", "TODO.md")
+DOCS = ("README.md", "SPEC.md", "PLAN.md", "TODO.md",
+        # the launch docs carry published figures now (the GPU-hour price, the G1
+        # measurement), so they owe the registry the same quote as the others. Before
+        # this they were outside `--check` entirely, which is how a hand-typed cell
+        # with two wrong paths survived for a session.
+        "KAGGLE_LAUNCH_INSTRUCTIONS.md", "EASY_LAUNCH.md")
 
 # The generated block is fenced in the docs by these two comment lines, and `doc_text`
 # cuts everything between them out. Without the cut, the registry would be checking
@@ -290,8 +295,70 @@ ROWS = [
         KAGGLE,
         [],
         [],
-        "no witness exists and none may be added by a local run: the corpus is trained on "
-        "Kaggle, so a figure here would be a projection wearing a measurement's clothes."),
+        "the run this row named is now committed as `v1b-kaggle-macro`, so G1's verdict no "
+        "longer rests here. What stays gated is raising the figure: that is a second GPU "
+        "spend, not a local re-run, and a number for it written here would be a projection "
+        "wearing a measurement's clothes."),
+
+    row("ordinal-ab", "SPEC §5 P9 9e (the `ce` vs `emd` verdict) · §9.35, §9.36",
+        "python bench/ordinal_ab.py --ab-dir /tmp/ab2",
+        RETRAIN,
+        ["runs/ordinal_ab.json"],
+        [("runs/ordinal_ab.json", '"churn_floor": 0.013982'),
+         ("runs/ordinal_ab.json", '"resolution_ratio": 1.7591'),
+         ("runs/ordinal_ab.json", '"resolution_ratio": 0.5194'),
+         ("runs/ordinal_ab.json", '"dev": "2/3"'),
+         ("runs/ordinal_ab.json", '"p95": 267')],
+        "four CPU arms from one shared init. The arms' own `metrics.json` (≈295 KB each) and "
+        "`model.pt` are not committed, so the artifact carries the rolled-up per-cell "
+        "accuracies the verdict was computed from — and the p95 it records is the §9.35 "
+        "confound, visible in the witness rather than asserted in prose. Quote the per-pair "
+        "figures; `pooled_over_seeds` is in the file and is the wrong unit (§9.36)."),
+
+    row("v1b-kaggle-macro", "SPEC §2.1 G1 myna row · §5 P8 · KAGGLE_LAUNCH_INSTRUCTIONS.md",
+        "uv run python -m myna.report --suite data/decision-v2-pilot --split test "
+        "--metrics runs/v1b_kaggle_3600b.metrics.json "
+        "--laya runs/laya_decision_v2_test.json "
+        "--out runs/v1b_kaggle_3600b.report.json",
+        HERE,
+        ["runs/v1b_kaggle_3600b.report.json", "runs/v1b_kaggle_3600b.metrics.json"],
+        [("runs/v1b_kaggle_3600b.report.json", '"acc": 0.4893271976084137'),
+         ("runs/v1b_kaggle_3600b.report.json", '"laya": 0.6668154761904762'),
+         ("runs/v1b_kaggle_3600b.report.json", '"majority": 0.4330647953941198'),
+         ("runs/v1b_kaggle_3600b.metrics.json", '"mem_plan_free_gib": 9.0'),
+         ("runs/v1b_kaggle_3600b.metrics.json", '"batch": 10')],
+        "The first valid GPU run, and now the witness G1 was open on: the metrics file "
+        "the box wrote, committed next to the roll-up computed from it. 0.489 is the "
+        "per-cell unweighted mean over the 16 cells both harnesses score — NOT the "
+        "0.3983 a diagnostic printed for the same run under a different roll-up, which "
+        "is why the unit is in this note (§9.37). `\"batch\": 10` is the memory plan "
+        "clamping `--batch 32` against the pinned 9.0 GiB, so the row also witnesses "
+        "the T4 regime."),
+
+    row("kaggle-wall-clock", "KAGGLE_LAUNCH_INSTRUCTIONS.md cost table · kaggle/campaign.py",
+        'grep -E "^step" runs/v1b_kaggle_3600b.train.log | tail -1',
+        HERE,
+        ["runs/v1b_kaggle_3600b.train.log"],
+        [("runs/v1b_kaggle_3600b.train.log", "20225s")],
+        "3,600 updates took 20,225 s of wall clock on a T4 — 5 h 37 m, 5.62 s/update "
+        "with evaluations included. `campaign.py` prices every cell from this constant, "
+        "and the launch docs used to promise 1.5 h for the same run. The 250-step "
+        "`dev-mid acc` line beside it is what says whether a run had converged: 0.4122 "
+        "at step 2250, 0.4355 at 3500 (§9.38)."),
+
+    row("kaggle-dev-tail", "SPEC §2.1 G1 · §9.38 · KAGGLE_LAUNCH_INSTRUCTIONS.md dose lane",
+        'grep -E "dev-mid acc" runs/v1b_kaggle_3600b.train.log | uniq | tail -5',
+        HERE,
+        ["runs/v1b_kaggle_3600b.train.log"],
+        [("runs/v1b_kaggle_3600b.train.log", "dev-mid acc 0.4355"),
+         ("runs/v1b_kaggle_3600b.train.log", "dev-mid acc 0.4283"),
+         ("runs/v1b_kaggle_3600b.train.log", "dev-mid acc 0.4122")],
+        "The tail of the curve that prices the next lane. `uniq` because the box wrote "
+        "every progress line twice (§9.38's witness is the doubled log, and a grep that "
+        "did not fold it would show two rungs per step). The remembered \"flat from step "
+        "2250\" is here disproved by the artifact: 0.4122 → 0.4355 is +0.0233 over the "
+        "last 1,250 updates, and 0.4355 is the run's high, so the curve was still rising "
+        "when its cosine schedule spent out."),
 ]
 
 STATUSES = (HERE, LAYA, CHROME, KAGGLE, RETRAIN)

@@ -15,11 +15,14 @@ tied to something that can contradict it:
 * `open` is only allowed for a gate that cites a row this box cannot reproduce at all
   (`gated-kaggle` or `retrain`). "open" names a missing artifact, not missing effort.
 
-That last distinction is load-bearing and easy to lose. G1 already has a committed number
-below its threshold — the untrained control's 0.346 — and is still `open`, because the run
-that decides it happens on a corpus this box does not train on. Calling that `not met`
-would report the control as if it were the checkpoint; calling the whole gate set `met`
-because three rows are green would be the marketing this file exists to refuse.
+That last distinction is load-bearing, and G1 is the case that proves it. That gate sat at
+`open` for a session while a real GPU run sat in a notebook output directory: the only
+myna architecture number committed here was the untrained control's 0.346, and reporting
+that as the checkpoint would have been a lie of the greener kind. It is `not met` now
+because the run's own artifacts got committed, which is what `open` was waiting for. The
+symmetric temptation is to settle a `not met` on whatever nearby number is lowest — G1's
+rows therefore cite the trained run and the control beside it, and pointedly not the void
+pre-`385e06c` checkpoint, which §9.23 already disqualified.
 
 The prose is checked, never generated: `--check` parses SPEC §2.2's status column and
 reds if any cell's leading words disagree with this file, so a verdict has to be changed
@@ -76,21 +79,35 @@ GATES = [
     gate("G1", "Accuracy beats the witness",
          "macro decision-v2 test ≥ 0.70 on the frozen split, per-source table published, "
          "≥ +0.15 over the 0.4331 majority floor",
-         OPEN,
-         ["g1-v1", "scratch-control", "scratch-vs-laya", "void-vs-laya"],
-         [proof("runs/report_scratch_vs_laya.json", "g1/pass", False,
-                "the only myna architecture number committed here is the control, and it "
-                "does not clear the threshold")],
-         "nothing that decides it. What is committed is the untrained control at **0.346 / "
-         "0.351** (`runs/scratch_decision_v2_test.md`) and the void pre-`385e06c` checkpoint "
-         "at **0.338**, and `runs/report_scratch_vs_laya.json` prints `\"pass\": false` for "
-         "the control's own G1 check.",
-         "open on a missing *artifact*, not a missing *run*. `v1b-kaggle-3600b` trained 3,600 "
-         "updates on Kaggle and reported its own metrics; no witness of it is committed in "
-         "this repo, which is exactly the case §9.30 refuses a figure for. TODO 3i publishes "
-         "the verdict from its own artifact — and until then the two numbers above are the "
-         "architecture at chance and at chance-after-a-gradient-step, neither of which is "
-         "G1's subject."),
+         NOT_MET,
+         ["v1b-kaggle-macro", "kaggle-dev-tail", "kaggle-wall-clock", "g1-v1",
+          "scratch-control", "scratch-vs-laya"],
+         [proof("runs/v1b_kaggle_3600b.report.json", "g1/pass", False,
+                "the trained run's own roll-up prints the verdict for this gate, and it "
+                "prints false"),
+          proof("runs/v1b_kaggle_3600b.report.json", "g1/meets_target", False,
+                "0.4893 against the 0.70 target, by the report's own arithmetic"),
+          proof("runs/report_scratch_vs_laya.json", "g1/pass", False,
+                "the untrained control fails the same gate, which is what makes the "
+                "trained number a movement rather than a ceiling")],
+         "`v1b-kaggle-3600b`'s committed report prints `\"pass\": false` for this gate: over "
+         "the 16 cells both harnesses score, per-cell unweighted, **myna 0.4893 · laya 0.6668 "
+         "· majority floor 0.4331** — **+0.056** over the floor against the **+0.15** required "
+         "and 0.211 short of 0.70. Its `train.log` is committed beside it: 3,600 updates in "
+         "20,225 s on a T4, and a dev curve whose last 1,000 updates still gain **+0.0072** "
+         "(0.4283 at step 2,500 → 0.4355 at 3,500). For contrast, the untrained control here "
+         "measures **0.346 / 0.351** (`runs/scratch_decision_v2_test.md`).",
+         "not met, measured — and the measurement is an artifact rather than a transcript. "
+         "§9.30 refuses a figure whose witness is not committed, and until this tick the "
+         "Kaggle run's `metrics.json` lived in a notebook output directory, so the gate had "
+         "to sit at `open`; `bench/reproduce.py`'s `v1b-kaggle-macro`, `kaggle-dev-tail` and "
+         "`kaggle-wall-clock` rows re-derive every figure above from files in `runs/`. What "
+         "the verdict does *not* settle is dose: "
+         "that tail slope is why a longer run is not a free +0.21, and §9.38 writes the "
+         "correction of the remembered \"flat from step 2,250\" claim. The void pre-`385e06c` "
+         "checkpoint's 0.338 is deliberately not a row here — a `not met` may not rest on a "
+         "void artifact (§9.23), so it stays in SPEC's prose as contrast and out of the "
+         "evidence."),
 
     gate("G2", "Latency claim survives equal-footing re-measurement",
          "same box, same window, same question count, direct `Agent` call not `Router`; "
@@ -182,12 +199,12 @@ GATES = [
          [proof(REGISTRY, "", True,
                 "every published table row is bound to a committed witness that still "
                 "contains the figure the prose quotes")],
-         "`make repro` is green at this tick: 22 registry rows bind every published table "
-         "cell to one command and one committed witness, and the 38 quoted figures are "
+         "`make repro` is green at this tick: 26 registry rows bind every published table "
+         "cell to one command and one committed witness, and the 55 quoted figures are "
          "re-read out of those files rather than out of the prose. The seeds live inside the "
          "printed commands (`--seed 0`, `--seeds 0 1`), not in sentences about them.",
          "met as a binding, not as a rebuild, and the gap is disclosed rather than absorbed: "
-         "no target *executes* the registry end to end — 14 rows re-run on this box, 2 retrain "
+         "no target *executes* the registry end to end — 17 rows re-run on this box, 3 retrain "
          "a checkpoint, 2 need a laya checkout on `PYTHONPATH`, 3 need Google Chrome and 1 is "
          "`KAGGLE`. That is TODO 8b, which stays unticked for exactly this reason."),
 ]

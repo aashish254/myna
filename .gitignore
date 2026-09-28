@@ -34,3 +34,11 @@ data/decision-v2-pilot/*
 # runs/browser_g3_int8.json, and `npm run g3 -- --artifact runs/onnx_int8` redraws the
 # PNGs on demand, so 4.4 MB of near-duplicate pixels stay out of a 114 KiB repo.
 docs/screenshots/int8/
+
+# The corpus staging dirs: `kaggle/package_dataset.py` and the upload recipe copy
+# `data/decision-v2-pilot` into one of these before `kaggle datasets create`, so they are
+# a ~60 MB duplicate of a corpus that is already a private dataset. A `git add -A` would
+# commit the copy as a second corpus and put upstream text in this repo's history.
+.kaggle-dataset/
+kaggle-dataset/
+.local-kaggle-upload/

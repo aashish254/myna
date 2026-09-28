@@ -14,7 +14,7 @@ short. Myna is an architecture built for that shape from the ground up.
 <!-- gates:release:begin -->
 ## Where this stands: the release gate, all seven rows
 
-**3 of 7 met, 2 not met, 2 open — the release gate is NOT clear.**
+**3 of 7 met, 3 not met, 1 open — the release gate is NOT clear.**
 
 Every verdict below is checked against a committed artifact — the registry
 row beside it and the field read out of that artifact by
@@ -25,13 +25,13 @@ are the two that cannot be closed on this box.
 
 | gate | verdict | what the committed artifact prints | what it does not claim |
 |---|---|---|---|
-| **G1** — Accuracy beats the witness | **open** | nothing that decides it. What is committed is the untrained control at **0.346 / 0.351** (`runs/scratch_decision_v2_test.md`) and the void pre-`385e06c` checkpoint at **0.338**, and `runs/report_scratch_vs_laya.json` prints `"pass": false` for the control's own G1 check. | open on a missing *artifact*, not a missing *run*. `v1b-kaggle-3600b` trained 3,600 updates on Kaggle and reported its own metrics; no witness of it is committed in this repo, which is exactly the case §9.30 refuses a figure for. TODO 3i publishes the verdict from its own artifact — and until then the two numbers above are the architecture at chance and at chance-after-a-gradient-step, neither of which is G1's subject. |
+| **G1** — Accuracy beats the witness | **not met** | `v1b-kaggle-3600b`'s committed report prints `"pass": false` for this gate: over the 16 cells both harnesses score, per-cell unweighted, **myna 0.4893 · laya 0.6668 · majority floor 0.4331** — **+0.056** over the floor against the **+0.15** required and 0.211 short of 0.70. Its `train.log` is committed beside it: 3,600 updates in 20,225 s on a T4, and a dev curve whose last 1,000 updates still gain **+0.0072** (0.4283 at step 2,500 → 0.4355 at 3,500). For contrast, the untrained control here measures **0.346 / 0.351** (`runs/scratch_decision_v2_test.md`). | not met, measured — and the measurement is an artifact rather than a transcript. §9.30 refuses a figure whose witness is not committed, and until this tick the Kaggle run's `metrics.json` lived in a notebook output directory, so the gate had to sit at `open`; `bench/reproduce.py`'s `v1b-kaggle-macro`, `kaggle-dev-tail` and `kaggle-wall-clock` rows re-derive every figure above from files in `runs/`. What the verdict does *not* settle is dose: that tail slope is why a longer run is not a free +0.21, and §9.38 writes the correction of the remembered "flat from step 2,250" claim. The void pre-`385e06c` checkpoint's 0.338 is deliberately not a row here — a `not met` may not rest on a void artifact (§9.23), so it stays in SPEC's prose as contrast and out of the evidence. |
 | **G2** — Latency claim survives equal-footing re-measurement | **met** | one M5 process, both engines fp32, `Agent.system_one` called directly, ladder capped inside laya's own 1024 window: **3.04×/3.21×/4.12×/3.60×** end-to-end and **6.78×/4.67×/4.75×/3.65×** ask-only at 1/5/10/50 questions, each cell the minimum of two committed runs. | met as a ratio, which is all G2 asks. It carries no accuracy implication: the model that is faster is the one that still fails G1, and the millisecond columns behind these ratios are load-dependent on a box other sessions share (§9.23) — quote the ratio, never the milliseconds. |
 | **G3** — Deployment works for real | **met** | the exported artifact answers three typed decisions in real Chrome 153 with the same probabilities the torch engine prints — 6/6 parity checks, both isolation modes, desktop and mobile widths — and its bytes, cold-load and p50 are measured there with the box's load average printed beside them. | met as a mechanics gate, and the caveat is part of the verdict rather than a footnote: what ships is v0, which fails G1 and G5; the ≤ 20 MB int8 route is open on bytes and closed on agreement (§9.28); the Apple-silicon int8 route closes for the opposite reason — 17.40 MiB at 9.24e-03 and no latency win at all, so fp32 is the artifact on both paths (§9.29). |
 | **G4** — Long-context is *correct*, not just cheap | **not met** | v0's needle curve prints **0.188 at 128 tokens** against a 0.167 uniform floor — at chance on the *shortest* rung — so the longer rows are the decay of nothing, and `runs/needle_myna-v0.md` prints `G4: not measured by this run` in place of a table a reader could quote. | not met, and not met by a run that cannot answer the question. The 16k *state* is measured, fixed at 576 KiB and cheap (§9.22); the 16k *decision* needs the 4k truncated-backprop checkpoint, which is 7b / `KAGGLE`. Those are two different claims and only the first one is settled. |
 | **G5** — Useful confidence, with abstention | **not met** | the curve's own `g5.pass` is `false`: accuracy climbs **0.349 → 0.535** as coverage falls 1.00 → 0.20 over 448 rows / 568 questions, **no rung reaches 0.95** (the max is 0.596, at 10% coverage), and G5's three named sources measure 0.000 / 0.025 / 0.150. | not met on the level, met on the machinery, and the gate is the level. `Myna(abstain_below=t)` withholds the commitment with a measured reason and the fallback seam labels which engine committed — a confidence that ranks the answers of a model that cannot answer is routing, not the product G5 describes (§9.24). |
 | **G6** — No regression on what already worked | **open** | v0's measured test macro is **0.9523** — the macro of the nine `=== test ===` rows in `runs/train-v0.log`, recomputed from its rows because the log prints no overall line — so the level clears today. | open rather than met, because the gate is written against the *next* checkpoint: it says "no regression", and there is no trained v1 artifact in this repo to regress. A draft of this row cited 0.951, a figure no artifact prints (§9.30), which is why the value here is computed from the log's own rows. |
-| **G7** — Reproducibility | **met** | `make repro` is green at this tick: 22 registry rows bind every published table cell to one command and one committed witness, and the 38 quoted figures are re-read out of those files rather than out of the prose. The seeds live inside the printed commands (`--seed 0`, `--seeds 0 1`), not in sentences about them. | met as a binding, not as a rebuild, and the gap is disclosed rather than absorbed: no target *executes* the registry end to end — 14 rows re-run on this box, 2 retrain a checkpoint, 2 need a laya checkout on `PYTHONPATH`, 3 need Google Chrome and 1 is `KAGGLE`. That is TODO 8b, which stays unticked for exactly this reason. |
+| **G7** — Reproducibility | **met** | `make repro` is green at this tick: 26 registry rows bind every published table cell to one command and one committed witness, and the 55 quoted figures are re-read out of those files rather than out of the prose. The seeds live inside the printed commands (`--seed 0`, `--seeds 0 1`), not in sentences about them. | met as a binding, not as a rebuild, and the gap is disclosed rather than absorbed: no target *executes* the registry end to end — 17 rows re-run on this box, 3 retrain a checkpoint, 2 need a laya checkout on `PYTHONPATH`, 3 need Google Chrome and 1 is `KAGGLE`. That is TODO 8b, which stays unticked for exactly this reason. |
 
 <!-- gates:release:end -->
 
@@ -519,9 +519,18 @@ uv run python -m myna.report --suite data/decision-v2-pilot --split test --metri
 # README upstream table's disclosure row · SPEC §5 P1, §9.23  [here]
 uv run python -m myna.report --suite data/decision-v2-pilot --split test --metrics runs/myna-v1-rich/metrics.json --laya runs/laya_decision_v2_test.json --out runs/report_void_vs_laya.json
 # SPEC §2.1 G1 myna row · TODO 3i  [gated-kaggle]
-# no local command: no witness exists and none may be added by a local run: the corpus is trained on Kaggle, so a figure here would be a projection wearing a measurement's clothes.
+# no local command: the run this row named is now committed as `v1b-kaggle-macro`, so G1's verdict no longer rests here.
+# SPEC §5 P9 9e (the `ce` vs `emd` verdict) · §9.35, §9.36  [retrain]
+python bench/ordinal_ab.py --ab-dir /tmp/ab2
+# SPEC §2.1 G1 myna row · §5 P8 · KAGGLE_LAUNCH_INSTRUCTIONS.md  [here]
+uv run python -m myna.report --suite data/decision-v2-pilot --split test --metrics runs/v1b_kaggle_3600b.metrics.json --laya runs/laya_decision_v2_test.json --out runs/v1b_kaggle_3600b.report.json
+# KAGGLE_LAUNCH_INSTRUCTIONS.md cost table · kaggle/campaign.py  [here]
+grep -E "^step" runs/v1b_kaggle_3600b.train.log | tail -1
+# SPEC §2.1 G1 · §9.38 · KAGGLE_LAUNCH_INSTRUCTIONS.md dose lane  [here]
+grep -E "dev-mid acc" runs/v1b_kaggle_3600b.train.log | uniq | tail -5
 ```
 <!-- reproduce:registry:end -->
+
 ## Quickstart
 
 ```bash

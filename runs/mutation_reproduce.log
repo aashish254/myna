@@ -1,5 +1,5 @@
 baseline copy: green (1 test file, 21 mutations)
-against a scratch copy of src/bench/tests + the four docs, with
+against a scratch copy of src/bench/tests + 9 top-level files (every *.md, pyproject.toml, Makefile), with
 data/runs/.git symlinked (§9.18), so no live tree is being edited.
 
 [ 1/21] caught      a figure the witness no longer prints is still a published figure

@@ -1,0 +1,478 @@
+{
+  "arms": {
+    "ce0": {
+      "cells": {
+        "dev": {
+          "agnews/is_business": 0.7555555555555555,
+          "agnews/is_scitech": 0.7659574468085106,
+          "agnews/is_sports": 0.8076923076923077,
+          "agnews/is_world": 0.825,
+          "agnews/topic": 0.5172413793103449,
+          "amazon/stars": 0.3375,
+          "banking77/intent": 0.034482758620689655,
+          "boolq/answer": 0.425,
+          "contrastive/decision": 0.5153061224489796,
+          "dbpedia14/category": 0.6293103448275862,
+          "imdb/positive": 0.6875,
+          "mnli/relation": 0.29310344827586204,
+          "sst5/sentiment": 0.425,
+          "trec/answer_type": 0.21551724137931033,
+          "yelp/rating": 0.375,
+          "yelp/recommend": 0.725
+        },
+        "test": {
+          "agnews/is_business": 0.6511627906976745,
+          "agnews/is_scitech": 0.6530612244897959,
+          "agnews/is_sports": 0.8085106382978723,
+          "agnews/is_world": 0.7777777777777778,
+          "agnews/topic": 0.39655172413793105,
+          "amazon/stars": 0.3,
+          "banking77/intent": 0.04310344827586207,
+          "boolq/answer": 0.4875,
+          "contrastive/decision": 0.4897959183673469,
+          "dbpedia14/category": 0.5086206896551724,
+          "imdb/positive": 0.7875,
+          "mnli/relation": 0.3448275862068966,
+          "sst5/sentiment": 0.2375,
+          "trec/answer_type": 0.23275862068965517,
+          "yelp/rating": 0.375,
+          "yelp/recommend": 0.75
+        }
+      },
+      "flags": {
+        "--accum-groups": "8",
+        "--batch": "32",
+        "--device": "auto",
+        "--eval-every": "0",
+        "--free-gib": "8",
+        "--group-sample": "pool",
+        "--lr": "3e-4",
+        "--max-q-cells": "1024",
+        "--mem-safety": "0.6",
+        "--out": "/tmp/ab2/ce0",
+        "--paraphrase": "on",
+        "--row-batch": "",
+        "--save-every": "250",
+        "--score-loss": "ce",
+        "--seed": "0",
+        "--steps": "250",
+        "--stop-factor": "3.0",
+        "--suite": "/Users/aashish/next ko ne next gen model/data/decision-v2-pilot",
+        "--vocab": "8192",
+        "--warm-start": "/tmp/kgwork/final/runs/v1b-kaggle-3600b/model.pt"
+      },
+      "meta": {
+        "batch": 15,
+        "last_step": 249,
+        "macro_dev": 0.4314387156567305,
+        "macro_test": 0.4114309149673529,
+        "p95": 267,
+        "stopped": null,
+        "temperature": 1.5
+      }
+    },
+    "ce1": {
+      "cells": {
+        "dev": {
+          "agnews/is_business": 0.7777777777777778,
+          "agnews/is_scitech": 0.7659574468085106,
+          "agnews/is_sports": 0.7692307692307693,
+          "agnews/is_world": 0.8,
+          "agnews/topic": 0.5086206896551724,
+          "amazon/stars": 0.3375,
+          "banking77/intent": 0.008620689655172414,
+          "boolq/answer": 0.475,
+          "contrastive/decision": 0.5051020408163265,
+          "dbpedia14/category": 0.6724137931034483,
+          "imdb/positive": 0.6625,
+          "mnli/relation": 0.27586206896551724,
+          "sst5/sentiment": 0.4,
+          "trec/answer_type": 0.1724137931034483,
+          "yelp/rating": 0.3875,
+          "yelp/recommend": 0.7125
+        },
+        "test": {
+          "agnews/is_business": 0.6511627906976745,
+          "agnews/is_scitech": 0.673469387755102,
+          "agnews/is_sports": 0.8085106382978723,
+          "agnews/is_world": 0.7777777777777778,
+          "agnews/topic": 0.3620689655172414,
+          "amazon/stars": 0.2875,
+          "banking77/intent": 0.04310344827586207,
+          "boolq/answer": 0.5375,
+          "contrastive/decision": 0.47959183673469385,
+          "dbpedia14/category": 0.5086206896551724,
+          "imdb/positive": 0.7875,
+          "mnli/relation": 0.3275862068965517,
+          "sst5/sentiment": 0.3,
+          "trec/answer_type": 0.1810344827586207,
+          "yelp/rating": 0.4125,
+          "yelp/recommend": 0.8125
+        }
+      },
+      "flags": {
+        "--accum-groups": "8",
+        "--batch": "32",
+        "--device": "auto",
+        "--eval-every": "0",
+        "--free-gib": "8",
+        "--group-sample": "pool",
+        "--lr": "3e-4",
+        "--max-q-cells": "1024",
+        "--mem-safety": "0.6",
+        "--out": "/tmp/ab2/ce1",
+        "--paraphrase": "on",
+        "--row-batch": "",
+        "--save-every": "250",
+        "--score-loss": "ce",
+        "--seed": "1",
+        "--steps": "250",
+        "--stop-factor": "3.0",
+        "--suite": "/Users/aashish/next ko ne next gen model/data/decision-v2-pilot",
+        "--vocab": "8192",
+        "--warm-start": "/tmp/kgwork/final/runs/v1b-kaggle-3600b/model.pt"
+      },
+      "meta": {
+        "batch": 14,
+        "last_step": 249,
+        "macro_dev": 0.42874375361394235,
+        "macro_test": 0.4110699709661083,
+        "p95": 274,
+        "stopped": null,
+        "temperature": 1.2
+      }
+    },
+    "emd0": {
+      "cells": {
+        "dev": {
+          "agnews/is_business": 0.7555555555555555,
+          "agnews/is_scitech": 0.7659574468085106,
+          "agnews/is_sports": 0.8076923076923077,
+          "agnews/is_world": 0.825,
+          "agnews/topic": 0.5,
+          "amazon/stars": 0.375,
+          "banking77/intent": 0.02586206896551724,
+          "boolq/answer": 0.45,
+          "contrastive/decision": 0.4744897959183674,
+          "dbpedia14/category": 0.6637931034482759,
+          "imdb/positive": 0.675,
+          "mnli/relation": 0.25862068965517243,
+          "sst5/sentiment": 0.4125,
+          "trec/answer_type": 0.22413793103448276,
+          "yelp/rating": 0.375,
+          "yelp/recommend": 0.725
+        },
+        "test": {
+          "agnews/is_business": 0.6511627906976745,
+          "agnews/is_scitech": 0.6530612244897959,
+          "agnews/is_sports": 0.8085106382978723,
+          "agnews/is_world": 0.7777777777777778,
+          "agnews/topic": 0.4224137931034483,
+          "amazon/stars": 0.3,
+          "banking77/intent": 0.034482758620689655,
+          "boolq/answer": 0.5,
+          "contrastive/decision": 0.5153061224489796,
+          "dbpedia14/category": 0.4827586206896552,
+          "imdb/positive": 0.7875,
+          "mnli/relation": 0.3275862068965517,
+          "sst5/sentiment": 0.275,
+          "trec/answer_type": 0.25862068965517243,
+          "yelp/rating": 0.4,
+          "yelp/recommend": 0.7625
+        }
+      },
+      "flags": {
+        "--accum-groups": "8",
+        "--batch": "32",
+        "--device": "auto",
+        "--eval-every": "0",
+        "--free-gib": "8",
+        "--group-sample": "pool",
+        "--lr": "3e-4",
+        "--max-q-cells": "1024",
+        "--mem-safety": "0.6",
+        "--out": "/tmp/ab2/emd0",
+        "--paraphrase": "on",
+        "--row-batch": "",
+        "--save-every": "250",
+        "--score-loss": "emd",
+        "--seed": "0",
+        "--steps": "250",
+        "--stop-factor": "3.0",
+        "--suite": "/Users/aashish/next ko ne next gen model/data/decision-v2-pilot",
+        "--vocab": "8192",
+        "--warm-start": "/tmp/kgwork/final/runs/v1b-kaggle-3600b/model.pt"
+      },
+      "meta": {
+        "batch": 15,
+        "last_step": 249,
+        "macro_dev": 0.41961075188019836,
+        "macro_test": 0.4193831660640424,
+        "p95": 267,
+        "stopped": null,
+        "temperature": 1.5
+      }
+    },
+    "emd1": {
+      "cells": {
+        "dev": {
+          "agnews/is_business": 0.7777777777777778,
+          "agnews/is_scitech": 0.7659574468085106,
+          "agnews/is_sports": 0.7692307692307693,
+          "agnews/is_world": 0.8,
+          "agnews/topic": 0.5258620689655172,
+          "amazon/stars": 0.3625,
+          "banking77/intent": 0.017241379310344827,
+          "boolq/answer": 0.4625,
+          "contrastive/decision": 0.5306122448979592,
+          "dbpedia14/category": 0.6724137931034483,
+          "imdb/positive": 0.6875,
+          "mnli/relation": 0.25862068965517243,
+          "sst5/sentiment": 0.4,
+          "trec/answer_type": 0.1724137931034483,
+          "yelp/rating": 0.375,
+          "yelp/recommend": 0.7375
+        },
+        "test": {
+          "agnews/is_business": 0.6511627906976745,
+          "agnews/is_scitech": 0.673469387755102,
+          "agnews/is_sports": 0.8085106382978723,
+          "agnews/is_world": 0.7777777777777778,
+          "agnews/topic": 0.3879310344827586,
+          "amazon/stars": 0.275,
+          "banking77/intent": 0.034482758620689655,
+          "boolq/answer": 0.5125,
+          "contrastive/decision": 0.46938775510204084,
+          "dbpedia14/category": 0.5258620689655172,
+          "imdb/positive": 0.8,
+          "mnli/relation": 0.3103448275862069,
+          "sst5/sentiment": 0.325,
+          "trec/answer_type": 0.20689655172413793,
+          "yelp/rating": 0.4,
+          "yelp/recommend": 0.8
+        }
+      },
+      "flags": {
+        "--accum-groups": "8",
+        "--batch": "32",
+        "--device": "auto",
+        "--eval-every": "0",
+        "--free-gib": "8",
+        "--group-sample": "pool",
+        "--lr": "3e-4",
+        "--max-q-cells": "1024",
+        "--mem-safety": "0.6",
+        "--out": "/tmp/ab2/emd1",
+        "--paraphrase": "on",
+        "--row-batch": "",
+        "--save-every": "250",
+        "--score-loss": "emd",
+        "--seed": "1",
+        "--steps": "250",
+        "--stop-factor": "3.0",
+        "--suite": "/Users/aashish/next ko ne next gen model/data/decision-v2-pilot",
+        "--vocab": "8192",
+        "--warm-start": "/tmp/kgwork/final/runs/v1b-kaggle-3600b/model.pt"
+      },
+      "meta": {
+        "batch": 14,
+        "last_step": 249,
+        "macro_dev": 0.43189851551870434,
+        "macro_test": 0.40966160861151685,
+        "p95": 274,
+        "stopped": null,
+        "temperature": 1.2
+      }
+    }
+  },
+  "cells_priced_by_the_term": 3,
+  "delta": {
+    "dev": {
+      "agnews/is_business": [
+        0.0,
+        0.0
+      ],
+      "agnews/is_scitech": [
+        0.0,
+        0.0
+      ],
+      "agnews/is_sports": [
+        0.0,
+        0.0
+      ],
+      "agnews/is_world": [
+        0.0,
+        0.0
+      ],
+      "agnews/topic": [
+        -0.017241,
+        0.017241
+      ],
+      "amazon/stars": [
+        0.0375,
+        0.025
+      ],
+      "banking77/intent": [
+        -0.008621,
+        0.008621
+      ],
+      "boolq/answer": [
+        0.025,
+        -0.0125
+      ],
+      "contrastive/decision": [
+        -0.040816,
+        0.02551
+      ],
+      "dbpedia14/category": [
+        0.034483,
+        0.0
+      ],
+      "imdb/positive": [
+        -0.0125,
+        0.025
+      ],
+      "mnli/relation": [
+        -0.034483,
+        -0.017241
+      ],
+      "sst5/sentiment": [
+        -0.0125,
+        0.0
+      ],
+      "trec/answer_type": [
+        0.008621,
+        0.0
+      ],
+      "yelp/rating": [
+        0.0,
+        -0.0125
+      ],
+      "yelp/recommend": [
+        0.0,
+        0.025
+      ]
+    },
+    "test": {
+      "agnews/is_business": [
+        0.0,
+        0.0
+      ],
+      "agnews/is_scitech": [
+        0.0,
+        0.0
+      ],
+      "agnews/is_sports": [
+        0.0,
+        0.0
+      ],
+      "agnews/is_world": [
+        0.0,
+        0.0
+      ],
+      "agnews/topic": [
+        0.025862,
+        0.025862
+      ],
+      "amazon/stars": [
+        0.0,
+        -0.0125
+      ],
+      "banking77/intent": [
+        -0.008621,
+        -0.008621
+      ],
+      "boolq/answer": [
+        0.0125,
+        -0.025
+      ],
+      "contrastive/decision": [
+        0.02551,
+        -0.010204
+      ],
+      "dbpedia14/category": [
+        -0.025862,
+        0.017241
+      ],
+      "imdb/positive": [
+        0.0,
+        0.0125
+      ],
+      "mnli/relation": [
+        -0.017241,
+        -0.017241
+      ],
+      "sst5/sentiment": [
+        0.0375,
+        0.025
+      ],
+      "trec/answer_type": [
+        0.025862,
+        0.025862
+      ],
+      "yelp/rating": [
+        0.025,
+        -0.0125
+      ],
+      "yelp/recommend": [
+        0.0125,
+        -0.0125
+      ]
+    }
+  },
+  "dose": "250 updates, warm-started from one shared init",
+  "pairs": {
+    "dev_seed0": {
+      "churn_floor": 0.013982,
+      "macro_emd_minus_ce": -0.011828,
+      "resolution_ratio": 0.596,
+      "score_cell_mean": 0.008333
+    },
+    "dev_seed1": {
+      "churn_floor": 0.010086,
+      "macro_emd_minus_ce": 0.003155,
+      "resolution_ratio": 0.4131,
+      "score_cell_mean": 0.004167
+    },
+    "test_seed0": {
+      "churn_floor": 0.011843,
+      "macro_emd_minus_ce": 0.007952,
+      "resolution_ratio": 1.7591,
+      "score_cell_mean": 0.020833
+    },
+    "test_seed1": {
+      "churn_floor": 0.011925,
+      "macro_emd_minus_ce": -0.001408,
+      "resolution_ratio": 0.0,
+      "score_cell_mean": 0.0
+    }
+  },
+  "pairs_above_floor": [
+    "test_seed0"
+  ],
+  "pooled_over_seeds": {
+    "dev": {
+      "churn_floor": 0.012034,
+      "positive_draws": "2/6",
+      "resolution_ratio": 0.5194,
+      "score_cell_mean": 0.00625
+    },
+    "test": {
+      "churn_floor": 0.011884,
+      "positive_draws": "3/6",
+      "resolution_ratio": 0.8765,
+      "score_cell_mean": 0.010417
+    }
+  },
+  "score_cells": [
+    "sst5/sentiment",
+    "yelp/rating",
+    "amazon/stars"
+  ],
+  "sign_agreement": {
+    "dev": "2/3",
+    "test": "1/3"
+  },
+  "verdict": "not shown. test_seed0 exceed their churn floor, dev_seed0, dev_seed1, test_seed1 do not, and the replicates disagree \u2014 sign agreement on the priced cells is 2/3 on dev and 1/3 on test. Macro moves opposite ways in the two seeds (dev: -0.0118 vs +0.0032 and test: +0.0080 vs -0.0014). This dose cannot separate the term from trunk noise.",
+  "what": "paired --score-loss ce vs emd ablation"
+}

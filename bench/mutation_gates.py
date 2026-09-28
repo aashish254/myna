@@ -97,9 +97,12 @@ def make_scratch(tmp):
 
     `.git` is a symlink rather than a copy: `git ls-files` reads the index, not the
     filesystem, so the linked index answers for witness paths that exist at the same
-    relative location under `runs/` (also linked). The four docs are linked because the
+    relative location under `runs/` (also linked). The docs are linked because the
     registry's own doc-quote check — which `check_gate` runs through every cited row —
-    reads all of them.
+    reads all of them, and the `Makefile` is linked because
+    `test_make_gates_is_the_check_and_the_prose_promises_it_by_that_name` reads it: a
+    scratch built from `*.md`/`*.toml` alone had no Makefile in it, and this battery's
+    baseline was red for exactly that reason without anybody being told.
     """
     repo = Path(tmp) / "repo"
     if repo.exists():
@@ -111,7 +114,8 @@ def make_scratch(tmp):
     for name in ("data", "runs", ".git"):
         if (ROOT / name).exists():
             (repo / name).symlink_to(ROOT / name)
-    for name in sorted(p.name for p in ROOT.iterdir() if p.suffix in (".md", ".toml", ".cfg")):
+    for name in sorted(p.name for p in ROOT.iterdir()
+                       if p.suffix in (".md", ".toml", ".cfg")) + ["Makefile"]:
         (repo / name).symlink_to(ROOT / name)
     return repo
 

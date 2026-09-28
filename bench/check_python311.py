@@ -1,7 +1,8 @@
 """Prove the package runs on the Kaggle image's Python, not just on this venv (P3 3c).
 
-`pyproject.toml` said `requires-python = ">=3.13"` while the Kaggle notebook image
-ships 3.11. That combination does not fail in an interesting way: pip/uv resolve
+`pyproject.toml` said `requires-python = ">=3.13"` while the supported floor is 3.11 and a
+notebook keeps whatever interpreter its image ships. That combination does not fail in an
+interesting way: pip/uv resolve
 past it, the notebook keeps the interpreter it already has, and the run either
 dies on a syntax error an hour in or — worse — trains fine here and silently
 diverges there because a stdlib call changed.

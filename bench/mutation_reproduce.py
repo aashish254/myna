@@ -37,8 +37,8 @@ harness, and the `cmd` key dropped from the needle's json. The static half of th
 reads the source, the dynamic half runs the harness against a two-row fixture suite and
 reads the file back, so the lie has to survive both.
 
-Scratch-repo mechanics per §9.18: `src`, `bench`, `tests`, the four docs and
-`pyproject.toml` are copied (`pythonpath = ["src"]` is resolved against the rootdir, so
+Scratch-repo mechanics per §9.18: `src`, `bench`, `tests`, every top-level markdown file
+plus `pyproject.toml` and `Makefile` are copied (`pythonpath = ["src"]` is resolved against the rootdir, so
 a mutated file reached through `PYTHONPATH` loses to the unmutated one, §9.12), `data`,
 `runs` and `.git` are symlinked (the checker asks `git ls-files` whether a witness is
 committed, which needs a repository), the baseline must be green before any mutation
@@ -56,7 +56,13 @@ from pathlib import Path
 
 ROOT = Path.cwd()
 TESTS = ["tests/test_reproduce.py"]
-DOCS = ["README.md", "SPEC.md", "PLAN.md", "TODO.md", "pyproject.toml"]
+# Every top-level file the tests read has to be in the scratch, and naming them is how
+# this battery went red on itself: `reproduce.DOCS` gained two launch docs and this list
+# did not, and `Makefile` was never here even though
+# `test_the_make_target_checks_and_only_reruns_when_a_row_is_named` reads it. A glob of
+# the markdown files plus the two build files travels with the repo instead.
+SCRATCH_FILES = sorted(p.name for p in ROOT.iterdir() if p.suffix == ".md") + [
+    "pyproject.toml", "Makefile"]
 
 RP = "bench/reproduce.py"
 RC = "bench/risk_coverage.py"
@@ -145,7 +151,7 @@ def make_scratch(tmp):
     for name in ("src", "bench", "tests"):
         shutil.copytree(ROOT / name, repo / name,
                         ignore=shutil.ignore_patterns("__pycache__", ".pytest_cache"))
-    for name in DOCS:
+    for name in SCRATCH_FILES:
         shutil.copy(ROOT / name, repo / name)
     # runs/ holds the witnesses and data/ the frozen split; .git is what makes a
     # witness "committed", so the checker needs a repository to ask the question in
@@ -192,7 +198,8 @@ def main():
             print(r0.stdout[-4000:])
             return 2
         print(f"baseline copy: green ({len(TESTS)} test file, {len(MUTATIONS)} mutations)")
-        print("against a scratch copy of src/bench/tests + the four docs, with\n"
+        print(f"against a scratch copy of src/bench/tests + {len(SCRATCH_FILES)} top-level "
+              "files (every *.md, pyproject.toml, Makefile), with\n"
               "data/runs/.git symlinked (§9.18), so no live tree is being edited.\n")
         for i, (label, rel, old, new) in enumerate(MUTATIONS, 1):
             verdict, detail = run_one(rel, old, new, tmp)

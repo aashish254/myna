@@ -20,7 +20,10 @@ check that the gate goes red with the sentence a reader would need:
   the registry instead of restating it), and a `met` verdict resting on a void artifact
   (§9.23);
 * the README block going stale, which is pinned rather than checked: per §9.31 a table
-  generated from the same declarations it would verify is not evidence.
+  generated from the same declarations it would verify is not evidence;
+* the row and figure *counts* G7's prose prints, which describe the registry and therefore
+  move every time a figure gets committed — the one place a number in gates.py is checked
+  against the file instead of against an artifact, because the artifact is the file's import.
 
 One of these tests is a *positive control* on purpose (`test_an_unmutated_verdict_holds`),
 because four of the seven mutations below assert "problems is non-empty" and would pass
@@ -90,9 +93,42 @@ def test_an_unmutated_verdict_holds():
 def test_the_release_state_counts_the_verdicts_that_are_there():
     t = G.tally()
     assert sum(t.values()) == len(G.GATES) == 7
-    assert t == {G.MET: 3, G.NOT_MET: 2, G.OPEN: 2}
+    assert t == {G.MET: 3, G.NOT_MET: 3, G.OPEN: 1}
     # README's headline is this string, so changing a verdict is a two-place edit
-    assert G.release_state().startswith("**3 of 7 met, 2 not met, 2 open")
+    assert G.release_state().startswith("**3 of 7 met, 3 not met, 1 open")
+
+
+def test_g1_is_not_met_on_the_trained_run_and_stays_off_the_void_one():
+    """G1 moved from `open` to `not met` when the Kaggle run's artifacts got committed, and
+    the row list is the shape of that move: the trained run's roll-up is cited, the void
+    pre-`385e06c` checkpoint is not, even though its 0.338 is the lowest nearby number."""
+    g = gate_of("G1")
+    assert g["verdict"] == G.NOT_MET
+    assert "v1b-kaggle-macro" in g["rows"] and "kaggle-dev-tail" in g["rows"]
+    assert "void-vs-laya" not in g["rows"], "a not-met verdict may not rest on a void file"
+    assert any(p["expect"] is False for p in g["proofs"])
+    assert any("v1b_kaggle_3600b" in p["file"] for p in g["proofs"]), \
+        "the verdict must read the trained artifact, not the control"
+
+
+def test_g7s_prose_prints_the_registry_it_actually_has():
+    """The row and figure counts live in three docs and in gates.py, and the registry they
+    describe grows a row every time a figure gets committed — this saw `22 rows` written
+    while the file held 23. A count in prose is a figure like any other: it needs the
+    artifact, which here is the registry itself."""
+    from collections import Counter
+    from reproduce import CHROME, HERE, KAGGLE, LAYA, RETRAIN
+    c = Counter(r["status"] for r in G.ROWS)
+    figures = sum(len(r["quotes"]) for r in G.ROWS)
+    g = gate_of("G7")
+    prose = g["reads"] + " " + g["note"]
+    for token in (f"{len(G.ROWS)} registry rows", f"{figures} quoted figures",
+                  f"{c[HERE]} rows re-run on this box",
+                  f"{c[RETRAIN]} retrain a checkpoint",
+                  f"{c[LAYA]} need a laya checkout on `PYTHONPATH`",
+                  f"{c[CHROME]} need Google Chrome",
+                  f"{c[KAGGLE]} is `KAGGLE`"):
+        assert token in prose, token
 
 
 def test_a_gate_citing_nothing_at_all_reds():

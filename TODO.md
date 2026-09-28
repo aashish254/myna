@@ -436,6 +436,44 @@ So every "train" item below is split into *prepare/verify the Kaggle path locall
       `bench/mutation_report.py` **93/93 caught** (67 → 93; `runs/mutation_report.log`); registry
       `--check` 22/22 rows and **41 figures**; gates 7/7 verdicts and **3 met / 2 not met / 2 open
       — NOT clear**, unchanged, because a clip is not a result and nothing published was retrained.
+- [x] **9f** The launch lane got generated instead of hand-typed, and the first valid GPU run
+      got a committed witness — so G1 is a verdict instead of a promise. *(this tick)*
+      Two halves, both paid for by the same mistake: the notebook cells in
+      `KAGGLE_LAUNCH_INSTRUCTIONS.md` were written by hand, and every one of their wrong paths
+      (`/kaggle/input/decision-v2-pilot` instead of `/kaggle/input/datasets/<owner>/<slug>`,
+      `pip install` against a `/kaggle/working` that starts empty, a 1.5 h guess for a run that
+      measured 5 h 37 m) was found by burning or nearly burning a session. `kaggle/campaign.py`
+      now emits the cells and, with `--nb`, a pushable kernel directory: it walks the mount with
+      `os.walk(followlinks=True)` because datasets arrive as **symlinks** and `Path.glob("**")`
+      does not descend into them, refuses to guess the owner, prices every cell from the measured
+      5.62 s/update, keeps the four measured-dead ablation cells out of the default lane, and
+      writes `is_private: true` with nothing pushed. `tests/test_kaggle_bundle.py` is 27 tests and
+      `bench/mutation_kaggle_bundle.py` carries **39 mutants, 39 caught**. `kaggle/run.py` gained
+      `--free-gib` (the T4 memory plan reads free bytes *before* the model loads) and
+      `--warm-start`, and it now **refuses** `--resume` onto a snapshot that already reached its
+      requested step — SPEC §5 P9 9e measured what that costs: a spent cosine schedule trains at
+      lr ~0 and prints numbers that read as drift.
+      The second half is the witness. `runs/v1b_kaggle_3600b.{train.log,metrics.json,report.json}`
+      are committed (285 KB / 295 KB / 9 KB, allowed by `!runs/*.log` and `!runs/*.json`; the log
+      was scanned before staging and its only "token" matches are `tokenizer` and `tokens`), which
+      is what §9.30 required before the run's figures could be quoted. Registry `--check` is
+      **26/26 rows, 55 figures**, and `bench/gates.py` moves G1 from `open` to **not met,
+      measured**: **myna 0.4893 · laya 0.6668 · floor 0.4331**, +0.056 against the +0.15 required,
+      its own report printing `g1.pass: false`. The tally is now **3 met / 3 not met / 1 open**,
+      and the counts in G7's prose are pinned by a test — they had drifted to `22 rows` while the
+      registry held 23, which is the failure mode of writing a number in three docs.
+      Found while re-running the batteries for those edits: `bench/mutation_gates.py` and
+      `bench/mutation_reproduce.py` had both been **aborting at baseline** — their scratch copies
+      never contained the `Makefile` a gate test reads, and one of them restated `reproduce.DOCS`
+      instead of importing it, so widening the doc set red-lined it — which means their committed
+      `baseline copy: green` logs witnessed a tree that no longer existed (§9.39). Both scratches
+      now derive the top-level file set from the filesystem, and both logs regenerate green:
+      **gates 17/17, reproduce 21/21, exit 0 each**.
+      Two remembered claims died on the way and are logged as **§9.37** (one run printed two      "test macro" numbers — 0.3983 from the diagnostic's roll-up, 0.4893 from the committed
+      report's; the gate quotes the one whose command is re-runnable) and **§9.38** ("dev was flat
+      from step 2,250" — the committed log's tail is +0.0072 per 1,000 updates and 0.4355 is the
+      run's high, so dose is still not the answer but for a measured reason: the 10k pair projects
+      ≈ +0.046 for ≈ 31.2 GPU h against a 30 h/week quota).
 - [ ] **9d** `banking77/intent` and `mnli/relation` are inside or outside G1's scope — a decision
       for the user, recorded so a later run does not silently average them back in.
 

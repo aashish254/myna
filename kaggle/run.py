@@ -19,17 +19,31 @@ What it pins, and why each is a rule rather than a taste:
   figure. `emd` is one flag and one output directory away, which is what makes the
   P9 ablation a pair of runs rather than a re-run whose drift reads as an effect.
 * `--resume` when a snapshot already exists at that path, so re-running the
-  notebook cell continues instead of restarting.
+  notebook cell continues instead of restarting — and a refusal when the snapshot
+  has already reached the requested step, because resuming a spent cosine schedule
+  trains at learning rate ~0. `--warm-start` is the flag for that case.
+* `--free-gib` is passed through to the trainer's memory plan rather than measured
+  by it. On a T4 the plan reads the free bytes *before* the model is resident, so an
+  unpinned plan over-batches; the pinned value is a property of the box, which is
+  why it stays opt-in here and unset by default.
 * the device is `auto`, which on a CUDA box picks CUDA and *fails loud* if CUDA is
   present but unreadable — the silent CPU fallback is §6's other lesson.
 
 It then execs `python -m myna.train` as a subprocess (so the stop rule's non-zero
 exit reaches the notebook) and tees the log to the run directory.
 
-Usage on Kaggle (one cell, after uploading this repo as a kernel input):
+Usage on Kaggle. Two facts the first version of this header got wrong: datasets mount
+at `/kaggle/input/datasets/<owner>/<slug>`, and `/kaggle/working` starts EMPTY, so
+`/kaggle/working/myna` does not exist until a cell creates it. Run off the mount:
 
-    !pip install -r /kaggle/working/myna/kaggle/requirements.txt
-    !python /kaggle/working/myna/kaggle/run.py --corpus /kaggle/input/decision-v2-pilot
+    !pip install -r /kaggle/input/datasets/<owner>/myna-code/kaggle/requirements.txt
+    !python /kaggle/input/datasets/<owner>/myna-code/kaggle/run.py \
+        --corpus /kaggle/input/datasets/<owner>/decision-v2-pilot --name my-run
+
+`--corpus` may be left off (see `_mount_glob`), but name it anyway: the two accounts
+this repo has uploaded under make an unqualified guess a real risk. To keep a writable
+copy of the repo, stage it first with `shutil.copytree(..., ignore=symlinks)` into
+`/kaggle/working/myna` and use those paths instead.
 
 Locally, to see the command without running it:
 
@@ -39,6 +53,7 @@ Locally, to see the command without running it:
 from __future__ import annotations
 
 import argparse
+import glob
 import json
 import os
 import shlex
@@ -49,6 +64,10 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
 WORKING = Path("/kaggle/working")
+# A module constant, not a literal in find_corpus: the discovery branch is the one
+# thing about this file that only ever runs on the box, and a test has to be able
+# to hand it a mount.
+INPUT = Path("/kaggle/input")
 if str(REPO / "src") not in sys.path:  # so a test can import this file and call main()
     sys.path.insert(0, str(REPO / "src"))
 
@@ -79,6 +98,19 @@ DEFAULTS = {
 }
 
 
+def _mount_glob(root: Path) -> list[Path]:
+    """Every `train.jsonl` under `root`, descending into symlinked directories.
+
+    `Path.glob("**")` does not follow a symlinked dir — measured on 3.9, 3.11 and
+    3.13, where `glob.glob(recursive=True)` returned 2 hits across the same fixture
+    and pathlib returned 0. Kaggle mounts each dataset as a symlink under
+    `/kaggle/input`, so the pathlib form of this search found the corpus locally and
+    nothing on the box, which is why every run to date had to pass `--corpus` by hand.
+    """
+    return sorted(Path(p) for p in glob.glob(str(root / "**" / "train.jsonl"),
+                                             recursive=True))
+
+
 def find_corpus(explicit: str | None) -> Path:
     """The pilot slice ships as a Kaggle dataset of the same four jsonl files the
     adapter reads here. Fail loud with what *is* mounted: a silently wrong corpus
@@ -90,10 +122,10 @@ def find_corpus(explicit: str | None) -> Path:
             raise SystemExit(f"--corpus {p} is missing {', '.join(missing)}")
         return p
     roots = [WORKING]
-    if Path("/kaggle/input").exists():
-        roots += sorted(d for d in Path("/kaggle/input").iterdir() if d.is_dir())
+    if INPUT.exists():
+        roots += sorted(d for d in INPUT.iterdir() if d.is_dir())
     for root in roots:
-        for cand in sorted(root.glob("**/train.jsonl"))[:50]:
+        for cand in _mount_glob(root)[:50]:
             if all((cand.parent / s).exists() for s in SPLITS):
                 return cand.parent
     raise SystemExit("no decision-v2-pilot corpus found: pass --corpus, or mount the "
@@ -107,11 +139,39 @@ def run_dir(name: str, out_root: str | None) -> Path:
     return (Path(out_root) if out_root else WORKING / "runs") / name
 
 
+def continuation(out: Path, steps: int) -> list[str]:
+    """`--resume` only when there is a schedule left to continue.
+
+    The snapshot is the same file either way, so the entrypoint cannot tell a
+    killed job from a finished one by looking for it. It can read `metrics.json`,
+    which the trainer writes last: a run that got to its requested step spent its
+    cosine decay, and `--resume` restores that spent scheduler (its `T_max` and
+    AdamW's `lr`), so the cell trains at learning rate ~0 and prints numbers that
+    read as drift. SPEC §5 P9 9e measured exactly that. A finished directory is
+    therefore a refusal that names the two things that are not a resume: a longer
+    `--steps`, or `--warm-start` for weights only."""
+    if not (out / "model_last.pt").exists():
+        return []
+    metrics = out / "metrics.json"
+    if metrics.exists():
+        try:
+            reached = json.loads(metrics.read_text()).get("last_step")
+        except (ValueError, OSError):
+            reached = None  # unreadable witness: fall through to the resume rule
+        if isinstance(reached, int) and reached >= steps:
+            raise SystemExit(
+                f"{out} already trained to step {reached} of {steps}: --resume would "
+                "continue a spent schedule at lr ~0. Use --warm-start for weights "
+                f"only, or raise --steps past {reached} to genuinely extend it.")
+    return ["--resume"]
+
+
 def build_command(corpus: Path, out: Path, args) -> list[str]:
     d = DEFAULTS
+    steps = args.steps or d["steps"]
     cmd = [sys.executable, "-m", "myna.train",
            "--suite", str(corpus), "--out", str(out),
-           "--device", args.device, "--steps", str(args.steps or d["steps"]),
+           "--device", args.device, "--steps", str(steps),
            "--batch", str(args.batch or d["batch"]),
            "--accum-groups", str(d["accum_groups"]),
            "--max-q-cells", str(d["max_q_cells"]),
@@ -128,8 +188,18 @@ def build_command(corpus: Path, out: Path, args) -> list[str]:
            "--paraphrase", args.paraphrase, "--row-batch"]
     if args.min_train_pool:
         cmd += ["--min-train-pool", str(args.min_train_pool)]
-    if (out / "model_last.pt").exists():
-        cmd += ["--resume"]
+    if args.free_gib is not None:
+        cmd += ["--free-gib", str(args.free_gib)]
+    if args.warm_start:
+        # the trainer refuses the pair, and the pair is what a stale snapshot plus a
+        # fresh flag would silently produce, so say it here with the paths in hand.
+        if (out / "model_last.pt").exists():
+            raise SystemExit(f"--warm-start with a snapshot at {out}: the runner would "
+                             "have added --resume too. Name a new --name, or drop "
+                             "--warm-start to continue that run.")
+        cmd += ["--warm-start", str(args.warm_start)]
+    else:
+        cmd += continuation(out, steps)
     return cmd
 
 
@@ -152,6 +222,15 @@ def main(argv=None):
     ap.add_argument("--stop-factor", type=float, default=None, help="override the drift "
                     "tolerance the loop stops itself on; the default is what runs on Kaggle")
     ap.add_argument("--min-train-pool", type=int, default=0)
+    ap.add_argument("--free-gib", type=float, default=None, help="pin the bytes the "
+                    "trainer's memory plan reads instead of measuring them; on a T4 the "
+                    "plan reads free bytes before the model is resident, so an unpinned "
+                    "plan over-batches (SPEC §6). Unset by default: the right number is a "
+                    "property of the box, not of this entrypoint")
+    ap.add_argument("--warm-start", default=None, metavar="MODEL_PT", help="train from an "
+                    "existing checkpoint's WEIGHTS only, with a fresh optimizer and schedule "
+                    "— what a paired ablation needs. `--resume` continues a killed run and "
+                    "restores its spent scheduler instead; the two are not interchangeable")
     ap.add_argument("--paraphrase", choices=["off", "on"], default="on")
     ap.add_argument("--score-loss", choices=["ce", "emd"], default=None,
                     help="how a `score` cell is priced (SPEC §5 P9). Default from the runner "
