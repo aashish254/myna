@@ -36,4 +36,4 @@ baseline copy: green (1 test file)
             FAILED tests/test_gates.py::test_check_exits_nonzero_when_a_verdict_breaks - ...
 
 17/17 mutations caught
-EXIT=0 (watched to completion 2026-09-28 by /tmp/sweep3.zsh, 140 s wall)
+EXIT=0 (watched to completion 2026-09-28 by /tmp/run_gates_battery.zsh, after the §9.43 clause was added to G7's prose)

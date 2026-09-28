@@ -31,7 +31,7 @@ are the two that cannot be closed on this box.
 | **G4** — Long-context is *correct*, not just cheap | **not met** | v0's needle curve prints **0.188 at 128 tokens** against a 0.167 uniform floor — at chance on the *shortest* rung — so the longer rows are the decay of nothing, and `runs/needle_myna-v0.md` prints `G4: not measured by this run` in place of a table a reader could quote. | not met, and not met by a run that cannot answer the question. The 16k *state* is measured, fixed at 576 KiB and cheap (§9.22); the 16k *decision* needs the 4k truncated-backprop checkpoint, which is 7b / `KAGGLE`. Those are two different claims and only the first one is settled. |
 | **G5** — Useful confidence, with abstention | **not met** | the curve's own `g5.pass` is `false`: accuracy climbs **0.349 → 0.535** as coverage falls 1.00 → 0.20 over 448 rows / 568 questions, **no rung reaches 0.95** (the max is 0.596, at 10% coverage), and G5's three named sources measure 0.000 / 0.025 / 0.150. | not met on the level, met on the machinery, and the gate is the level. `Myna(abstain_below=t)` withholds the commitment with a measured reason and the fallback seam labels which engine committed — a confidence that ranks the answers of a model that cannot answer is routing, not the product G5 describes (§9.24). |
 | **G6** — No regression on what already worked | **open** | v0's measured test macro is **0.9523** — the macro of the nine `=== test ===` rows in `runs/train-v0.log`, recomputed from its rows because the log prints no overall line — so the level clears today. | open rather than met, because the gate is written against the *next* checkpoint: it says "no regression", and there is no trained v1 artifact in this repo to regress. A draft of this row cited 0.951, a figure no artifact prints (§9.30), which is why the value here is computed from the log's own rows. |
-| **G7** — Reproducibility | **met** | `make repro` is green at this tick: 27 registry rows bind every published table cell to one command and one committed witness, and the 58 quoted figures are re-read out of those files rather than out of the prose. The seeds live inside the printed commands (`--seed 0`, `--seeds 0 1`), not in sentences about them. | met as a binding, not as a rebuild, and the gap is disclosed rather than absorbed: no target *executes* the registry end to end — 18 rows re-run on this box, 3 retrain a checkpoint, 2 need a laya checkout on `PYTHONPATH`, 3 need Google Chrome and 1 is `KAGGLE`. That is TODO 8b, which stays unticked for exactly this reason. |
+| **G7** — Reproducibility | **met** | `make repro` is green at this tick: 27 registry rows bind every published table cell to one command and one committed witness, and the 58 quoted figures are re-read out of those files rather than out of the prose. The python commands among those rows are checked against the tool behind them — its `--help` must still print every flag the row publishes (§9.43). The seeds live inside the printed commands (`--seed 0`, `--seeds 0 1`), not in sentences about them. | met as a binding, not as a rebuild, and the gap is disclosed rather than absorbed: no target *executes* the registry end to end — 18 rows re-run on this box, 3 retrain a checkpoint, 2 need a laya checkout on `PYTHONPATH`, 3 need Google Chrome and 1 is `KAGGLE`. That is TODO 8b, which stays unticked for exactly this reason. |
 
 <!-- gates:release:end -->
 
@@ -446,12 +446,15 @@ uv run python bench/reproduce.py --check     # every row, or it says which one d
 proves, for each row, that its witness is still committed, still contains the figure the
 docs quote from it, and that the prose around the table — not this index, which is this
 file's own registry echoed back and is cut out before matching — still prints the
-command. `tests/test_reproduce.py` (25 tests) pins the block below to the registry, so a
+command. The fourth assertion asks the tool rather than the file: every row whose command
+names a python target gets `--help` from it, and each flag the row publishes has to be in
+the answer, because a renamed flag leaves the other three untouched (§9.43).
+`tests/test_reproduce.py` (33 tests) pins the block below to the registry, so a
 row cannot appear here without being added there, and
 `bench/mutation_reproduce.py` breaks the checker one promise
 at a time — a witness that stopped existing, a figure the artifact no longer prints, an
-index that counts as its own evidence — and requires the tests to go red: **21/21, all
-caught**, in `runs/mutation_reproduce.log`. Rows tagged
+index that counts as its own evidence, a flag check that stopped asking — and requires the
+tests to go red: **29/29 all caught**, in `runs/mutation_reproduce.log`. Rows tagged
 `external-*` need something this repo does not carry (a laya checkout, Google Chrome);
 the `gated-kaggle` row has **no witness on purpose** — that figure does not exist yet,
 and no local run may invent it. `make repro-show ROW=ID` prints what a row would do and

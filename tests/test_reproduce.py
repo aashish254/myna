@@ -1,7 +1,7 @@
 """8b: the registry that ties every published table row to one command and one witness.
 
 A registry is only worth having if it can go red, so these tests do not check that the
-rows look plausible — they check the five assertions `--check` makes, each one broken in
+rows look plausible — they check the six assertions `--check` makes, each one broken in
 isolation:
 
 * a row that quotes no figure at all, which no artifact could ever contradict;
@@ -11,6 +11,8 @@ isolation:
 * a figure the docs quote that the artifact no longer contains — the §9.30 failure, in
   which a number copied out of a file was copied again after the file changed;
 * a command the docs stopped printing;
+* a command whose own tool no longer accepts the flags it publishes — the only
+  assertion here that asks an interpreter rather than a file (§9.43);
 * a gated row that grew a witness, which is how a projection gets read as a measurement.
 
 And one meta-test: the README block is generated from the registry, so a row added here
@@ -82,6 +84,66 @@ def test_a_command_the_docs_dropped_fails_the_row():
 
 def test_a_row_that_names_no_witness_at_all_fails():
     assert "no witness named" in problems(row(witness=[]))
+
+
+# --- the fourth assertion: the command still runs (§9.43) --------------------------
+# The three above are answered by reading files, so all three stay true when a tool
+# renames a flag: the artifact was written before the rename, the docs quote the old
+# line, and the witness is committed. These ask the interpreter instead.
+
+def test_a_flag_the_tool_dropped_fails_the_row():
+    r = row(cmd="uv run python bench/eval_needle.py --ckpt runs/myna-v0 --recall-everything")
+    assert any("--recall-everything" in p for p in problems(r)), problems(r)
+
+
+def test_a_command_whose_module_is_not_there_fails_the_row():
+    r = row(cmd="uv run python -m myna.no_such_tool --out runs/x.md")
+    assert any("does not answer --help" in p for p in problems(r)), problems(r)
+
+
+def test_an_env_prefixed_command_is_still_asked_its_flags():
+    # `PYTHONPATH="…" .venv/bin/python -m …` is how the laya row is written, so the
+    # assignment must not be mistaken for the command.
+    r = row(cmd='PYTHONPATH="<laya checkout>" .venv/bin/python '
+                "-m bench.bench_latency_matched --window-nope 8")
+    assert any("--window-nope" in p for p in problems(r)), problems(r)
+
+
+def test_a_gated_row_is_not_asked_to_parse_as_a_shell_line():
+    gated = next(r for r in R.ROWS if r["status"] == R.KAGGLE)
+    assert not any("--help" in p or "parse" in p for p in problems(gated))
+
+
+def test_the_flag_question_reaches_every_python_command_and_only_those():
+    """A coverage assertion, not a behaviour one: the prefix-stripping above and the
+    `uv run` skip are what make 20 of the 27 rows checkable, and a checker that quietly
+    recognised fewer targets would still print 27/27."""
+    asked = [r["id"] for r in R.ROWS
+             if r["status"] != R.KAGGLE and R.python_target(r["cmd"])]
+    assert len(asked) == 20, asked
+    assert "latency-matched" in asked and "v0-accuracy" in asked
+    for skipped in ("browser-g3-fp32", "report-floors",
+                    "kaggle-wall-clock", "kaggle-dev-tail"):
+        assert skipped not in asked, skipped
+
+
+def test_a_launcher_prefix_is_not_treated_as_the_interpreter():
+    kind, target, flags = R.python_target("uv run python -m myna.report --split dev")
+    assert (kind, target) == ("module", "myna.report")
+    assert flags == ["--split"]
+
+
+def test_a_tool_that_never_answers_its_help_is_a_problem_not_a_traceback(monkeypatch):
+    # §9.40's shape inside §9.43's check: a `--help` that hangs must cost the timeout and
+    # report, not end the gate by exception. `timeout=0` raises on the spot.
+    monkeypatch.setattr(R, "HELP_TIMEOUT", 0)
+    monkeypatch.setattr(R, "_HELP", {})
+    r = row(cmd="uv run python -m myna.report --split dev")
+    assert any("--help" in p and "0s" in p for p in problems(r)), problems(r)
+
+
+def test_a_value_flag_loses_its_value_before_the_comparison():
+    assert R.python_target("uv run python -m myna.report --split=dev")[2] == ["--split"]
 
 
 def test_check_exits_nonzero_when_a_row_is_broken():

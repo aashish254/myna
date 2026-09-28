@@ -287,7 +287,8 @@ So every "train" item below is split into *prepare/verify the Kaggle path locall
       lower a published minimum). `Observation.save_state`'s "~0.6 MB" is 576 KiB of state and
       592,533 B on disk, measured. Suite: **312 passed, 1 skipped**
 - [ ] **8b** One reproduction command per table row, and a `make` / script target that runs them
-      Command side done: `bench/reproduce.py` holds **22 rows**, each binding one published table
+      Command side done: `bench/reproduce.py` held **22 rows** at this tick (it carries **27 rows /
+      58 figures** since 9f–9i and 8e), each binding one published table
       to one canonical command, its committed witness(es), and the literal figures the prose
       quotes out of them — **38 figures tied to a committed artifact, 1 row gated with no witness
       on purpose** (`g1-v1`; a gated number with a file behind it is how a projection gets read
@@ -297,7 +298,8 @@ So every "train" item below is split into *prepare/verify the Kaggle path locall
       `bench/mutation_reproduce.py` → **21/21** (`runs/mutation_reproduce.log`) — the pass that
       caught this item's own doc check being vacuous, logged as §9.31. `make repro` /
       `make repro-run ROW=id` are the target. **Still open:** one target cannot *run* the whole
-      registry — 14 of the 22 rows are `here` and re-runnable on this box, while 2 retrain a
+      registry — 14 of the 22 rows were `here` and re-runnable on this box (18 of the 27 they have
+      become are), while 2 retrain a
       checkpoint, 2 need a laya checkout on `PYTHONPATH`, 3 need Google Chrome and 1 is `KAGGLE`
       — so "a target that runs them all" is a Kaggle-side item, not a
       `make` line, and ticking it here would claim a one-command rebuild this repo cannot do.
@@ -372,6 +374,36 @@ So every "train" item below is split into *prepare/verify the Kaggle path locall
       one-target-runs-everything gap (Kaggle-side), and the release itself still waits on P0's
       push, on G1/G4's checkpoints and on any trained artifact for G6.
       Suite at this tick: **383 passed, 1 skipped**.
+- [x] **8e** `--check` asks the tool, not just the file: a row's command must still accept the
+      flags it publishes. *(this tick — the falsifiable half of 8b, which stays open)*
+      8b's remaining gap is that one `make` target cannot *run* all 27 rows, and that stays a
+      Kaggle-side item. What was buildable here is the assertion behind it: three of `--check`'s
+      four questions are answered by reading disk, so a row could publish a flag its tool had
+      renamed and stay green — the artifact predates the rename, the docs still quote the line,
+      `git ls-files` still returns it. `python_target()` now resolves `-m module` and `script.py`
+      past a `uv run` launcher and a `VAR=value` prefix, `help_output()` asks that tool for
+      `--help` once per process, and `command_problem()` requires every published `--flag` to be
+      in the answer. Nothing else executes, which is §9.40 applied to the registry: a gate that
+      ran a row would overwrite the witness it is checking. A hung `--help` costs `HELP_TIMEOUT`
+      and becomes a report rather than a traceback, and that is a test (`HELP_TIMEOUT = 0`) not a
+      sentence.
+      Measured, and it is a negative: **20 of 27 rows are python commands, all 20 answer, every
+      flag accepted**, `--check` from **0.72 s to 5.85 s** (timed in one process by stubbing
+      `command_problem` to `None`), still **27/27 rows, 58 figures**. The 7
+      unchecked rows say what they are — 3 `npm` (gated for real by `mutation_browser.py`), 2
+      `grep` over a committed log, `pytest tests/test_report.py`, and the `gated-kaggle` prose row
+      whose apostrophe makes `shlex` raise, which is one of the new mutants. G7's own sentence now
+      names the fourth assertion, so its prose was re-rendered into README (generated, pinned by a
+      test) and copied by hand into SPEC §2.2 — and because `bench/gates.py` changed,
+      `bench/mutation_gates.py` was re-run rather than inherited: **17/17 in 240 s**
+      (`runs/mutation_gates.log`).
+      Instrument:
+      `tests/test_reproduce.py` **33** (was 25) and `bench/mutation_reproduce.py` **29/29 caught,
+      exit 0** in **270 s** (`runs/mutation_reproduce.log`, 8 new mutants, each caught by the test
+      written for it). One stale literal died on the way: the battery's own docstring still
+      described a vacuous checker as one where "`--check` still says **19/19**" — a registry size
+      three ticks out of date — now 27/27 in place. Logged as **§9.43**.
+      Suite at this tick: **444 passed, 1 skipped**.
 
 ## P9 — The three defects the first valid checkpoint named (SPEC §5 P9)
 - [x] **9a** `score` cells are trained with a nominal cost while every other component treats the

@@ -3,17 +3,18 @@
     python bench/mutation_reproduce.py
 
 `bench/reproduce.py` publishes one claim: *every table row in this repo has a command
-that regenerates it and a committed witness that still prints the figure the prose
-quotes.* Nothing external can check that — the registry and the docs are both in this
+that regenerates it, a committed witness that still prints the figure the prose quotes,
+and a tool behind that command that still accepts every flag in it.* Nothing external
+can check that — the registry and the docs are both in this
 repo, so a weakened checker and a drifting doc look identical from inside. Hence the
 same witness as every other gate here: inject each lie the checker could tell, and
 require `tests/test_reproduce.py` to fail.
 
-Five families, in the order the defect actually arrives.
+Six families, in the order the defect actually arrives.
 
 **A check that reports nothing.** The quote assertion losing its `bad.append`, the
 tracked-witness branch becoming unreachable, the doc-quote test inverted to always
-pass. Each one turns the gate into a printer: `--check` still says 19/19, and §9.30
+pass. Each one turns the gate into a printer: `--check` still says 27/27, and §9.30
 happens again with a green light on.
 
 **A matcher that only matches the easy case.** `norm()` folding a backslash continuation
@@ -31,6 +32,16 @@ training row: each guard removed in turn. Every one of these mutations is paired
 test that also passes `--dry-run`, because the scratch repo symlinks `runs/` and a
 battery that launched the real harness would overwrite the committed witnesses it is
 supposed to be checking.
+
+**A command that stopped running.** The four assertions above read files, so all four
+stay true when a tool renames a flag — the witness was written before the rename, the
+docs still print the old line, and the artifact is committed. `--check` therefore also
+runs `--help` on the tool behind every python row and requires each published flag to be
+in the answer (§9.43). The mutants are the ways that stops asking: the comparison emptied,
+the nonzero return ignored, a hung `--help` allowed to raise, the `-m` and `.py` forms
+and the `uv run` / `VAR=value` prefixes unrecognised (each of which silently shrinks the
+rows asked while still printing 27/27), and the gated prose row put through `shlex`,
+which is what its skip is for.
 
 **A harness that stops naming itself.** `emit("$ " + cmd)` emptied in the risk/coverage
 harness, and the `cmd` key dropped from the needle's json. The static half of the test
@@ -127,6 +138,35 @@ MUTATIONS = [
     ("the README block stops naming the table a command belongs to", RP,
      "        out.append(f\"# {r['table']}  [{r['status']}]\")",
      "        out.append(f\"# [{r['status']}]\")"),
+    # --- a command that stopped running (§9.43) ----------------------------------
+    # The four assertions above are all answered by reading files, so they survive a
+    # flag being renamed: the witness predates the rename, the docs still quote the old
+    # line, and the artifact is committed. These mutants are the shapes in which the
+    # fourth assertion — the one that asks an interpreter — stops asking.
+    ("a flag the tool no longer accepts is still a published flag", RP,
+     "    missing = sorted({f for f in flags if f not in out})",
+     "    missing = []"),
+    ("a tool that refuses --help is still the tool behind the command", RP,
+     "    if rc != 0:",
+     "    if False:"),
+    ("a hung --help ends the gate by traceback instead of by report", RP,
+     "        except subprocess.TimeoutExpired:",
+     "        except KeyError:"),
+    ("a `-m` command stops being recognised, so nobody is asked", RP,
+     '    if argv[0] == "-m" and len(argv) > 1:',
+     "    if False:"),
+    ("a `script.py` command stops being recognised, so nobody is asked", RP,
+     '    elif argv[0].endswith(".py"):',
+     "    elif False:"),
+    ("a launcher prefix is treated as the command itself", RP,
+     '    if argv[:2] == ["uv", "run"]:',
+     "    if False:"),
+    ("an env-prefixed command is left unchecked", RP,
+     r'    while argv and re.fullmatch(r"\w+=.*", argv[0]):',
+     "    while False:"),
+    ("a gated Kaggle row is asked to parse as a shell line", RP,
+     '    if r["status"] == KAGGLE:\n        return None',
+     '    if False:\n        return None'),
     # --- a harness that stops naming itself -------------------------------------
     ("the risk/coverage witness stops printing its own command", RC,
      "    emit(\"$ \" + cmd)",

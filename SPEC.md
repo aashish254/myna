@@ -70,7 +70,7 @@ Quote the ratio, never the millisecond figure.
 | **G4** | Long-context is *correct*, not just cheap | needle-style typed decision ≥ 0.90 at 4k and ≥ 0.85 at 16k state | **not met, and not yet measurable on this box.** v0's needle curve (`runs/needle_myna-v0.md`) reads 0.188 at 128 tokens against a 0.167 floor — at chance on the shortest rung — so the longer rows are decay of nothing, and the harness now says so itself rather than printing a table (§9.25). The 16k *state* is measured and cheap (§9.22); the 16k *decision* needs the long-context checkpoint, which is 7b / `KAGGLE` |
 | **G5** | Useful confidence, with abstention | risk/coverage curve on `calibration.jsonl`; ≥ 0.95 accuracy at ≥ 60% coverage on banking77 + dbpedia14 + trec | **not met on the level, met on the machinery.** Abstention ships: `Myna(ckpt, abstain_below=t)` withholds the commitment and prints the measured reason, the fallback seam labels every answer with the engine that committed, and the curve is a committed artifact (`runs/risk_coverage.md`, 448 rows / 568 questions). Accuracy on v0 climbs **0.349 → 0.535** as coverage falls 1.00 → 0.20 — the confidence ranks the answers, on a checkpoint that cannot do the task — and setting the 0.693 floor on the engine abstains on **227** questions where the curve withheld **227**. But **no rung reaches 0.95** (max 0.596, at 10% coverage) and G5's own three sources sit at 0.000 / 0.025 / 0.150, so the pass needs the `KAGGLE` checkpoint (§9.24) |
 | **G6** | No regression on what already worked | synthetic v0 test ≥ 0.94 | open — v0's measured test macro is **0.9523** (`runs/train-v0.log`, macro of its nine `=== test ===` rows), so the level clears today; the gate stays open until a v1 checkpoint is run against it, and a draft of this row cited "0.951", which no artifact prints (§9.30) |
-| **G7** | Reproducibility | one command per result, seeds pinned, witness JSONs committed, `pytest` green | **met, as a binding rather than a rebuild.** `bench/reproduce.py` holds 27 rows binding every published table cell to one command and one committed witness each, and `make repro` re-reads the 58 quoted figures out of those artifacts rather than out of the prose; the seeds live inside the printed commands (`--seed 0`, `--seeds 0 1`), not in sentences about them. What this does **not** say: no target *executes* the registry end to end — 18 rows re-run on this box, 3 retrain a checkpoint, 2 need a laya checkout, 3 need Chrome, 1 is `KAGGLE` — which is why TODO 8b stays unticked and why G7 is discipline rather than a one-command rebuild |
+| **G7** | Reproducibility | one command per result, seeds pinned, witness JSONs committed, `pytest` green | **met, as a binding rather than a rebuild.** `bench/reproduce.py` holds 27 rows binding every published table cell to one command and one committed witness each, and `make repro` re-reads the 58 quoted figures out of those artifacts rather than out of the prose; the python commands among those rows are checked against the tool behind them — its `--help` must still print every flag the row publishes (§9.43); the seeds live inside the printed commands (`--seed 0`, `--seeds 0 1`), not in sentences about them. What this does **not** say: no target *executes* the registry end to end — 18 rows re-run on this box, 3 retrain a checkpoint, 2 need a laya checkout, 3 need Chrome, 1 is `KAGGLE` — which is why TODO 8b stays unticked and why G7 is discipline rather than a one-command rebuild |
 
 **This column is not a claim.** `make gates` (`bench/gates.py --check`) re-reads each cell's
 leading verdict word, the registry row that gate cites, and the named field inside a committed
@@ -846,8 +846,12 @@ are counted, and if nothing is left the run refuses. See §9.14.
 - [ ] Reproduction script per table.
       The registry side is done — `bench/reproduce.py` binds every published row to one canonical
       command and one committed witness, `make repro` checks all of them, and the counts and the
-      one thing still open (a target that *runs* them, which 8 of the 22 commands cannot do on
-      this box) are in TODO 8b. §9.31 is what the mutation battery caught on the way.
+      one thing still open (a target that *runs* them, which 9 of the 27 rows cannot do on
+      this box) are in TODO 8b. §9.31 is what the mutation battery caught on the way. TODO 8e
+      added the fourth assertion — `--check` asks the tool behind each python row for `--help` and
+      requires every published flag to be in the answer, which is the half of "a target that runs
+      them" that is decidable here — and §9.43 is its measured negative: 20 of 27 rows are python
+      commands, all 20 accept their flags, and 7 rows say what kind of command they are instead.
 - [x] **The upstream-corpus comparison, published as three rows** — the §8 risk line's mandate.
       README's *On the upstream corpus* section prints laya **0.667**, myna's untrained control
       **0.346 / 0.351 (mean 0.348)**, and myna-trained as **gated on its witness rather than on
@@ -1900,3 +1904,41 @@ Kept permanently, because the value of this project's claims is that they surviv
    rule** — an uncapped wrapper inherits the cost of every uncapped probe inside it. And a sweep that
    finds nothing gets written down anyway, because the alternative is a later session re-running it or
    "fixing" batteries that were never broken.
+43. **"Every published table row has a command that regenerates it" was checked by reading
+   files, so it never asked whether the command runs.** `bench/reproduce.py --check` makes three
+   assertions per row — the witness is committed, the witness still prints the quoted figure, the
+   docs print the command verbatim — and all three are answered from disk. A row that publishes
+   `--score-loss emd` against a build that renamed the flag passes every one of them: the artifact
+   was written while the flag existed, the docs still quote the line, and `git ls-files` still
+   returns it. The registry's own history is full of the rename: `--free-gib`, `--warm-start`,
+   `--seed` resizing the step (§9.34), and 9g's `MINI_DOSE` cap, which *removed* three flags from a
+   printed command line and had to be paid for with a new test and two new mutants. None of that
+   would a file-reading checker have seen.
+   `--check` now makes a fourth assertion, and it asks the tool: every row whose command names a
+   python target (`-m module` or `script.py`, after skipping a `uv run` launcher and a `VAR=value`
+   prefix) is run as `<this interpreter> <target> --help`, and every `--flag` the row publishes has
+   to appear in the answer. Nothing but `--help` is ever executed, so no row can launch a run from
+   inside its own gate — §9.40's rule applied to the registry — and a `--help` that hangs costs
+   `HELP_TIMEOUT` and becomes a report, not a traceback (mutant 20, caught by the test that sets
+   `HELP_TIMEOUT = 0`). The measured result on 2026-09-28 is a **negative**: 20 of the 27 rows are
+   python commands, all 20 answer, and every flag they publish is accepted. The gate costs
+   **0.72 s → 5.85 s** in one process with the same cache cold each time (measured by stubbing
+   `command_problem` to return `None` and re-timing `--check`), and stayed at **27/27**. Seven rows go unchecked and say so: three `npm` scripts
+   (gated for real by `bench/mutation_browser.py`, which runs the node selftest), two `grep` lines
+   over a committed log, `uv run pytest tests/test_report.py`, and the `gated-kaggle` row, which is
+   prose — feeding it to `shlex` raises on the apostrophe in `eval_laya_real.py's`, which is exactly
+   the mutant (`a gated Kaggle row is asked to parse as a shell line`) that the committed-tree test
+   catches. Battery: **29/29 caught** (8 new, `runs/mutation_reproduce.log`, 270 s), tests
+   `tests/test_reproduce.py` **33**.
+   One stale literal surfaced on the way, in the gate's own docstring: `mutation_reproduce.py`
+   described a weakened checker as one where "`--check` still says **19/19**", a registry size that
+   had been overtaken three ticks ago. It is now corrected to 27/27 in place, because a count inside
+   a battery's explanation is read as a claim about what the battery guarantees — and entry 39 is the
+   rule that a number like that decays into inheritance.
+   G7's prose in `bench/gates.py` names what the registry guarantees, so it gained the fourth
+   assertion; README's release table re-renders from that string under a test and SPEC §2.2's row is
+   copied by hand, which is the one place this repo has prose that can fall behind generated text.
+   Because the file the gate battery mutates changed, `bench/mutation_gates.py` was re-run rather
+   than inherited: **17/17 in 240 s** (`runs/mutation_gates.log`).
+   The general form: **a check that reads files proves what was written, not what still runs — where
+   a command is part of the claim, ask the command.**

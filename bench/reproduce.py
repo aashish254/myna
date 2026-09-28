@@ -20,9 +20,11 @@ Three kinds of row, and the difference is not cosmetic:
   a corpus this box does not train on. Those rows must have *no* witness: a gated number
   with a file behind it is how a projection gets read as a measurement.
 
-`--check` is deliberately three independent assertions, because they break separately:
-the witness is committed (`git ls-files`), the docs quote this command verbatim, and the
-witness still contains the value the registry claims for it.
+`--check` is deliberately four independent assertions, because they break separately:
+the witness is committed (`git ls-files`), the docs quote this command verbatim, the
+witness still contains the value the registry claims for it, and the tool behind the
+command still answers `--help` with every flag the row publishes. The last one is the
+difference between a registry of *quotas* and a registry of *commands* (§9.43).
 """
 
 from __future__ import annotations
@@ -426,12 +428,91 @@ def tracked(rel: str) -> bool:
     return r.returncode == 0
 
 
+# §9.43: `--check` asked three questions of a command — is it quoted, does its witness
+# exist, does that witness still print the figure — and all three are answered by
+# reading files. So a row could publish `--score-loss` against a tool that had renamed
+# the flag, and the registry would call the row green: the artifact it points at was
+# written before the rename. The fourth assertion asks the tool instead of the file.
+HELP_TIMEOUT = 60
+_HELP: dict[tuple[str, str], tuple[int, str]] = {}
+
+
+def python_target(cmd: str):
+    """`(kind, target, flags)` for a row's command, or None when it is not a python one.
+
+    `uv run` is a launcher and `VAR=value` a prefix, neither of which a reader pastes
+    into the same shell, so both are skipped to reach the interpreter. The interpreter
+    named in the docs is then ignored and `sys.executable` used: the question is whether
+    *this* tree's tool accepts *this* row's flags, and a row that pinned a venv path
+    would make the answer depend on who last edited the Makefile. npm/grep/pytest
+    commands are not python targets and go unchecked — the browser rows are gated by
+    `bench/mutation_browser.py` running the node selftest for real.
+    """
+    argv = shlex.split(cmd)
+    if argv[:2] == ["uv", "run"]:
+        argv = argv[2:]
+    while argv and re.fullmatch(r"\w+=.*", argv[0]):
+        argv = argv[1:]
+    if argv and Path(argv[0]).name.startswith("python"):
+        argv = argv[1:]
+    if not argv:
+        return None
+    if argv[0] == "-m" and len(argv) > 1:
+        kind, target, rest = "module", argv[1], argv[2:]
+    elif argv[0].endswith(".py"):
+        kind, target, rest = "file", argv[0], argv[1:]
+    else:
+        return None
+    return kind, target, [t.split("=")[0] for t in rest if t.startswith("--")]
+
+
+def help_output(kind: str, target: str) -> tuple[int, str]:
+    """`--help` for one tool, asked once per process. The cache is keyed on the target
+    alone because the flags differ per row while the help text does not."""
+    if (kind, target) not in _HELP:
+        argv = ([sys.executable, "-m", target] if kind == "module"
+                else [sys.executable, target])
+        try:
+            p = subprocess.run([*argv, "--help"], cwd=REPO, capture_output=True,
+                               text=True, timeout=HELP_TIMEOUT)
+            _HELP[(kind, target)] = (p.returncode, p.stdout + p.stderr)
+        except subprocess.TimeoutExpired:
+            _HELP[(kind, target)] = (-1, f"--help never answered within {HELP_TIMEOUT}s")
+    return _HELP[(kind, target)]
+
+
+def command_problem(r) -> str | None:
+    """Why this row's command cannot run here, or None. Nothing is executed but `--help`.
+
+    A gated Kaggle row is prose, not a shell line, so it is not asked; a row whose
+    command names a file that is not in the tree fails at `--help` like anything else.
+    """
+    if r["status"] == KAGGLE:
+        return None
+    try:
+        parsed = python_target(r["cmd"])
+    except ValueError as e:
+        return f"command does not parse as a shell line ({e}): {r['cmd'][:60]}"
+    if parsed is None:
+        return None
+    kind, target, flags = parsed
+    rc, out = help_output(kind, target)
+    if rc != 0:
+        tail = (out.strip().splitlines() or ["no output"])[-1][:110]
+        return f"the {kind} behind the command does not answer --help (rc={rc}): {tail}"
+    missing = sorted({f for f in flags if f not in out})
+    if missing:
+        return f"{target} does not accept {', '.join(missing)}"
+    return None
+
+
 def check_row(r) -> tuple[list[str], list[str]]:
     """(problems, notes) for one row. Empty problems means the row holds.
 
-    The three assertions are independent on purpose: a row can have its witness
+    The four assertions are independent on purpose: a row can have its witness
     committed and its figure intact while the docs stopped quoting the command, and
-    that is exactly the drift §9.30 is about.
+    that is exactly the drift §9.30 is about. The fourth differs in kind — it asks the
+    tool instead of the file, which is the only way a renamed flag goes red (§9.43).
     """
     bad, notes = [], []
     if not r["quotes"] and r["status"] != KAGGLE:
@@ -443,6 +524,8 @@ def check_row(r) -> tuple[list[str], list[str]]:
         bad.append("no witness named")
     if r["status"] == KAGGLE and r["witness"]:
         bad.append("a gated row must not point at a witness")
+    if (cp := command_problem(r)):
+        bad.append(cp)
     for f in r["witness"]:
         if not (REPO / f).exists():
             bad.append(f"witness missing: {f}")
