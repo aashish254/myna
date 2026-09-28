@@ -70,3 +70,4 @@ baseline copy: green (1 test file)
             FAILED tests/test_latency_matched.py::test_a_second_copy_cannot_share_the_output_path
 
 34/34 mutations caught
+EXIT=0 (watched to completion 2026-09-28 by /tmp/sweep3.zsh, 80 s wall)

@@ -167,7 +167,13 @@ def worst_case_tokens(tok, paraphraser, items, cache):
 
 def macro_acc(m):
     """Unweighted mean over the per-(source, question) accuracies in an
-    `evaluate()` map — the brier/ece sidecars are excluded by design."""
+    `evaluate()` map — the brier/ece sidecars are excluded by design.
+
+    §9.41: 60% of this map's terms hold exactly one row, so the value is a
+    paired-comparison statistic, not a level. Any claim about the *model* goes
+    through `myna.report`'s row-weighted cells; this one is only safe against
+    itself, across steps or arms.
+    """
     names = [k for k in m if not k.endswith((":brier", ":ece"))]
     return sum(m[k] for k in names) / max(len(names), 1)
 

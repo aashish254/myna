@@ -70,7 +70,7 @@ Quote the ratio, never the millisecond figure.
 | **G4** | Long-context is *correct*, not just cheap | needle-style typed decision ≥ 0.90 at 4k and ≥ 0.85 at 16k state | **not met, and not yet measurable on this box.** v0's needle curve (`runs/needle_myna-v0.md`) reads 0.188 at 128 tokens against a 0.167 floor — at chance on the shortest rung — so the longer rows are decay of nothing, and the harness now says so itself rather than printing a table (§9.25). The 16k *state* is measured and cheap (§9.22); the 16k *decision* needs the long-context checkpoint, which is 7b / `KAGGLE` |
 | **G5** | Useful confidence, with abstention | risk/coverage curve on `calibration.jsonl`; ≥ 0.95 accuracy at ≥ 60% coverage on banking77 + dbpedia14 + trec | **not met on the level, met on the machinery.** Abstention ships: `Myna(ckpt, abstain_below=t)` withholds the commitment and prints the measured reason, the fallback seam labels every answer with the engine that committed, and the curve is a committed artifact (`runs/risk_coverage.md`, 448 rows / 568 questions). Accuracy on v0 climbs **0.349 → 0.535** as coverage falls 1.00 → 0.20 — the confidence ranks the answers, on a checkpoint that cannot do the task — and setting the 0.693 floor on the engine abstains on **227** questions where the curve withheld **227**. But **no rung reaches 0.95** (max 0.596, at 10% coverage) and G5's own three sources sit at 0.000 / 0.025 / 0.150, so the pass needs the `KAGGLE` checkpoint (§9.24) |
 | **G6** | No regression on what already worked | synthetic v0 test ≥ 0.94 | open — v0's measured test macro is **0.9523** (`runs/train-v0.log`, macro of its nine `=== test ===` rows), so the level clears today; the gate stays open until a v1 checkpoint is run against it, and a draft of this row cited "0.951", which no artifact prints (§9.30) |
-| **G7** | Reproducibility | one command per result, seeds pinned, witness JSONs committed, `pytest` green | **met, as a binding rather than a rebuild.** `bench/reproduce.py` holds 26 rows binding every published table cell to one command and one committed witness each, and `make repro` re-reads the 55 quoted figures out of those artifacts rather than out of the prose; the seeds live inside the printed commands (`--seed 0`, `--seeds 0 1`), not in sentences about them. What this does **not** say: no target *executes* the registry end to end — 17 rows re-run on this box, 3 retrain a checkpoint, 2 need a laya checkout, 3 need Chrome, 1 is `KAGGLE` — which is why TODO 8b stays unticked and why G7 is discipline rather than a one-command rebuild |
+| **G7** | Reproducibility | one command per result, seeds pinned, witness JSONs committed, `pytest` green | **met, as a binding rather than a rebuild.** `bench/reproduce.py` holds 27 rows binding every published table cell to one command and one committed witness each, and `make repro` re-reads the 58 quoted figures out of those artifacts rather than out of the prose; the seeds live inside the printed commands (`--seed 0`, `--seeds 0 1`), not in sentences about them. What this does **not** say: no target *executes* the registry end to end — 18 rows re-run on this box, 3 retrain a checkpoint, 2 need a laya checkout, 3 need Chrome, 1 is `KAGGLE` — which is why TODO 8b stays unticked and why G7 is discipline rather than a one-command rebuild |
 
 **This column is not a claim.** `make gates` (`bench/gates.py --check`) re-reads each cell's
 leading verdict word, the registry row that gate cites, and the named field inside a committed
@@ -875,7 +875,7 @@ are counted, and if nothing is left the run refuses. See §9.14.
       writes down, G4 still needs Kaggle, and P0's push is user-gated with no remote yet
       created.
 
-### P9 — The three defects the first valid checkpoint named *(9a shipped; 9b's fix measured dead; 9c local; 9d the user's call; 9e measured dead too)*
+### P9 — The three defects the first valid checkpoint named *(9a shipped; 9b's fix measured dead; 9c local; 9d the user's call; 9e measured dead too; 9f–9i are TODO's ticks: G1 is now `not met` on a committed witness, one mutation battery had never finished, the last unexplained V1-B number resolved into an aggregation, and the §9.40 sweep across all 14 batteries found no second unaffordable probe)*
 
 Opened by the diagnostic run against `v1b-kaggle-3600b`'s own logits (TODO 3i's lane), which answers
 the capacity question in the direction that matters: **the mechanism is not broken, the cost
@@ -1815,3 +1815,88 @@ Kept permanently, because the value of this project's claims is that they surviv
    whose honest cost is a training run is a mutation nobody re-runs, so the figure decays into
    inheritance. And entry 39's rule applies to entry 39: it named the habit of checking that a
    battery finished, then quoted this battery's `39/39` from the record rather than from a run.
+41. **dbpedia14's "unexplained dev→test collapse" was two roll-ups of one run, not two
+   measurements of one quantity.** The item carried out of `v1b-kaggle-3600b` said dev 0.5324 falls
+   to test 0.2047 across 37 question-sets per side, called that "too large to call overfitting
+   without looking", and told whoever read it next to investigate before trusting the test macro.
+   Both literals reproduce exactly today as the **unweighted mean over `evaluate()`'s per-set keys**
+   of the committed `runs/v1b_kaggle_3600b.metrics.json` — and the cell's own shape says why that
+   roll-up cannot carry a conclusion: 116 rows sit in 37 sets, **36 of which hold exactly one row**
+   (`runs/v1b_kaggle_3600b.report.json`: `n=116 sets=37`; the dev render's strata block: *"37
+   exact-signature sets, 0.69 of rows in a reused set"*). So 36 of the 37 terms are 0-or-1 coin
+   flips, and because dev and test share **one** signature between them the pair never was the same
+   quantity twice. On the basis the shipped report actually uses — accuracy **row-weighted within each
+   cell** across the question-sets that hold it, then an unweighted mean over the 16 cells (entry 37's
+   "per-cell unweighted" is that outer step, and it is a different thing from this inner one), because
+   *"an unweighted mean lets a 1-row group outvote a 116-row one"* — the cell is dev **0.647** →
+   test **0.457**: a −0.190 drop against a **0.129** majority floor, which makes it one of the cells
+   furthest *above* guessing rather than the suite's weak point. And −0.190 does not need a
+   mechanism: over the 16 cells both splits score, mean |Δ| is 0.079 with sd 0.089, five other cells
+   move by ≥ 0.10 (agnews/topic −0.164, sst5/sentiment −0.163, amazon/stars −0.138, agnews
+   is_scitech −0.113, is_business −0.104), and imdb/positive swings +0.125 the other way; overall
+   macro is dev 0.5356 → test 0.4893. The dev half is now an artifact of its own —
+   `uv run python -m myna.report --split dev --metrics runs/v1b_kaggle_3600b.metrics.json \
+   --out runs/v1b_kaggle_3600b.dev.report.json > runs/v1b_kaggle_3600b.dev.report.log` — which is the
+   committed metrics re-rendered, not the run repeated: no GPU, no re-run of a gated lane, and
+   `bench/reproduce.py` row `v1b-kaggle-dev` re-reads 0.5356, `n=116 / sets=37` and the 0.647 line out
+   of it.
+   The distortion is not local to dbpedia14, and the suite-wide count is the number to carry: of the
+   per-set roll-up's own terms, **414 of 690 dev (60.0%) and 417 of 716 test (58.2%) hold exactly one
+   row**. Delete those terms and the same unweighted mean reads **0.6756 dev / 0.6092 test** instead of
+   0.4355 / 0.3983 — so the basis was never a rounding choice; it moved the headline by 0.240 on dev
+   and 0.211 on test, and a roll-up where the majority of terms are single-row cannot support a claim
+   about a *model* at all. One consequence for entry 38, which this clause does not undo: the training
+   log's `dev-mid acc` ladder is `train.macro_acc`, i.e. this same per-set basis — its last rung prints
+   0.4355, and the committed dev block's per-set mean is 0.43547, the same statistic to the four places
+   both print. The **slope** §9.38 measured
+   (+0.0072 per 1,000 updates) stands, because it pairs one basis against itself across steps; but
+   0.4355 must never be read as the level of a dev run that the report puts at 0.5356, and a reader who
+   does will "discover" a 0.100 gap that is pure bookkeeping. **The item is closed with "nothing
+   to find", and G1 is untouched** — 0.4893 against 0.70 stays *not met* on entry 37's basis.
+   The general form: **read a dev→test delta on the basis the artifact publishes**; a gap between two
+   aggregations of one run is a fact about the aggregation. One trap sits on the way to that rule, and
+   it looks like waste: the
+   37 sets come from 11 (dev) / 10 (test) distinct legend *key-sets*, because `_signature` hashes
+   the criteria dict in the row's own order. That fragmentation is load-bearing, not waste —
+   `parse_questions` resolves each gold through `list(crit).index(lab)`, so grouping rows whose
+   legends agree only up to order would keep the first row's option list and silently mis-index
+   every later row's label. Canonicalising the key without canonicalising the options would turn a
+   noisy cell into a wrong one.
+   The same re-check was then run against the repo's other negative result, because its verdict
+   sentence quotes a macro: `runs/ordinal_ab.json`'s `meta.macro_dev/macro_test` are `macro_acc`, i.e.
+   the per-set roll-up, and on the report's per-cell basis its "macro moves opposite ways in the two
+   seeds" reads dev −0.0013 / +0.0053 (still opposite) and test +0.0071 / +0.0005 (same sign, the
+   second one nil). **The verdict does not move**, because it never rested on that clause — the
+   resolution ratios are computed from per-cell deltas of the priced cells against the churn floor of
+   the unpriced ones (dev 0.5194, test 0.8765), which is the same basis `myna.report` uses. What the
+   check buys is a rule: **a quoted macro has to name its basis, and a null has to be re-derived on
+   the other basis before anyone calls it an artifact of this one.**
+42. **§9.40's defect lives in the driver too, and sweeping it across all 14 batteries found no
+   second unaffordable probe.** The entry above capped the test that answers a mutant; it did not cap
+   the loop that runs the batteries. Measured 2026-09-28: the first sweep script iterated
+   `paraphrase report p5 longctx onnx mlx ordinal scratch` with no per-battery deadline, so one hung
+   battery would have sat inside its own uncaught `timeout=1800` and then serialised everything behind
+   it — an hour of fan for a summary nobody can read. It was stopped mid-`onnx` at PID 32557 plus its
+   `onnxruntime` children (exact PIDs; a broad `pkill` is not available to this repo while anything may
+   be training), and parts 2 and 3 ran every battery under a `SECONDS`/`kill -0` watchdog at
+   `CAP=2400`/`1800` — a killed battery prints `TIMEOUT`, keeps its partial log, and that partial log is
+   the witness that it did not finish. The watchdog itself was checked against a dummy `sleep 600`
+   first (rc=143 after 8 s, process confirmed gone) rather than trusted. All 14 then finished inside this
+   session: paraphrase **29/29** · report **93/93** · p5 **49/49** · longctx **20/20** · onnx **22/22**
+   (1,200 s wall, two graph re-exports per mutant) · mlx **14/14** · ordinal **19/19** · scratch
+   **13/13** · gates **17/17** · reproduce **21/21** · browser **24/24** · latency-matched **34/34** ·
+   memory plan **44/44** · kaggle bundle **42/42** — **441 mutants, 441 caught, zero `MISSED`, zero
+   `BAD-PATTERN`, zero `TIMEOUT`**, summed from the 14 files in `runs/mutation_*.log` (11 of them
+   rewritten from these runs; each closes with an `EXIT=0` line naming the wrapper that produced it).
+   What this entry is *for* is the negative, because a green sweep reads like nothing happened. The
+   static half of the audit predicted it: `grep` for `myna.train`, `run.py` and `--steps` across
+   `bench/mutation_*.py` returns only the kaggle bundle, so `MINI_DOSE` is the single place a probe can
+   reach training; two batteries handle a timeout (`mutation_browser.py` gives its `node` selftest 180 s
+   and turns `TimeoutExpired` into a *caught* mutant with the reason printed — the right shape), and the
+   remaining twelve carry `timeout=1800` uncaught, which costs a slow exit rather than a training run.
+   So the process-group refactor stayed in the one file with evidence against it instead of being
+   spread over thirteen "for consistency", which is the same speculative reach that produced the mutant
+   in entry 40. The general form: **a driver that runs a probe owes the probe the same affordability
+   rule** — an uncapped wrapper inherits the cost of every uncapped probe inside it. And a sweep that
+   finds nothing gets written down anyway, because the alternative is a later session re-running it or
+   "fixing" batteries that were never broken.

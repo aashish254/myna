@@ -1,0 +1,476 @@
+{
+  "cmd": "python -m myna.report --split dev --metrics runs/v1b_kaggle_3600b.metrics.json --out runs/v1b_kaggle_3600b.dev.report.json",
+  "metrics_file": "runs/v1b_kaggle_3600b.metrics.json",
+  "laya_file": null,
+  "laya_merged": {},
+  "suite": "data/decision-v2-pilot",
+  "split": "dev",
+  "file": "development.jsonl",
+  "min_rows": 30,
+  "dropped_cells": [],
+  "unmatched_sets": [],
+  "strata": {
+    "banking77": {
+      "rows": 116,
+      "sets": 116,
+      "slots": 116,
+      "distinct_instructions": 4,
+      "multi_row_set_share": 0.0,
+      "repeated_instruction_share": 1.0,
+      "class": "shared-instruction"
+    },
+    "boolq": {
+      "rows": 80,
+      "sets": 80,
+      "slots": 80,
+      "distinct_instructions": 80,
+      "multi_row_set_share": 0.0,
+      "repeated_instruction_share": 0.0,
+      "class": "per-row-instruction"
+    },
+    "agnews": {
+      "rows": 116,
+      "sets": 105,
+      "slots": 300,
+      "distinct_instructions": 8,
+      "multi_row_set_share": 0.1724137931034483,
+      "repeated_instruction_share": 1.0,
+      "class": "shared-instruction"
+    },
+    "mnli": {
+      "rows": 116,
+      "sets": 112,
+      "slots": 116,
+      "distinct_instructions": 80,
+      "multi_row_set_share": 0.06896551724137931,
+      "repeated_instruction_share": 0.41379310344827586,
+      "class": "per-row-instruction"
+    },
+    "sst5": {
+      "rows": 80,
+      "sets": 4,
+      "slots": 80,
+      "distinct_instructions": 4,
+      "multi_row_set_share": 1.0,
+      "repeated_instruction_share": 1.0,
+      "class": "shared-instruction"
+    },
+    "yelp": {
+      "rows": 80,
+      "sets": 4,
+      "slots": 160,
+      "distinct_instructions": 5,
+      "multi_row_set_share": 1.0,
+      "repeated_instruction_share": 1.0,
+      "class": "shared-instruction"
+    },
+    "trec": {
+      "rows": 116,
+      "sets": 37,
+      "slots": 116,
+      "distinct_instructions": 1,
+      "multi_row_set_share": 0.6896551724137931,
+      "repeated_instruction_share": 1.0,
+      "class": "shared-instruction"
+    },
+    "dbpedia14": {
+      "rows": 116,
+      "sets": 37,
+      "slots": 116,
+      "distinct_instructions": 1,
+      "multi_row_set_share": 0.6896551724137931,
+      "repeated_instruction_share": 1.0,
+      "class": "shared-instruction"
+    },
+    "amazon": {
+      "rows": 80,
+      "sets": 1,
+      "slots": 80,
+      "distinct_instructions": 1,
+      "multi_row_set_share": 1.0,
+      "repeated_instruction_share": 1.0,
+      "class": "shared-instruction"
+    },
+    "imdb": {
+      "rows": 80,
+      "sets": 1,
+      "slots": 80,
+      "distinct_instructions": 1,
+      "multi_row_set_share": 1.0,
+      "repeated_instruction_share": 1.0,
+      "class": "shared-instruction"
+    },
+    "contrastive": {
+      "rows": 196,
+      "sets": 27,
+      "slots": 196,
+      "distinct_instructions": 4,
+      "multi_row_set_share": 0.9285714285714286,
+      "repeated_instruction_share": 1.0,
+      "class": "shared-instruction"
+    }
+  },
+  "cells": [
+    {
+      "source": "agnews",
+      "question": "is_business",
+      "type": "noul",
+      "n": 45,
+      "options": 2,
+      "options_by_size": {
+        "2": 45
+      },
+      "sets": 39,
+      "majority": 0.7777777777777778,
+      "uniform": 0.5,
+      "acc": 0.7555555555555555,
+      "n_scored": 45,
+      "clip": 0.7777777777777778,
+      "clip_worth": 0.022222222222222254,
+      "brier": 0.17807012523214022
+    },
+    {
+      "source": "agnews",
+      "question": "is_scitech",
+      "type": "noul",
+      "n": 47,
+      "options": 2,
+      "options_by_size": {
+        "2": 47
+      },
+      "sets": 43,
+      "majority": 0.7659574468085106,
+      "uniform": 0.5,
+      "acc": 0.7659574468085106,
+      "n_scored": 47,
+      "clip": 0.7659574468085106,
+      "clip_worth": 0.0,
+      "brier": 0.1690938849883907
+    },
+    {
+      "source": "agnews",
+      "question": "is_sports",
+      "type": "noul",
+      "n": 52,
+      "options": 2,
+      "options_by_size": {
+        "2": 52
+      },
+      "sets": 45,
+      "majority": 0.7884615384615384,
+      "uniform": 0.5,
+      "acc": 0.8076923076923077,
+      "n_scored": 52,
+      "clip": 0.8076923076923077,
+      "clip_worth": 0.0,
+      "brier": 0.16314382516205883
+    },
+    {
+      "source": "agnews",
+      "question": "is_world",
+      "type": "noul",
+      "n": 40,
+      "options": 2,
+      "options_by_size": {
+        "2": 40
+      },
+      "sets": 35,
+      "majority": 0.825,
+      "uniform": 0.5,
+      "acc": 0.825,
+      "n_scored": 40,
+      "clip": 0.825,
+      "clip_worth": 0.0,
+      "brier": 0.14873773034196347
+    },
+    {
+      "source": "agnews",
+      "question": "topic",
+      "type": "choice",
+      "n": 116,
+      "options": 5,
+      "options_by_size": {
+        "4": 104,
+        "5": 12
+      },
+      "sets": 105,
+      "majority": 0.2672413793103448,
+      "uniform": 0.24482758620689649,
+      "acc": 0.5344827586206896,
+      "n_scored": 116,
+      "clip": 0.5344827586206896,
+      "clip_worth": 0.0,
+      "brier": null
+    },
+    {
+      "source": "amazon",
+      "question": "stars",
+      "type": "score",
+      "n": 80,
+      "options": 5,
+      "options_by_size": {
+        "5": 80
+      },
+      "sets": 1,
+      "majority": 0.2375,
+      "uniform": 0.2,
+      "acc": 0.375,
+      "n_scored": 80,
+      "clip": 0.375,
+      "clip_worth": 0.0,
+      "brier": null
+    },
+    {
+      "source": "banking77",
+      "question": "intent",
+      "type": "choice",
+      "n": 116,
+      "options": 78,
+      "options_by_size": {
+        "77": 104,
+        "78": 12
+      },
+      "sets": 116,
+      "majority": 0.0603448275862069,
+      "uniform": 0.01296978883185777,
+      "acc": 0.02586206896551724,
+      "n_scored": 116,
+      "clip": 0.0603448275862069,
+      "clip_worth": 0.034482758620689655,
+      "brier": null
+    },
+    {
+      "source": "boolq",
+      "question": "answer",
+      "type": "noul",
+      "n": 80,
+      "options": 2,
+      "options_by_size": {
+        "2": 80
+      },
+      "sets": 80,
+      "majority": 0.625,
+      "uniform": 0.5,
+      "acc": 0.475,
+      "n_scored": 80,
+      "clip": 0.625,
+      "clip_worth": 0.15000000000000002,
+      "brier": 0.32069409190235093
+    },
+    {
+      "source": "contrastive",
+      "question": "decision",
+      "type": "noul",
+      "n": 196,
+      "options": 4,
+      "options_by_size": {
+        "2": 80,
+        "3": 104,
+        "4": 12
+      },
+      "sets": 27,
+      "majority": 0.45918367346938777,
+      "uniform": 0.3962585034013605,
+      "acc": 0.5102040816326531,
+      "n_scored": 196,
+      "clip": 0.5102040816326531,
+      "clip_worth": 0.0,
+      "brier": 0.24642103910446167
+    },
+    {
+      "source": "dbpedia14",
+      "question": "category",
+      "type": "choice",
+      "n": 116,
+      "options": 15,
+      "options_by_size": {
+        "14": 104,
+        "15": 12
+      },
+      "sets": 37,
+      "majority": 0.1206896551724138,
+      "uniform": 0.07093596059113294,
+      "acc": 0.646551724137931,
+      "n_scored": 116,
+      "clip": 0.646551724137931,
+      "clip_worth": 0.0,
+      "brier": null
+    },
+    {
+      "source": "imdb",
+      "question": "positive",
+      "type": "noul",
+      "n": 80,
+      "options": 2,
+      "options_by_size": {
+        "2": 80
+      },
+      "sets": 1,
+      "majority": 0.525,
+      "uniform": 0.5,
+      "acc": 0.675,
+      "n_scored": 80,
+      "clip": 0.675,
+      "clip_worth": 0.0,
+      "brier": 0.22717612981796265
+    },
+    {
+      "source": "mnli",
+      "question": "relation",
+      "type": "choice",
+      "n": 116,
+      "options": 4,
+      "options_by_size": {
+        "3": 104,
+        "4": 12
+      },
+      "sets": 112,
+      "majority": 0.3448275862068966,
+      "uniform": 0.32471264367816083,
+      "acc": 0.28448275862068967,
+      "n_scored": 116,
+      "clip": 0.3448275862068966,
+      "clip_worth": 0.060344827586206906,
+      "brier": null
+    },
+    {
+      "source": "sst5",
+      "question": "sentiment",
+      "type": "score",
+      "n": 80,
+      "options": 5,
+      "options_by_size": {
+        "5": 80
+      },
+      "sets": 4,
+      "majority": 0.3125,
+      "uniform": 0.2,
+      "acc": 0.45,
+      "n_scored": 80,
+      "clip": 0.45,
+      "clip_worth": 0.0,
+      "brier": null
+    },
+    {
+      "source": "trec",
+      "question": "answer_type",
+      "type": "choice",
+      "n": 116,
+      "options": 7,
+      "options_by_size": {
+        "6": 104,
+        "7": 12
+      },
+      "sets": 37,
+      "majority": 0.23275862068965517,
+      "uniform": 0.16420361247947457,
+      "acc": 0.27586206896551724,
+      "n_scored": 116,
+      "clip": 0.27586206896551724,
+      "clip_worth": 0.0,
+      "brier": null
+    },
+    {
+      "source": "yelp",
+      "question": "rating",
+      "type": "score",
+      "n": 80,
+      "options": 5,
+      "options_by_size": {
+        "5": 80
+      },
+      "sets": 4,
+      "majority": 0.275,
+      "uniform": 0.2,
+      "acc": 0.4375,
+      "n_scored": 80,
+      "clip": 0.4375,
+      "clip_worth": 0.0,
+      "brier": null
+    },
+    {
+      "source": "yelp",
+      "question": "recommend",
+      "type": "noul",
+      "n": 80,
+      "options": 2,
+      "options_by_size": {
+        "2": 80
+      },
+      "sets": 4,
+      "majority": 0.6,
+      "uniform": 0.5,
+      "acc": 0.725,
+      "n_scored": 80,
+      "clip": 0.725,
+      "clip_worth": 0.0,
+      "brier": 0.17475510612130166
+    }
+  ],
+  "macro": {
+    "acc": 0.5355719231874607,
+    "majority": 0.45107765659267074,
+    "uniform": 0.3321192559493052,
+    "clip": 0.5522625362142807,
+    "clip_worth": 0.016690613026819956,
+    "brier_noul": 0.20351149158382875,
+    "cells_scored": 16,
+    "cells_kept": 16,
+    "both": null
+  },
+  "below_majority_floor": [
+    {
+      "cell": "agnews/is_business",
+      "acc": 0.7555555555555555,
+      "majority": 0.7777777777777778,
+      "clip": 0.7777777777777778,
+      "clip_worth": 0.022222222222222254
+    },
+    {
+      "cell": "banking77/intent",
+      "acc": 0.02586206896551724,
+      "majority": 0.0603448275862069,
+      "clip": 0.0603448275862069,
+      "clip_worth": 0.034482758620689655
+    },
+    {
+      "cell": "boolq/answer",
+      "acc": 0.475,
+      "majority": 0.625,
+      "clip": 0.625,
+      "clip_worth": 0.15000000000000002
+    },
+    {
+      "cell": "mnli/relation",
+      "acc": 0.28448275862068967,
+      "majority": 0.3448275862068966,
+      "clip": 0.3448275862068966,
+      "clip_worth": 0.060344827586206906
+    }
+  ],
+  "brier": {
+    "noul_cells": 8,
+    "priced_cells": 8,
+    "macro": 0.20351149158382875,
+    "cells": {
+      "agnews/is_business": 0.17807012523214022,
+      "agnews/is_scitech": 0.1690938849883907,
+      "agnews/is_sports": 0.16314382516205883,
+      "agnews/is_world": 0.14873773034196347,
+      "boolq/answer": 0.32069409190235093,
+      "contrastive/decision": 0.24642103910446167,
+      "imdb/positive": 0.22717612981796265,
+      "yelp/recommend": 0.17475510612130166
+    }
+  },
+  "g1": {
+    "target": 0.7,
+    "margin": 0.15,
+    "meets_target": false,
+    "meets_margin": false,
+    "pass": false,
+    "macro_acc": 0.5355719231874607,
+    "macro_majority": 0.45107765659267074,
+    "margin_observed": 0.08449426659478998
+  }
+}

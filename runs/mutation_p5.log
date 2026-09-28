@@ -100,3 +100,4 @@ baseline copy: green (4 test files)
             FAILED tests/test_risk_coverage.py::test_an_uninformative_confidence_buys_nothing
 
 49/49 mutations caught
+EXIT=0 (watched to completion 2026-09-28; /tmp/sweep/summary.txt: "EXIT=0 -> 49/49 mutations caught", uncapped part-1 loop)

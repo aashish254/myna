@@ -199,12 +199,12 @@ GATES = [
          [proof(REGISTRY, "", True,
                 "every published table row is bound to a committed witness that still "
                 "contains the figure the prose quotes")],
-         "`make repro` is green at this tick: 26 registry rows bind every published table "
-         "cell to one command and one committed witness, and the 55 quoted figures are "
+         "`make repro` is green at this tick: 27 registry rows bind every published table "
+         "cell to one command and one committed witness, and the 58 quoted figures are "
          "re-read out of those files rather than out of the prose. The seeds live inside the "
          "printed commands (`--seed 0`, `--seeds 0 1`), not in sentences about them.",
          "met as a binding, not as a rebuild, and the gap is disclosed rather than absorbed: "
-         "no target *executes* the registry end to end — 17 rows re-run on this box, 3 retrain "
+         "no target *executes* the registry end to end — 18 rows re-run on this box, 3 retrain "
          "a checkpoint, 2 need a laya checkout on `PYTHONPATH`, 3 need Google Chrome and 1 is "
          "`KAGGLE`. That is TODO 8b, which stays unticked for exactly this reason."),
 ]

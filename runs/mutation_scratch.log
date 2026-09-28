@@ -28,3 +28,4 @@ baseline copy: green (1 test file)
             FAILED tests/test_scratch.py::test_each_refusal_refuses_in_words - FileNotFou...
 
 13/13 mutations caught
+EXIT=0 (watched to completion 2026-09-28 by /tmp/sweep2.zsh, 111 s wall)

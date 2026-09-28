@@ -1,0 +1,93 @@
+baseline copy: green (2 test files)
+
+[ 1/44] caught      p95 becomes the median: the tail stops being paid for
+            FAILED tests/test_memory_plan.py::test_p95_tracks_the_tail_not_the_mean - Ass...
+[ 2/44] caught      p95 takes the pool's head instead of a random sample
+            FAILED tests/test_memory_plan.py::test_p95_samples_when_the_split_is_bigger_than_the_limit
+[ 3/44] caught      state price swapped for the option-cell price
+            FAILED tests/test_memory_plan.py::test_rows_that_fit_is_the_documented_division
+[ 4/44] caught      the measured 0.8 MiB/position quietly becomes 1.6
+            FAILED tests/test_memory_plan.py::test_rows_that_fit_is_the_documented_division
+[ 5/44] caught      a missing reading is filled in with a guess
+            FAILED tests/test_memory_plan.py::test_rows_that_fit_refuses_to_invent_a_budget
+[ 6/44] caught      the safety factor is not applied
+            FAILED tests/test_memory_plan.py::test_rows_that_fit_is_the_documented_division
+[ 7/44] caught      a plan that rounds to zero is allowed to say 0
+            FAILED tests/test_memory_plan.py::test_rows_that_fit_is_the_documented_division
+[ 8/44] caught      a question branch that eats the budget still gets a batch
+            FAILED tests/test_memory_plan.py::test_the_question_branch_is_reserved_before_the_states_are_sized
+[ 9/44] caught      the reserve is added to the budget instead of taken out of it
+            FAILED tests/test_memory_plan.py::test_the_question_branch_is_reserved_before_the_states_are_sized
+[10/44] caught      free_device_bytes keys on the wrong device
+            FAILED tests/test_memory_plan.py::test_free_device_bytes_reads_cuda_headroom_not_total
+[11/44] caught      cuda reports total bytes as if they were free
+            FAILED tests/test_memory_plan.py::test_free_device_bytes_reads_cuda_headroom_not_total
+[12/44] caught      an unreadable driver crashes the run instead of reporting None
+            FAILED tests/test_memory_plan.py::test_free_device_bytes_reads_cuda_headroom_not_total
+[13/44] caught      the drift rule judges a spike against the whole history, not the window
+            FAILED tests/test_memory_plan.py::test_stop_uses_only_the_recent_window_so_recovery_is_not_penalised
+[14/44] caught      the window is short enough to stop on the first slow step
+            FAILED tests/test_memory_plan.py::test_stop_needs_a_window_before_it_can_judge
+[15/44] caught      the rule's own window shrinks to nothing
+            FAILED tests/test_memory_plan.py::test_stop_needs_a_window_before_it_can_judge
+[16/44] caught      the shipped --stop-factor default becomes 10, so nothing ever stops
+            FAILED tests/test_memory_plan.py::test_the_defaults_that_run_on_kaggle_are_in_the_record
+[17/44] caught      the shipped --save-every default loses all but the last snapshot
+            FAILED tests/test_memory_plan.py::test_the_defaults_that_run_on_kaggle_are_in_the_record
+[18/44] caught      the shipped --mem-safety default spends the whole budget
+            FAILED tests/test_memory_plan.py::test_batch_is_clamped_to_the_plan_and_the_clamp_prints
+[19/44] caught      the tolerance is 10x, so drift never stops anything
+            FAILED tests/test_memory_plan.py::test_stop_fires_on_time_drift_and_names_both_numbers
+[20/44] caught      headroom ignored: stopping only when already at zero
+            FAILED tests/test_memory_plan.py::test_stop_fires_when_headroom_drops_under_the_projection
+[21/44] caught      the headroom factor is generous instead of tight
+            FAILED tests/test_memory_plan.py::test_stop_fires_when_headroom_drops_under_the_projection
+[22/44] caught      the median is replaced by its maximum
+            FAILED tests/test_memory_plan.py::test_median_both_parity_cases - assert 3.0 ...
+[23/44] caught      the projection is compared without its guard, so 0 stops everything
+            FAILED tests/test_memory_plan.py::test_stop_fires_when_headroom_drops_under_the_projection
+[24/44] caught      the clamp only fires at twice the fit
+            FAILED tests/test_memory_plan.py::test_batch_is_clamped_to_the_plan_and_the_clamp_prints
+[25/44] caught      the question branch is never priced
+            FAILED tests/test_memory_plan.py::test_row_batch_subtracts_the_question_branch_from_the_plan
+[26/44] caught      the refusal does not name the knob to turn
+            FAILED tests/test_memory_plan.py::test_a_question_branch_that_eats_the_budget_is_refused
+[27/44] caught      the plan line hides that a reserve was taken
+            FAILED tests/test_memory_plan.py::test_row_batch_subtracts_the_question_branch_from_the_plan
+[28/44] caught      the clamp prints a shrink it does not perform
+            FAILED tests/test_memory_plan.py::test_batch_is_clamped_to_the_plan_and_the_clamp_prints
+[29/44] caught      the planned batch never reaches the loop
+            FAILED tests/test_memory_plan.py::test_batch_is_clamped_to_the_plan_and_the_clamp_prints
+[30/44] caught      the no-reading branch prints a plan it cannot support
+            FAILED tests/test_memory_plan.py::test_no_headroom_reading_says_so_instead_of_guessing
+[31/44] caught      step times are never recorded, so the drift rule is dead
+            FAILED tests/test_memory_plan.py::test_drift_stops_the_run_and_exits_nonzero
+[32/44] caught      the stop skips writing the snapshot
+            FAILED tests/test_memory_plan.py::test_drift_stops_the_run_and_exits_nonzero
+[33/44] caught      the stop reports a reason and keeps training
+            FAILED tests/test_memory_plan.py::test_drift_stops_the_run_and_exits_nonzero
+[34/44] caught      metrics.json is told the run finished
+            FAILED tests/test_memory_plan.py::test_drift_stops_the_run_and_exits_nonzero
+[35/44] caught      a truncated run exits 0
+            FAILED tests/test_memory_plan.py::test_drift_stops_the_run_and_exits_nonzero
+[36/44] caught      the cadence counts steps from 0, so it fires one update late
+            FAILED tests/test_memory_plan.py::test_resume_continues_after_the_snapshot_step
+[37/44] caught      the snapshot drops the optimizer state
+            FAILED tests/test_memory_plan.py::test_snapshot_carries_optimizer_scheduler_and_step
+[38/44] caught      the snapshot drops the scheduler state
+            FAILED tests/test_memory_plan.py::test_snapshot_carries_optimizer_scheduler_and_step
+[39/44] caught      the snapshot records no step, so a resume restarts the decay
+            FAILED tests/test_memory_plan.py::test_snapshot_carries_optimizer_scheduler_and_step
+[40/44] caught      resume replays the snapshotted update
+            FAILED tests/test_memory_plan.py::test_resume_continues_after_the_snapshot_step
+[41/44] caught      a missing snapshot falls through to torch's own error
+            FAILED tests/test_memory_plan.py::test_resume_without_a_snapshot_fails_loud
+[42/44] caught      load_snapshot ignores the stored step
+            FAILED tests/test_memory_plan.py::test_snapshot_carries_optimizer_scheduler_and_step
+[43/44] caught      resume loads the weights but not the optimizer
+            FAILED tests/test_memory_plan.py::test_snapshot_carries_optimizer_scheduler_and_step
+[44/44] caught      the plan's free bytes never reach metrics
+            FAILED tests/test_memory_plan.py::test_batch_is_clamped_to_the_plan_and_the_clamp_prints
+
+44/44 mutations caught
+EXIT=0

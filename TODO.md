@@ -503,6 +503,68 @@ So every "train" item below is split into *prepare/verify the Kaggle path locall
       the worktree's venv does not have it — verified by importing from it), so a suite count only
       compares with the tree it was measured in. `make gates` 7/7 with **3 met / 3 not met / 1
       open**; `make repro` **26/26 rows, 55 figures**. Logged as **§9.40**.
+- [x] **9h** The last "investigate before concluding" item on `v1b-kaggle-3600b` is closed with
+      nothing in it: dbpedia14's dev→test drop was two aggregations, not two measurements. *(this tick)*
+      §9.30 says a published figure needs a row that can re-run it, and 9f gave the test half of this
+      delta a row (`v1b-kaggle-macro`) while the dev half lived only in a session's arithmetic — so the
+      dev split is now rendered into the repo too: registry row **`v1b-kaggle-dev`**, witnesses
+      `runs/v1b_kaggle_3600b.dev.report.{json,log}`, three quoted figures (`0.5355719231874607`,
+      `"sets": 37`, and the `dbpedia14/category choice 116 37 0.647` table line read with its columns).
+      Registry: **27/27 rows, 58 figures**, `make gates` 7/7 at **3 met / 3 not met / 1 open**, and
+      README's generated block re-rendered from `gates.py`. G7's own sentence counted the registry, so
+      9f/9g's `26/26, 55` lines stay as what they measured at their tick.
+      The item said dev 0.5324 falls to test 0.2047 on 37 question-sets a side, which is too large a
+      swing to call overfitting without looking. Both literals still reproduce, exactly, as the
+      unweighted mean over `evaluate()`'s per-set keys of the committed `metrics.json` — and that cell
+      is **116 rows in 37 sets, 36 of which hold one row**, with **one** signature shared between the
+      splits, so 36 of the 37 terms are coin flips over different samples. Suite-wide that roll-up is
+      **414 of 690 dev terms (60.0%) and 417 of 716 test (58.2%) holding one row each**, and dropping
+      those terms lifts the same mean to 0.6756 dev / 0.6092 test — a basis that moves the headline by
+      0.240 and 0.211 is not a rounding choice. `myna.report`'s own basis —
+      row-weighted inside each cell, because its docstring says a 1-row group must not outvote a 116-row
+      one — gives dev **0.647** → test **0.457** against a **0.129** majority floor, and −0.190 is at the
+      tail of a spread, not an anomaly: over the 16 cells both splits score, mean |Δ| is 0.079 (sd 0.089)
+      with five other cells past 0.10 and imdb/positive +0.125 the other way. Overall macro dev 0.5356 →
+      test 0.4893. Witness: `runs/v1b_kaggle_3600b.dev.report.log`, which is the committed metrics
+      re-rendered with `--split dev` — no GPU, no re-run of a gated lane. **G1 does not move**: 0.4893
+      against 0.70 stays *not met* on entry 37's basis. One trap documented on the way, because it looks
+      like waste and is not: the 37 sets come from 11/10 distinct legend key-sets since `_signature`
+      hashes the criteria dict in the row's own order, and `parse_questions` resolves each gold through
+      `list(crit).index(lab)` — canonicalising the key without canonicalising the options would group
+      rows whose legends disagree on order and mis-index their labels. The same re-check went to
+      `runs/ordinal_ab.json`, the repo's other negative: its `meta.macro_*` are `macro_acc` (the per-set
+      roll-up), and on its own per-cell basis — which is `report.accuracy_cells`, the report's function —
+      "macro moves opposite ways in the two seeds" is dev −0.0013/+0.0053 and test +0.0071/+0.0005, so the
+      clause is basis-dependent while the verdict is not, because the resolution ratios (dev 0.5194, test
+      0.8765) are priced cells against the unpriced churn floor all the way down. Logged as **§9.41**.
+- [x] **9i** §9.40's sweep over all 14 mutation batteries, and the honest finding: no second
+      instance. *(this tick)*
+      9g fixed the probe inside one battery; the thing that ran the batteries was still uncapped, and
+      that is the same defect one level up. Measured the hard way: part 1 looped eight batteries
+      (`paraphrase report p5 longctx onnx mlx ordinal scratch`) with no per-battery deadline, so a hang
+      would have burned its own uncaught `timeout=1800` and then queued every battery behind it. It
+      reached the fifth — `onnx` — before being stopped at PID 32557 and its `onnxruntime` children
+      (exact PIDs, never a broad `pkill`), and those four were re-launched under a `SECONDS`/`kill -0`
+      watchdog at `CAP=2400`/`1800`, which was first tested on a dummy `sleep 600` (rc=143 after 8 s,
+      process confirmed gone) rather than trusted. All 14 then finished in this session, and every
+      number below is read off a log a process was watched closing, not off the record: paraphrase
+      **29/29** · report **93/93** · p5 **49/49** · longctx **20/20** · onnx **22/22** (1,200 s — two
+      graph re-exports per mutant) · mlx **14/14** · ordinal **19/19** · scratch **13/13** · gates
+      **17/17** · reproduce **21/21** · browser **24/24** · latency-matched **34/34** · memory plan
+      **44/44** · kaggle bundle **42/42**. **441 mutants, 441 caught; zero `MISSED`, zero
+      `BAD-PATTERN`, zero `TIMEOUT`**, summed straight out of `runs/mutation_*.log` (14 files, 441
+      caught), eleven of those files written by this session's three sweep parts and each closing with
+      an `EXIT=0 (watched …)` line that names its wrapper.
+      The static audit had already said the same thing: no battery but the kaggle bundle even names
+      `myna.train`, `run.py` or `--steps`, so `MINI_DOSE` is the only place a probe could reach
+      training. Two batteries handle a timeout — the bundle with its process-group `killpg`, and
+      `mutation_browser.py`, whose `node` selftest gets 180 s and a `TimeoutExpired` handler that
+      *counts a hang as caught* with the reason printed — while the other twelve carry
+      `timeout=1800` uncaught, which is a slow death rather than an unaffordable probe. The group-kill
+      refactor therefore stays in the one file where a probe was genuinely unaffordable. Suite after the rewrites: **436 passed, 1 skipped in 194 s** (the count
+      line read from the run, because all three of the session's background waiters fired early on a
+      still-live `ps`), `make gates` 7/7 at **3 met / 3 not met / 1 open**, `make repro` **27/27 rows,
+      58 figures**. Logged as **§9.42**.
 - [ ] **9d** `banking77/intent` and `mnli/relation` are inside or outside G1's scope — a decision
       for the user, recorded so a later run does not silently average them back in.
 

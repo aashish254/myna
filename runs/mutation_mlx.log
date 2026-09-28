@@ -30,3 +30,4 @@ baseline copy: green (2 test files)
             FAILED tests/test_mlx_int8.py::test_artifact_round_trip_answers_bit_identically
 
 14/14 mutations caught
+EXIT=0 (watched to completion 2026-09-28 by /tmp/sweep2.zsh, 80 s wall)

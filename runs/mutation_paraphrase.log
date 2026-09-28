@@ -1,0 +1,34 @@
+baseline copy: green (2 test files)
+
+[ 1/29] caught  FAILED tests/test_paraphrase.py::test_training_never_draws_the_held_out_phrasing draw can pick the held-out phrasing
+[ 2/29] caught  FAILED tests/test_paraphrase.py::test_the_held_out_index_is_outside_the_training_pool EVAL_INDEX points inside the training pool
+[ 3/29] caught  FAILED tests/test_paraphrase.py::test_the_held_out_index_is_outside_the_training_pool training pool includes the held-out phrasing
+[ 4/29] caught  FAILED tests/test_paraphrase.py::test_paraphraser_is_memoized_and_stays_inside_the_train draw always returns the same phrasing
+[ 5/29] caught  FAILED tests/test_paraphrase.py::test_a_phrasing_equal_to_the_suite_wording_is_an_error_ suite suffix never stripped (lookup fails, or trains on eval wording)
+[ 6/29] caught  FAILED tests/test_paraphrase.py::test_boolq_keeps_a_suite_suffix_that_happens_to_end_its boolq content taken from the stripped core, editing the row's question
+[ 7/29] caught  FAILED tests/test_paraphrase.py::test_mnli_frame_varies_and_hypothesis_is_verbatim mnli hypothesis keeps the frame tail
+[ 8/29] caught  FAILED tests/test_paraphrase.py::test_mnli_parts_rejects_a_foreign_shape - Fa... mnli_parts passes a foreign shape through
+[ 9/29] caught  FAILED tests/test_paraphrase.py::test_unknown_instruction_fails_loud_instead_of_passing_ unknown schema passes the suite wording through
+[10/29] caught  FAILED tests/test_paraphrase.py::test_a_phrasing_equal_to_the_suite_wording_is_an_error_ equality guard against the suite wording removed
+[11/29] caught  FAILED tests/test_paraphrase.py::test_out_of_range_index_is_an_error - IndexE... variant index range check removed
+[12/29] caught  FAILED tests/test_paraphrase.py::test_paraphrase_touches_only_the_instruction options list shared instead of copied
+[13/29] caught  FAILED tests/test_paraphrase.py::test_paraphrase_questions_returns_exactly_the_requested paraphrase_questions leaves the instruction alone
+[14/29] caught  FAILED tests/test_paraphrase.py::test_paraphraser_is_memoized_and_stays_inside_the_train source_of returns the signature, not the source
+[15/29] caught  FAILED tests/test_paraphrase.py::test_phrasings_vary_the_tail_as_well_as_the_question tail axis dropped: nine phrasings, one ending
+[16/29] caught  FAILED tests/test_paraphrase.py::test_content_frames_vary_their_tail_too - As... content frames lose their suffix axis
+[17/29] caught  FAILED tests/test_paraphrase.py::test_paraphraser_warm_reaches_every_schema_in_the_split warm reports zero sets built
+[18/29] caught  FAILED tests/test_paraphrase.py::test_paraphraser_is_memoized_and_stays_inside_the_train draws stop being counted
+[19/29] caught  FAILED tests/test_paraphrase_wiring.py::test_each_row_is_reworded_under_its_own_source row batch ignores the paraphraser
+[20/29] caught  FAILED tests/test_paraphrase_wiring.py::test_each_row_is_reworded_under_its_own_source row batch draws under the first row's source
+[21/29] caught  FAILED tests/test_paraphrase_wiring.py::test_drawn_phrasing_is_what_gets_tokenized tensors built from the pre-paraphrase items
+[22/29] caught  FAILED tests/test_paraphrase_wiring.py::test_worst_case_prices_the_longest_phrasing_not_ budget priced at the first phrasing
+[23/29] caught  FAILED tests/test_paraphrase_wiring.py::test_worst_case_prices_the_longest_phrasing_not_ budget priced at the shortest phrasing
+[24/29] caught  FAILED tests/test_paraphrase_wiring.py::test_worst_case_prices_the_longest_phrasing_not_ base question list left at its true length
+[25/29] caught  FAILED tests/test_paraphrase_wiring.py::test_evaluate_scores_the_held_out_phrasing evaluate ignores the requested phrasing
+[26/29] caught  FAILED tests/test_paraphrase_wiring.py::test_held_out_eval_reads_the_reserved_index held-out eval reads a training index
+[27/29] caught  FAILED tests/test_paraphrase_wiring.py::test_trainer_flag_produces_a_held_out_metric[ext shared-set path stops drawing
+[28/29] caught  FAILED tests/test_paraphrase_wiring.py::test_paraphrase_off_leaves_the_suite_wording_alo --paraphrase off still paraphrases
+[29/29] caught  FAILED tests/test_paraphrase_wiring.py::test_long_context_refuses_the_flag - ... long-context + paraphrase runs instead of refusing
+
+29/29 mutations caught
+EXIT=0 (from /tmp/sweep/summary.txt, the wrapper that ran it)

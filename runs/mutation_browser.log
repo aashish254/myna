@@ -50,4 +50,4 @@ baseline copy: green (7 checks)
             FAIL  every fetched file is the file on disk, and the total is their sum (4.15 MiB across 6 files): printed 4.15 MiB, di
 
 24/24 mutations caught
-exit=0
+EXIT=0 (watched to completion 2026-09-28 by /tmp/sweep3.zsh, 60 s wall)

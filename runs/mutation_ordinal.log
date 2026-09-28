@@ -40,3 +40,4 @@ baseline copy: green (1 test file)
             FAILED tests/test_ordinal_loss.py::test_build_row_batch_marks_score_cells_and_leaves_padding_false
 
 19/19 mutations caught
+EXIT=0 (watched to completion 2026-09-28 by /tmp/sweep2.zsh, 100 s wall)

@@ -335,6 +335,21 @@ ROWS = [
         "clamping `--batch 32` against the pinned 9.0 GiB, so the row also witnesses "
         "the T4 regime."),
 
+    row("v1b-kaggle-dev", "SPEC §9.41 (the dbpedia14 dev→test delta) · TODO 9h",
+        "uv run python -m myna.report --split dev --metrics runs/v1b_kaggle_3600b.metrics.json "
+        "--out runs/v1b_kaggle_3600b.dev.report.json > runs/v1b_kaggle_3600b.dev.report.log",
+        HERE,
+        ["runs/v1b_kaggle_3600b.dev.report.json", "runs/v1b_kaggle_3600b.dev.report.log"],
+        [("runs/v1b_kaggle_3600b.dev.report.json", '"acc": 0.5355719231874607'),
+         ("runs/v1b_kaggle_3600b.dev.report.json", '"sets": 37'),
+         ("runs/v1b_kaggle_3600b.dev.report.log",
+          "dbpedia14/category    choice   116   37 0.647")],
+        "The dev half of the same committed metrics file, so a dev→test delta has a witness "
+        "on both sides. `\"sets\": 37` beside `n: 116` is the point of the row: 36 of those "
+        "sets hold one row, which is why the per-set roll-up of this cell (0.5324, and 0.2047 "
+        "on test) is a variance amplifier rather than a measurement, and why §9.41's numbers "
+        "are the row-weighted ones — 0.647 dev, 0.457 test, 0.5356 macro."),
+
     row("kaggle-wall-clock", "KAGGLE_LAUNCH_INSTRUCTIONS.md cost table · kaggle/campaign.py",
         'grep -E "^step" runs/v1b_kaggle_3600b.train.log | tail -1',
         HERE,

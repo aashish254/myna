@@ -188,4 +188,4 @@ baseline copy: green (1 test file)
             FAILED tests/test_report.py::test_the_json_report_carries_the_clip_and_brier_as_fields
 
 93/93 mutations caught
-exit 0
+EXIT=0 (watched to completion 2026-09-28; /tmp/sweep/summary.txt: "EXIT=0 -> 93/93 mutations caught", uncapped part-1 loop)

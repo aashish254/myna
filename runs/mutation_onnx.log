@@ -46,4 +46,4 @@ baseline copy: green (1 test file)
             FAILED tests/test_onnx_export.py::test_a_question_too_wide_for_the_graph_fails_instead_of_passing_on_nothing
 
 22/22 mutations caught
-exit=0
+EXIT=0 (watched to completion 2026-09-28 by /tmp/sweep2.zsh, 1200 s wall)
