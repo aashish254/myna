@@ -2263,3 +2263,13 @@ Kept permanently, because the value of this project's claims is that they surviv
    a comparison test must assert the raw values on both sides *and* the sameness of everything else.
    The battery's own wall time is also now stated as bounded-by-polls rather than stamped, because this
    driver was launched without `ts` per line — §9.40's lesson one step further out, into the wrapper.
+49. **A commit subject can be a published figure too, and this one was wrong the moment it was
+   typed.** `e9c73c1` opens `10c: §7.1 paid against the launcher`. 10c is the GPU pair, and it is
+   still unspent and still `- [ ]` in both §5 and TODO — what that commit did was finish 10b's gate
+   obligation for the launch path. Nothing in the tree was wrong: the plan's checkboxes, the
+   registry row and the launch doc all say the pair has not run. The record that drifted was the
+   history, and history is the one artifact no `--check` reads. Not amended (a local rewrite is
+   still a rewrite of something already cited); corrected here, so anyone reading `git log` and
+   then §5 finds this entry between the two. The rule: **a tick ID in a subject is a claim about
+   the plan's state, so it gets read back against the checkbox before the commit is made** — the
+   same §9.44 discipline, applied one file earlier.
