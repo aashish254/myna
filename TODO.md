@@ -650,6 +650,63 @@ So every "train" item below is split into *prepare/verify the Kaggle path locall
       line read from the run, because all three of the session's background waiters fired early on a
       still-live `ps`), `make gates` 7/7 at **3 met / 3 not met / 1 open**, `make repro` **27/27 rows,
       58 figures**. Logged as **§9.42**.
+- [x] **10a** Tier 0's diagnosis turned into a price: the label prior *is* the best-scoring policy
+      the rows support. *(this tick)*
+      §9.47 found eight of sixteen cells answering from an association, three of them agnews `noul`
+      cells emitting one label on every test row and finishing on their own majority floor —
+      0.6531 / 0.8085 / 0.7778. The reason was readable off the train split without a model: those
+      four cells carry natural majorities of **0.7390–0.7545**, so a constant answer scores ~0.75
+      and nothing the rows support scores better. Flattening the marginal a mini-batch is drawn from
+      drops the constant answer to ~0.5, which is the whole mechanism of `--anti-prior`.
+      Logged as **§9.48** alongside the two claims this tick re-derived out of the artifacts (the
+      "ten of sixteen" count and the "~31 GPU hours" price of the pair).
+- [x] **10b** `--anti-prior on|off` in the row batcher, its reach measured on the shipped rows, and
+      its gate at 41/41. *(this tick)*
+      Each row is weighted by the product, over the questions it answers, of `1 / (share of its gold
+      label inside its (source, question) cell)`, rescaled so each source's weights sum to its row
+      count — the task mix cannot move. Only cells at or above `ANTI_PRIOR_SKEW = 0.55` are treated
+      (six of sixteen). `bench/anti_prior_audit.py` runs the *real* `draw_row_batch` at the
+      *published* dose (batch 10, 2,048 cells/forward, 8 sets, 3,600 updates, seed 0), both arms plus
+      `--compare` over every `COMBINE` rule, and `runs/anti_prior_audit.log` is the witness: the six
+      flatten to 0.6184 / 0.6278 / 0.6247 / 0.6172 / 0.5023 / 0.5095, the control arm's largest move
+      is +0.0077, per-source weight sums match their row counts to **0.00e+00**, and the arms' drawn
+      source shares differ by at most **0.13 pts** — the only part of the mix that belongs to the
+      weights (banking77 sits 5.18 points under its row share in *both* arms: that is
+      `--max-q-cells`, and it is why a single-arm mix table would have been a bug). `prod` is the
+      minimum in all six columns at this dose, which is the measured reason it is the shipped rule;
+      at 40 updates × 2 sets it is the minimum in **1 of 6**, so the ranking test reads the committed
+      witness and the reduced-dose test asserts only table-vs-payload.
+      The two limits are in the artifact, not just here: flattening the *train* marginal does not
+      flatten the *test* marginal the floors are computed from, and row-level weighting cannot hold a
+      cell fixed when its rows carry several labels — nine of the ten untargeted cells flatten anyway
+      (contrastive/decision 0.507 → 0.337) and **yelp/rating sharpens** (0.203 → 0.259) because its
+      weight is computed on `recommend`. Reach over Tier 0's eight is three.
+      Suite **508 passed / 1 skipped in 275.52 s** (the count read off the run, and the +42 over
+      §3.4's stale 466 measured by collecting both trees and diffing per-file totals: 35 new in
+      `test_anti_prior.py`, 3 in `test_kaggle_bundle.py`, 4 in `test_cli_help.py`), `make repro`
+      **29/29 rows, 69 figures**, `make gates` 7/7 at **3 met / 3 not met / 1 open** — the new
+      registry row is `anti-prior-audit`, and §3.4's map now carries the harness and its battery.
+      The three claims this tick had to retract had already shipped: **"ten of sixteen"** (§9.47's
+      count is eight), **"~31 GPU hours"** for the pair (that is the 10k lane; this pair is 11.2),
+      and the flag's help text promising that the ten untargeted cells "change nothing" — the audit
+      measures nine moving and one sharpening.
+      `bench/mutation_anti_prior.py`: **41/41 caught** over three passes (25/28 → 28/28 → +13
+      printed-face mutants, all 13 dying first try — §9.46's lesson inverted, because those tests
+      assert against output `main()` produces inside the test), baseline green on 35 tests, 36 min
+      (`runs/mutation_anti_prior.log`). And the reason this tick exists at all: `kaggle/run.py` had
+      never plumbed the flag and `campaign.py` had no cell for it, so 10c was unexecutable from the
+      staged bundle — the launcher gap §9.48 is named for.
+- [ ] **10c** The GPU pair `antiprior_off_s0` / `antiprior_on_s0` — **~11.2 GPU-hours**, unspent, and
+      the user's call.
+      Two arms × 3,600 updates at the measured 5.618 s/update (`kaggle-wall-clock`). Printed by
+      `python kaggle/campaign.py --include-dead`; `--list` labels both *open, unspent* rather than
+      borrowing the ablation cells' *measured, not resolved*. The control is run, not borrowed:
+      0.4893 came off the `myna-code` version before any of the data-loader work, so judging one new
+      arm against it would price the flag *and* the code drift. `tests/test_kaggle_bundle.py` asserts
+      the two generated cells are byte-identical after normalizing the one flag value, so no third
+      variable can enter the pair later. Default stays `off` at every layer.
+      What is *not* promised: that removing the shortcut makes the model read. If the macro does not
+      move, the finding is that the constant answer was never what the training signal was buying.
 - [ ] **9d** `banking77/intent` and `mnli/relation` are inside or outside G1's scope — a decision
       for the user, recorded so a later run does not silently average them back in.
       **Priced on 2026-09-28 so the call has numbers beside it** — `uv run python -m

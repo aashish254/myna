@@ -71,6 +71,7 @@ step  3599  loss 0.988  ema 1.262  sets/update 8  20225s
 
 | run | updates | GPU-hours |
 |---|---|---|
+| the batching pair | 3,600 | ~5.6 each, ~11.2 for the pair — the cheapest open question |
 | the ablation arms | 3,600 | ~5.6 each, ~22.4 for the four |
 | the extended arms | 10,000 | ~15.6 each, ~31.2 for the pair |
 
@@ -127,6 +128,24 @@ cells is 2/3 on dev and 1/3 on test. The verdict in `runs/ordinal_ab.json` is *n
 shown*, and the four ablation cells are therefore not in the default lane. They cost
 ~22.4 GPU-hours to re-ask a question whose answer at this dose is already on file;
 `--include-dead` prints them if you decide the dose is what was wrong.
+
+**Open — the batching question, and the cheapest one.** `--anti-prior` (SPEC §5 P10) draws
+each mini-batch by inverse label prior instead of by row share. Its *input* side is already
+measured on the shipped rows without a model, in seconds on CPU:
+
+```
+uv run python bench/anti_prior_audit.py --compare --out runs/anti_prior_audit.json
+```
+
+That prints the six skewed cells flattening — agnews 0.739–0.755 → 0.617–0.628, boolq 0.624
+→ 0.502, yelp/recommend 0.605 → 0.510 — with the per-source weight sums matching their row
+counts to 0.00e+00, so the mix of tasks does not move. What it cannot say is whether
+removing the shortcut makes the model *read*, because the floors cells are judged against
+come from the untouched test split. That is exactly what the pair `--include-dead` prints —
+`antiprior_off_s0` / `antiprior_on_s0`, both seed 0 at 3,600 updates, differing in one flag,
+~11.2 GPU-hours — and it is why the control is run rather than borrowed: 0.4893 came off the
+bundle before any of the data-loader work, so a lone treated arm would price the flag *and*
+the code drift.
 
 **Not shippable as a cell — long context and "calibration".** The old campaign
 offered `--context-len 16384` and `--calibrate`. `kaggle/run.py` accepts neither: the

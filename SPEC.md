@@ -70,7 +70,7 @@ Quote the ratio, never the millisecond figure.
 | **G4** | Long-context is *correct*, not just cheap | needle-style typed decision ≥ 0.90 at 4k and ≥ 0.85 at 16k state | **not met, and not yet measurable on this box.** v0's needle curve (`runs/needle_myna-v0.md`) reads 0.188 at 128 tokens against a 0.167 floor — at chance on the shortest rung — so the longer rows are decay of nothing, and the harness now says so itself rather than printing a table (§9.25). The 16k *state* is measured and cheap (§9.22); the 16k *decision* needs the long-context checkpoint, which is 7b / `KAGGLE` |
 | **G5** | Useful confidence, with abstention | risk/coverage curve on `calibration.jsonl`; ≥ 0.95 accuracy at ≥ 60% coverage on banking77 + dbpedia14 + trec | **not met on the level, met on the machinery.** Abstention ships: `Myna(ckpt, abstain_below=t)` withholds the commitment and prints the measured reason, the fallback seam labels every answer with the engine that committed, and the curve is a committed artifact (`runs/risk_coverage.md`, 448 rows / 568 questions). Accuracy on v0 climbs **0.349 → 0.535** as coverage falls 1.00 → 0.20 — the confidence ranks the answers, on a checkpoint that cannot do the task — and setting the 0.693 floor on the engine abstains on **227** questions where the curve withheld **227**. But **no rung reaches 0.95** (max 0.596, at 10% coverage) and G5's own three sources sit at 0.000 / 0.025 / 0.150, so the pass needs the `KAGGLE` checkpoint (§9.24) |
 | **G6** | No regression on what already worked | synthetic v0 test ≥ 0.94 | open — v0's measured test macro is **0.9523** (`runs/train-v0.log`, macro of its nine `=== test ===` rows), so the level clears today; the gate stays open until a v1 checkpoint is run against it, and a draft of this row cited "0.951", which no artifact prints (§9.30) |
-| **G7** | Reproducibility | one command per result, seeds pinned, witness JSONs committed, `pytest` green | **met, as a binding rather than a rebuild.** `bench/reproduce.py` holds 28 registry rows, each binding one published table cell to one command and one committed witness, and `make repro` re-reads the 61 quoted figures out of those artifacts rather than out of the prose; the python commands among those rows are checked against the tool behind them — its `--help` must still print every flag the row publishes (§9.43); the seeds live inside the printed commands (`--seed 0`, `--seeds 0 1`), not in sentences about them. What this does **not** say: no target *executes* the registry end to end — 19 rows re-run on this box, 3 retrain a checkpoint, 2 need a laya checkout on `PYTHONPATH`, 3 need Google Chrome and 1 is `KAGGLE` — which is why TODO 8b stays unticked and why G7 is discipline rather than a one-command rebuild. Every count in this cell is now read back against `ROWS` by `bench/gates.py`, so this row — the table's one hand-copied cell — goes red rather than quietly stale (§9.44) |
+| **G7** | Reproducibility | one command per result, seeds pinned, witness JSONs committed, `pytest` green | **met, as a binding rather than a rebuild.** `bench/reproduce.py` holds 29 registry rows, each binding one published table cell to one command and one committed witness, and `make repro` re-reads the 69 quoted figures out of those artifacts rather than out of the prose; the python commands among those rows are checked against the tool behind them — its `--help` must still print every flag the row publishes (§9.43); the seeds live inside the printed commands (`--seed 0`, `--seeds 0 1`), not in sentences about them. What this does **not** say: no target *executes* the registry end to end — 20 rows re-run on this box, 3 retrain a checkpoint, 2 need a laya checkout on `PYTHONPATH`, 3 need Google Chrome and 1 is `KAGGLE` — which is why TODO 8b stays unticked and why G7 is discipline rather than a one-command rebuild. Every count in this cell is now read back against `ROWS` by `bench/gates.py`, so this row — the table's one hand-copied cell — goes red rather than quietly stale (§9.44) |
 
 **This column is not a claim.** `make gates` (`bench/gates.py --check`) re-reads each cell's
 leading verdict word, the registry row that gate cites, and the named field inside a committed
@@ -165,6 +165,11 @@ unless the unfiltered row reproduces the report to the digit) and its gate
 `mutation_kaggle_bundle.py` (the entrypoint + packager gate, 42 mutations — and §9.40 is the reason
 its catching test is capped to one update rather than a training run), `check_python311.py` (the 3.11 witness
 that runs the package on a real 3.11 interpreter and exits 2 rather than skipping),
+`anti_prior_audit.py` (the P10 measurement without a model: both arms drawn through the *real*
+batcher at the *published* dose, per-source weight sums against their row counts, the between-arm
+mix column that is the only half belonging to the weights, and `--compare` over every `COMBINE`
+rule) and its gate `mutation_anti_prior.py` (41 mutations; 28 over the trainer's drawer and
+weights, 13 over what the harness *prints*, which is §9.48's point),
 `bench_latency_matched.py` (the 4a/4b harness: one process, both engines, matched inputs, `flock`ed
 output, and since 8a a `meta` that carries its own argv and the box's load average at the end of
 the run) and its gate `mutation_latency_matched.py` (34 mutations), `risk_coverage.py` (the 5b
@@ -184,13 +189,18 @@ and which byte figure the manifest quotes). `browser_g3.mjs` measures the artifa
 `src/myna/onnx_export.py` is the G3 export path — two fixed-width graphs, the chained-scan
 composition check, and a parity report — with its gate `bench/mutation_onnx.py` (22 mutations).
 `kaggle/`: `run.py` (one-command entrypoint: corpus discovery, the measured flag set, `--resume` only
-when a snapshot exists, tee to `train.log`, `run.json`, non-zero propagation), `package_dataset.py`
+when a snapshot exists, tee to `train.log`, `run.json`, non-zero propagation), `campaign.py`
+(the notebook cells: every path it emits checked against the box, every flag checked against
+`run.py`'s `--help`, the GPU-hours priced off `runs/v1b_kaggle_3600b.train.log`, and an A/B pair
+that differs in exactly one flag), `package_dataset.py`
 (stage the pilot corpus, verify every byte against the corpus, print the upload command, never run
 it), `requirements.txt`.
-`tests/`: **466 passing + 1 skipped** — the skip is the KEV-gated parity test, green wherever
+`tests/`: **508 passing + 1 skipped** — the skip is the KEV-gated parity test, green wherever
 `kev` is installed. (A §3.4 map is present tense, so this count is due whenever the suite moves;
-it read **312** until tick 9j, which added the scope harness's 7 tests and 3 in
-`test_cli_help.py`. §9.44 is the rule and §9.46 is the tick that found the stale copy.)
+it read **466** until tick 10b, which added the P10 lane's **42** — 35 in `test_anti_prior.py`, 3 in
+`test_kaggle_bundle.py`, 4 in `test_cli_help.py` — counted by collecting the two trees and diffing
+the per-file totals rather than by subtracting remembered numbers (§9.44's rule, and §9.46 is the
+tick that found the stale copy this sentence is the successor to).)
 The 8a label pass added `test_train_logging.py` (4: `split_report`'s four
 figures pinned, a lopsided split distinguishable from an even one at the same total, the empty
 group set logging rather than raising) and one end-to-end `--no-laya` case in
@@ -1066,6 +1076,83 @@ what this repo can act on without the artifact:
       applied to ourselves). `ce` stays the
       default in `kaggle/run.py`'s `DEFAULTS`, which is what keeps every published number standing. Re-judge the four arms with
       `python bench/ordinal_ab.py --ab-dir /tmp/ab2`.
+
+### P10 — The prior the rows pay for a constant answer *(10a diagnosed from Tier 0, 10b built, audited and mutation-checked 41/41 (§9.48); 10c is the GPU pair, priced and unrun)*
+
+P9 named three defects from accuracies, and an accuracy cannot say *which input* the answer came
+from. Tier 0 (§9.47) ablated the inputs on the committed V1-B checkpoint and eight of decision-v2's
+sixteen cells turned out not to read the state at all — swapping it moves their accuracy by ≤0.001 —
+and three of those eight are agnews `noul` cells that emit one label on *every* test row and finish
+exactly on their own majority floor (0.6531 / 0.8085 / 0.7778). The cheapest mechanistic reason the
+training data offers for a constant answer is the label prior, and unlike 9d's scope call that part
+is measurable **without a model**:
+
+- [x] **10a** The shortcut is the best-scoring policy the rows support. agnews' train marginal is
+      **0.7390–0.7545** inside its four `noul` cells, so a cell that answers one label always is
+      worth ~0.75 — more than anything a constant predictor can be worth against a flat prior, and
+      the same order as the 0.739–0.755 the cells finished on. `--anti-prior` (10b) flattens the
+      marginal the mini-batch is drawn from, which makes the constant answer worth ~0.5. **What
+      this is not:** a claim that the model will then read. It removes a shortcut; it does not add
+      an ability, and if removing the shortcut does not move the macro, the reading is that the
+      association was never the training signal's fault. The floor the report judges cells against
+      is the untouched *test* split's, and this lever does not move it — see 10b's limits.
+- [x] **10b** `--anti-prior on|off` in `myna.train`, default **off**. Each row is weighted by the
+      product, over the questions it answers, of `1 / (share of its gold label inside its
+      (source, question) cell)`, and the weights are rescaled so every source's sum equals its row
+      count — the task mix cannot move, only the answer histogram inside each cell can. Only cells
+      whose natural majority reaches `ANTI_PRIOR_SKEW = 0.55` are treated: six of sixteen.
+      `bench/anti_prior_audit.py` prices all of it on the shipped rows, through the *real* batcher
+      (`myna.train.draw_row_batch`) at the *published* dose — batch 10, 2,048 question cells per
+      forward, 8 sets per update, 3,600 updates, seed 0, both arms in one process:
+
+      ```bash
+      uv run python bench/anti_prior_audit.py --compare --out runs/anti_prior_audit.json
+      ```
+
+      `runs/anti_prior_audit.log` is the witness. The six treated cells flatten as designed —
+      is_business 0.7545 → **0.6184**, is_sports 0.7483 → **0.6278**, is_scitech 0.7467 → **0.6247**,
+      is_world 0.7390 → **0.6172**, boolq/answer 0.6243 → **0.5023**, yelp/recommend 0.6055 →
+      **0.5095** — while the control arm reproduces the natural marginals (largest move +0.0077).
+      The two guards that make the rest of the table mean something: per-source weight sums equal
+      their row counts to **worst relative deviation 0.00e+00**, and the arms' drawn source shares
+      differ by at most **0.13 points**. That last column is the one that belongs to the weights;
+      the gap between a source's *row* share (9.15 pts) and its drawn share in *both* arms —
+      banking77 sits at 3.97 either way, **−5.18** — belongs to `--max-q-cells` skipping rows whose
+      question branch would blow the budget, and is why reading a single arm's mix as an effect
+      would have been a bug. `--compare` draws every rule in `COMBINE` and `prod` is the minimum in
+      all six columns, which is the measured reason it is the shipped rule; mean/max/geo/sum stay in
+      `COMBINE` only so the table stays reproducible. **The trap this tick found:** at a reduced
+      dose (40 updates × 2 sets) `prod` is the minimum in **1 of 6** columns and `mean` reads 0.8947
+      on a cell whose prior is 0.7390 — a ranking claimed from a short run is a claim about the
+      seed, so the ranking test reads the committed witness, not a cheap run.
+      Two limits the artifact states rather than hides. (i) **Nothing here is an accuracy claim**:
+      flattening the train marginal does not flatten the test marginal, and the floors cells are
+      judged against come from the test split. (ii) **Row-level weighting cannot hold a cell fixed
+      when its rows carry several labels.** Of the ten cells the skew threshold does not target,
+      nine flatten anyway — contrastive/decision 0.507 → 0.337, down to its own 1/3 uniform, −0.163
+      — and **one sharpens**: yelp/rating 0.203 → 0.259, +0.055, because a yelp row answers `rating`
+      and `recommend` at once and these weights are computed on the other question. And the reach
+      over Tier 0's eight is three: the other five (amazon/stars, banking77/intent,
+      contrastive/decision, mnli/relation, sst5/sentiment) are already flatter than 0.55 in their own
+      train marginal, so an inverse-prior re-weighting has almost nothing to remove for them. If the
+      shortcut there is a label prior, it is not this split's majority.
+      `bench/mutation_anti_prior.py` holds the harness's printed face: **41 mutants, 41 caught, exit
+      0** (`runs/mutation_anti_prior.log`), and §9.48 is what that pass taught — including that
+      `kaggle/run.py` had never plumbed the flag, so the whole lane below was not executable from
+      the staged bundle.
+- [ ] **10c** The GPU pair: `antiprior_off_s0` / `antiprior_on_s0` in `kaggle/campaign.py`
+      (`--include-dead`; `--list` labels both *open, unspent*). Two arms × 3,600 updates at the
+      measured 5.618 s/update (§2.1's `kaggle-wall-clock` row) is **~11.2 GPU-hours** of the 30
+      h/week free quota — the cheapest mechanism-level question in the repo, and still the user's
+      call, so the box is not run here. The control is *run*, not borrowed, because 0.4893 came off
+      the `myna-code` dataset version as it stood before any of the data-loader work landed on this
+      branch: judged against that number a difference would price the flag *and* the code drift,
+      judged against a fresh `off` arm it prices the flag. Both arms keep `--score-loss ce`, `--seed
+      0`, `--stop-factor 3.0`, `--save-every 250` and the same `--free-gib` pin; `tests/test_kaggle_bundle.py`
+      asserts the two generated cells are byte-identical after normalizing the one flag value, so a
+      third variable cannot enter the pair later. `off` stays the default at every layer
+      (`DEFAULTS["anti_prior"]`, every existing cell, `train.py`'s own default), which is what keeps
+      every published number standing.
 
 ---
 
@@ -2063,3 +2150,100 @@ Kept permanently, because the value of this project's claims is that they surviv
    spots — they pin the numbers that were interesting and skip the plumbing that decides what gets
    printed. Read a battery's survivors by which half of the file they sit in: 8/8 in the pure
    function and 0/13 everywhere else is a sentence about the tests, not about the mutants.**
+47. **Tier 0 read the trained model's inputs, and half of decision-v2 never reads the state.**
+   P9's three defects were named from accuracies, and an accuracy cannot say *which input* the
+   answer came from — while three pillars of the architecture say it should be recoverable: the
+   probe reads the question, the option spans carry the labels, the state carries the evidence.
+   `bench/diag_question_ablation.py` scores the committed V1-B test split six ways, one forward
+   pass per arm per row, through `myna.train.build_batch` and `evaluate()`'s own chunking, with the
+   roll-up imported rather than restated (§9.41) — so `as-scored` *is* the statistic G1 was judged
+   on, and the guard is that it must reproduce the report's 716 per-question-set accuracies key for
+   key before anything prints. It did: **0.4893271976, 716 keys, 0 single-row tie flips**, in
+   **186 s of CPU for all six arms** — no GPU, no retrain, no new data. Macros, with `Δ` against
+   `as-scored` (floor 0.4331, uniform-floor macro 0.3321): `blank-instruction` **0.3341 / −0.1553**,
+   `permute-instruction` **0.4927 / +0.0034**, `cross-source-instruction` **0.4364 / −0.0529**,
+   `blank-options` **0.2669 / −0.2225**, `swap-state` **0.4173 / −0.0720**.
+   Three readings, each forced by a named arm. (i) **Option descriptions are the answer channel.**
+   Blanking them — same `K` spans, text replaced by `option 1..K`, so the pointer head still gets a
+   span per label — costs more than any other arm and lands *below* the uniform floor, 0.2669
+   against 0.3321: the head is not reading position. That puts a committed artifact behind P9's
+   "the mechanism is not broken, the cost function is", and it does not retire the sentence's
+   caveat — the option-*order* permutation magnitudes that sentence declines to quote are still
+   uncommitted, because Tier 0 asks a different question of the same spans (§9.30 is per figure, not
+   per conclusion). (ii) **The cue is read as a bag, per source.** Blanking it collapses the model
+   (−0.1553), permuting it within a source changes nothing (+0.0034) because nine sources print one
+   cue text on every row — which is why every arm also prints how many strings it actually rewrote,
+   260/716 for that one — and substituting a *cross-source* cue of the same option count costs
+   −0.0529. (iii) **Half the cells do not read the state at all.** Eight of sixteen print
+   `state-Δ` of exactly **+0.000**, and all eight also commit their most-predicted label to a larger
+   share of rows than the gold majority holds: an association, not evidence. Three are `noul` cells
+   emitting one label on *every* row and finishing on their own floor to four decimals
+   (agnews/is_scitech 0.6531, agnews/is_sports 0.8085, agnews/is_world 0.7778); the stateless eight
+   are those three plus amazon/stars, banking77/intent, contrastive/decision, mnli/relation and
+   sst5/sentiment. The arm is not a no-op — 1,164 of 1,176 states were rewritten, and it moves the
+   other eight cells, six of them by more than 0.06 (dbpedia14/category −0.388, imdb/positive
+   −0.275, yelp/recommend −0.250, yelp/rating −0.137, trec/answer_type −0.078, agnews/topic
+   −0.060).
+   One count this entry published first and then re-derived is corrected here rather than deleted:
+   an earlier draft said **ten** of the sixteen cells answer from an association. No rule over the
+   committed distributions yields 10 — **8** at or below their own majority floor, **3** constant
+   predictors, **13** over-emitting their top label, **8** exactly state-invariant, and that last
+   pair's intersection is **8**, not 10 (§9.44: a count travels with the rule that produces it).
+   Why this is a diagnosis and not a fix. The lever it points at is the input distribution, so it is
+   P10's question, priced there — and priced *small*: three of the stateless eight sit inside the
+   six cells `--anti-prior` reaches, and the other five already carry train majorities below the
+   skew threshold, so an inverse-prior re-weighting has almost nothing to remove for them. The gate
+   stays visibly open: this harness needs `model.pt` from the Kaggle-side checkpoint directory whose
+   *figures* are committed and whose *weights* are not, so it has no registry row and `make repro`
+   cannot re-run it — which is the honest asymmetry, not an omission.
+   The general form: **an accuracy is a claim about an input. Ablate the inputs before buying
+   parameters, and read a per-cell delta's exact zero as a finding rather than as a rounding — a
+   cell whose score does not move when its evidence is replaced is not under-trained, it is not
+   looking.**
+48. **The P10 lever was built, gated 41/41, and nothing on the launch path could pull it.**
+   `--anti-prior` went into `myna.train`, `bench/anti_prior_audit.py` measured what it reaches, and
+   `bench/mutation_anti_prior.py` closed every mutant it had — across three passes: 25/28 caught on
+   the first (the 3 survivors all inside `draw_row_batch`), 28/28 on the second, and after 13 more
+   mutants aimed at what the harness *prints*, **41/41 caught** with a baseline green on 35 tests in
+   53.90 s (`runs/mutation_anti_prior.log`; 36 min for the 41). None of that made the open GPU
+   decision runnable: `kaggle/run.py` — the file the launch docs tell a human to run — had no
+   `--anti-prior`, and `campaign.py` generated cells for the `--score-loss` pair but not for this
+   one, so 10c could only have been executed by editing the staged bundle on the box. The registry
+   could not see the hole either: `--check` asks a tool's `--help` about the flags a row *publishes*
+   (§9.43), and until this tick no row published the audit's command.
+   **What the 13 printed-face mutants taught is §9.46 run backwards.** That entry's finding was
+   that tests written beside a harness inherit its blind spots — 0/13 of `scope_pricing`'s
+   non-arithmetic mutants died. Here all 13 died on the first try, and the difference is the seam:
+   every one of those tests asserts against output `main()` produces *inside the test*, and the
+   scratch repo symlinks `runs/`, so a witness-reading test could not have seen a mutated harness
+   at all. Labeling both arms under the control arm's name, printing the natural majority in the
+   realized column, reading the mix delta off the wrong arm, counting rows per question set so every
+   denominator becomes a set count, and pricing the shared-set batcher instead of the row batcher —
+   each is now a red test.
+   Three claims that had already shipped were corrected the same tick, all by re-deriving them from
+   the artifacts rather than remembering them: **"ten of sixteen cells"** (Tier 0's count is eight —
+   the invariant set and the over-emitting set intersect at 8 and no rule over the committed
+   distributions yields 10, §9.44); **"~31 GPU hours"** for the P10 pair (that is the *10k* paired
+   lane; two arms at the published 3,600 updates cost 2 × 5.618 s/update × 3,600 = **~11.2 h**, and
+   the constant came back to `runs/v1b_kaggle_3600b.train.log`'s `step 3599 … 20225s`); and the
+   flag's own help text, which promised that "on the 10 cells whose prior is already flat it changes
+   nothing" — the audit measures nine of those ten moving anyway (down to 0.163, contrastive/decision
+   0.507 → 0.337) and **one sharpening** (yelp/rating 0.203 → 0.259), because a yelp row answers two
+   questions and the weight is computed on the other one. A sentence about what a mechanism does
+   *not* reach is as much a claim as a number, and was as unverified.
+   Two more, about the record rather than the measurement. **`EXIT=0` in that log is inferred, not
+   watched** — the battery ran under `nohup`, the shell that would have echoed `$?` was gone, and
+   the pass body was written from the absence of a `SURVIVED:` line. Correct as reasoning, wrong as
+   an instrument: a battery is a measurement, so it gets launched `; echo EXIT=$? >> log`. And the
+   dedupe: `tests/test_anti_prior.py` defined **four test functions twice** — 109 duplicated lines,
+   two byte-identical blocks — because a rewrite this session inserted the corrected block instead
+   of replacing the old one. Python kept the last definition, so the file collected 35 tests while
+   defining 39, and the two dead copies still *looked* like gates: one of them carried the
+   reduced-dose ranking assertion this tick had deliberately removed, i.e. the file's visible face
+   contradicted its shipped reasoning. `tests/test_kaggle_bundle.py` now fails on a duplicate `def`
+   anywhere in `src/`, `tests/`, `bench/` or `kaggle/`, which is the class, not this instance.
+   The general form: **a lever the trainer has and the launcher lacks is not a feature, it is prose
+   — plumb it through the entrypoint, generate the paired cell, and give the harness a registry row
+   in the same tick, because the gate that asks the tool about published flags cannot see a flag
+   nobody published. And a green suite is not a claim that the suite is the one you think it is:
+   count definitions as well as collected tests.**

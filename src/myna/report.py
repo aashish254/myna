@@ -44,7 +44,7 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
-from .real_data import load_split
+from .real_data import load_split, source_of_group
 
 #: §4.2's floor macro is pooled over cells with at least this many rows, so a cell
 #: of 2 rows cannot join the average that decides G1.
@@ -52,10 +52,10 @@ MIN_CELL_ROWS = 30
 
 
 def _source_of(group_key: str) -> str:
-    return group_key.split("#", 1)[0]
+    return source_of_group(group_key)
 
 
-def cell_stats(groups: dict) -> dict:
+def cell_stats(groups: dict, with_labels: bool = False) -> dict:
     """{group_key: (questions, examples)} -> {(source, qname): cell}.
 
     Two floors, both read off the rows rather than from a constant:
@@ -69,7 +69,13 @@ def cell_stats(groups: dict) -> dict:
       whole distribution for that reason, and `main()` prints the mixed cells.
 
     noul is scored by Brier elsewhere, but its gold is still a label index, so the
-    same histogram gives its floor."""
+    same histogram gives its floor.
+
+    `with_labels` keeps the whole per-label histogram on the cell instead of
+    collapsing it to `majority`. It is off by default so every published report
+    carries the same keys; `myna.real_data.balance_weights` asks for it, which is
+    what makes the anti-prior weights and these floors two readings of one
+    aggregation rather than two aggregations that could disagree (§9.41)."""
     out: dict[tuple[str, str], dict] = {}
     for key, (questions, examples) in groups.items():
         source = _source_of(key)
@@ -88,6 +94,8 @@ def cell_stats(groups: dict) -> dict:
         c["options"] = dict(c["options"])
         c["majority"] = (max(labels.values()) / c["n"]) if c["n"] and labels else 0.0
         c["uniform"] = (c["chance"] / c["n"]) if c["n"] else 0.0
+        if with_labels:
+            c["labels"] = dict(labels)
     return out
 
 

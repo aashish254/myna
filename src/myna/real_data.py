@@ -14,15 +14,33 @@ form a group of one; `flatten_groups` hands those rows to the per-row batch
 contract instead. Labels become option indices: choice -> position of the
 label key among criteria keys, noul -> 0/1 on ["no", "yes"], score -> the
 level index. Options with no description fall back to the key humanized.
+
+`balance_weights` / `flatten_weighted` sit beside the loaders because the thing
+they measure — the gold-label prior of a (source, question) cell — is a property
+of these rows, not of the sampler that reads them.
 """
 
 from __future__ import annotations
 
 import hashlib
 import json
+from math import exp, log
 from pathlib import Path
 
 from .data import Example, Question
+
+#: A cell whose most common label carries at least this share of its rows has a
+#: prior worth flattening; below it, re-weighting is a rounding error. Measured on
+#: decision-v2/train: the six cells above it are agnews' four `noul` questions
+#: (0.739-0.755) plus boolq (0.624) and yelp/recommend (0.605).
+ANTI_PRIOR_SKEW = 0.55
+
+
+def source_of_group(key):
+    """The group-key contract. `load_split` writes `f"{source}#{sig}"`, so the
+    source is everything before the first `#` — and `myna.report` parses the same
+    key to name its cells, which is why the rule lives here rather than twice."""
+    return key.split("#", 1)[0]
 
 
 def _option_text(key, desc):
@@ -123,6 +141,130 @@ def flatten_groups(groups):
     -- which is what boolq and mnli need, their 300 singleton groups each being
     one row deep."""
     return [(q, ex) for q, exs in groups.values() for ex in exs]
+
+
+def _prod(ts):
+    w = 1.0
+    for t in ts:
+        w *= t
+    return w
+
+
+#: How a row's per-slot inverse frequencies become one weight. Every one of these
+#: was drawn against the shipped pilot by `bench/anti_prior_audit.py --compare`,
+#: which is what picks `prod` (see `balance_weights`); the rest are kept so that
+#: comparison stays runnable through the same function the trainer calls, rather
+#: than through a copy in a scratch file that could drift from it.
+COMBINE = {
+    "prod": _prod,
+    "mean": lambda ts: sum(ts) / len(ts),
+    "sum": lambda ts: float(sum(ts)),
+    "max": max,
+    "geo": lambda ts: exp(sum(log(t) for t in ts) / len(ts)),
+}
+
+
+def balance_weights(groups, combine="prod"):
+    """{group_key: (questions, examples)} -> {group_key: [one weight per example]}.
+
+    `combine` is how a row's per-slot inverse frequencies collapse to one number; it
+    defaults to and ships as "prod".
+
+    The label prior is the thing a model learns when the state does not decide the
+    answer: it answers the cell's most frequent label and collects that share as
+    accuracy. Tier 0 measured it on the trained checkpoint — three agnews `noul`
+    cells emit one label on *every* row and finish exactly at their own majority
+    floor (0.653 / 0.809 / 0.778), and those floors come from a train prior of
+    0.739-0.755. So the shortcut is the most rewarded output the training data
+    offers. Flattening that marginal makes the constant answer worth 0.5 rather
+    than ~0.75, which is the only way the training signal can say "read instead".
+
+    A row's raw weight is the **product** over its questions of `1 / share` of its
+    gold label in that cell — equivalently `exp(-logP(gold labels | cell priors))`,
+    the reciprocal of how predictable the row's whole answer set is from the priors
+    alone. Rows that defy the prior are the ones drawn more often.
+
+    The product was chosen by measurement, not by taste
+    (`bench/anti_prior_audit.py`, 3,600 updates x 8 sets x batch 10 on the shipped
+    pilot train split, same seed per arm). The realized majority of agnews/is_business
+    after the draws: natural 0.7545, mean-of-inverses 0.7112, max-of-inverses 0.7483,
+    geometric mean 0.6997, **product 0.6184**. Mean and sum agree to the digit because
+    a source's rows all carry the same slot count, so their ratio is a constant the
+    per-source rescale below removes anyway. What separates them is that a *marginal*
+    is a joint object: an agnews row answers three questions at once, and only the
+    product prices all three of them together.
+
+    Two things about this shape are load-bearing:
+
+    * The cell is `(source, question name)`, pooled across every question-set of
+      that source — not the tensor group. decision-v2 randomizes option descriptions
+      per row, so nearly all of its 17,112 groups hold one row and a within-group
+      histogram is flat by construction: the prior only exists at the cell level (see
+      `myna.train.group_cycle`'s note on `_signature`).
+    * Weights are then rescaled so each *source* has mean weight 1. Inverse frequency
+      alone also scales by how many labels a cell uses — a 77-intent cell has mean
+      weight ~77 and a binary one ~2 — so a naive draw would send tens of times more
+      gradient to banking77 than to imdb. That is a source-mix change wearing a
+      label-balancing name; this rescale keeps each source the expectation a uniform
+      draw gives it, so the only thing that moves is the label histogram inside it.
+      Checked on the shipped rows by `bench/anti_prior_audit.py`: `sum(w) == n_rows`
+      per source to a relative deviation of 0.00e+00.
+    """
+    priors = cell_priors(groups)
+    if combine not in COMBINE:
+        raise SystemExit(f"balance_weights: unknown combine {combine!r}; "
+                         f"choose among {', '.join(sorted(COMBINE))}")
+    f = COMBINE[combine]
+    raw: dict[str, list[float]] = {}
+    per_source: dict[str, list[float]] = {}
+    for key, (questions, examples) in groups.items():
+        source = source_of_group(key)
+        cells = [priors.get((source, q.name), {}) for q in questions]
+        ws = []
+        for ex in examples:
+            # a row can carry fewer golds than its set has questions: those slots are
+            # unlabelled for this row and stay out of the terms rather than entering as
+            # a factor of 1.0. For the shipped product that is a no-op — 1.0 is its own
+            # identity — but for the mean-style rules it would price a short row as if
+            # it answered every question it was shown. A row with no labelled slot at
+            # all gets weight 1.0: it is not rarer, it is just unpriceable.
+            terms = [1.0 / cells[i][ex.gold[i]]
+                     for i in range(min(len(cells), len(ex.gold))) if cells[i].get(ex.gold[i])]
+            ws.append(f(terms) if terms else 1.0)
+        raw[key] = ws
+        per_source.setdefault(source, []).extend(ws)
+    means = {s: (sum(ws) / len(ws) if ws else 1.0) for s, ws in per_source.items()}
+    return {key: [w / means[source_of_group(key)] for w in ws] for key, ws in raw.items()}
+
+
+def flatten_weighted(groups, combine="prod"):
+    """-> (items, weights) aligned row-for-row with `flatten_groups(groups)`.
+
+    One call site produces both, because the alignment is the contract: `weights[i]`
+    must belong to `items[i]` or the sampler re-weights the wrong rows. Returning
+    them together is what makes passing one without the other impossible."""
+    ws = balance_weights(groups, combine)
+    items, weights = [], []
+    for key, (questions, examples) in groups.items():
+        for j, ex in enumerate(examples):
+            items.append((questions, ex))
+            weights.append(ws[key][j])
+    return items, weights
+
+
+def cell_priors(groups):
+    """{(source, qname): {label_index: share}} — the natural label marginal of
+    every cell in the split, read off the rows.
+
+    One cell per (source, question), which is the unit G1 is scored in, so the
+    prior that anti-prior batching flattens and the majority floor that decides
+    whether a cell beat chance are two readings of the same aggregation.
+    `balance_weights` uses it for the same reason."""
+    from .report import cell_stats  # lazy: report imports this module at top level
+
+    return {(src, name): {lab: n / c["n"] for lab, n in c["labels"].items()}
+            for (src, name), c in cell_stats(groups, with_labels=True).items()
+            if c["n"]}
 
 
 def suite_texts(groups):

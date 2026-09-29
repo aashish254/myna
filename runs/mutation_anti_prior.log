@@ -1,0 +1,87 @@
+baseline copy: green (1 test file) 35 passed in 53.90s
+
+[ 1/41] caught      the cell prior is looked up by question-set, so every lookup misses
+            FAILED tests/test_anti_prior.py::test_minority_rows_outrank_majority_by_the_inverse_share
+[ 2/41] caught      the label histogram is divided by the number of sets, not rows
+            FAILED tests/test_anti_prior.py::test_the_prior_and_the_majority_floor_are_one_aggregation
+[ 3/41] caught      cell_priors asks cell_stats not to keep the histogram
+            FAILED tests/test_anti_prior.py::test_the_prior_is_pooled_across_question_sets_not_within_one
+[ 4/41] caught      cell_stats keeps labels whether or not they were asked for
+            FAILED tests/test_anti_prior.py::test_labels_stay_out_of_the_default_cell_stats
+[ 5/41] caught      a row is weighted by its label's frequency instead of its inverse
+            FAILED tests/test_anti_prior.py::test_minority_rows_outrank_majority_by_the_inverse_share
+[ 6/41] caught      the shipped combination rule drifts from product to max
+            FAILED tests/test_anti_prior.py::test_two_slot_rows_are_priced_by_the_product_not_the_mean
+[ 7/41] caught      the per-source rescale is dropped
+            FAILED tests/test_anti_prior.py::test_a_flat_corpus_gets_flat_weights - Asser...
+[ 8/41] caught      every source is rescaled by the first source's mean
+            FAILED tests/test_anti_prior.py::test_each_source_sums_to_its_row_count - Ass...
+[ 9/41] caught      a row is paired with its group's first weight
+            FAILED tests/test_anti_prior.py::test_flatten_weighted_returns_the_same_rows_with_their_own_weights
+[10/41] caught      the row batcher ignores the drawer it was handed
+            FAILED tests/test_anti_prior.py::test_the_row_batch_draw_flattens_the_marginal
+[11/41] caught      the unweighted path is forced through a drawer
+            FAILED tests/test_anti_prior.py::test_the_row_batch_draw_flattens_the_marginal
+[12/41] caught      the pick is made before the batch-full check, shifting the rng stream
+            FAILED tests/test_anti_prior.py::test_the_off_paths_reproduce_the_pre_flag_sampler_exactly
+[13/41] caught      the unweighted shared-set path samples with replacement
+            FAILED tests/test_anti_prior.py::test_the_unweighted_shared_set_path_shortens_instead_of_repeating
+[14/41] caught      the weighted shared-set path stops dropping repeats
+            FAILED tests/test_anti_prior.py::test_an_over_batch_ask_empties_the_pool_on_the_weighted_path
+[15/41] caught      the draw table is read without scaling by its mass
+            FAILED tests/test_anti_prior.py::test_the_row_batch_draw_flattens_the_marginal
+[16/41] caught      a draw table with no mass is accepted
+            FAILED tests/test_anti_prior.py::test_weighted_draw_refuses_an_empty_or_zero_mass_table
+[17/41] caught      the shared-set path is handed no drawer
+            FAILED tests/test_anti_prior.py::test_trainer_names_the_reach_and_reports_the_draw[shared-set]
+[18/41] caught      the row-batch path is handed no drawer
+            FAILED tests/test_anti_prior.py::test_trainer_names_the_reach_and_reports_the_draw[row-batch]
+[19/41] caught      the shared-set path builds no per-set drawers
+            FAILED tests/test_anti_prior.py::test_trainer_names_the_reach_and_reports_the_draw[shared-set]
+[20/41] caught      the shared-set batches are drawn but never counted
+            FAILED tests/test_anti_prior.py::test_trainer_names_the_reach_and_reports_the_draw[shared-set]
+[21/41] caught      the row batches are drawn but never counted
+            FAILED tests/test_anti_prior.py::test_trainer_names_the_reach_and_reports_the_draw[row-batch]
+[22/41] caught      flat cells are reported as if they had been flattened
+            FAILED tests/test_anti_prior.py::test_the_audit_reports_only_the_cells_the_flag_targets
+[23/41] caught      the drawn majority is read off the natural prior
+            FAILED tests/test_anti_prior.py::test_the_audit_reports_only_the_cells_the_flag_targets
+[24/41] caught      the reach banner denominates in skewed cells instead of cells
+            FAILED tests/test_anti_prior.py::test_trainer_names_the_reach_and_reports_the_draw[row-batch]
+[25/41] caught      the reach threshold is set where no cell can reach it
+            FAILED tests/test_anti_prior.py::test_the_audit_reports_only_the_cells_the_flag_targets
+[26/41] caught      a drawn share out of zero draws is reported as a mix shift
+            FAILED tests/test_anti_prior.py::test_an_audit_that_drew_nothing_reports_nothing_moved
+[27/41] caught      the long-context combination is accepted instead of refused
+            FAILED tests/test_anti_prior.py::test_long_context_refuses_the_flag - Asserti...
+[28/41] caught      metrics.json says on whatever the flag said
+            FAILED tests/test_anti_prior.py::test_off_records_no_mechanism - AssertionErr...
+[29/41] caught      both arms of the audit print under the control arm's label
+            FAILED tests/test_anti_prior.py::test_the_two_arms_are_labelled_and_each_line_belongs_to_its_own_arm
+[30/41] caught      the control arm's label is carried by the treated arm's lines
+            FAILED tests/test_anti_prior.py::test_the_two_arms_are_labelled_and_each_line_belongs_to_its_own_arm
+[31/41] caught      the arm headers lose which arm they name
+            FAILED tests/test_anti_prior.py::test_the_two_arms_are_labelled_and_each_line_belongs_to_its_own_arm
+[32/41] caught      a marginals table prints the natural majority as the realized one
+            FAILED tests/test_anti_prior.py::test_each_arms_table_prints_the_numbers_its_payload_carries
+[33/41] caught      the audit's reach sentence denominates in skewed cells
+            FAILED tests/test_anti_prior.py::test_the_reach_line_counts_every_cell_the_split_has
+[34/41] caught      the mix table's last column becomes treatment minus rows
+            FAILED tests/test_anti_prior.py::test_the_mix_block_prints_the_weights_own_column_and_no_other
+[35/41] caught      the between-arm column prints each arm's own gap to the rows
+            FAILED tests/test_anti_prior.py::test_the_mix_block_prints_the_weights_own_column_and_no_other
+[36/41] caught      rows are counted per question set, so every denominator is a set count
+            ERROR tests/test_anti_prior.py::test_the_two_arms_are_labelled_and_each_line_belongs_to_its_own_arm
+[37/41] caught      the mean batch stat divides by updates instead of mini-batches
+            FAILED tests/test_anti_prior.py::test_the_run_says_how_much_it_drew_and_that_it_claims_no_accuracy
+[38/41] caught      the shipped rule named under the table is not the rule the table picked
+            FAILED tests/test_anti_prior.py::test_a_compare_run_prints_the_table_its_payload_carries_and_names_the_rule_it
+[39/41] caught      the audit's marginals are labelled the accuracy result
+            FAILED tests/test_anti_prior.py::test_the_run_says_how_much_it_drew_and_that_it_claims_no_accuracy
+[40/41] caught      the audit prices the shared-set batcher instead of the row batcher
+            ERROR tests/test_anti_prior.py::test_the_two_arms_are_labelled_and_each_line_belongs_to_its_own_arm
+[41/41] caught      the compare table's natural row is read out of the prod draw
+            FAILED tests/test_anti_prior.py::test_a_compare_run_prints_the_table_its_payload_carries_and_names_the_rule_it
+
+41/41 mutations caught
+EXIT=0 — *inferred, not watched*: `main()` returns 1 only when `survivors` or `bad` is non-empty, and this pass prints no `SURVIVED:` and no `BAD-PATTERN` line, so both lists are empty. The process ran under `nohup` and the shell that would have echoed `$?` was gone when the tally printed; the lesson is in the launch line, not the code — a battery is a measurement, so it gets launched `; echo EXIT=$? >> log`. 41 mutants in **36 min** (16:12:07–16:48:32, ~53 s a pass), baseline copy green with **35 tests** in 53.90 s. How the mutant count got to 41: the FIRST pass over the mechanism alone scored **25/28** and left three survivors — the pick moved before the batch-full check, the unweighted shared-set path sampling with replacement, the weighted shared-set path ceasing to drop repeats — all three inside `draw_row_batch`'s loop, the one function these tests were written beside without sequence-checking it (`/tmp/mut_ap.log`, EXIT=1, 16 min). Three tests closed them and the second pass scored **28/28** (`/tmp/mut_ap2.log`, baseline green with 25 tests in 33.29 s). The 13 `bench/anti_prior_audit.py` mutants in this file are the §9.46 follow-up on top of that, and they died on the first try because their tests assert against output `main()` produces *inside the test* — `runs/` is symlinked into the scratch repo, so a test reading this harness's own witness cannot see a mutated harness (SPEC §9.48). One docstring-only correction to the harness followed this pass — its per-arm reach counts and the GPU price of the open A/B — which changes no printed line and no assertion.

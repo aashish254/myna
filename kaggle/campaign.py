@@ -19,7 +19,11 @@ The cost is measured too, and it is not what the first draft of these docs promi
 That 3600-step run printed `step 3599 ... 20225s` of wall clock on a T4: **5 h 37 m**,
 5.62 s per update with evaluations included. The "1.5 hours" figure was a guess.
 Priced at the measured rate, the four-cell CE-vs-EMD² ablation is ~22.4 GPU-hours and
-one 10k-step run ~15.6 — against 30 h/week of free quota. That arithmetic is why
+one 10k-step run ~15.6 — against 30 h/week of free quota. The P10 anti-prior pair is the
+cheapest question in the table at ~11.2 (two arms x 3,600 updates), which is why it is
+rendered on request rather than left out: it is the only lane whose input-side effect is
+already measured on the shipped rows (`bench/anti_prior_audit.py`,
+`runs/anti_prior_audit.json`) while its output side stays open. That arithmetic is why
 `campaign.py`'s default output carries the open lane and the ablation only on
 request: `--score-loss` was measured at its local dose and did not resolve
 (`runs/ordinal_ab.json`), so those four cells would spend a week of quota re-asking a
@@ -56,27 +60,49 @@ STAGED = "/kaggle/working/myna"
 
 EXPERIMENTS = {
     "extended_ce_s0": {
-        "steps": 10_000, "loss": "ce", "seed": 0, "open": True,
+        "steps": 10_000, "loss": "ce", "anti": "off", "seed": 0, "open": True, "dead": False,
         "target": "G1 not met, measured: 0.4893 (runs/v1b_kaggle_3600b.report.json). "
                   "That run's dev tail still gains +0.0072 per 1,000 updates, which at "
                   "10k projects ~+0.05 against the +0.211 G1 needs: this lane is here to "
                   "falsify the dose reading, not to hope in it (SPEC §9.38)",
     },
     "extended_ce_s1": {
-        "steps": 10_000, "loss": "ce", "seed": 1, "open": True,
+        "steps": 10_000, "loss": "ce", "anti": "off", "seed": 1, "open": True, "dead": False,
         "target": "G1: the replicate. One 10k run is an anecdote about a seed",
     },
     "ablation_ce_s0": {
-        "steps": 3600, "loss": "ce", "seed": 0, "open": False,
+        "steps": 3600, "loss": "ce", "anti": "off", "seed": 0, "open": False, "dead": True,
         "target": "P9 9a's arm, measured at local dose and not resolved "
                   "(runs/ordinal_ab.json). Read the docstring before spending",
     },
-    "ablation_ce_s1": {"steps": 3600, "loss": "ce", "seed": 1, "open": False,
+    "ablation_ce_s1": {"steps": 3600, "loss": "ce", "anti": "off", "seed": 1, "open": False, "dead": True,
                       "target": "as above, control replicate"},
-    "ablation_emd_s0": {"steps": 3600, "loss": "emd", "seed": 0, "open": False,
+    "ablation_emd_s0": {"steps": 3600, "loss": "emd", "anti": "off", "seed": 0, "open": False, "dead": True,
                         "target": "as above, treatment arm"},
-    "ablation_emd_s1": {"steps": 3600, "loss": "emd", "seed": 1, "open": False,
+    "ablation_emd_s1": {"steps": 3600, "loss": "emd", "anti": "off", "seed": 1, "open": False, "dead": True,
                         "target": "as above, treatment replicate"},
+    # The P10 pair: two cells differing in one flag, at the published dose, seed 0 both.
+    # Not in the default lane because spending is the user's call — but it is the cheapest
+    # mechanism-level question in the repo, so it is priced to the tenth of an hour here
+    # rather than left as an adjective.
+    "antiprior_off_s0": {
+        "steps": 3600, "loss": "ce", "anti": "off", "seed": 0, "open": False, "dead": False,
+        "target": "P10 control: the draw every published figure came from, run again rather "
+                  "than borrowed. 0.4893 came off the `myna-code` dataset version as it stood "
+                  "before any of the data-loader work on this branch, so one new arm judged "
+                  "against that number would price the flag *and* the code drift; judged "
+                  "against this arm it prices the flag",
+    },
+    "antiprior_on_s0": {
+        "steps": 3600, "loss": "ce", "anti": "on", "seed": 0, "open": False, "dead": False,
+        "target": "P10 treatment: mini-batches drawn by inverse label prior. "
+                  "bench/anti_prior_audit.py measures what the arm trains on (six skewed "
+                  "cells 0.739-0.755 -> 0.617-0.628, boolq 0.624 -> 0.502, mix unmoved to "
+                  "0.00e+00); what it cannot measure is whether removing the shortcut makes "
+                  "the model read, because the floors are the untouched test split's. Tier 0 "
+                  "(SPEC §9.47) says eight of sixteen cells answer from an association, and "
+                  "three of those eight are reachable by this lever",
+    },
 }
 
 # @STAGED@ and @INPUT@ are replaced rather than .format()ed: the cell is python
@@ -146,6 +172,7 @@ def experiment_cell(name: str, cfg: dict, corpus: str | None, owner: str | None,
     lines[-1] += " \\"
     lines.append(f"    --steps {cfg['steps']} \\\n"
                  f"    --score-loss {cfg['loss']} \\\n"
+                 f"    --anti-prior {cfg['anti']} \\\n"
                  f"    --seed {cfg['seed']} \\\n"
                  f"    --stop-factor 3.0 \\\n"
                  f"    --save-every 250 \\\n"
@@ -178,10 +205,18 @@ def blocks(include_dead: bool, corpus: str | None, owner: str | None,
            "outright, and a\n# sequential notebook loses everything after the cell that "
            "was cut.\n# --save-every 250 bounds that loss to 250 updates."]
     if not only:
-        skipped = [k for k, v in EXPERIMENTS.items() if not v["open"]]
+        skipped = [(k, v) for k, v in EXPERIMENTS.items() if not v["open"]]
         if skipped and not include_dead:
-            out.append("# Not here (measured, not resolved): " + ", ".join(skipped)
-                       + ".\n# campaign.py --include-dead prints them.")
+            # `dead` is why a cell is absent, not that it is: the four ablation cells have
+            # an artifact saying they did not resolve, the P10 pair has never been run. One
+            # label for both tells a reader the unrun arm already has evidence behind it.
+            dead = ", ".join(k for k, v in skipped if v["dead"])
+            unspent = ", ".join(k for k, v in skipped if not v["dead"])
+            line = "# Not here (measured, not resolved): " + dead + "."
+            if unspent:
+                line += ("\n# Not here (open, unspent — the dose is the user's call, and "
+                         "the input side is already measured): " + unspent + ".")
+            out.append(line + "\n# campaign.py --include-dead prints them.")
     if not owner and not corpus:
         out.append("# --corpus is absent, so run.py discovers the mounted corpus. That "
                    "works when\n# exactly one dataset with a calibration.jsonl is "
@@ -253,9 +288,13 @@ def main(argv=None) -> int:
 
     if args.list:
         for key, cfg in EXPERIMENTS.items():
-            state = "open" if cfg["open"] else "measured, not resolved"
-            print(f"{key:18s} {cfg['loss']:3s} seed {cfg['seed']} {cfg['steps']:6d} "
-                  f"steps  ~{hours(cfg['steps']):5.1f} h  {state}")
+            state = ("open" if cfg["open"] else
+                     "measured, not resolved" if cfg["dead"] else "open, unspent")
+            # `anti` is on the line because it is the only thing separating the P10 pair:
+            # without it the matrix shows two rows reading `ce seed 0 3600 steps`.
+            print(f"{key:18s} {cfg['loss']:3s} anti={cfg['anti']:3s} "
+                  f"seed {cfg['seed']} {cfg['steps']:6d} steps  "
+                  f"~{hours(cfg['steps']):5.1f} h  {state}")
             print(f"{'':18s} {cfg['target']}")
         return 0
     if args.nb:

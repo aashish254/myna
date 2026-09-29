@@ -116,13 +116,14 @@ def test_a_gated_row_is_not_asked_to_parse_as_a_shell_line():
 
 def test_the_flag_question_reaches_every_python_command_and_only_those():
     """A coverage assertion, not a behaviour one: the prefix-stripping above and the
-    `uv run` skip are what make 21 of the 28 rows checkable, and a checker that quietly
-    recognised fewer targets would still print 28/28."""
+    `uv run` skip are what make 22 of the 29 rows checkable, and a checker that quietly
+    recognised fewer targets would still print 29/29."""
     asked = [r["id"] for r in R.ROWS
              if r["status"] != R.KAGGLE and R.python_target(r["cmd"])]
-    assert len(asked) == 21, asked
+    assert len(asked) == 22, asked
     assert "latency-matched" in asked and "v0-accuracy" in asked
     assert "scope-pricing" in asked, "a `-m bench.*` row must be asked its flags"
+    assert "anti-prior-audit" in asked, "the row P10 added owes the flag question too"
     for skipped in ("browser-g3-fp32", "report-floors",
                     "kaggle-wall-clock", "kaggle-dev-tail"):
         assert skipped not in asked, skipped

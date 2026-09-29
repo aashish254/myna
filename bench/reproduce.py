@@ -390,6 +390,38 @@ ROWS = [
         "2250\" is here disproved by the artifact: 0.4122 → 0.4355 is +0.0233 over the "
         "last 1,250 updates, and 0.4355 is the run's high, so the curve was still rising "
         "when its cosine schedule spent out."),
+
+    row("anti-prior-audit", "SPEC §5 P10 · `campaign.py`'s P10 pair · TODO 10",
+        "uv run python bench/anti_prior_audit.py --compare "
+        "--out runs/anti_prior_audit.json",
+        HERE,
+        ["runs/anti_prior_audit.json", "runs/anti_prior_audit.log"],
+        [("runs/anti_prior_audit.log",
+          "cells at or above skew 0.55: 6 of 16 — agnews/is_business 0.7545, "
+          "agnews/is_sports 0.7483, agnews/is_scitech 0.7467, agnews/is_world 0.7390, "
+          "boolq/answer 0.6243, yelp/recommend 0.6055"),
+         ("runs/anti_prior_audit.log", "worst relative deviation 0.00e+00"),
+         ("runs/anti_prior_audit.log", "largest between-arm mix difference: 0.13 pts"),
+         ("runs/anti_prior_audit.log",
+          "shipped rule: prod — mean/max/geo/sum are kept in COMBINE only so this table "
+          "stays reproducible"),
+         ("runs/anti_prior_audit.json", '"rows": 57904'),
+         ("runs/anti_prior_audit.json", '"updates": 3600'),
+         ("runs/anti_prior_audit.json", '"weight_sum_max_rel_deviation": 0.0'),
+         ("runs/anti_prior_audit.json", '"majority_drawn": 0.6246683046683047')],
+        "What `--anti-prior on` changes about the data, measured without a model: the real "
+        "batcher (`myna.train.draw_row_batch`) run at the published dose (batch 10, 2,048 "
+        "question cells per forward, 8 sets, 3,600 updates, seed 0) over the shipped "
+        "57,904-row train split, both arms, plus every `COMBINE` rule. Six of sixteen cells "
+        "sit at or above the 0.55 skew threshold and their drawn marginals flatten to "
+        "0.617-0.628 / 0.502 / 0.510; `prod` is the minimum in all six columns, which is why "
+        "it is the shipped rule; per-source weight sums equal their row counts to 0.00e+00, "
+        "so the task mix cannot move, and the arms differ by 0.13 points of drawn share. "
+        "Two limits the row carries rather than hides: the flattening is of the *train* "
+        "marginal while the floors the report judges cells against come from the untouched "
+        "test split, and a yelp row answers two questions at once, so weighting on one "
+        "cell's prior sharpens another's (yelp/rating 0.203 → 0.259). Nothing here is an "
+        "accuracy claim — that is `antiprior_off_s0` vs `antiprior_on_s0`, ~11.2 GPU-hours."),
 ]
 
 STATUSES = (HERE, LAYA, CHROME, KAGGLE, RETRAIN)

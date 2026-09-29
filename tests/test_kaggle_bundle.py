@@ -31,10 +31,13 @@ The rule each test protects:
 * the notebook cells the launch docs paste are *generated*, and the generator is held
   to the box: every flag it emits is one `run.py` accepts, every `/kaggle/...` path it
   emits is a shape the box has, its setup cell stages a mount made of symlinks, and the
-  GPU-hours it prices cells at come from a committed log rather than from a guess.
+  GPU-hours it prices cells at come from a committed log rather than from a guess. An A/B
+  pair it prints must differ in exactly the one flag under test, and an absent cell must
+  be absent for a reason that describes it.
 """
 
 import ast
+import collections
 import hashlib
 import json
 import os
@@ -106,6 +109,25 @@ def test_every_source_file_parses_under_python_311():
         except SyntaxError as e:
             bad.append(f"{p.relative_to(REPO)}: {e}")
     assert not bad, "not 3.11-compatible:\n" + "\n".join(bad)
+
+
+def test_no_module_binds_the_same_name_twice():
+    """A second module-level `def` replaces the first silently: `tests/test_anti_prior.py` shipped
+    two byte-identical blocks of four test functions after a rewrite inserted the corrected copy
+    instead of replacing the old one (§9.48). The file still collected 35 tests — while defining 39
+    functions, and the dead copies read like gates to anyone scrolling the file, including one
+    assertion that tick had deliberately removed. Only top-level names are counted: a `by()` inside
+    one function and another inside the next are different bindings, and two classes with a `table()`
+    are the point of classes."""
+    dupes = []
+    for p in _files("src", "tests", "bench", "kaggle"):
+        body = ast.parse(p.read_text(), filename=str(p), feature_version=(3, 11)).body
+        names = [n.name for n in body
+                 if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))]
+        counts = collections.Counter(names)
+        dupes += [f"{p.relative_to(REPO)}: {k} x{v}"
+                  for k, v in sorted(counts.items()) if v > 1]
+    assert not dupes, "shadowed module-level definitions:\n" + "\n".join(dupes)
 
 
 def test_the_project_does_not_claim_it_needs_312_or_later():
@@ -239,6 +261,32 @@ def test_warm_start_is_a_flag_and_never_a_pair(tmp_path):
     r = _run_py(argv, expect_zero=False)
     assert r.returncode != 0 and "--resume" in r.stdout + r.stderr, \
         "a snapshot plus --warm-start is the pair the trainer refuses"
+
+
+def test_the_batching_arm_is_a_flag_and_its_default_is_the_published_draw(tmp_path):
+    """`--anti-prior` is the one lever whose *input* side is already measured
+    (`runs/anti_prior_audit.log`: six skewed cells flatten, task mix unmoved) while its
+    output side needs a GPU. The trainer has had the flag since it was written; the
+    entrypoint did not pass it, which left the open A/B unrunnable without editing the
+    staged bundle. Off stays the default and the pair must differ in one token: 0.4893
+    and every figure in the report came off the natural draw."""
+    suite = _write_suite(tmp_path / "suite")
+    root = str(tmp_path / "runs")
+    argv = ["--corpus", str(suite), "--dry-run", "--out-root", root]
+    plain = shlex.split(_run_py(argv).stdout.strip())
+    off = shlex.split(_run_py([*argv, "--anti-prior", "off"]).stdout.strip())
+    on = shlex.split(_run_py([*argv, "--anti-prior", "on"]).stdout.strip())
+    assert plain == off, "the runner's default must be the draw every published figure used"
+    assert "--anti-prior" in plain and "off" == plain[plain.index("--anti-prior") + 1]
+    i = off.index("--anti-prior")
+    assert off[i + 1] == "off" and on[i + 1] == "on"
+    assert len(off) == len(on), "the arms differ in a value, not in a token count"
+    assert [k for k in range(len(off)) if off[k] != on[k]] == [i + 1], \
+        f"the pair drifts beyond the flag: {off} vs {on}"
+
+    sys.path.insert(0, str(REPO / "kaggle"))
+    import run as krun
+    assert krun.DEFAULTS["anti_prior"] == "off"
 
 
 def test_no_experiment_name_is_a_refusal(tmp_path):
@@ -493,6 +541,55 @@ def test_the_measured_dead_ablation_is_not_in_the_default_lane():
     for name in ("ablation_ce_s0", "ablation_ce_s1", "ablation_emd_s0", "ablation_emd_s1"):
         assert f"--name {name}" in dead, name
     assert "ordinal_ab.json" in dead, "the dead cells must carry the reason to the box"
+
+
+def test_the_antiprior_pair_is_one_flag_apart_and_prices_itself():
+    """P10's open GPU question is two cells differing in nothing but the draw, so a macro
+    difference belongs to the batching and not to a seed, a dose or a `--free-gib` pin.
+    Both print only under `--include-dead`: ~11.2 GPU-hours against 30 h/week of quota is
+    the user's call. The default lane has to say *why* each is absent, which it could not
+    do while "measured, not resolved" covered four cells with an artifact and two that have
+    never run."""
+    camp = _campaign()
+    dead = _campaign_render("--owner", "pilot", "--include-dead")
+    for name in ("antiprior_off_s0", "antiprior_on_s0"):
+        assert f"--name {name}" in dead, name
+    default = _campaign_render("--owner", "pilot")
+    assert "--name antiprior" not in default
+    assert "Not here (open, unspent" in default and "antiprior_on_s0" in default
+    for line in default.splitlines():
+        if line.startswith("# Not here (measured"):
+            assert "antiprior" not in line, "an unrun arm must not wear the dead label"
+
+    def command(name):
+        cell = camp.experiment_cell(name, camp.EXPERIMENTS[name],
+                                    "/kaggle/input/datasets/pilot/decision-v2-pilot",
+                                    "pilot", camp.FREE_GIB)
+        # The header line is each arm's reason and differs on purpose. The command is the
+        # experiment: normalize the two tokens that name the arm and the rest must be
+        # byte-identical, or the pair prices something other than the flag.
+        return (cell[cell.index("!python"):].replace(name, "ARM")
+                .replace("--anti-prior on", "--anti-prior ARM")
+                .replace("--anti-prior off", "--anti-prior ARM"))
+
+    assert command("antiprior_off_s0") == command("antiprior_on_s0")
+
+    for name, arm in (("antiprior_off_s0", "off"), ("antiprior_on_s0", "on")):
+        cfg = camp.EXPERIMENTS[name]
+        assert cfg["anti"] == arm and cfg["steps"] == 3600 and cfg["loss"] == "ce"
+        assert cfg["seed"] == 0 and not cfg["open"] and not cfg["dead"], name
+
+    # the matrix line is how a reader picks an arm, so it must show the axis that
+    # distinguishes these two rows rather than leaving them identical on screen.
+    listed = subprocess.run([sys.executable, str(CAMPAIGN), "--list"], capture_output=True,
+                            text=True, cwd=REPO, check=True).stdout
+    assert "antiprior_off_s0   ce  anti=off seed 0   3600 steps" in listed, listed
+    assert "antiprior_on_s0    ce  anti=on  seed 0   3600 steps" in listed, listed
+
+    assert camp.hours(3600) * 2 == pytest.approx(11.24, abs=0.05)
+    assert "~5.6 GPU-hours" in dead
+    assert "bench/anti_prior_audit.py" in camp.EXPERIMENTS["antiprior_on_s0"]["target"], \
+        "SPEC §9.30: a reason that asks for GPU hours names the artifact behind it"
 
 
 def test_the_nb_route_writes_a_pushable_kernel_and_pushes_nothing(tmp_path):

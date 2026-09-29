@@ -95,6 +95,12 @@ DEFAULTS = {
     # flag exists so one notebook cell can be flipped to `emd` and the other left
     # alone — a paired GPU run, not a lone re-run whose drift reads as an effect.
     "score_loss": "ce",
+    # Same shape as `score_loss`, for the other one-flag pair the repo can run:
+    # `--anti-prior on` re-weights the mini-batch draw by the inverse label prior
+    # (SPEC §5 P10). Off is what every published figure — 0.4893 included — was
+    # drawn with, and `bench/anti_prior_audit.py` measures what on changes: the six
+    # skewed cells' drawn marginals flatten, the task mix does not move.
+    "anti_prior": "off",
 }
 
 
@@ -185,6 +191,7 @@ def build_command(corpus: Path, out: Path, args) -> list[str]:
            "--seed", str(args.seed if args.seed is not None else d["seed"]),
            "--vocab", str(args.vocab if args.vocab is not None else d["vocab"]),
            "--score-loss", args.score_loss or d["score_loss"],
+           "--anti-prior", args.anti_prior or d["anti_prior"],
            "--paraphrase", args.paraphrase, "--row-batch"]
     if args.min_train_pool:
         cmd += ["--min-train-pool", str(args.min_train_pool)]
@@ -236,6 +243,13 @@ def main(argv=None):
                     help="how a `score` cell is priced (SPEC §5 P9). Default from the runner "
                          "is ce, the loss every published figure used; emd is the ablation, "
                          "and run.json records which one ran")
+    ap.add_argument("--anti-prior", choices=["off", "on"], default=None,
+                    help="draw each mini-batch by the inverse label prior of the "
+                         "(source, question) cells its rows answer (SPEC §5 P10). Default "
+                         "off — the draw every published figure came from. The entrypoint "
+                         "always passes --row-batch, which is what decision-v2 needs: a "
+                         "shared-set drawer can only re-weight rows *inside* one set, and "
+                         "the median set there holds a single row")
     ap.add_argument("--dry-run", action="store_true", help="print the command and exit")
     ap.add_argument("--check", action="store_true", help="verify the interpreter, the "
                     "imports, the device and the corpus, then exit")

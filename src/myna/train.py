@@ -6,10 +6,12 @@ Usage:  uv run python -m myna.train [--steps 4000] [--device mps]
 from __future__ import annotations
 
 import argparse
+import bisect
 import json
 import random
 import sys
 import time
+from collections import Counter, defaultdict
 from pathlib import Path
 
 import torch
@@ -18,17 +20,68 @@ from tokenizers import Tokenizer
 
 from .data import WORKFLOWS, generate
 from .model import MynaConfig, MynaModel, typed_loss
+from .real_data import ANTI_PRIOR_SKEW, balance_weights
 from .tokenizer import question_tensors, batch_question_tensors, train_tokenizer, encode_text
 
 
-def draw_batch(pool, batch, rng):
+class WeightedDraw:
+    """A cumulative inverse-frequency sampler over `range(len(weights))`.
+
+    One O(n) table built at startup, then a bisect per pick. `random.choices` is the
+    obvious call and was not used because it rebuilds its cumulative weights on every
+    invocation: at 57,904 rows and 28,800 mini-batches that is ~1.7e9 float adds for
+    a flag whose whole cost should be one pass over the corpus.
+
+    Picks are *with* replacement and the batchers drop repeats. That is a real, if
+    negligible, deviation from exact weighted sampling without replacement: a
+    decision-v2 batch is 10 rows out of 57,904, so the chance any slot is re-drawn
+    inside one batch is ~0.08%. It is the reason a batch can never come back empty
+    when the cell budget rejects candidates.
+    """
+
+    def __init__(self, weights):
+        cum, run = [], 0.0
+        for w in weights:
+            if w < 0:
+                raise ValueError(f"negative draw weight {w}")
+            run += w
+            cum.append(run)
+        if not cum or run <= 0:
+            raise ValueError(f"draw table has no positive mass ({len(cum)} weights)")
+        self.cum = cum
+        self.total = run
+        self.n = len(cum)
+
+    def index(self, rng):
+        return bisect.bisect_right(self.cum, rng.random() * self.total, hi=self.n - 1)
+
+
+def draw_batch(pool, batch, rng, drawer=None):
     """Distinct examples only, shortening the batch rather than repeating one row.
 
     With replacement a singleton pool yields `batch` copies of the same example: the
     step drives its loss to ~0 and contributes almost no gradient. decision-v2 hits
     this constantly because option descriptions are randomized per row, so many
-    question-sets hold a single row."""
-    return rng.sample(pool, min(batch, len(pool)))
+    question-sets hold a single row.
+
+    `drawer` is a `WeightedDraw` over this pool's rows: when given, the batch is
+    drawn by inverse label prior (`--anti-prior`, SPEC §5 P10) instead of uniformly.
+    The unweighted path is untouched by the flag — same call, same `rng.sample` — so
+    every figure published before it keeps its exact data order.
+    """
+    if drawer is None:
+        return rng.sample(pool, min(batch, len(pool)))
+    out, seen = [], set()
+    want = min(batch, len(pool))  # the same "shorten, never repeat" cap as rng.sample
+    for _ in range(want * 40):
+        if len(out) == want:
+            break
+        i = drawer.index(rng)
+        if i in seen:
+            continue
+        seen.add(i)
+        out.append(pool[i])
+    return out
 
 
 def build_batch(exs, tok, questions, device):
@@ -113,7 +166,7 @@ def question_tokens(tok, questions, cache=None):
     return lq
 
 
-def draw_row_batch(items, batch, max_q_cells, rng, tok, cache=None):
+def draw_row_batch(items, batch, max_q_cells, rng, tok, cache=None, drawer=None):
     """`batch` distinct rows whose padded question branch stays under
     `max_q_cells` = rows x questions x question-tokens.
 
@@ -124,12 +177,19 @@ def draw_row_batch(items, batch, max_q_cells, rng, tok, cache=None):
     questions and question tokens pad to the batch maximum, so one long
     instruction mixed in with two short ones charges the whole batch for the
     long one. The first picked row always goes in, so a batch is never empty.
+
+    `drawer` is a `WeightedDraw` over `items`: with it, which rows are offered
+    follows the inverse label prior instead of the uniform row share, and the
+    distinctness and cell-budget rules above are unchanged. Without it the loop is
+    the one every published figure was drawn by, rng call for rng call — which is
+    why the pick is made *after* the batch-is-full check rather than by a generator:
+    one extra draw per batch would shift the stream for every later step.
     """
     out, seen, n_max, lq_max = [], set(), 0, 0
     for _ in range(batch * 40):
         if len(out) == batch:
             break
-        i = rng.randrange(len(items))
+        i = rng.randrange(len(items)) if drawer is None else drawer.index(rng)
         if i in seen:
             continue
         qs = items[i][0]
@@ -163,6 +223,84 @@ def worst_case_tokens(tok, paraphraser, items, cache):
             cache[id(v)] = worst
         cache[id(qs)] = worst
     return len(by_key)
+
+
+class PriorAudit:
+    """Counts what the batches actually drew, so `--anti-prior` can report the label
+    marginals it *reached* beside the ones it asked for.
+
+    The weights are an argument; a batch of ten rows out of a 5,300-row cell is a
+    statistical flattening, and 3,600 updates is a finite number of draws. This is
+    the difference between "we re-weighted" and "the majority label appeared on
+    0.62 of drawn rows instead of 0.75" — which is also the honest answer about
+    reach: row-level weighting flattens a single-question cell almost exactly and a
+    multi-question cell only part of the way, because one row answers three questions
+    at once. `bench/anti_prior_audit.py` measures that gap on the shipped rows.
+
+    The per-source draw mix is counted and carried in the payload but not printed as
+    a verdict, because in this loop the mix is *already* moved by something else: the
+    `--max-q-cells` budget skips a row that would blow the padded question branch, and
+    banking77's 77-option sets pay that price, so its drawn share is ~4% against a 9%
+    row share with the flag off too. Only the difference *between* the two arms
+    belongs to these weights, and only the audit script can show both arms."""
+
+    def __init__(self, groups):
+        from .real_data import cell_priors, source_of_group
+
+        self.priors = cell_priors(groups)
+        self.natural_rows: Counter = Counter()
+        for key, (_q, exs) in groups.items():
+            self.natural_rows[source_of_group(key)] += len(exs)
+        self.drawn: dict[tuple[str, str], Counter] = defaultdict(Counter)
+        self.drawn_rows: Counter = Counter()
+        self.rows = 0
+
+    def add(self, questions, exs):
+        """One mini-batch of a shared question set (path P2-off)."""
+        for ex in exs:
+            self.add_items([(questions, ex)])
+
+    def add_items(self, items):
+        """One mini-batch of `--row-batch` items, each with its own question set."""
+        from .real_data import source_of_group
+
+        for qs, ex in items:
+            source = source_of_group(ex.workflow)
+            self.drawn_rows[source] += 1
+            self.rows += 1
+            for i, q in enumerate(qs[: len(ex.gold)]):
+                self.drawn[(source, q.name)][ex.gold[i]] += 1
+
+    def report(self, skew=ANTI_PRIOR_SKEW):
+        """-> (lines for the log, JSON-able payload). Cells under `skew` are left
+        out: they were flat to begin with, so a deviation there is noise on a
+        mechanism that never fired."""
+        tot_nat = sum(self.natural_rows.values())
+        cells, mix, worst = {}, {}, 0.0
+        for (source, name), nat in self.priors.items():
+            c = self.drawn.get((source, name))
+            if not c or max(nat.values()) < skew:
+                continue
+            tot = sum(c.values())
+            dr = {lab: n / tot for lab, n in c.items()}
+            cells[f"{source}/{name}"] = {
+                "rows_drawn": tot, "majority_natural": max(nat.values()),
+                "majority_drawn": max(dr.values()),
+                "natural": {str(k): v for k, v in sorted(nat.items())},
+                "drawn": {str(k): v for k, v in sorted(dr.items())}}
+        if self.rows:  # a drawn share out of zero draws is not a mix, it is a 1.0 shift
+            for source, n in sorted(self.natural_rows.items()):
+                want, got = n / tot_nat, self.drawn_rows[source] / self.rows
+                mix[source] = {"natural": want, "drawn": got}
+                worst = max(worst, abs(got - want))
+        order = sorted(cells, key=lambda k: -cells[k]["majority_natural"])
+        lines = [f"anti-prior: {k} majority {cells[k]['majority_natural']:.3f} -> "
+                 f"{cells[k]['majority_drawn']:.3f} over {cells[k]['rows_drawn']} drawn rows"
+                 for k in order]
+        lines.append(f"anti-prior: {self.rows} rows drawn over {len(cells)} skewed cells; "
+                     f"per-source draw mix in the payload")
+        return lines, {"rows_drawn": self.rows, "skew": skew, "cells": cells,
+                       "source_mix": mix, "max_source_shift": worst}
 
 
 def macro_acc(m):
@@ -526,6 +664,26 @@ def main():
                          "Measured at 1.6 MiB of retained activations per cell "
                          "(bench/mem_profile.py), so 2048 is a ~3.2 GB question branch. The "
                          "option axis costs ~3 KiB per cell and is not what filled the M5.")
+    ap.add_argument("--anti-prior", choices=["off", "on"], default="off",
+                    help="draw each mini-batch by inverse label prior instead of by row share "
+                         "(SPEC §5 P10). What not doing it costs is measured: Tier 0 found three "
+                         "agnews noul cells emitting one label on every test row and finishing "
+                         "exactly on their own majority floor (0.653 / 0.809 / 0.778), because a "
+                         "constant answer is worth ~0.75 against a train prior of 0.739-0.755 -- "
+                         "the most rewarded output the data offers. Flattening that marginal makes "
+                         "it worth 0.5. Weights are normalized within each source, so the mix of "
+                         "tasks a run trains on does not move; only the answer histogram inside "
+                         "each cell does. On the shared-set path the re-weighting is inside one "
+                         "question-set, so pair it with --row-batch: a set holding a single row "
+                         "(decision-v2's median) is drawn whole or not at all. Default off, "
+                         "because this is a bet, not a gain: the audit measures the ten cells "
+                         "the skew threshold does not target moving anyway -- nine of them "
+                         "flatten, by up to 0.170 (contrastive/decision 0.507 -> 0.337, which is "
+                         "its own 1/3 uniform), and one sharpens (yelp/rating +0.056, because a "
+                         "yelp row answers two questions and these weights are computed on the "
+                         "other one) -- and if removing the shortcut does not make the model "
+                         "read, the macro falls: the floor it is judged against stays the "
+                         "natural majority of the untouched test split.")
     ap.add_argument("--paraphrase", choices=["off", "on"], default="off",
                     help="train on hand-written phrasings of every instruction and never on the "
                          "suite's own wording (SPEC P1). Dev/test stay on the exact suite strings, "
@@ -602,6 +760,12 @@ def main():
             # training on ce would print a run that claims a loss it did not use
             raise SystemExit("--score-loss emd is not available with --long-context: the "
                              "needle corpus has no score cells and no ordinal mask")
+        if args.anti_prior == "on":
+            # the needle batches are generated row by row inside the step, so there is
+            # no corpus marginal to re-weight against; the flag would print a run that
+            # claims a batching mechanism it never ran
+            raise SystemExit("--anti-prior on is not available with --long-context: needle "
+                             "batches are generated per step and carry no label prior")
         train_long_context(args, rng, device)
         return
 
@@ -674,17 +838,46 @@ def main():
             yield rng.choices(keys, weights=weights, k=1)[0]
 
     cycle = group_cycle(wfs, args.group_sample)
+    # `--anti-prior`: one drawer per question-set for the shared-set path, one over the
+    # flattened row list for `--row-batch`, and one audit counting what the batches
+    # actually contained. Both paths get it because both are reachable — a run that
+    # ignored the flag outside `--row-batch` would print this banner and train on the
+    # old marginals. What each can do differs, though, and decision-v2 makes it matter:
+    # the shared-set drawer re-weights rows *inside* one question-set, so a set that
+    # holds a single row — the median there — is drawn whole or not at all, and the
+    # marginals only move on the sets with depth. `--row-batch` puts every row in one
+    # pool, which is the path the published run used.
+    anti = args.anti_prior == "on"
+    audit = PriorAudit(data["train"]) if anti else None
+    row_drawer = None
+    group_drawers = {k: WeightedDraw(ws) for k, ws in balance_weights(data["train"]).items()} \
+        if anti and not args.row_batch else {}
     row_items = None
     if args.row_batch:
-        from .real_data import flatten_groups
+        from .real_data import flatten_groups, flatten_weighted
 
-        row_items = flatten_groups(data["train"])
+        if anti:
+            row_items, row_ws = flatten_weighted(data["train"])
+            row_drawer = WeightedDraw(row_ws)
+        else:
+            row_items = flatten_groups(data["train"])
         q_len_cache: dict[int, int] = {}
         widest = max((len(qs), question_tokens(tok, qs, q_len_cache)) for qs, _ in row_items)
         print(f"row-batch: {len(row_items)} rows in one pool, {len(q_len_cache)} question sets, "
               f"widest row {widest[0]} questions x {widest[1]} tokens; budget "
               f"{args.max_q_cells} cells/forward (~{args.max_q_cells * 1.6 / 1024:.1f} GB branch)",
               flush=True)
+    if anti:
+        # the flag reaches however many cells the corpus actually has. On the synthetic
+        # corpus every label is drawn uniformly, so the honest statement is "0 of 9" and
+        # a banner claiming flattened marginals would be a claim about a mechanism that
+        # had nothing to act on.
+        skewed = [c for c, v in audit.priors.items() if max(v.values()) >= ANTI_PRIOR_SKEW]
+        print(f"anti-prior: mini-batches drawn by inverse label prior; "
+              f"{len(skewed)} of {len(audit.priors)} cells carry a majority label at or above "
+              f"{ANTI_PRIOR_SKEW}"
+              + (" — nothing to flatten on this corpus, the flag changes no draws"
+                 if not skewed else ""), flush=True)
     dev_probe = {
         wf: (q, exs[: args.eval_n]) for wf, (q, exs) in data["dev"].items()
     } if data["dev"] else {
@@ -791,11 +984,17 @@ def main():
                 questions, pool = data["train"][wf]
                 if paraphraser is not None:
                     questions = paraphraser.draw(wf, questions, rng)
-                b = build_batch(draw_batch(pool, args.batch, rng), tok, questions, device)
+                exs = draw_batch(pool, args.batch, rng,
+                                 drawer=group_drawers[wf] if anti else None)
+                b = build_batch(exs, tok, questions, device)
+                if audit is not None:
+                    audit.add(questions, exs)
             else:
                 items = draw_row_batch(row_items, args.batch, args.max_q_cells, rng, tok,
-                                    q_len_cache)
+                                    q_len_cache, drawer=row_drawer if anti else None)
                 b = build_row_batch(items, tok, device, paraphraser, rng)
+                if audit is not None:
+                    audit.add_items(items)
             logits = model(b["state_ids"], b["state_len"], b["q_ids"], b["q_mask"],
                            b["span_mat"], b["opt_valid"], b["decide_idx"])
             loss = typed_loss(logits, b["gold"], b["has_gold"], b["ordinal"],
@@ -831,6 +1030,12 @@ def main():
             out = Path(args.out)
             out.mkdir(parents=True, exist_ok=True)
             save_snapshot(out, model, opt, sched, tok, cfg, step)
+
+    anti_prior = None
+    if audit is not None:
+        audit_lines, anti_prior = audit.report()
+        for line in audit_lines:
+            print(line, flush=True)
 
     calib_split, calib_name = temperature_source(data)
     # the row count rides along with the label: "(fit on calibration)" would
@@ -879,6 +1084,7 @@ def main():
                    "temperature_fit_rows": n_fit_rows,
                    "paraphrase": args.paraphrase, "paraphrase_sets": n_sets,
                    "paraphrase_draws": n_draws,
+                   "anti_prior": args.anti_prior, "anti_prior_audit": anti_prior,
                    "batch": args.batch, "state_tokens_p95": p95,
                    "mem_plan_free_gib": None if free is None else free / 1024 / MI,
                    "mem_safety": args.mem_safety, "resumed_from_step": start_step,
