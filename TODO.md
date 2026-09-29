@@ -696,6 +696,17 @@ So every "train" item below is split into *prepare/verify the Kaggle path locall
       (`runs/mutation_anti_prior.log`). And the reason this tick exists at all: `kaggle/run.py` had
       never plumbed the flag and `campaign.py` had no cell for it, so 10c was unexecutable from the
       staged bundle — the launcher gap §9.48 is named for.
+      §7.1 then got paid against the launcher itself: `bench/mutation_kaggle_bundle.py` went 42 →
+      **48 mutants, 48 caught, exit 0** (`runs/mutation_kaggle_bundle.log`), six of them over the
+      P10 plumbing — three in `kaggle/run.py` (default draw flipped to `on`, the token dropped
+      between `--score-loss` and `--paraphrase`, argparse defaulting to `on`) and three in
+      `kaggle/campaign.py` (cell hardcoding `--anti-prior off`, `--list` without its `anti=`
+      column, the `dead`/unspent labels swapped). Measured, not asserted: the hardcoded-arm mutant
+      was run against the pair test **with the new `f"--anti-prior {arm}" in cell(name)` line
+      removed**, and it went green — 32 passed — because the one-flag-apartness check normalizes
+      `on` and `off` to the same token, so a generator emitting `off` twice still yields two
+      identical commands. §9.46 from the other side again: a normalization that makes two things
+      comparable deletes the difference the check is about.
 - [ ] **10c** The GPU pair `antiprior_off_s0` / `antiprior_on_s0` — **~11.2 GPU-hours**, unspent, and
       the user's call.
       Two arms × 3,600 updates at the measured 5.618 s/update (`kaggle-wall-clock`). Printed by

@@ -561,14 +561,16 @@ def test_the_antiprior_pair_is_one_flag_apart_and_prices_itself():
         if line.startswith("# Not here (measured"):
             assert "antiprior" not in line, "an unrun arm must not wear the dead label"
 
-    def command(name):
-        cell = camp.experiment_cell(name, camp.EXPERIMENTS[name],
+    def cell(name):
+        return camp.experiment_cell(name, camp.EXPERIMENTS[name],
                                     "/kaggle/input/datasets/pilot/decision-v2-pilot",
                                     "pilot", camp.FREE_GIB)
+
+    def command(name):
         # The header line is each arm's reason and differs on purpose. The command is the
         # experiment: normalize the two tokens that name the arm and the rest must be
         # byte-identical, or the pair prices something other than the flag.
-        return (cell[cell.index("!python"):].replace(name, "ARM")
+        return (cell(name)[cell(name).index("!python"):].replace(name, "ARM")
                 .replace("--anti-prior on", "--anti-prior ARM")
                 .replace("--anti-prior off", "--anti-prior ARM"))
 
@@ -578,6 +580,10 @@ def test_the_antiprior_pair_is_one_flag_apart_and_prices_itself():
         cfg = camp.EXPERIMENTS[name]
         assert cfg["anti"] == arm and cfg["steps"] == 3600 and cfg["loss"] == "ce"
         assert cfg["seed"] == 0 and not cfg["open"] and not cfg["dead"], name
+        # the normalization above cannot see a hardcoded value: if the generator emits
+        # `off` for both arms the two commands still read identical. Each cell must
+        # carry *its own* arm, which is the only thing being tested for ~5.6 hours.
+        assert f"--anti-prior {arm}" in cell(name), name
 
     # the matrix line is how a reader picks an arm, so it must show the axis that
     # distinguishes these two rows rather than leaving them identical on screen.

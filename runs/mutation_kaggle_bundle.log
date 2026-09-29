@@ -1,89 +1,103 @@
 baseline copy: green (1 test file)
 
-[ 1/42] caught      the entrypoint forgets --row-batch (boolq/mnli would not train)
+[ 1/48] caught      the entrypoint forgets --row-batch (boolq/mnli would not train)
             FAILED tests/test_kaggle_bundle.py::test_dry_run_prints_the_exact_command_and_nothing_else
-[ 2/42] caught      the entrypoint trains on the suite wording
+[ 2/48] caught      the entrypoint trains on the suite wording
             FAILED tests/test_kaggle_bundle.py::test_dry_run_prints_the_exact_command_and_nothing_else
-[ 3/42] caught      accumulation collapses to one set per update (the interference bug)
+[ 3/48] caught      accumulation collapses to one set per update (the interference bug)
             FAILED tests/test_kaggle_bundle.py::test_dry_run_prints_the_exact_command_and_nothing_else
-[ 4/42] caught      group sampling goes back to uniform (measured: starves the data-rich sets)
+[ 4/48] caught      group sampling goes back to uniform (measured: starves the data-rich sets)
             FAILED tests/test_kaggle_bundle.py::test_dry_run_prints_the_exact_command_and_nothing_else
-[ 5/42] caught      the cadence on the box becomes 500 updates
+[ 5/48] caught      the cadence on the box becomes 500 updates
             FAILED tests/test_kaggle_bundle.py::test_dry_run_prints_the_exact_command_and_nothing_else
-[ 6/42] caught      the default dose stops being the 10,000 updates the launch docs price
+[ 6/48] caught      the default dose stops being the 10,000 updates the launch docs price
             FAILED tests/test_kaggle_bundle.py::test_the_default_dose_is_the_one_the_docs_price
-[ 7/42] caught      the default batch forgets it is an upper bound
+[ 7/48] caught      the default batch forgets it is an upper bound
             FAILED tests/test_kaggle_bundle.py::test_the_default_dose_is_the_one_the_docs_price
-[ 8/42] caught      the drift tolerance on the box becomes 10x
+[ 8/48] caught      the drift tolerance on the box becomes 10x
             FAILED tests/test_kaggle_bundle.py::test_dry_run_prints_the_exact_command_and_nothing_else
-[ 9/42] caught      the memory safety margin disappears
+[ 9/48] caught      the memory safety margin disappears
             FAILED tests/test_kaggle_bundle.py::test_dry_run_prints_the_exact_command_and_nothing_else
-[10/42] caught      the question branch is unbudgeted
+[10/48] caught      the question branch is unbudgeted
             FAILED tests/test_kaggle_bundle.py::test_dry_run_prints_the_exact_command_and_nothing_else
-[11/42] caught      the seed is left to chance
+[11/48] caught      the seed is left to chance
             FAILED tests/test_kaggle_bundle.py::test_dry_run_prints_the_exact_command_and_nothing_else
-[12/42] caught      --eval-every is off, so a long run reports nothing mid-way
+[12/48] caught      --eval-every is off, so a long run reports nothing mid-way
             FAILED tests/test_kaggle_bundle.py::test_dry_run_prints_the_exact_command_and_nothing_else
-[13/42] caught      a run without a name silently picks one
+[13/48] caught      the entrypoint's default draw becomes the treated one
+            FAILED tests/test_kaggle_bundle.py::test_the_batching_arm_is_a_flag_and_its_default_is_the_published_draw
+[14/48] caught      the entrypoint accepts --anti-prior and never passes it to the trainer
+            FAILED tests/test_kaggle_bundle.py::test_the_batching_arm_is_a_flag_and_its_default_is_the_published_draw
+[15/48] caught      --anti-prior defaults to on, so a plain run is the treated arm
+            FAILED tests/test_kaggle_bundle.py::test_the_batching_arm_is_a_flag_and_its_default_is_the_published_draw
+[16/48] caught      a run without a name silently picks one
             FAILED tests/test_kaggle_bundle.py::test_no_experiment_name_is_a_refusal - as...
-[14/42] caught      a half-mounted corpus is accepted
+[17/48] caught      a half-mounted corpus is accepted
             FAILED tests/test_kaggle_bundle.py::test_a_half_mounted_corpus_fails_loud - a...
-[15/42] caught      corpus discovery stops following the mount's symlinks
+[18/48] caught      corpus discovery stops following the mount's symlinks
             FAILED tests/test_kaggle_bundle.py::test_corpus_discovery_follows_a_symlinked_kaggle_mount
-[16/42] caught      the dry run runs the job
+[19/48] caught      the dry run runs the job
             FAILED tests/test_kaggle_bundle.py::test_dry_run_prints_the_exact_command_and_nothing_else
-[17/42] caught      --resume is never added, so re-running the cell restarts the job
+[20/48] caught      --resume is never added, so re-running the cell restarts the job
             FAILED tests/test_kaggle_bundle.py::test_resume_is_added_only_when_a_snapshot_exists
-[18/42] caught      --resume is added blindly, even with nothing to resume
+[21/48] caught      --resume is added blindly, even with nothing to resume
             FAILED tests/test_kaggle_bundle.py::test_dry_run_prints_the_exact_command_and_nothing_else
-[19/42] caught      a finished run is resumed, so the next cell trains at lr ~0
+[22/48] caught      a finished run is resumed, so the next cell trains at lr ~0
             FAILED tests/test_kaggle_bundle.py::test_a_finished_snapshot_is_not_resumed
-[20/42] caught      the memory plan's free-bytes pin is dropped
+[23/48] caught      the memory plan's free-bytes pin is dropped
             FAILED tests/test_kaggle_bundle.py::test_the_free_gib_pin_reaches_the_plan_but_is_never_invented
-[21/42] caught      --warm-start never reaches the trainer
+[24/48] caught      --warm-start never reaches the trainer
             FAILED tests/test_kaggle_bundle.py::test_warm_start_is_a_flag_and_never_a_pair
-[22/42] caught      --warm-start and --resume are emitted together
+[25/48] caught      --warm-start and --resume are emitted together
             FAILED tests/test_kaggle_bundle.py::test_warm_start_is_a_flag_and_never_a_pair
-[23/42] caught      runs share one directory
+[26/48] caught      runs share one directory
             FAILED tests/test_kaggle_bundle.py::test_dry_run_prints_the_exact_command_and_nothing_else
-[24/42] caught      the output goes somewhere Kaggle does not persist
+[27/48] caught      the output goes somewhere Kaggle does not persist
             FAILED tests/test_kaggle_bundle.py::test_the_runs_root_is_kaggle_working - As...
-[25/42] caught      the stop rule's non-zero exit is swallowed
+[28/48] caught      the stop rule's non-zero exit is swallowed
             FAILED tests/test_kaggle_bundle.py::test_a_stopped_run_propagates_nonzero - a...
-[26/42] caught      --check never verifies the imports
+[29/48] caught      --check never verifies the imports
             FAILED tests/test_kaggle_bundle.py::test_check_reports_the_interpreter_it_is_running_under
-[27/42] caught      the staged copy is hashed against itself, not against the corpus
+[30/48] caught      the staged copy is hashed against itself, not against the corpus
             FAILED tests/test_kaggle_bundle.py::test_a_lossy_copy_fails_the_build_and_the_manifest_still_records_the_corpu
-[28/42] caught      verification is reduced to file sizes
+[31/48] caught      verification is reduced to file sizes
             FAILED tests/test_kaggle_bundle.py::test_a_same_size_edit_of_the_stage_is_still_a_problem
-[29/42] caught      a corrupt stage still reports OK
+[32/48] caught      a corrupt stage still reports OK
             FAILED tests/test_kaggle_bundle.py::test_a_lossy_copy_fails_the_build_and_the_manifest_still_records_the_corpu
-[30/42] caught      the packager claims it uploaded
+[33/48] caught      the packager claims it uploaded
             FAILED tests/test_kaggle_bundle.py::test_packaging_stages_the_pilot_byte_for_byte
-[31/42] caught      the dataset metadata omits a split
+[34/48] caught      the dataset metadata omits a split
             FAILED tests/test_kaggle_bundle.py::test_the_stage_names_the_account_and_never_guesses_it
-[32/42] caught      the staged metadata names a hardcoded account
+[35/48] caught      the staged metadata names a hardcoded account
             FAILED tests/test_kaggle_bundle.py::test_the_stage_names_the_account_and_never_guesses_it
-[33/42] caught      the setup cell cannot see a symlinked mount
+[36/48] caught      the setup cell cannot see a symlinked mount
             FAILED tests/test_kaggle_bundle.py::test_the_setup_cell_stages_a_mount_that_is_all_symlinks
-[34/42] caught      a corpus path with no owner in it
+[37/48] caught      a corpus path with no owner in it
             FAILED tests/test_kaggle_bundle.py::test_no_generated_cell_names_a_path_the_box_does_not_have
-[35/42] caught      the cells run the repo from a directory nothing creates
+[38/48] caught      the cells run the repo from a directory nothing creates
             FAILED tests/test_kaggle_bundle.py::test_no_generated_cell_names_a_path_the_box_does_not_have
-[36/42] caught      the generator prices a cell off the guessed rate
+[39/48] caught      the generator prices a cell off the guessed rate
             FAILED tests/test_kaggle_bundle.py::test_the_priced_cost_is_measured_and_its_witness_is_committed
-[37/42] caught      the open lane buys 31 GPU hours off a remembered slope
+[40/48] caught      the open lane buys 31 GPU hours off a remembered slope
             FAILED tests/test_kaggle_bundle.py::test_the_open_lane_states_a_measured_slope_and_not_a_remembered_one
-[38/42] caught      the generator emits a flag the runner does not accept
+[41/48] caught      the generator emits a flag the runner does not accept
             FAILED tests/test_kaggle_bundle.py::test_every_flag_the_generator_emits_the_runner_accepts
-[39/42] caught      the measured-dead ablation goes back into the default lane
+[42/48] caught      the measured-dead ablation goes back into the default lane
             FAILED tests/test_kaggle_bundle.py::test_the_measured_dead_ablation_is_not_in_the_default_lane
-[40/42] caught      the generated kernel is public
+[43/48] caught      the generated kernel is public
             FAILED tests/test_kaggle_bundle.py::test_the_nb_route_writes_a_pushable_kernel_and_pushes_nothing
-[41/42] caught      the generated kernel mounts no corpus
+[44/48] caught      the generated kernel mounts no corpus
             FAILED tests/test_kaggle_bundle.py::test_every_source_file_parses_under_python_311
-[42/42] caught      the kernel writes its id without the account it was given
+[45/48] caught      the kernel writes its id without the account it was given
             FAILED tests/test_kaggle_bundle.py::test_the_nb_route_writes_a_pushable_kernel_and_pushes_nothing
+[46/48] caught      the cell generator hardcodes the control arm, so both cells train the same draw
+            FAILED tests/test_kaggle_bundle.py::test_the_antiprior_pair_is_one_flag_apart_and_prices_itself
+[47/48] caught      the matrix hides the axis that separates the pair
+            FAILED tests/test_kaggle_bundle.py::test_the_antiprior_pair_is_one_flag_apart_and_prices_itself
+[48/48] caught      an unspent arm is labelled as already measured
+            FAILED tests/test_kaggle_bundle.py::test_the_antiprior_pair_is_one_flag_apart_and_prices_itself
 
-42/42 mutations caught
-EXIT=0
+48/48 mutations caught
+EXIT=0 — watched to the end by four foreground polls, and 48/48 with no SURVIVED, no BAD-PATTERN and no TIMEOUT line in this file. The wall figure is *bounded by the polls* (~15 min for 48 passes, so ~18 s a pass against the 36 s an unmutated copy costs — `-x` stops at the first failure, which is why a caught mutant is cheaper than the baseline) and is not stamped: this wrapper was launched without `ts` on each line, which is the same class of sloppiness §9.48 names in `runs/mutation_anti_prior.log`, where the EXIT had to be *inferred* from the absence of a SURVIVED line. A battery is a measurement, so its driver owes the reader a timestamp; the fix is the launch line, not the code (SPEC §9.40, §9.48).
+
+Pass shape. Entries 1-12 and 16-45 are the 42 mutants §9.40 and §9.42 put on file, and all 42 stayed caught; the 6 new ones are entries 13-15 and 46-48 — P10's plumbing, three in `kaggle/run.py` (the default draw flipped to `on`, `--anti-prior` dropped between `--score-loss` and `--paraphrase`, argparse defaulting to `on`) and three in `kaggle/campaign.py` (the cell hardcoding `--anti-prior off`, `--list` hiding the `anti=` column, the `dead`/unspent labels swapped). Each died on `tests/test_kaggle_bundle.py`'s two P10 tests, and the hardcoded-arm mutant is why the raw emitted cell is now asserted to carry its own arm's value: the one-flag-apartness check normalizes `on`/`off` to the same token, so a generator that emits `off` twice still produced two identical commands and the test was green on the bug it exists to catch.

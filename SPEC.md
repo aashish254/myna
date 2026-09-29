@@ -162,8 +162,9 @@ split, instruction-derived strata, laya's own accuracies joined by cell, G1 verd
 roll-up *imported* from `myna.report` rather than restated, and the guard that refuses to print
 unless the unfiltered row reproduces the report to the digit) and its gate
 `mutation_scope_pricing.py` (24 mutations; §9.46 is why it exists and what its first pass found),
-`mutation_kaggle_bundle.py` (the entrypoint + packager gate, 42 mutations — and §9.40 is the reason
-its catching test is capped to one update rather than a training run), `check_python311.py` (the 3.11 witness
+`mutation_kaggle_bundle.py` (the entrypoint + packager gate, 48 mutations — and §9.40 is the reason
+its catching test is capped to one update rather than a training run, and §9.48 why six of them
+are P10's launcher plumbing), `check_python311.py` (the 3.11 witness
 that runs the package on a real 3.11 interpreter and exits 2 rather than skipping),
 `anti_prior_audit.py` (the P10 measurement without a model: both arms drawn through the *real*
 batcher at the *published* dose, per-source weight sums against their row counts, the between-arm
@@ -497,7 +498,8 @@ optimization.** boolq and mnli are the permanent half of it — their instructio
       `bench/mutation_kaggle_bundle.py` → **25/25** (first pass 21/25; §9.15). That figure is the
       state of P3's list, not a re-runnable number: the harness could not reach the end of its own
       `the dry run runs the job` mutant until §9.40 capped what the catching test was willing to
-      launch. Current: **42/42, exit 0**, in `runs/mutation_kaggle_bundle.log`.
+      launch. Current: **48/48, exit 0** (42 inherited + P10's six), in
+      `runs/mutation_kaggle_bundle.log`.
 - [x] **3c** Python 3.11. `requires-python` is `>=3.11` (it was `>=3.13`, which made the box's own
       interpreter a *silent fallback*), every file under `src/ tests/ bench/ kaggle/` parses under
       `feature_version=(3, 11)`, and `bench/check_python311.py` runs the whole thing on a real 3.11
@@ -1139,7 +1141,10 @@ is measurable **without a model**:
       `bench/mutation_anti_prior.py` holds the harness's printed face: **41 mutants, 41 caught, exit
       0** (`runs/mutation_anti_prior.log`), and §9.48 is what that pass taught — including that
       `kaggle/run.py` had never plumbed the flag, so the whole lane below was not executable from
-      the staged bundle.
+      the staged bundle. That gap is now mutation-checked too:
+      `bench/mutation_kaggle_bundle.py` went 42 → **48, 48 caught, exit 0**
+      (`runs/mutation_kaggle_bundle.log`), and §9.48's last paragraph records the one that went green
+      until its test was fixed.
 - [ ] **10c** The GPU pair: `antiprior_off_s0` / `antiprior_on_s0` in `kaggle/campaign.py`
       (`--include-dead`; `--list` labels both *open, unspent*). Two arms × 3,600 updates at the
       measured 5.618 s/update (§2.1's `kaggle-wall-clock` row) is **~11.2 GPU-hours** of the 30
@@ -2247,3 +2252,14 @@ Kept permanently, because the value of this project's claims is that they surviv
    in the same tick, because the gate that asks the tool about published flags cannot see a flag
    nobody published. And a green suite is not a claim that the suite is the one you think it is:
    count definitions as well as collected tests.**
+   Then §7.1 was paid against the launcher (§5 P10's 10b): `bench/mutation_kaggle_bundle.py` 42 →
+   **48 mutants, 48 caught, exit 0**, six over the P10 plumbing. One of those six is a finding of the
+   same family as §9.46 and it was measured before being written: the test that proves the two GPU
+   cells differ in *exactly one flag* proves it by normalizing `--anti-prior on` and `--anti-prior off`
+   to one token — so the mutant that hardcodes `off` in the generator, i.e. the bug that would spend
+   ~5.6 GPU-hours to re-run the control arm twice, went green. Running that mutant against the test
+   with the added `assert f"--anti-prior {arm}" in cell(name)` line deleted printed **32 passed**: the
+   normalization that makes two things comparable is what deletes the difference the check is about, so
+   a comparison test must assert the raw values on both sides *and* the sameness of everything else.
+   The battery's own wall time is also now stated as bounded-by-polls rather than stamped, because this
+   driver was launched without `ts` per line — §9.40's lesson one step further out, into the wrapper.

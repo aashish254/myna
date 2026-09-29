@@ -41,6 +41,17 @@ descend into (measured on 3.9, 3.11 and 3.13: pathlib 0 hits, `glob(recursive=Tr
 2). The mutant that reverts `_mount_glob` to the pathlib form is caught there, and
 was caught by nothing before, because every other test passes `--corpus` explicitly.
 
+P10's `--anti-prior` plumbing got six entries here, and one of them is the reason
+`test_the_antiprior_pair_is_one_flag_apart_and_prices_itself` now asserts on the cell
+*before* normalizing it. The pair's test compares the two commands after replacing
+`--anti-prior on` and `--anti-prior off` with the same token — which is the right way to
+prove nothing else moved, and it is blind on exactly one thing: a generator that emits
+`off` for both arms produces two identical commands and the assertion is satisfied. So the
+hardcoded-arm mutant survived the test that exists to catch it, until the test asserted
+`f"--anti-prior {arm}" in cell(name)`. §9.46's lesson, arriving from the opposite side for
+the second time in this repo: a normalization that makes two things comparable also deletes
+the difference the check is about.
+
 The first pass of this battery caught 21/25, and all four survivors were the
 tests' fault, not the code's: `WORKING` was only exercised through a monkeypatch
 (so a literal `/tmp` default was invisible); `check()`'s sha branch was
@@ -99,6 +110,19 @@ MUTATIONS = [
      '"seed": 0,', '"seed": None,'),
     ("--eval-every is off, so a long run reports nothing mid-way", RUN,
      '"eval_every": 250,', '"eval_every": 0,'),
+    # P10's three-token plumbing. The launcher is the only place `--anti-prior` can be
+    # lost silently: the trainer accepts it, `--dry-run` still prints a command, and the
+    # cell in `campaign.py` still names the arm — so a run finishes and the lane it was
+    # supposed to decide is the control lane drawn twice.
+    ("the entrypoint's default draw becomes the treated one", RUN,
+     '"anti_prior": "off",', '"anti_prior": "on",'),
+    ("the entrypoint accepts --anti-prior and never passes it to the trainer", RUN,
+     '"--score-loss", args.score_loss or d["score_loss"],\n'
+     '           "--anti-prior", args.anti_prior or d["anti_prior"],',
+     '"--score-loss", args.score_loss or d["score_loss"],'),
+    ("--anti-prior defaults to on, so a plain run is the treated arm", RUN,
+     'ap.add_argument("--anti-prior", choices=["off", "on"], default=None,',
+     'ap.add_argument("--anti-prior", choices=["off", "on"], default="on",'),
     # --- the entrypoint's refusals --------------------------------------------
     ("a run without a name silently picks one", RUN,
      "    if not args.name:", "    if False:"),
@@ -175,6 +199,17 @@ MUTATIONS = [
      '"dataset_sources": [],'),
     ("the kernel writes its id without the account it was given", CAMP,
      'f"{owner}/{slug}"', '"someone-else/myna-campaign"'),
+    # The P10 pair is one flag apart on paper and ~5.6 GPU-hours apart on the box, so
+    # both halves of that promise are probed: the cell must emit *its own* arm, and the
+    # reason a cell is absent from the default lane must describe the cell that is gone.
+    ("the cell generator hardcodes the control arm, so both cells train the same draw", CAMP,
+     'f"    --anti-prior {cfg[\'anti\']} \\\\\\n"', 'f"    --anti-prior off \\\\\\n"'),
+    ("the matrix hides the axis that separates the pair", CAMP,
+     'f"{key:18s} {cfg[\'loss\']:3s} anti={cfg[\'anti\']:3s} "',
+     'f"{key:18s} {cfg[\'loss\']:12s} "'),
+    ("an unspent arm is labelled as already measured", CAMP,
+     'dead = ", ".join(k for k, v in skipped if v["dead"])',
+     'dead = ", ".join(k for k, v in skipped if not v["dead"])'),
 ]
 
 
