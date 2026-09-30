@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 @dataclass
 class MynaConfigScaledT4:
-    """~80–100M param configuration optimized for T4 single instance."""
+    """~36M param configuration optimized for T4 single instance (~2.3× V1-B's 15.4M)."""
     vocab: int = 4096
     d_model: int = 512
     n_layers: int = 8
@@ -30,9 +30,8 @@ if __name__ == "__main__":
     print(f"  vocab={cfg.vocab}, d_model={cfg.d_model}, n_layers={cfg.n_layers}")
     print(f"  n_heads={cfg.n_heads}, d_k={cfg.d_k}, d_v={cfg.d_v}")
     print(f"  d_ff={cfg.d_ff}, d_ptr={cfg.d_ptr}")
-    # Approximate param count via formula: L × [4×d² + 4×d×H] per layer
-    approx_trunk = cfg.n_layers * (4 * cfg.d_model**2 + 4 * cfg.d_model * cfg.n_heads)
-    approx_probe = 2 * cfg.d_model * cfg.d_ptr
-    total = approx_trunk + approx_probe
-    print(f"  Estimated trunk params: ~{approx_trunk // 1_000_000}M")
-    print(f"  Total (trunk+probe): ~{total // 1_000_000}M")
+    # Actual param count via MynaModel instantiation (approximation formula misses FFN weights)
+    from myna.model import MynaModel
+    model = MynaModel(cfg)
+    total_params = sum(p.numel() for p in model.parameters())
+    print(f"  Actual (via MynaModel): {total_params:,} ({total_params/1_000_000:.2f}M)")
