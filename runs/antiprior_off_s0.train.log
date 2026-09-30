@@ -42,3 +42,19 @@ step  1260  loss 1.580  ema 1.444  sets/update 8  8578s
 step  1320  loss 1.293  ema 1.402  sets/update 8  8973s
 step  1380  loss 1.541  ema 1.389  sets/update 8  9378s
 step  1440  loss 1.126  ema 1.339  sets/update 8  9773s
+step  1500  loss 1.098  ema 1.257  sets/update 8  10175s
+step  1500  dev-mid acc 0.4062
+step  1560  loss 1.529  ema 1.274  sets/update 8  10595s
+step  1620  loss 1.089  ema 1.204  sets/update 8  10985s
+step  1680  loss 1.006  ema 1.180  sets/update 8  11389s
+step  1740  loss 1.040  ema 1.184  sets/update 8  11788s
+step  1750  dev-mid acc 0.4173
+step  1800  loss 0.924  ema 1.174  sets/update 8  12205s
+step  1860  loss 1.371  ema 1.197  sets/update 8  12595s
+step  1920  loss 1.203  ema 1.159  sets/update 8  12991s
+step  1980  loss 1.156  ema 1.166  sets/update 8  13377s
+step  2000  dev-mid acc 0.4373
+step  2040  loss 1.228  ema 1.112  sets/update 8  13799s
+step  2100  loss 1.173  ema 1.118  sets/update 8  14186s
+step  2160  loss 1.093  ema 1.158  sets/update 8  14576s
+step  2220  loss 1.060  ema 1.161  sets/update 8  14970s

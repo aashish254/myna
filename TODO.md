@@ -769,7 +769,7 @@ So every "train" item below is split into *prepare/verify the path locally* (thi
       comparable deletes the difference the check is about.
 - [ ] **10c** The GPU pair `antiprior_off_s0` / `antiprior_on_s0` — **~11.2 GPU-hours**, unspent *on
       the T4*, and the user's call there. Kaggle auth is broken, so the pair is running on the local
-      M5 lane since 2026-10-01 at the measured 6.79 s/update averaged over its first 1,440 updates
+      M5 lane since 2026-10-01 at the measured 6.74 s/update averaged over its first 2,220 updates
       (§9.50), and each arm's `model.pt` goes
       to a GitHub Release the pass that writes it — the V1-B weights are gone with `/private/tmp`, so
       a regenerated checkpoint that is not shipped is a repeat of the same loss.

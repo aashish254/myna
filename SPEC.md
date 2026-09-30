@@ -1272,17 +1272,20 @@ is measurable **without a model**:
       2026-10-01), so as of
       2026-10-01 the pair is running on the local M5 lane through the canonical launcher instead
       (§9.50). No GPU-hours of the quota are spent, `--list` still labels both arms *open, unspent*
-      on that lane, and this box's wall price is the measured 6.79 s/update averaged over the first
-      1,440 updates (9,773 s of stamped log) — 1.21× the T4's slope, ~6.79 h per arm and ~13.6 h for
-      the pair, still mid-run: the off arm is at 1,440 of 3,600 and ~4.1 h from its final line as of
-      2026-10-01 03:06 local. The verdict stays open until both arms report.
+      on that lane, and this box's wall price is the measured 6.74 s/update averaged over the first
+      2,220 updates (14,970 s of stamped log) — 1.20× the T4's slope, ~6.74 h per arm and ~13.5 h for
+      the pair, still mid-run: the off arm is at 2,220 of 3,600 and ~2.6 h from its final line as of
+      2026-10-01 04:35 local. The verdict stays open until both arms report.
       The control arm is not yet a verdict, and its live trace says why not: `dev-mid acc` reads
-      0.3682 / 0.3962 / 0.3638 / 0.3758 / 0.4023 at steps 250 / 500 / 750 / 1,000 / 1,250
-      (`runs/antiprior_off_s0.train.log`), an ordinary-least-squares slope of **+0.0191 per 1,000
-      updates** over those five points — 2.7× V1-B's tail (+0.0072, §9.38), on a dev split this run
-      evaluates every 250 updates and on a 1176-row dev set. That is a *mid-run dev* trend, not a
-      test macro, and it prices nothing about `--anti-prior` because the arm is the `off` side of
-      the pair; the pair's verdict stays on Tier 0's emitter count over the 16 cells, not the macro.
+      0.3682 / 0.3962 / 0.3638 / 0.3758 / 0.4023 / 0.4062 / 0.4173 / 0.4373 at steps 250 through 2,000
+      in 250s (`runs/antiprior_off_s0.train.log`), an ordinary-least-squares slope of **+0.0354 per
+      1,000 updates** over those eight points, mean 0.3959 — about 4.9× V1-B's tail (+0.0072, §9.38),
+      on a dev split this run evaluates every 250 updates and on a 1176-row dev set. That is a
+      *mid-run dev* trend, not a test macro, and it prices nothing about `--anti-prior` because the
+      arm is the `off` side of the pair; the pair's verdict stays on Tier 0's emitter count over the
+      16 cells, not the macro. The slope is also the second reading of the same live number: at 1,250
+      the same regression over five points was +0.0191, so the figure is a property of the window it
+      was drawn over and not of the run (§9.44; the completed log supersedes both).
       The control is *run*, not borrowed, because 0.4893 came off
       the `myna-code` dataset version as it stood before any of the data-loader work landed on this
       branch: judged against that number a difference would price the flag *and* the code drift,
