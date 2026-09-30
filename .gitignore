@@ -6,6 +6,10 @@ dist/
 wheels/
 *.egg-info
 
+# Finder's per-directory state. It is untracked junk that a pre-commit `git add -A` would
+# otherwise publish into a public repo's history on the tick it happens to run.
+.DS_Store
+
 # Virtual environments
 .venv
 .pytest_cache/
@@ -21,6 +25,10 @@ runs/*
 !runs/*.json
 !runs/*.md
 !runs/*.log
+# ...except the pair driver's own stdout, which `!runs/*.log` above would otherwise pull in:
+# its first line echoes the launcher's absolute interpreter path, and the per-arm flat
+# witnesses (`runs/antiprior_off_s0.train.log`) are what the registry reads. §9.50's rule.
+runs/pair_driver.log
 
 # Derived corpora: the rows are upstream text, so the default is that only the provenance file
 # stays in git (it pins revisions, seeds, collision counts and the sha256 of the generated

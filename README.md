@@ -577,10 +577,16 @@ uv run python bench/diag_question_ablation.py --run-dir runs/v1b-kaggle-3600b --
 ## Quickstart
 
 ```bash
-uv sync
+uv sync --extra mlx
 uv run python -m myna.train          # 4,000 steps by default; v0's 9,000 took 15,693 s on an M5
 uv run pytest                        # equivalence + isolation proofs
 ```
+
+`--extra mlx` is part of the recipe, not a nicety: four registry rows (`arch-params`, `mlx-int8`,
+`mlx-int8-keepgate`, `mlx-kernel`) publish commands whose modules have to answer `--help`, so a bare
+`uv sync` leaves `uv run pytest` red on a fresh clone — which is how this repo's own CI failed its
+first 7 runs (§9.51). MLX builds CPU-only off macOS, and the gates that use it pin
+`mx.set_default_device(mx.cpu)`, so the numbers do not move with the GPU.
 
 **Weights are not in the tree** — `.gitignore` keeps `*.pt` out, and G7's witness is the committed
 JSON, not a binary. The v0 checkpoint that ~20 registry rows read as `--ckpt runs/myna-v0` is
