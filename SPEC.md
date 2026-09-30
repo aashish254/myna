@@ -2203,18 +2203,21 @@ Kept permanently, because the value of this project's claims is that they surviv
    are committed and whose *weights* are not.
 
    ```bash
-   uv run python bench/diag_question_ablation.py \
-       --run-dir /private/tmp/kgwork/ckptfull/runs/v1b-kaggle-3600b \
-       --tokenizer /private/tmp/kgwork/tok/runs/v1b-kaggle-3600b/tokenizer.json \
+   uv run python bench/diag_question_ablation.py --run-dir runs/v1b-kaggle-3600b \
        --out runs/diag_question_ablation.json
    ```
 
-   That line re-runs on the box holding `/private/tmp/kgwork` (67.7 MB of weights, uncommitted) and
-   not on a fresh clone, so `make repro` records it as a `retrain` row: it ties the six arm macros
-   and the 716-key guard to the committed `runs/diag_question_ablation.json` and `.log`, and asks
-   the tool that every flag in the line still exists — what it cannot do is re-derive the table for
-   a reader who has only this repository. That asymmetry is the honest shape of the artifact, not
-   an omission.
+   That line re-runs nowhere today, and saying so is the correction this tick exists for. The
+   67.7 MB of weights it was measured against lived under `/private/tmp`, which is ephemeral, and
+   the directory is gone as of 2026-09-30; the committed `runs/diag_question_ablation.{json,log}`
+   still carry the absolute paths the measurement actually used, because a witness is written once
+   and read forever and is not edited to look tidy. So the published line now names the directory a
+   re-run of the 3,600-update dose writes — `runs/v1b-kaggle-3600b`, the same convention every other
+   row uses — instead of a temp path that no longer resolves. `make repro` keeps it a `retrain` row:
+   it ties the six arm macros and the 716-key guard to those committed artifacts and asks the tool
+   that every flag in the line still exists. What it cannot do is re-derive the table for a reader
+   holding only this repository, and after the temp clear it could not do that for this box either.
+   That asymmetry is the honest shape of the artifact, not an omission.
    The general form: **an accuracy is a claim about an input. Ablate the inputs before buying
    parameters, and read a per-cell delta's exact zero as a finding rather than as a rounding — a
    cell whose score does not move when its evidence is replaced is not under-trained, it is not

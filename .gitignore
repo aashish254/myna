@@ -22,12 +22,20 @@ runs/*
 !runs/*.md
 !runs/*.log
 
-# Derived corpora: the rows are upstream text, so only the provenance file stays in git
-# (it pins revisions, seeds, collision counts and the sha256 of the generated train.jsonl).
+# Derived corpora: the rows are upstream text, so the default is that only the provenance file
+# stays in git (it pins revisions, seeds, collision counts and the sha256 of the generated
+# train.jsonl). The pilot splits below are the one exception, published on the owner's decision
+# (2026-09-30) so a fresh clone can run every registry row whose `--suite` default is
+# `data/decision-v2-pilot` — including the Tier 0 row, whose harness reads that path.
 data/*
 !data/decision-v2-pilot/
 data/decision-v2-pilot/*
 !data/decision-v2-pilot/upstream_manifest.json
+!data/decision-v2-pilot/train.jsonl
+!data/decision-v2-pilot/development.jsonl
+!data/decision-v2-pilot/test.jsonl
+!data/decision-v2-pilot/calibration.jsonl
+!data/decision-v2-pilot/tokenizer-8192.json
 
 # The four shipping screenshots are the layout witness and are committed. The int8 set
 # is the same page with two red checks — its claim is the byte and probability table in

@@ -335,9 +335,11 @@ def table_text(arm_rows, stats, order, guard_note, keep_min) -> str:
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    ap.add_argument("--run-dir", default="/private/tmp/kgwork/ckptfull/runs/v1b-kaggle-3600b",
+    ap.add_argument("--run-dir", default="runs/v1b-kaggle-3600b",
                     help="directory holding model.pt (+ tokenizer.json unless --tokenizer "
-                         "names one; this box's downloaded copy keeps them in two dirs)")
+                         "names one). Nothing in this repository ships weights, so this has "
+                         "to be produced by the published 3,600-update dose first; a download "
+                         "that splits the two files uses --tokenizer for the other half")
     ap.add_argument("--tokenizer", default=None,
                     help="tokenizer.json, when it is not inside --run-dir")
     ap.add_argument("--suite", default="data/decision-v2-pilot")

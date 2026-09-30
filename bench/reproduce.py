@@ -424,8 +424,8 @@ ROWS = [
         "accuracy claim — that is `antiprior_off_s0` vs `antiprior_on_s0`, ~11.2 GPU-hours."),
 
     row("tier0-ablation", "SPEC §5 P10 9l (§9.48) — Tier 0 input ablation",
-        "uv run python bench/diag_question_ablation.py --run-dir /private/tmp/kgwork/ckptfull/runs/v1b-kaggle-3600b "
-        "--tokenizer /private/tmp/kgwork/tok/runs/v1b-kaggle-3600b/tokenizer.json --out runs/diag_question_ablation.json",
+        "uv run python bench/diag_question_ablation.py --run-dir runs/v1b-kaggle-3600b "
+        "--out runs/diag_question_ablation.json",
         RETRAIN,
         ["runs/diag_question_ablation.json", "runs/diag_question_ablation.log"],
         [("runs/diag_question_ablation.log", "macro 0.4893"),

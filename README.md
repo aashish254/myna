@@ -557,7 +557,7 @@ grep -E "dev-mid acc" runs/v1b_kaggle_3600b.train.log | uniq | tail -5
 # SPEC §5 P10 · `campaign.py`'s P10 pair · TODO 10  [here]
 uv run python bench/anti_prior_audit.py --compare --out runs/anti_prior_audit.json
 # SPEC §5 P10 9l (§9.48) — Tier 0 input ablation  [retrain]
-uv run python bench/diag_question_ablation.py --run-dir /private/tmp/kgwork/ckptfull/runs/v1b-kaggle-3600b --tokenizer /private/tmp/kgwork/tok/runs/v1b-kaggle-3600b/tokenizer.json --out runs/diag_question_ablation.json
+uv run python bench/diag_question_ablation.py --run-dir runs/v1b-kaggle-3600b --out runs/diag_question_ablation.json
 ```
 <!-- reproduce:registry:end -->
 
