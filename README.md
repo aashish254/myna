@@ -587,7 +587,9 @@ add-on: the registry asks `bench/quantize_int8.py --help` for its `int8-quantize
 imports onnx at module scope, so a plain `uv sync` leaves **5 tests red** — the row, gate G7's proof
 that every published row binds to a live command, and the four `test_gates.py` arms that read it.
 Those 5 are what the runner printed on its first real collection pass (13 failed, 520 passed, 20
-skipped, §9.52), and CI installs the extra for the same reason this file does.
+skipped, §9.52); the next run installed the extra and went **green — 545 passed, 8 skipped, 0 failed
+in 568.96 s**, the first green this repository has recorded, and CI installs `--extra browser` for the
+same reason this file does.
 
 **And a fresh clone is still missing the weights, which costs another 5.** `--extra browser` alone
 does not make `uv run pytest` green: five tests load `runs/myna-v0/model.pt`, `runs/*` is ignored, and
