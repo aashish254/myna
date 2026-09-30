@@ -4,11 +4,13 @@ Derived from SPEC §5 (plan phases P0–P8), §2.2 (acceptance gates G1–G7) an
 Checked items are done **and witnessed** — an item is only ticked when a command prints the thing
 the item claims, per SPEC §7.1.
 
-**Training policy for this loop (user directive, 2026-09-26):** nothing trains on the MacBook.
-All model training runs on **Kaggle**; the MacBook is used for architecture code, data, tests,
-inference/eval, and every on-device/MLX/MPS measurement (those *must* stay here — SPEC §6).
-So every "train" item below is split into *prepare/verify the Kaggle path locally* (this loop) and
-*run it on Kaggle* (user's credentials — labelled `KAGGLE`).
+**Training policy for this loop:** the 2026-09-26 directive ("nothing trains on the MacBook; all
+model training runs on **Kaggle**") was **lifted by the account holder on 2026-10-01** because the
+Kaggle token no longer authenticates (SPEC §5 P0 `KAGGLE`, §9.50). The 10c pair therefore runs here
+on the M5. Everything else about the old directive still holds: the on-device/MLX/MPS measurements
+*must* stay on this box (SPEC §6), and only one training run at a time.
+So every "train" item below is split into *prepare/verify the path locally* (this loop) and
+*run it on Kaggle* (user's credentials — labelled `KAGGLE`, blocked until the token is re-minted).
 
 ## P0 — Repo and measurement hygiene
 - [x] Fix duplicate-row batching in `draw_batch()` (`385e06c`), mutation-checked
@@ -25,9 +27,23 @@ So every "train" item below is split into *prepare/verify the Kaggle path locall
       `tests/test_cli_help.py` alongside `myna.report --help`. Their V1-B *numbers* remain void and
       are re-derived post-`385e06c` (the KAGGLE item below), which is a different debt.
 - [ ] Re-derive every V1-B conclusion from a post-`385e06c` run — `KAGGLE` (needs the retrain)
-- [x] Push the repo to a remote — done 2026-09-30: public at `github.com/aashish254/myna`, history
-      scanned blob-by-blob for credentials (845 blobs, 0 matches), v0 weights shipped as a Release
-      asset not a git blob (SPEC §5 P0)
+- [x] Push the repo to a remote — done 2026-09-30: public at `github.com/aashish254/myna`, v0 weights
+      shipped as a Release asset not a git blob, and every blob in history scanned for credential
+      shapes. The scan is `make secrets` now (`bench/scan_secrets.py`), because this line's earlier
+      "845 blobs, 0 matches" turned out not to be reproducible by any command — a re-run of the same
+      one-off recipe walked zero blobs and still printed green. SPEC §5 P0 carries the full correction.
+- [x] `bench/scan_secrets.py` + **`make secrets`** — the credential scan stops being prose about a
+      command. Walks `git cat-file --batch-all-objects` (not the refs), nine shapes, prints
+      `blobs scanned` against `blobs in the db` and exits 1 on a mismatch, and splits a finding into
+      **reachable-from-a-ref** (fails — that is the set a push transfers) and **unreachable** (printed
+      as local debt, not red — otherwise a clean tree can never go green). At this tick: **549 / 549
+      blobs, 24 unreachable, 106,332,327 B, 0 hits reachable from a ref for 9 shapes, 3 local-debt
+      hits** which are this tool's own superseded drafts. The loosest URL shape hit three
+      `docs/screenshots/*.png` before it was narrowed to printable ASCII — read, PNG magic confirmed,
+      fixed in the pattern rather than parked in an allowlist. Falsified by `tests/test_scan_secrets.py`
+      (3 arms: clean repo prints its denominator, planted fakes are named by shape and path and exit 1,
+      an `--amend`ed blob no ref points at is still found but classified local debt and exits 0).
+      Suite at this tick: **556 passed, 1 skipped**.
 
 ## P1 — Data
 - [x] Pull ~5k upstream rows/source from pinned HF revisions (`9e954f9`)

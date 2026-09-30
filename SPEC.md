@@ -353,18 +353,54 @@ does not advance, it goes in the corrections log (§9).
       explicit `--device` is never rewritten. Order matters and is tested both ways.
 - [ ] Re-derive every V1-B conclusion; numbers in `runs/*.log` predate `385e06c` and are void.
 - [x] Push the repo. **Closed 2026-09-30:** the tree is public at
-      `github.com/aashish254/myna` — 72 commits, 224 tracked files (`git rev-list --count HEAD`,
-      `git ls-files | wc -l`), pilot corpus included. Two things were checked on the way out rather
-      than assumed: every blob in history was scanned for credential shapes (845 blobs, **0
-      matches** — the only `KGAT_` string ever committed is prose reading `KGAT_…`), and the v0
-      weights went onto the repo as a **Release asset** rather than into git history, with the
-      `risk_coverage` witness re-run against them to prove they are the published ones. What the
-      push did *not* fix is the opposite half of §9.47: the V1-B weights lived under `/private/tmp`
-      and are gone, so no remote holds them either. (The first draft of this line read "71 commits
-      and 238 tracked files" — both wrong, because they were copied from a recursive tree listing
-      that counts directories and from a pre-push log. Nothing in `bench/gates.py` re-reads a
-      sentence like this one, which is §9.44's point extended to prose that fell outside its reach:
-      the counts are now printed next to the two commands that produce them.)
+      `github.com/aashish254/myna`, pilot corpus included. The counts *at that push* were 72 commits
+      and 224 tracked files, from `git rev-list --count HEAD` and `git ls-files | wc -l`; re-read
+      earlier on 2026-10-01, before the commit that adds `make secrets`, the same two commands printed
+      **75** and **221** (four paid-path files removed since, one witness added). A figure that wants to
+      survive has to carry its date, because a present-tense count in a prose line is the one kind of
+      stale this repo has no check for (§9.44).
+      Two things were checked on the way out rather than assumed. (1) The v0 weights went onto the repo
+      as a **Release asset** rather than into git history, with the `risk_coverage` witness re-run
+      against them to prove they are the published ones. (2) Every blob in history was scanned for
+      credential shapes — and that scan is now a tool, `bench/scan_secrets.py` behind **`make
+      secrets`**, because the first two passes were one-off commands and both were wrong.
+      It walks `git cat-file --batch-all-objects`, not the refs, and then splits what it finds into the
+      two things that are not the same fact: a hit in a blob **reachable from a ref** is in the set a
+      push transfers, so it fails the gate; a hit in an **unreachable** blob is local debt on this
+      machine — printed, counted, and not red, because making a clean tree permanently red is how a
+      check gets muted. At this tick it reads **549 blobs, 301 trees, 84 commits, 106,332,327 B, 24
+      unreachable**, with **0 hits reachable from a ref** across 9 shapes (`KGAT_`, `gho_`, `ghp_`,
+      `github_pat_`, a PEM private-key header, `AKIA`, Slack `xox*`, `sk-`, and a URL carrying
+      `user:secret@`). The 3 unreachable hits are this tool's own superseded drafts — the first
+      version of its URL pattern, which matched that pattern's own source line, and the first version
+      of its test fixture, which hard-coded the fake tokens instead of building them from pieces so the
+      committed blob stays outside the shapes it tests. Both were staged, then replaced, so the old
+      objects are in the database and in no ref. That is the value of the split: a refs-only scan
+      would have called them nothing, and an object-database scan that could not tell them from a leak
+      could never go green on its own tree. The counts move with every commit, which is why the command
+      is the record and this sentence only dates the reading.
+      The ninth shape had a second history worth keeping. Written loosely (`://` … `:` … `@` over any
+      bytes) it hit **three** blobs, all of them `docs/screenshots/*.png`, because a compressed PNG
+      byte stream happens to spell that sequence; each was read, confirmed to start with the `\x89PNG`
+      magic, and re-checked with the same pattern restricted to printable ASCII, which returned
+      nothing. So the pattern is printable-only — the real fix was the shape, not an allowlist that
+      would have quietly swallowed the next hit. No credential-shaped string in this history has ever
+      been a credential: the only `KGAT_` text committed is prose reading `KGAT_…`.
+      What the old line said was "845 blobs, 0 matches", and 845 is not a number any command here
+      reproduces. Re-running the same recipe this session printed "0 blobs scanned, 0 matches" — a
+      mis-parsed `git rev-list --objects` field count that walked nothing and still came back green.
+      So `bench/scan_secrets.py` prints `blobs scanned` and `blobs in the db` on separate lines,
+      compares them, and exits 1 on a mismatch: **"0 matches" is only a result with the denominator
+      printed beside it** (§9.46's class, aimed at a secret scanner this time). The tool is itself
+      falsified — `tests/test_scan_secrets.py`'s three arms build a throwaway repo, require the clean
+      arm to print its denominator, plant two fake credentials and require the hit by shape and path
+      with a non-zero exit, then `--amend` them out of every ref and require the same blobs to be
+      still found, named as local debt, and *not* to fail the gate.
+      This line has now miscounted twice, both by remembering instead of reading: an earlier draft read
+      "71 commits and 238 tracked files", copied from a recursive tree listing that counts directories
+      and from a pre-push log.
+      What the push did *not* fix is the opposite half of §9.47: the V1-B weights lived under
+      `/private/tmp` and are gone, so no remote holds them either.
 - [ ] Kaggle CLI auth is dead, and it gates the GPU lane rather than a row. Reproduced
       2026-10-01: `~/.kaggle/access_token` is present (38 B, `KGAT_…`, never printed here) and both
       credential paths fail identically — `kaggle quota` exits **1** on
@@ -2357,6 +2393,15 @@ Kept permanently, because the value of this project's claims is that they surviv
    and the release went live 19 minutes later, which GitHub stamps `publishedAt
    2026-09-30T19:27:29Z` — the two clocks agree once the box's UTC+05:45 is applied, and saying so
    here because an hour reading a mismatched timestamp would conclude the artifact was invented.
+   That log is committed as `runs/ckpt_backup.log`, since the entry is making a timed claim and §9.30
+   does not exempt a process just because it is a shell script. GitHub's own asset digest is the
+   checksum a reviewer should verify against — `model_last.pt` on that release carries
+   `sha256:db124b8fdb6a04afa5a626e20acdac9470c66c73d520f368eb6ff0b1b4281cdf` — so "these are the run's
+   weights" is a download-and-hash claim, not a promise. It is *not* checkable against this laptop:
+   `model_last.pt` is a rolling snapshot, the step-500 write landed at 01:20 and re-hashed the local
+   path to `770bf49afe30b96264b34f5cc3ae29ee3ba1f937e512942a0d1fd81d83a928e5`. Same 203,229,625 B,
+   different weights — which is the reason the watcher ships on a size-and-stability trigger and not a
+   filename, and the reason a step-250 checkpoint has to leave the machine before step 500 arrives.
    That is also why a staged run dir reports its step as *not
    recorded*: `train.py` writes `model.pt` as `{state_dict, cfg, temperature}` and puts the step only
    in `model_last.pt`.

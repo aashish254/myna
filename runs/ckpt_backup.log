@@ -1,0 +1,6 @@
+[2026-10-01 00:49:01] watcher started (pid 92238), repo aashish254/myna, arms: antiprior_off_s0 antiprior_on_s0
+[2026-10-01 00:53:16] runs/antiprior_off_s0/model_last.pt stable at 203229625 bytes
+https://github.com/aashish254/myna/releases/tag/antiprior_off_s0-wip
+[2026-10-01 01:12:29] created antiprior_off_s0-wip
+antiprior_off_s0-wip
+  model_last.pt 203229625B

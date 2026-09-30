@@ -468,6 +468,17 @@ the answer, because a renamed flag leaves the other three untouched (§9.43).
 The registry's *size* is counted out of `ROWS` by `bench/gates.py` and read back out of
 SPEC §2.2 — the gate table's one hand-copied row — so `make gates` reds on a stale count
 instead of printing it (§9.44).
+A third command guards something no row covers: `make secrets`
+(`bench/scan_secrets.py`) walks **every blob in the object database**, reachable or not,
+against nine credential shapes, and prints the blobs it scanned beside the blobs the
+database reports so a mismatch exits non-zero. That denominator is the whole design —
+the first version of this check was a one-off command that mis-parsed its own input,
+walked nothing, and published "845 blobs, 0 matches" into SPEC (§5 P0).
+A finding is then classified, because two findings are not the same fact: one in a blob
+reachable from a ref is in the set a push transfers and fails the command; one in an
+unreachable blob — an amended commit's leftover, or the tool's own earlier drafts — is
+printed as local debt and does not. `tests/test_scan_secrets.py` runs all three arms of
+that rule against a throwaway repo.
 `tests/test_reproduce.py` (33 tests) pins the block below to the registry, so a
 row cannot appear here without being added there, and
 `bench/mutation_reproduce.py` breaks the checker one promise
