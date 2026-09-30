@@ -29,6 +29,13 @@ def make_batch(B=2, N=3, O=4, Ls=6, Lq=5, vocab=64, seed=0):
     return (state_ids, state_len, q_ids, q_mask, span_mat, opt_valid, decide_idx)
 
 
+# Every test below needs the MLX engine, so a machine without the optional `mlx` extra
+# skips this file instead of failing it (SPEC §9.51). Placed after `make_batch`, which
+# `test_mlx_int8.py` imports from here. Both orders were measured with mlx hidden: each
+# skips, so this placement is about which file the skip is attributed to, not a cliff.
+pytest.importorskip("mlx.core")
+
+
 def _torch_logits(cfg, sd, batch):
     m = MynaModel(cfg)
     m.load_state_dict(sd)

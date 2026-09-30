@@ -200,8 +200,15 @@ that differs in exactly one flag), `package_dataset.py`
 (stage the pilot corpus, verify every byte against the corpus, print the upload command, never run
 it), `requirements.txt`.
 `tests/`: **556 passing + 1 skipped**, measured on this tick's tree — 557 collected by
-`pytest --collect-only -q`, and the run's own summary line splits it 556/1 in 291.67 s. The skip is
-the KEV-gated parity test, green wherever `kev` is installed. (A §3.4 map is present tense, so this
+`pytest --collect-only -q`, and the run's own summary line splits it 556/1 in 291.67 s, re-measured at
+290.39 s on the CI-fix tick with the same split. The skip is
+the KEV-gated parity test, green wherever `kev` is installed. **That count is a claim about this
+box**, and §9.51 is what it cost to say it without the qualifier: `test_mlx_int8.py` (8) and
+`test_mlx_parity.py` (3) both need the optional `mlx` extra and now skip on a machine that lacks it.
+With `mlx` hidden by a local blocker the tree reads **5 failed / 540 passed / 3 skipped** — the 5
+being `bench/reproduce.py --check`, whose four MLX rows still have to answer `--help` — which is why
+CI installs `--extra mlx` instead of skipping around it.
+(A §3.4 map is present tense, so this
 count is due whenever the suite moves; it read **466** until tick 10b, which added the P10 lane's
 **42** — 35 in `test_anti_prior.py`, 3 in `test_kaggle_bundle.py`, 4 in `test_cli_help.py` — counted
 by collecting the two trees and diffing the per-file totals rather than by subtracting remembered
@@ -412,6 +419,15 @@ does not advance, it goes in the corrections log (§9).
       and from a pre-push log.
       What the push did *not* fix is the opposite half of §9.47: the V1-B weights lived under
       `/private/tmp` and are gone, so no remote holds them either.
+- [ ] **CI has never been green, and now it has a reason to stay that way visible.** All 7 runs the
+      Actions tab records fail identically at collection — `ModuleNotFoundError: No module named
+      'mlx'` in `tests/test_mlx_int8.py`, so **zero tests executed** while this box reported 556
+      passing beside them. §9.51 is the full measurement, including the rehearsal that hides `mlx`
+      locally and the four registry rows that make it an install problem rather than a skip problem.
+      The fix is small and all four pieces are load-bearing: `importorskip` in the two MLX test files
+      so a missing extra costs a file and not the session, `uv sync --extra mlx` in the workflow
+      because the registry gate needs those modules, and the same flag in README's Quickstart so the
+      documented recipe is not the one that fails.
 - [ ] Kaggle CLI auth is dead, and it gates the GPU lane rather than a row. Reproduced
       2026-10-01: `~/.kaggle/access_token` is present (38 B, `KGAT_…`, never printed here) and both
       credential paths fail identically — `kaggle quota` exits **1** on
@@ -2449,3 +2465,56 @@ Kept permanently, because the value of this project's claims is that they surviv
    publishing path gets proven against a throwaway asset before the real one exists, and a rate
    lifted from another machine's log is labelled as the price of that machine rather than of the
    result.**
+51. **"The suite is green" was a sentence about this laptop, and CI has never run a single
+    test.** Every count published since the push — 556 passed, 1 skipped, and the §3.4 line that
+    carries it — was measured here, where `mlx` is installed. On `ubuntu-latest` it is not: `mlx`
+    is an optional extra (`[project.optional-dependencies] mlx = ["mlx>=0.20"]`), and CI's install
+    step was bare `uv sync`. So `tests/test_mlx_int8.py` line 22 did a plain
+    `import mlx.core as mx` at module scope, and `gh run view --log-failed` on all **7** runs this
+    repo has ever recorded — 36771444494 back to 36749769385, every one `failure`, each finishing in
+    29–48 s — prints the same four lines:
+    `ERROR collecting tests/test_mlx_int8.py` → `ModuleNotFoundError: No module named 'mlx'` →
+    `Interrupted: 1 error during collection` → `Process completed with exit code 2`.
+    **Zero tests executed**, on every run, since the repo went public. The 30-second duration is
+    the tell: a run that executes 557 items cannot finish in half a minute, and the 556-green
+    sentence next to a red Actions tab is what a reviewer reads first.
+    The bug is one line wide and the distinction is not cosmetic. A module-level `import` of an
+    absent package raises during *collection*, which aborts the whole session;
+    `pytest.importorskip` raises `Skipped` and costs one file. The file that already got it right —
+    `tests/test_mlx_parity.py` — imports `mlx` *inside* each test body, which is why it never took
+    the suite down with it.
+    The probe was falsified before it was believed, twice. The first blocker used
+    `find_spec`'s predecessor `find_module`, removed in Python 3.12, so it blocked nothing and
+    reported **11 passed**: a green probe run is not evidence that the probe ran. Its replacement
+    raised a bare `ImportError`, which `importorskip` re-raises, so the suite still died at
+    collection — a *different* red for a *different* reason, and easy to misread as "the fix did not
+    work". Only `ModuleNotFoundError(msg, name="mlx")`, which is what CPython itself raises,
+    reproduces the runner. Lesson: the test of a test harness gets a negative control too.
+    With a blocker that works, the first measured rehearsal was **8 failed, 540 passed, 2 skipped**,
+    and the 8 are the finding, not the noise: 4 in `tests/test_gates.py` and 1 in
+    `tests/test_reproduce.py` are all `bench/reproduce.py --check`, which prints
+    **26/30 rows hold** there with `! the module behind the command does not answer --help (rc=1):
+    ModuleNotFoundError` on four rows — `arch-params`, `mlx-int8`, `mlx-int8-keepgate`, `mlx-kernel`.
+    That is §9.43's runnability assertion doing its job on a machine that lacks the module, and it is
+    why the fix cannot be "skip more": the registry gate *is* an mlx gate, so CI installs the extra.
+    Adding the same `importorskip` to `tests/test_mlx_parity.py` moves its 3 failures into the skip
+    column — measured: **5 failed, 540 passed, 3 skipped**, the 5 being exactly those
+    4 + 1 registry tests. Against the normal tree the suite is unchanged at **556 passed, 1 skipped
+    in 290.39 s**, because both files run for real here.
+    Two details worth keeping, because both were written wrong once inside this tick. (i) The CI
+    comment first said "two registry rows (`arch-params`, `mlx-kernel`)". It is four, and the way to
+    know is `grep -v '^ok'` on the check's own output, not a remembered number — §9.44's rule applies
+    to a comment in a workflow file exactly as it applies to a table. (ii) README's architecture line
+    "proven numerically identical, in float64, in CI" names
+    `tests/test_trunk_numerics.py`, which is torch-only at `atol=1e-8` and so never needed `mlx` —
+    the claim was never about the file that broke, yet it was still false, because on that runner
+    nothing ran at all. It becomes true for the first time with this commit, which is the reason the
+    fix went on a branch and through a PR before it touched `main`: the claim is only worth anything
+    once the Actions tab shows it, and §9.30 does not exempt a badge. (iii) README's Quickstart said
+    `uv sync` and then `uv run pytest` — the repo documented, in the three lines a reviewer types
+    first, the exact sequence that reproduces the failure. It now says `uv sync --extra mlx` beside
+    the four row names, because a recipe that is one flag short is a defect with an audience.
+    The general form: **a green local suite is a claim about one machine. Any check that re-runs a
+    published command inherits that command's optional dependencies, so CI installs every extra a
+    `--check` path touches, every optional import in a test file goes through `importorskip`, and a
+    sentence that says "the tests pass" names the environment it was measured in.**

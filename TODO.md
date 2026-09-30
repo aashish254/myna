@@ -47,6 +47,20 @@ So every "train" item below is split into *prepare/verify the path locally* (thi
       (3 arms: clean repo prints its denominator, planted fakes are named by shape and path and exit 1,
       an `--amend`ed blob no ref points at is still found but classified local debt and exits 0).
       Suite at this tick: **556 passed, 1 skipped**.
+- [ ] **Make CI green** — `.github/workflows/ci.yml` has failed all **7** runs this repo has ever
+      recorded, at **29–48 s each**, because `tests/test_mlx_int8.py` did a bare module-scope
+      `import mlx.core as mx` and `mlx` is an optional extra that a `ubuntu-latest` runner does not
+      have: `Interrupted: 1 error during collection`, exit 2, **zero tests executed** while this box
+      printed 556 green beside them. Three pieces, each measured: `pytest.importorskip("mlx.core")`
+      in `test_mlx_int8.py` (8) and `test_mlx_parity.py` (3) so a missing extra costs a file not the
+      session; `uv sync --extra mlx` in the workflow, because the rehearsal with `mlx` hidden
+      (**5 failed / 540 passed / 3 skipped**) shows the 5 are `bench/reproduce.py --check` failing the
+      §9.43 runnability assertion on four rows — `arch-params`, `mlx-int8`, `mlx-int8-keepgate`,
+      `mlx-kernel` — so skipping is not a fix; and `--extra mlx` in README's Quickstart, which
+      documented the exact two commands that fail. The probe itself was wrong twice before it worked
+      (`find_module`, gone in 3.12, blocked nothing and reported 11 passed; then a bare `ImportError`,
+      which `importorskip` re-raises instead of skipping) — SPEC §9.51. Lands through a PR: after 7
+      red runs the green Actions tab is the witness.
 
 ## P1 — Data
 - [x] Pull ~5k upstream rows/source from pinned HF revisions (`9e954f9`)
