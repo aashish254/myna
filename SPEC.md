@@ -166,6 +166,9 @@ unless the unfiltered row reproduces the report to the digit) and its gate
 its catching test is capped to one update rather than a training run, and §9.48 why six of them
 are P10's launcher plumbing), `check_python311.py` (the 3.11 witness
 that runs the package on a real 3.11 interpreter and exits 2 rather than skipping),
+`scan_secrets.py` (`make secrets`, §5 P0: every blob in the object database against nine credential
+shapes, the scanned-vs-in-the-db denominator asserted, and a hit classified by whether a ref reaches
+it — reachable fails, unreachable prints as local debt) with `tests/test_scan_secrets.py` as its gate,
 `anti_prior_audit.py` (the P10 measurement without a model: both arms drawn through the *real*
 batcher at the *published* dose, per-source weight sums against their row counts, the between-arm
 mix column that is the only half belonging to the weights, and `--compare` over every `COMBINE`
@@ -196,12 +199,18 @@ when a snapshot exists, tee to `train.log`, `run.json`, non-zero propagation), `
 that differs in exactly one flag), `package_dataset.py`
 (stage the pilot corpus, verify every byte against the corpus, print the upload command, never run
 it), `requirements.txt`.
-`tests/`: **508 passing + 1 skipped** — the skip is the KEV-gated parity test, green wherever
-`kev` is installed. (A §3.4 map is present tense, so this count is due whenever the suite moves;
-it read **466** until tick 10b, which added the P10 lane's **42** — 35 in `test_anti_prior.py`, 3 in
-`test_kaggle_bundle.py`, 4 in `test_cli_help.py` — counted by collecting the two trees and diffing
-the per-file totals rather than by subtracting remembered numbers (§9.44's rule, and §9.46 is the
-tick that found the stale copy this sentence is the successor to).)
+`tests/`: **556 passing + 1 skipped**, measured on this tick's tree — 557 collected by
+`pytest --collect-only -q`, and the run's own summary line splits it 556/1 in 291.67 s. The skip is
+the KEV-gated parity test, green wherever `kev` is installed. (A §3.4 map is present tense, so this
+count is due whenever the suite moves; it read **466** until tick 10b, which added the P10 lane's
+**42** — 35 in `test_anti_prior.py`, 3 in `test_kaggle_bundle.py`, 4 in `test_cli_help.py` — counted
+by collecting the two trees and diffing the per-file totals rather than by subtracting remembered
+numbers (§9.44's rule, and §9.46 is the tick that found the stale copy this sentence is the successor
+to). It then went **48 stale** across the two ticks that followed and nobody re-read it: 3 are this
+tick's `test_scan_secrets.py`; the other 45 arrived between tick 10b and today, and this sentence does
+not pretend to know which files they came from because no per-file baseline was recorded — that is the
+same hole §9.44 is about, and the reason the number above is a re-measurement (557 collected, 556 + 1
+from the run) rather than 508 + 48.
 The 8a label pass added `test_train_logging.py` (4: `split_report`'s four
 figures pinned, a lopsided split distinguishable from an even one at the same total, the empty
 group set logging rather than raising) and one end-to-end `--no-laya` case in
@@ -368,17 +377,19 @@ does not advance, it goes in the corrections log (§9).
       two things that are not the same fact: a hit in a blob **reachable from a ref** is in the set a
       push transfers, so it fails the gate; a hit in an **unreachable** blob is local debt on this
       machine — printed, counted, and not red, because making a clean tree permanently red is how a
-      check gets muted. At this tick it reads **549 blobs, 301 trees, 84 commits, 106,332,327 B, 24
-      unreachable**, with **0 hits reachable from a ref** across 9 shapes (`KGAT_`, `gho_`, `ghp_`,
-      `github_pat_`, a PEM private-key header, `AKIA`, Slack `xox*`, `sk-`, and a URL carrying
-      `user:secret@`). The 3 unreachable hits are this tool's own superseded drafts — the first
-      version of its URL pattern, which matched that pattern's own source line, and the first version
-      of its test fixture, which hard-coded the fake tokens instead of building them from pieces so the
-      committed blob stays outside the shapes it tests. Both were staged, then replaced, so the old
-      objects are in the database and in no ref. That is the value of the split: a refs-only scan
-      would have called them nothing, and an object-database scan that could not tell them from a leak
-      could never go green on its own tree. The counts move with every commit, which is why the command
-      is the record and this sentence only dates the reading.
+      check gets muted. What is stable enough to state in prose: **no hit reachable from a ref**, for
+      9 shapes (`KGAT_`, `gho_`, `ghp_`, `github_pat_`, a PEM private-key header, `AKIA`, Slack `xox*`,
+      `sk-`, and a URL carrying `user:secret@`). The unreachable hits are this tool's own superseded
+      drafts — the first version of its URL pattern, which matched that pattern's own source line, and
+      the first version of its test fixture, which hard-coded the fake tokens instead of building them
+      from pieces so the committed blob stays outside the shapes it tests. Both were staged, then
+      replaced, so the old objects are in the database and in no ref. That is the value of the split: a
+      refs-only scan would have called them nothing, and an object-database scan that could not tell
+      them from a leak could never go green on its own tree.
+      The blob and byte counts are deliberately absent from this sentence: committing the fix that made
+      the scan possible added five blobs of its own, so a number written here was stale before the
+      commit finished — `blobs scanned`, `blobs in the db` and `unreachable blobs` are the command's
+      output, and §9.44's rule applies to a scanner the same way it applies to a table.
       The ninth shape had a second history worth keeping. Written loosely (`://` … `:` … `@` over any
       bytes) it hit **three** blobs, all of them `docs/screenshots/*.png`, because a compressed PNG
       byte stream happens to spell that sequence; each was read, confirmed to start with the `\x89PNG`

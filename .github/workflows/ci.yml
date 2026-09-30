@@ -13,3 +13,10 @@ jobs:
       - uses: astral-sh/setup-uv@v4
       - run: uv sync
       - run: uv run pytest -q
+      # One assertion, and it is the one that matters to a remote: no credential shape in
+      # any blob reachable from a ref. Hits in unreachable leftovers are printed as local
+      # debt and do not fail this — and a clone can carry them: a `git clone` of this path
+      # reported 29 of its 554 blobs unreachable, with the same three findings. SPEC §5 P0:
+      # the claim behind this step used to be a sentence about a one-off command that
+      # walked zero blobs and printed "0 matches" anyway.
+      - run: make secrets

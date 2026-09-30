@@ -36,9 +36,12 @@ So every "train" item below is split into *prepare/verify the path locally* (thi
       command. Walks `git cat-file --batch-all-objects` (not the refs), nine shapes, prints
       `blobs scanned` against `blobs in the db` and exits 1 on a mismatch, and splits a finding into
       **reachable-from-a-ref** (fails — that is the set a push transfers) and **unreachable** (printed
-      as local debt, not red — otherwise a clean tree can never go green). At this tick: **549 / 549
-      blobs, 24 unreachable, 106,332,327 B, 0 hits reachable from a ref for 9 shapes, 3 local-debt
-      hits** which are this tool's own superseded drafts. The loosest URL shape hit three
+      as local debt, not red — otherwise a clean tree can never go green). The published claim is
+      **no hit reachable from a ref, for 9 shapes**; the blob and byte counts are the command's output
+      and not copied here, because committing this tool added blobs of its own and a number written in
+      prose would have been stale before its own commit landed. The local-debt hits are the tool's
+      superseded drafts — its first URL pattern, which matched its own source line, and its first test
+      fixture, which hard-coded the fakes it tests. The loosest URL shape hit three
       `docs/screenshots/*.png` before it was narrowed to printable ASCII — read, PNG magic confirmed,
       fixed in the pattern rather than parked in an allowlist. Falsified by `tests/test_scan_secrets.py`
       (3 arms: clean repo prints its denominator, planted fakes are named by shape and path and exit 1,

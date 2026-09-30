@@ -478,7 +478,9 @@ A finding is then classified, because two findings are not the same fact: one in
 reachable from a ref is in the set a push transfers and fails the command; one in an
 unreachable blob — an amended commit's leftover, or the tool's own earlier drafts — is
 printed as local debt and does not. `tests/test_scan_secrets.py` runs all three arms of
-that rule against a throwaway repo.
+that rule against a throwaway repo, and `.github/workflows/ci.yml` runs `make secrets`
+on every push — so the sentence "no credential is in this repository's history" is a
+command CI executes rather than a claim this file remembers.
 `tests/test_reproduce.py` (33 tests) pins the block below to the registry, so a
 row cannot appear here without being added there, and
 `bench/mutation_reproduce.py` breaks the checker one promise
