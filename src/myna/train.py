@@ -23,9 +23,10 @@ from .model import MynaConfig, MynaModel, typed_loss
 from .real_data import ANTI_PRIOR_SKEW, balance_weights
 from .tokenizer import question_tensors, batch_question_tensors, train_tokenizer, encode_text
 try:
-    from .config_scaled import MynaConfigScaled
+    try:
+    from .config_scaled import MynaConfigScaledT4
 except ImportError:
-    MynaConfigScaled = None  # optional; only needed for scaled runs
+    MynaConfigScaledT4 = None  # optional; only needed for T4 scaled runs
 
 
 class WeightedDraw:
@@ -719,7 +720,8 @@ def main():
                          "rate is not a budget, and the M5 run died on one).")
     ap.add_argument("--config", choices=["v0", "scaled"], default="v0",
                     help="model architecture config: v0 uses d_model=384, n_layers=6 (~15M params); "
-                         "scaled uses d_model=1024, n_layers=16 (~310-420M params) targeting ≥0.80 macro accuracy.")
+                         "scaled uses d_model=512, n_layers=8 (~80–100M params) optimized for T4 "
+                         "(≤16GB VRAM), targeting ≥0.60 macro accuracy from V1-B baseline 0.4893.")
     ap.add_argument("--mem-safety", type=float, default=0.6,
                     help="share of the reported headroom the plan may spend, leaving room for "
                          "activations the per-position table does not count")
@@ -816,9 +818,9 @@ def main():
 
     vocab = tok.get_vocab_size()
     if args.config == "scaled":
-        if MynaConfigScaled is None:
+        if MynaConfigScaledT4 is None:
             raise SystemExit("--config scaled requires src/myna/config_scaled.py (not installed)")
-        cfg = MynaConfigScaled(vocab=vocab)
+        cfg = MynaConfigScaledT4(vocab=vocab)
     else:
         cfg = MynaConfig(vocab=vocab)
     model = MynaModel(cfg).to(device)
