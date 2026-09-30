@@ -422,6 +422,26 @@ ROWS = [
         "test split, and a yelp row answers two questions at once, so weighting on one "
         "cell's prior sharpens another's (yelp/rating 0.203 → 0.259). Nothing here is an "
         "accuracy claim — that is `antiprior_off_s0` vs `antiprior_on_s0`, ~11.2 GPU-hours."),
+
+    row("tier0-ablation", "SPEC §5 P10 9l (§9.48) — Tier 0 input ablation",
+        "uv run python bench/diag_question_ablation.py --run-dir /private/tmp/kgwork/ckptfull/runs/v1b-kaggle-3600b "
+        "--tokenizer /private/tmp/kgwork/tok/runs/v1b-kaggle-3600b/tokenizer.json --out runs/diag_question_ablation.json",
+        RETRAIN,
+        ["runs/diag_question_ablation.json", "runs/diag_question_ablation.log"],
+        [("runs/diag_question_ablation.log", "macro 0.4893"),
+         ("runs/diag_question_ablation.json", '"last_step": 3599'),
+         ("runs/diag_question_ablation.log", "rewrote    0/716 cues"),
+         ("runs/diag_question_ablation.log", "rewrote"),
+         ("runs/diag_question_ablation.log", "state")],
+        "Six arms — as-scored, blank-instruction, permute-instruction, cross-source-instruction, "
+        "blank-options, swap-state — ablating state/instructions/options through the V1-B checkpoint "
+        "(step 3599, 16.9M params, temperature 1.2). Macro 0.4893 vs floor 0.4331 (+0.056 over floor, "
+        "+0.211 short of 0.70). Eight stateless cells (swap-state equals as-scored): "
+        "agnews/is_scitech, agnews/is_sports, agnews/is_world, amazon/stars, banking77/intent, "
+        "contrastive/decision, mnli/relation, sst5/sentiment. Three noul constant emitters "
+        "(collapse_share == 1.0, distinct_labels_predicted == 1): agnews/is_scitech, agnews/is_sports, "
+        "agnews/is_world. States rewritten 1164/1176 by swap-state; instructions rewritten 260/526 "
+        "by permute/cross-source arms.")
 ]
 
 STATUSES = (HERE, LAYA, CHROME, KAGGLE, RETRAIN)

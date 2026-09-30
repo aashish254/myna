@@ -22,6 +22,10 @@ from .data import WORKFLOWS, generate
 from .model import MynaConfig, MynaModel, typed_loss
 from .real_data import ANTI_PRIOR_SKEW, balance_weights
 from .tokenizer import question_tensors, batch_question_tensors, train_tokenizer, encode_text
+try:
+    from .config_scaled import MynaConfigScaled
+except ImportError:
+    MynaConfigScaled = None  # optional; only needed for scaled runs
 
 
 class WeightedDraw:
@@ -586,10 +590,20 @@ def train_long_context(args, rng, device):
         model = MynaModel(cfg)
         model.load_state_dict(ck["state_dict"])
     else:
-        cfg = MynaConfig(vocab=args.vocab)
+        vocab = args.vocab
+        if args.config == "scaled":
+            if MynaConfigScaled is None:
+                raise SystemExit("--config scaled requires src/myna/config_scaled.py (not installed)")
+            cfg = MynaConfigScaled()
+            # Override vocab if tokenizer has learned more entries than default
+            # (this is rare; most runs keep 4096)
+            vocab = max(vocab, cfg.vocab)
+            cfg = MynaConfigScaled(vocab=vocab)
+        else:
+            cfg = MynaConfig(vocab=vocab)
         model = MynaModel(cfg)
         tok = train_tokenizer([" ".join(FILLER), " ".join(DESKS), " ".join(ENTITIES)],
-                              vocab_size=args.vocab)
+                              vocab_size=vocab)
     model.to(device)
     print(f"long-context: state={args.long_context} grad={args.grad_tokens} "
           f"params={sum(p.numel() for p in model.parameters())}", flush=True)
@@ -703,6 +717,9 @@ def main():
                          "have no trustworthy reading, so on those the batch is taken exactly as "
                          "--batch gives it unless a number is stated here (SPEC P3: a projected "
                          "rate is not a budget, and the M5 run died on one).")
+    ap.add_argument("--config", choices=["v0", "scaled"], default="v0",
+                    help="model architecture config: v0 uses d_model=384, n_layers=6 (~15M params); "
+                         "scaled uses d_model=1024, n_layers=16 (~310-420M params) targeting ≥0.80 macro accuracy.")
     ap.add_argument("--mem-safety", type=float, default=0.6,
                     help="share of the reported headroom the plan may spend, leaving room for "
                          "activations the per-position table does not count")
@@ -797,7 +814,13 @@ def main():
     for _split, _groups in data.items():
         print(split_report(_split, _groups), flush=True)
 
-    cfg = MynaConfig(vocab=tok.get_vocab_size())
+    vocab = tok.get_vocab_size()
+    if args.config == "scaled":
+        if MynaConfigScaled is None:
+            raise SystemExit("--config scaled requires src/myna/config_scaled.py (not installed)")
+        cfg = MynaConfigScaled(vocab=vocab)
+    else:
+        cfg = MynaConfig(vocab=vocab)
     model = MynaModel(cfg).to(device)
     print("params:", sum(p.numel() for p in model.parameters()))
     opt = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=0.01)
