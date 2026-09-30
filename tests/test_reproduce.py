@@ -44,6 +44,8 @@ def problems(r):
     return R.check_row(r)[0]
 
 
+def notes(r):
+    return R.check_row(r)[1]
 def test_the_registry_is_well_formed():
     assert len({r["id"] for r in R.ROWS}) == len(R.ROWS), "row ids must be unique"
     for r in R.ROWS:
@@ -146,6 +148,71 @@ def test_a_tool_that_never_answers_its_help_is_a_problem_not_a_traceback(monkeyp
 
 def test_a_value_flag_loses_its_value_before_the_comparison():
     assert R.python_target("uv run python -m myna.report --split=dev")[2] == ["--split"]
+
+
+# --- §9.51: MLX loads on macOS and nowhere else, and the gate must know which is which.
+# The predicate is tested as a table first, then wired: a note off macOS, red on macOS,
+# and red for every import error that is not exactly "this platform cannot load MLX".
+
+MLX_LOAD_TAILS = [
+    "ModuleNotFoundError: No module named 'mlx'",
+    "ImportError: libmlx.so: cannot open shared object file: No such file or directory",
+]
+NOT_A_PLATFORM_LIMIT = [
+    "ModuleNotFoundError: No module named 'numpy'",
+    "ImportError: cannot import name 'quantized_' from 'mlx.core' (/…/myna/mlx_model.py)",
+    "--help never answered within 0s",
+    "no output",
+]
+
+
+def test_the_mlx_load_failure_is_a_platform_limit_only_off_macos():
+    for tail in MLX_LOAD_TAILS:
+        assert R.mlx_unloadable_here(tail, "linux"), tail
+        assert R.mlx_unloadable_here(tail, "win32"), tail
+        assert not R.mlx_unloadable_here(tail, "darwin"), tail
+    for tail in NOT_A_PLATFORM_LIMIT:
+        assert not R.mlx_unloadable_here(tail, "linux"), tail
+
+
+def test_an_unloadable_mlx_row_is_a_note_and_not_a_failure(monkeypatch):
+    r = row(cmd="uv run python -m bench.bench_mlx --ckpt runs/myna-v0 --reps 20")
+    monkeypatch.setattr(R, "_HELP", {("module", "bench.bench_mlx"): (1, MLX_LOAD_TAILS[1])})
+    monkeypatch.setattr(sys, "platform", "linux")
+    assert not any("--help" in p for p in problems(r)), problems(r)
+    noted = notes(r)
+    assert any("bench.bench_mlx cannot be imported on linux" in n for n in noted), noted
+
+
+def test_the_same_failure_on_macos_is_red_because_mlx_can_load_there(monkeypatch):
+    # The mutation this arm exists for: widening the limit to every platform turns a
+    # broken local MLX install into a printed excuse, and the 4 rows would pass unseen.
+    r = row(cmd="uv run python -m bench.bench_mlx --ckpt runs/myna-v0 --reps 20")
+    for tail in MLX_LOAD_TAILS:
+        monkeypatch.setattr(R, "_HELP", {("module", "bench.bench_mlx"): (1, tail)})
+        monkeypatch.setattr(sys, "platform", "darwin")
+        assert any("does not answer --help" in p for p in problems(r)), (tail, problems(r))
+        assert not any("cannot be imported" in n for n in notes(r))
+
+
+def test_a_missing_base_dependency_off_macos_still_fails_the_row(monkeypatch):
+    r = row(cmd="uv run python -m bench.bench_mlx --ckpt runs/myna-v0 --reps 20")
+    monkeypatch.setattr(R, "_HELP",
+                        {("module", "bench.bench_mlx"):
+                         (1, "ModuleNotFoundError: No module named 'torch'")})
+    monkeypatch.setattr(sys, "platform", "linux")
+    assert any("does not answer --help" in p for p in problems(r)), problems(r)
+
+
+def test_the_registry_names_which_rows_the_platform_limit_reaches():
+    """The limit is only honest if it says how far it reaches: four rows publish MLX
+    commands, so CI skips exactly four `--help` assertions there, not a growing set."""
+    ids = sorted(r["id"] for r in R.ROWS
+                 if "bench_mlx" in r["cmd"] or "mlx_int8_gem" in r["cmd"])
+    assert ids == ["arch-params", "mlx-int8", "mlx-int8-keepgate", "mlx-kernel"], ids
+    for i in ids:
+        r = next(x for x in R.ROWS if x["id"] == i)
+        assert R.python_target(r["cmd"]), f"{i} must be a python target or the limit is moot"
 
 
 def test_check_exits_nonzero_when_a_row_is_broken():

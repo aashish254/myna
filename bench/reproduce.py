@@ -564,12 +564,51 @@ def command_problem(r) -> str | None:
     kind, target, flags = parsed
     rc, out = help_output(kind, target)
     if rc != 0:
-        tail = (out.strip().splitlines() or ["no output"])[-1][:110]
+        tail = _last_line(out)
+        if mlx_unloadable_here(tail, sys.platform):
+            return None
         return f"the {kind} behind the command does not answer --help (rc={rc}): {tail}"
     missing = sorted({f for f in flags if f not in out})
     if missing:
         return f"{target} does not accept {', '.join(missing)}"
     return None
+
+
+# MLX is an optional extra, and off macOS PyPI's wheel installs but cannot load: the
+# bindings ship without libmlx.so, which is what CI's runner printed (SPEC §9.51). Four
+# rows publish commands whose modules import it, so on that box there is no CLI to
+# inspect — a platform limit rather than the flag drift §9.43 exists to catch. Narrow on
+# purpose: a base dependency going missing, or any MLX error that is not exactly "this
+# platform cannot load it", still fails the row.
+MLX_UNLOADABLE = (
+    "ModuleNotFoundError: No module named 'mlx'",
+    "ImportError: libmlx.so",
+)
+
+
+def mlx_unloadable_here(tail: str, platform: str) -> bool:
+    return platform != "darwin" and tail.startswith(MLX_UNLOADABLE)
+
+
+def _last_line(out: str) -> str:
+    return (out.strip().splitlines() or ["no output"])[-1][:110]
+
+
+def platform_note(r) -> str | None:
+    """The printed confession for a row whose `--help` was not asked. A note is not a
+    pass: it names the limit, so `--check` output says which rows it could not read."""
+    try:
+        parsed = python_target(r["cmd"]) if r["status"] != KAGGLE else None
+    except ValueError:
+        return None
+    if not parsed:
+        return None
+    kind, target, _flags = parsed
+    rc, out = help_output(kind, target)
+    if rc == 0 or not mlx_unloadable_here(_last_line(out), sys.platform):
+        return None
+    return (f"{target} cannot be imported on {sys.platform} (MLX is Darwin-only at "
+            "runtime), so its --help was not asked here")
 
 
 def check_row(r) -> tuple[list[str], list[str]]:
@@ -607,6 +646,8 @@ def check_row(r) -> tuple[list[str], list[str]]:
         notes.append("needs a laya checkout on PYTHONPATH, so it only runs where laya is")
     if r["status"] == CHROME:
         notes.append("needs Google Chrome, so it only runs on a box that has it")
+    if (pn := platform_note(r)):
+        notes.append(pn)
     return bad, notes
 
 

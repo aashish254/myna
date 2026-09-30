@@ -199,25 +199,34 @@ when a snapshot exists, tee to `train.log`, `run.json`, non-zero propagation), `
 that differs in exactly one flag), `package_dataset.py`
 (stage the pilot corpus, verify every byte against the corpus, print the upload command, never run
 it), `requirements.txt`.
-`tests/`: **556 passing + 1 skipped**, measured on this tick's tree — 557 collected by
-`pytest --collect-only -q`, and the run's own summary line splits it 556/1 in 291.67 s, re-measured at
-290.39 s on the CI-fix tick with the same split. The skip is
+`tests/`: **561 passing + 1 skipped**, measured on this tick's tree — 562 collected by
+`pytest --collect-only -q`, and the run's own summary line splits it 561/1, re-measured 2026-10-01
+in 292.95 s with the 10c arm training beside it (the same counts read 283.78 s on the first run of
+this tree, so the seconds move and the split does not). The **+5**
+over the 556 this map read earlier in the same tick are §9.51's arms, all five in
+`test_reproduce.py` (the platform-limit table, the note path, the still-red-on-macOS path, the
+missing-base-dependency path, and the guard that names which four rows the limit reaches) — counted
+by re-collecting rather than by adding, and `--collect-only` piped through
+`awk -F'::' '{print $1}' | sort | uniq -c` is now part of the re-read, because two of the three
+drifts this paragraph has confessed to were invisible without a per-file baseline. The skip is
 the KEV-gated parity test, green wherever `kev` is installed. **That count is a claim about this
 box**, and §9.51 is what it cost to say it without the qualifier: `test_mlx_int8.py` (8) and
-`test_mlx_parity.py` (3) both need the optional `mlx` extra and now skip on a machine that lacks it.
-With `mlx` hidden by a local blocker the tree reads **5 failed / 540 passed / 3 skipped** — the 5
-being `bench/reproduce.py --check`, whose four MLX rows still have to answer `--help` — which is why
-CI installs `--extra mlx` instead of skipping around it.
+`test_mlx_parity.py` (3) need MLX, and off macOS MLX cannot even load — PyPI's Linux wheel ships the
+bindings without `libmlx.so` — so both files skip there via `try / except ImportError` +
+`pytest.skip(allow_module_level=True)`, which also catches the *unloadable* case that
+`importorskip` re-raises. The four MLX registry rows say so as a printed note rather than failing
+§9.43's `--help` assertion (`bench/reproduce.py`'s `mlx_unloadable_here`, pinned by 5 arms and
+mutation-checked 4/4).
 (A §3.4 map is present tense, so this
 count is due whenever the suite moves; it read **466** until tick 10b, which added the P10 lane's
 **42** — 35 in `test_anti_prior.py`, 3 in `test_kaggle_bundle.py`, 4 in `test_cli_help.py` — counted
 by collecting the two trees and diffing the per-file totals rather than by subtracting remembered
 numbers (§9.44's rule, and §9.46 is the tick that found the stale copy this sentence is the successor
-to). It then went **48 stale** across the two ticks that followed and nobody re-read it: 3 are this
-tick's `test_scan_secrets.py`; the other 45 arrived between tick 10b and today, and this sentence does
-not pretend to know which files they came from because no per-file baseline was recorded — that is the
-same hole §9.44 is about, and the reason the number above is a re-measurement (557 collected, 556 + 1
-from the run) rather than 508 + 48.
+to). It then went **48 stale** across the two ticks that followed and nobody re-read it: 3 are that
+tick's `test_scan_secrets.py`; the other 45 arrived between tick 10b and it, and that sentence did not
+pretend to know which files they came from because no per-file baseline had been recorded — the same
+hole §9.44 is about, and the reason *that* number was a re-measurement (557 collected, 556 + 1 from
+the run) rather than 508 + 48.
 The 8a label pass added `test_train_logging.py` (4: `split_report`'s four
 figures pinned, a lopsided split distinguishable from an even one at the same total, the empty
 group set logging rather than raising) and one end-to-end `--no-laya` case in
@@ -419,15 +428,18 @@ does not advance, it goes in the corrections log (§9).
       and from a pre-push log.
       What the push did *not* fix is the opposite half of §9.47: the V1-B weights lived under
       `/private/tmp` and are gone, so no remote holds them either.
-- [ ] **CI has never been green, and now it has a reason to stay that way visible.** All 7 runs the
+- [ ] **CI has never run a test, and the reason is now a gate rather than a surprise.** All 7 runs the
       Actions tab records fail identically at collection — `ModuleNotFoundError: No module named
       'mlx'` in `tests/test_mlx_int8.py`, so **zero tests executed** while this box reported 556
-      passing beside them. §9.51 is the full measurement, including the rehearsal that hides `mlx`
-      locally and the four registry rows that make it an install problem rather than a skip problem.
-      The fix is small and all four pieces are load-bearing: `importorskip` in the two MLX test files
-      so a missing extra costs a file and not the session, `uv sync --extra mlx` in the workflow
-      because the registry gate needs those modules, and the same flag in README's Quickstart so the
-      documented recipe is not the one that fails.
+      passing beside them. §9.51 is the full measurement, including the first fix (`--extra mlx` in
+      the workflow) being falsified by the runner itself: PyPI's Linux wheel installs MLX's bindings
+      without `libmlx.so`, so off macOS the package is present and unloadable at once, and
+      `importorskip` re-raises that instead of skipping. What landed instead: the two MLX test files
+      guard the import with `try / except ImportError` + a module-level skip, and
+      `bench/reproduce.py` learned to tell a dependency this platform cannot load (a printed note on
+      exactly 2 error strings, 4 rows) from a missing base dependency or a dropped flag (red, always).
+      README's Quickstart names which rows each install choice leaves unread. Unticked until the
+      Actions tab shows green: after 7 red runs the run is the witness, §9.30.
 - [ ] Kaggle CLI auth is dead, and it gates the GPU lane rather than a row. Reproduced
       2026-10-01: `~/.kaggle/access_token` is present (38 B, `KGAT_…`, never printed here) and both
       credential paths fail identically — `kaggle quota` exits **1** on
@@ -1239,9 +1251,17 @@ is measurable **without a model**:
       2026-10-01), so as of
       2026-10-01 the pair is running on the local M5 lane through the canonical launcher instead
       (§9.50). No GPU-hours of the quota are spent, `--list` still labels both arms *open, unspent*
-      on that lane, and this box's wall price is the measured 6.75 s/update averaged over the first
-      480 updates — 1.20× the T4's slope, ~6.75 h per arm and ~13.5 h for the pair, mid-run and
-      provisional. The verdict stays open until both arms report.
+      on that lane, and this box's wall price is the measured 6.79 s/update averaged over the first
+      1,440 updates (9,773 s of stamped log) — 1.21× the T4's slope, ~6.79 h per arm and ~13.6 h for
+      the pair, still mid-run: the off arm is at 1,440 of 3,600 and ~4.1 h from its final line as of
+      2026-10-01 03:06 local. The verdict stays open until both arms report.
+      The control arm is not yet a verdict, and its live trace says why not: `dev-mid acc` reads
+      0.3682 / 0.3962 / 0.3638 / 0.3758 / 0.4023 at steps 250 / 500 / 750 / 1,000 / 1,250
+      (`runs/antiprior_off_s0.train.log`), an ordinary-least-squares slope of **+0.0191 per 1,000
+      updates** over those five points — 2.7× V1-B's tail (+0.0072, §9.38), on a dev split this run
+      evaluates every 250 updates and on a 1176-row dev set. That is a *mid-run dev* trend, not a
+      test macro, and it prices nothing about `--anti-prior` because the arm is the `off` side of
+      the pair; the pair's verdict stays on Tier 0's emitter count over the 16 cells, not the macro.
       The control is *run*, not borrowed, because 0.4893 came off
       the `myna-code` dataset version as it stood before any of the data-loader work landed on this
       branch: judged against that number a difference would price the flag *and* the code drift,
@@ -2475,8 +2495,9 @@ Kept permanently, because the value of this project's claims is that they surviv
     29–48 s — prints the same four lines:
     `ERROR collecting tests/test_mlx_int8.py` → `ModuleNotFoundError: No module named 'mlx'` →
     `Interrupted: 1 error during collection` → `Process completed with exit code 2`.
-    **Zero tests executed**, on every run, since the repo went public. The 30-second duration is
-    the tell: a run that executes 557 items cannot finish in half a minute, and the 556-green
+    **Zero tests executed**, on every run, since the repo went public. The wall time is the
+    tell you can read without the log: those 557 items take **294 s** on this box, so a job that
+    finishes in 29 s *including* checkout and dependency install ran none of them — and the 556-green
     sentence next to a red Actions tab is what a reviewer reads first.
     The bug is one line wide and the distinction is not cosmetic. A module-level `import` of an
     absent package raises during *collection*, which aborts the whole session;
@@ -2491,17 +2512,39 @@ Kept permanently, because the value of this project's claims is that they surviv
     work". Only `ModuleNotFoundError(msg, name="mlx")`, which is what CPython itself raises,
     reproduces the runner. Lesson: the test of a test harness gets a negative control too.
     With a blocker that works, the first measured rehearsal was **8 failed, 540 passed, 2 skipped**,
-    and the 8 are the finding, not the noise: 4 in `tests/test_gates.py` and 1 in
-    `tests/test_reproduce.py` are all `bench/reproduce.py --check`, which prints
+    and the 8 split 5 + 3 in a way that turned out to be the whole decision: the 3 are
+    `tests/test_mlx_parity.py`'s own tests, which genuinely need the engine, and the **5 — 4 in
+    `tests/test_gates.py` and 1 in `tests/test_reproduce.py` — are all** `bench/reproduce.py --check`,
+    which prints
     **26/30 rows hold** there with `! the module behind the command does not answer --help (rc=1):
     ModuleNotFoundError` on four rows — `arch-params`, `mlx-int8`, `mlx-int8-keepgate`, `mlx-kernel`.
-    That is §9.43's runnability assertion doing its job on a machine that lacks the module, and it is
-    why the fix cannot be "skip more": the registry gate *is* an mlx gate, so CI installs the extra.
-    Adding the same `importorskip` to `tests/test_mlx_parity.py` moves its 3 failures into the skip
-    column — measured: **5 failed, 540 passed, 3 skipped**, the 5 being exactly those
-    4 + 1 registry tests. Against the normal tree the suite is unchanged at **556 passed, 1 skipped
-    in 290.39 s**, because both files run for real here.
-    Two details worth keeping, because both were written wrong once inside this tick. (i) The CI
+    That is §9.43's runnability assertion doing its job on a machine that lacks the module — and the
+    inference drawn from it, "**so CI installs the extra**", was the claim CI then falsified.
+    Run 36776477857 got past the install step and printed, from the runner:
+    `ImportError: libmlx.so: cannot open shared object file: No such file or directory`.
+    PyPI's Linux `mlx` wheel ships the bindings and not the library (`mlx-metal` is marked
+    `sys_platform == 'darwin'`), so on Linux MLX is **installable and unloadable at once**, and
+    `pytest.importorskip` re-raises that bare `ImportError` instead of skipping — the same
+    second-failure shape the probe had already taught, now delivered by the real runner instead of a
+    rehearsal. Wheel filenames on a lockfile are not a measurement of `import`: the lock's
+    `cp313-cp313-manylinux_2_35_x86_64` entry was real, and what it proved about `import mlx.core`
+    on that runner was nothing. That is the whole argument for rehearsing a CI change on a branch —
+    the PR's run cost 28 s and returned a fact no local probe could have produced.
+    What the runner can therefore never have is MLX, so the gate had to learn to tell three things
+    apart instead of conflating them: **absent** (skip the file), **present but unloadable here**
+    (also skip — `tests/test_mlx_int8.py` and `test_mlx_parity.py` now wrap the import in
+    `try / except ImportError` + `pytest.skip(allow_module_level=True)`, measured both ways with the
+    two blockers, each printing `MLX unavailable on this box: …`), and **a module that exists here
+    and is broken** (red, always). The registry got the same distinction in
+    `bench/reproduce.py`: `mlx_unloadable_here(tail, platform)` forgives exactly two error strings
+    (`No module named 'mlx'`, `libmlx.so`) and only off Darwin, and the row then prints
+    `… cannot be imported on linux (MLX is Darwin-only at runtime), so its --help was not asked here`
+    as a note rather than a pass — `python -m bench.bench_mlx` failing to load on a Mac is still red,
+    and so is `No module named 'numpy'` anywhere. Five arms in `tests/test_reproduce.py` pin that
+    table, and §7.1 was paid against them: **4 mutants, 4 caught** (drop the Darwin guard → 2 fail;
+    broaden to any `ImportError` → 2 fail; unwire the note → 1; unwire the limit → 1), file restored
+    and byte-compared afterwards.
+    Three details worth keeping, because each was written wrong once inside this tick. (i) The CI
     comment first said "two registry rows (`arch-params`, `mlx-kernel`)". It is four, and the way to
     know is `grep -v '^ok'` on the check's own output, not a remembered number — §9.44's rule applies
     to a comment in a workflow file exactly as it applies to a table. (ii) README's architecture line
@@ -2511,10 +2554,24 @@ Kept permanently, because the value of this project's claims is that they surviv
     nothing ran at all. It becomes true for the first time with this commit, which is the reason the
     fix went on a branch and through a PR before it touched `main`: the claim is only worth anything
     once the Actions tab shows it, and §9.30 does not exempt a badge. (iii) README's Quickstart said
-    `uv sync` and then `uv run pytest` — the repo documented, in the three lines a reviewer types
-    first, the exact sequence that reproduces the failure. It now says `uv sync --extra mlx` beside
-    the four row names, because a recipe that is one flag short is a defect with an audience.
-    The general form: **a green local suite is a claim about one machine. Any check that re-runs a
-    published command inherits that command's optional dependencies, so CI installs every extra a
-    `--check` path touches, every optional import in a test file goes through `importorskip`, and a
-    sentence that says "the tests pass" names the environment it was measured in.**
+    bare `uv sync` and `uv run pytest`, and the first draft of this tick "fixed" it by adding
+    `--extra mlx` — which off macOS installs a package that cannot be imported, i.e. it would have
+    handed the next contributor the same collection error through the documented recipe. The
+    corrected line is `uv sync` everywhere, `--extra mlx` on Apple silicon, and README says which
+    rows each choice leaves unread.
+    Counts, each measured on the tree it describes. The MLX-hidden rehearsal reads
+    **5 failed / 540 passed / 3 skipped**, and note what that rehearsal *cannot* show: on this box
+    `sys.platform` is `darwin` inside `bench/reproduce.py`, so the platform-note path never fires
+    however thoroughly `mlx` is hidden — the 5 failures (4 in `test_gates.py`, 1 in
+    `test_reproduce.py`, all `bench/reproduce.py --check` printing **26/30 rows hold**) are the
+    correct result here, and the Linux behaviour is reached only by the monkeypatched arms and, for
+    real, by the runner. That asymmetry is why the gate landed with tests that fake the platform
+    rather than with a rehearsal that could not have caught it. Against the final tree on this box:
+    **561 passed, 1 skipped**, 562 collected, in 283.78 s — the +5 being `test_reproduce.py`'s new
+    arms — with MLX loading and both MLX files running for real. (§3.4 carries the re-read: the same
+    split at 292.95 s on 2026-10-01, so the counts held across the 10c run and only the seconds moved.)
+    The general form: **a green local suite is a claim about one machine, and "the wheel exists" is a
+    claim about a filename. Where a check re-runs a published command it inherits that command's
+    optional dependencies, so it must be able to say *why* it could not ask: a dependency this
+    platform cannot load becomes a printed note, a dependency that went missing or a flag that went
+    away stays red, and no optional import sits at module scope unguarded in a test file.**
