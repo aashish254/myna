@@ -353,13 +353,18 @@ does not advance, it goes in the corrections log (§9).
       explicit `--device` is never rewritten. Order matters and is tested both ways.
 - [ ] Re-derive every V1-B conclusion; numbers in `runs/*.log` predate `385e06c` and are void.
 - [x] Push the repo. **Closed 2026-09-30:** the tree is public at
-      `github.com/aashish254/myna` (71 commits, 238 tracked files, pilot corpus included). Two
-      things were checked on the way out rather than assumed: every blob in history was scanned for
-      credential shapes (845 blobs, **0 matches** — the only `KGAT_` string ever committed is prose
-      reading `KGAT_…`), and the v0 weights went onto the repo as a **Release asset** rather than
-      into git history, with the `risk_coverage` witness re-run against them to prove they are the
-      published ones. What the push did *not* fix is the opposite half of §9.47: the V1-B weights
-      lived under `/private/tmp` and are gone, so no remote holds them either.
+      `github.com/aashish254/myna` — 72 commits, 224 tracked files (`git rev-list --count HEAD`,
+      `git ls-files | wc -l`), pilot corpus included. Two things were checked on the way out rather
+      than assumed: every blob in history was scanned for credential shapes (845 blobs, **0
+      matches** — the only `KGAT_` string ever committed is prose reading `KGAT_…`), and the v0
+      weights went onto the repo as a **Release asset** rather than into git history, with the
+      `risk_coverage` witness re-run against them to prove they are the published ones. What the
+      push did *not* fix is the opposite half of §9.47: the V1-B weights lived under `/private/tmp`
+      and are gone, so no remote holds them either. (The first draft of this line read "71 commits
+      and 238 tracked files" — both wrong, because they were copied from a recursive tree listing
+      that counts directories and from a pre-push log. Nothing in `bench/gates.py` re-reads a
+      sentence like this one, which is §9.44's point extended to prose that fell outside its reach:
+      the counts are now printed next to the two commands that produce them.)
 
 ### P1 — Data: the accuracy unlock *(tasks #14 and #15 done)*
 The suite froze **300 train rows per source** (contrastive 432, since its generator emits a fixed
