@@ -178,6 +178,7 @@ def build_command(corpus: Path, out: Path, args) -> list[str]:
     cmd = [sys.executable, "-m", "myna.train",
            "--suite", str(corpus), "--out", str(out),
            "--device", args.device, "--steps", str(steps),
+           "--config", args.config,
            "--batch", str(args.batch or d["batch"]),
            "--accum-groups", str(d["accum_groups"]),
            "--max-q-cells", str(d["max_q_cells"]),
@@ -221,6 +222,11 @@ def main(argv=None):
                     "(default /kaggle/working/runs, the only path Kaggle persists)")
     ap.add_argument("--device", default="auto", help="auto picks CUDA on a Kaggle GPU box")
     ap.add_argument("--steps", type=int, default=None)
+    ap.add_argument("--config", choices=["v0", "scaled"], default="v0",
+                    help="model architecture: v0 is d_model=384/n_layers=6 (~15M params, the "
+                         "shape every published figure including 0.4893 was trained in); "
+                         "scaled is d_model=512/n_layers=8 (~36M), the config sized to fit a "
+                         "free Kaggle T4 (SPEC §5 P10c)")
     ap.add_argument("--batch", type=int, default=None)
     ap.add_argument("--seed", type=int, default=None)
     ap.add_argument("--save-every", type=int, default=None)
