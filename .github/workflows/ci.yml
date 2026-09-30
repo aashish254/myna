@@ -36,7 +36,11 @@ jobs:
           ls -l runs/myna-v0
           test -s runs/myna-v0/model.pt
           test -s runs/myna-v0/tokenizer.json
-      - run: uv run pytest -q
+      # `-rs` is part of the command, not decoration: a green run that hides *why* it
+      # skipped is how §9.51's "the suite is green" survived seven red runs. Every skip on
+      # this platform prints its reason in the log, so the reader can tell a platform limit
+      # from a test that stopped meaning anything.
+      - run: uv run pytest -q -rs
       # One assertion, and it is the one that matters to a remote: no credential shape in
       # any blob reachable from a ref. Hits in unreachable leftovers are printed as local
       # debt and do not fail this — and a clone can carry them: a `git clone` of this path

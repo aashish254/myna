@@ -200,9 +200,9 @@ that differs in exactly one flag), `package_dataset.py`
 (stage the pilot corpus, verify every byte against the corpus, print the upload command, never run
 it), `requirements.txt`.
 `tests/`: **561 passing + 1 skipped**, measured on this tick's tree — 562 collected by
-`pytest --collect-only -q`, and the run's own summary line splits it 561/1, re-measured 2026-10-01
-in 292.95 s with the 10c arm training beside it (the same counts read 283.78 s on the first run of
-this tree, so the seconds move and the split does not). The **+5**
+`pytest --collect-only -q`, and the run's own summary line splits it 561/1: 292.95 s before the
+§9.52 test edits and **289.00 s** after them, so the split survived the round-2 fixes and only the
+seconds moved (the first run of this tree read 283.78 s). The **+5**
 over the 556 this map read earlier in the same tick are §9.51's arms, all five in
 `test_reproduce.py` (the platform-limit table, the note path, the still-red-on-macOS path, the
 missing-base-dependency path, and the guard that names which four rows the limit reaches) — counted
@@ -449,8 +449,14 @@ does not advance, it goes in the corrections log (§9).
       under test instead of under prose), two MLX bench harnesses whose usage text cannot render
       off macOS (2, marked `macos_only` after a CPU-only rehearsal that prints its own blocker),
       and one test that asserted `resolve_device("mps") == "mps"` — i.e. that this laptop has MPS
-      (1, now monkeypatched so it reads the policy). Unticked until the Actions tab shows green:
-      after 7 red runs the run is the witness, §9.30.
+      (1, now monkeypatched so it reads the policy). **Round 3, measured the same day:** run
+      36781802262 went green — `--extra browser` installed *and* loaded, `bench/quantize_int8.py
+      --help` answered on Linux, `gh release download v0-checkpoint` filled `runs/myna-v0`, and the
+      runner printed **545 passed, 8 skipped, 0 failed in 572.45 s** with the credential scan walking
+      **222 of 222** blobs at **0 matches**. First green in this repository's history. Still unticked
+      until the Actions tab shows green *on `main`*: that run is a PR run, and `on: push: main` has to
+      see the same SHA. The pytest line now carries `-rs`, so a future green must name each skip
+      instead of just counting it — after 7 red runs the run is the witness, §9.30.
 - [ ] Kaggle CLI auth is dead, and it gates the GPU lane rather than a row. Reproduced
       2026-10-01: `~/.kaggle/access_token` is present (38 B, `KGAT_…`, never printed here) and both
       credential paths fail identically — `kaggle quota` exits **1** on
@@ -2626,12 +2632,26 @@ Kept permanently, because the value of this project's claims is that they surviv
     reports **52 passed, 2 skipped** for those two files with the skip reason named. §9.51's probe
     failed twice because a green probe is not evidence that the probe ran; this one prints its own
     blocker. What the rehearsal still cannot reach is the Linux *install* — see below.
-    Labelled honestly: onnx and onnxruntime being loadable on Linux is a **projection**, made from
-    the fact that Linux is onnxruntime's primary target rather than from a wheel filename, and the
-    run that installs `--extra browser` is its measurement. The branch is written here before the
-    result: if that step goes red on import, the `int8-quantize` row joins the four MLX rows under
-    the platform-limit path and `mlx_unloadable_here` becomes a general unloadable-module note — and
-    the 13 will then read as 8, not 0.
+    Labelled honestly, and then measured: onnx and onnxruntime being loadable on Linux was a
+    **projection**, made from the fact that Linux is onnxruntime's primary target rather than from a
+    wheel filename, and run 36781802262 is the measurement that closed it. **CI is green for the
+    first time in this repository's history**: that run printed **545 passed, 8 skipped, 1 warning
+    in 572.45 s**, exit 0, with `make secrets` reached and reporting **222 blobs scanned of 222 in
+    the db, 0 unreachable, 0 matches for 9 shapes** — a fresh clone's object database is a fifth the
+    size of this laptop's (222 vs 574), which is the denominator assertion doing its job rather than
+    a smaller scan. The `int8-quantize` row's `--help` was asked and answered on Linux, so the
+    projection's failure branch — `int8-quantize` joining the four MLX rows under a platform note —
+    did not fire, and the extra stays where a real dependency belongs.
+    The two boxes' reported totals differ by exactly 9 items (562 collected here, 553 reported there)
+    and the reason is the §9.51 design rather than a lost test: a module-level `pytest.skip` collapses
+    a whole file to **one** reported skip, so `test_mlx_int8.py` (8 tests) and `test_mlx_parity.py` (3)
+    become 2 skip lines on a box that cannot load MLX — eleven items in, two lines out, a net −9. That
+    collapse is the same shape the hidden-`mlx` rehearsal printed locally as `2 skipped`, so the gap
+    is arithmetic of the skip design and not a collection failure. Of the 8 skips the runner reported,
+    5 are accounted for by that design (the two collapsed MLX files, the two `macos_only` CLI params,
+    the KEV-gated parity test); the other 3 are named in the log of the run that follows this entry,
+    because CI now runs `pytest -q -rs` — a green that cannot say *why* it skipped is how §9.51's
+    sentence survived seven red runs, so the reasons print on every run from here.
     The general form: **a clone is a different machine, and green is a claim about whichever one ran.
     Fixing a defect that hid every test does not make the suite green; it lets the suite report the
     thirteen things that were never tested anywhere but here.**
