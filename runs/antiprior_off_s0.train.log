@@ -1,0 +1,24 @@
+
+
+
+tokenizer trained: 8192
+cmd: python -m myna.train --suite data/decision-v2-pilot --out runs/antiprior_off_s0 --device mps --steps 3600 --config v0 --batch 10 --accum-groups 8 --max-q-cells 2048 --group-sample pool --eval-every 250 --save-every 250 --mem-safety 0.6 --stop-factor 3.0 --seed 0 --vocab 8192 --score-loss ce --anti-prior off --paraphrase on --row-batch --free-gib 9.0
+split train: 57904 rows over 17112 groups, per-group 1-5300
+split dev: 1176 rows over 524 groups, per-group 1-80
+split test: 1176 rows over 534 groups, per-group 1-80
+split calibration: 448 rows over 168 groups, per-group 1-48
+params: 16926848
+train question-sets: 17112  median pool 1  sets with pool<batch(10) 16967 (99% of sets run a short batch)
+row-batch: 57904 rows in one pool, 17112 question sets, widest row 3 questions x 40 tokens; budget 2048 cells/forward (~3.2 GB branch)
+paraphrase: 17112 question sets re-worded, suite wording held out; 17112 sets budgeted at their longest phrasing
+memory plan: batch 10 fits 9.0 GiB free x 0.6, less 3.2 GiB of question branch at p95 267 tokens (needs 5.3 GiB)
+step     0  loss 1.518  ema 1.518  sets/update 8  7s
+step    60  loss 1.307  ema 1.475  sets/update 8  412s
+step   120  loss 1.537  ema 1.527  sets/update 8  812s
+step   180  loss 1.433  ema 1.476  sets/update 8  1214s
+step   240  loss 1.449  ema 1.513  sets/update 8  1612s
+step   250  dev-mid acc 0.3682
+step   300  loss 1.553  ema 1.493  sets/update 8  2048s
+step   360  loss 1.447  ema 1.478  sets/update 8  2457s
+step   420  loss 1.160  ema 1.431  sets/update 8  2851s
+step   480  loss 1.510  ema 1.480  sets/update 8  3242s

@@ -709,8 +709,12 @@ So every "train" item below is split into *prepare/verify the Kaggle path locall
       `on` and `off` to the same token, so a generator emitting `off` twice still yields two
       identical commands. §9.46 from the other side again: a normalization that makes two things
       comparable deletes the difference the check is about.
-- [ ] **10c** The GPU pair `antiprior_off_s0` / `antiprior_on_s0` — **~11.2 GPU-hours**, unspent, and
-      the user's call.
+- [ ] **10c** The GPU pair `antiprior_off_s0` / `antiprior_on_s0` — **~11.2 GPU-hours**, unspent *on
+      the T4*, and the user's call there. Kaggle auth is broken, so the pair is running on the local
+      M5 lane since 2026-10-01 at the measured 6.75 s/update averaged over its first 480 updates
+      (§9.50), and each arm's `model.pt` goes
+      to a GitHub Release the pass that writes it — the V1-B weights are gone with `/private/tmp`, so
+      a regenerated checkpoint that is not shipped is a repeat of the same loss.
       Two arms × 3,600 updates at the measured 5.618 s/update (`kaggle-wall-clock`). Printed by
       `python kaggle/campaign.py --include-dead`; `--list` labels both *open, unspent* rather than
       borrowing the ablation cells' *measured, not resolved*. The control is run, not borrowed:

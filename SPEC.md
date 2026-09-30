@@ -365,6 +365,18 @@ does not advance, it goes in the corrections log (§9).
       that counts directories and from a pre-push log. Nothing in `bench/gates.py` re-reads a
       sentence like this one, which is §9.44's point extended to prose that fell outside its reach:
       the counts are now printed next to the two commands that produce them.)
+- [ ] Kaggle CLI auth is dead, and it gates the GPU lane rather than a row. Reproduced
+      2026-10-01: `~/.kaggle/access_token` is present (38 B, `KGAT_…`, never printed here) and both
+      credential paths fail identically — `kaggle quota` exits **1** on
+      `Authentication required to call the Kaggle API.`, and the same call with the file's contents
+      exported as `KAGGLE_API_TOKEN` exits **1** on the same line. The CLI is 2.2.4, whose `auth`
+      subcommands are `login`, `print-access-token` and `revoke`; the repair is a browser OAuth
+      `kaggle auth login` or a fresh token from kaggle.com → Settings → API, and **only the account
+      holder can do either**. What it actually blocks: the registry's one `gated-kaggle` row
+      (`g1-v1`) and every campaign cell that wants the T4 inside the 30 h/week quota. It does not
+      block the 4 `retrain` rows — this box runs those at §9.50's wall price, which is why 10c is
+      running here at all. The status tally behind those numbers is read from `ROWS`, not copied
+      from prose: 20 `here`, 4 `retrain`, 3 `external-chrome`, 2 `external-laya`, 1 `gated-kaggle`.
 
 ### P1 — Data: the accuracy unlock *(tasks #14 and #15 done)*
 The suite froze **300 train rows per source** (contrastive 432, since its generator emits a fixed
@@ -1159,8 +1171,15 @@ is measurable **without a model**:
 - [ ] **10c** The GPU pair: `antiprior_off_s0` / `antiprior_on_s0` in `kaggle/campaign.py`
       (`--include-dead`; `--list` labels both *open, unspent*). Two arms × 3,600 updates at the
       measured 5.618 s/update (§2.1's `kaggle-wall-clock` row) is **~11.2 GPU-hours** of the 30
-      h/week free quota — the cheapest mechanism-level question in the repo, and still the user's
-      call, so the box is not run here. The control is *run*, not borrowed, because 0.4893 came off
+      h/week free quota — the cheapest mechanism-level question in the repo. That price is the
+      T4's, and the T4 is unreachable: Kaggle auth is broken (the §5 P0 auth line, reproduced
+      2026-10-01), so as of
+      2026-10-01 the pair is running on the local M5 lane through the canonical launcher instead
+      (§9.50). No GPU-hours of the quota are spent, `--list` still labels both arms *open, unspent*
+      on that lane, and this box's wall price is the measured 6.75 s/update averaged over the first
+      480 updates — 1.20× the T4's slope, ~6.75 h per arm and ~13.5 h for the pair, mid-run and
+      provisional. The verdict stays open until both arms report.
+      The control is *run*, not borrowed, because 0.4893 came off
       the `myna-code` dataset version as it stood before any of the data-loader work landed on this
       branch: judged against that number a difference would price the flag *and* the code drift,
       judged against a fresh `off` arm it prices the flag. Both arms keep `--score-loss ce`, `--seed
@@ -1191,8 +1210,15 @@ is measurable **without a model**:
   option count — §9.9. Never run P4/P6/P7 concurrently with P3.
 - **Training runs on Kaggle, not the M5** (user directive, 2026-09-26): the M5 does architecture
   code, data, tests, inference/eval and every Apple-only measurement (MLX, MPS latency, browser
-  on-device) — those cannot move. The blockers this loop could clear are cleared: (1) still no git
-  remote, so the code travels as the kernel's uploaded source and the data as a dataset
+  on-device) — those cannot move. **The directive itself was lifted by the account holder on
+  2026-10-01**, in writing ("run the training locally … I gave you all permission"): with the T4
+  unreachable (§5 P0's auth line), keeping it would have stopped every dose experiment, so the 10c
+  pair runs on this box. What the lift does not change is the box's memory ceiling — this arm
+  requests `--batch 10` and pins `--free-gib 9.0` precisely so the plan picks the same batch V1-B
+  trained at instead of sizing to whatever bytes are free at the moment the plan runs. The blockers
+  this loop could clear are cleared: (1) the remote now exists (§5 P0, 2026-09-30), though that
+  changes nothing about how the bundle travels: a Kaggle kernel has no internet unless it is
+  granted, so the code still ships as the kernel's uploaded source and the data as a dataset
   (`kaggle/package_dataset.py` builds it, prints the upload command, does not run it); (2)
   `requires-python` is `>=3.11` and the package is proven to train on a real 3.11
   (`bench/check_python311.py`); (3) `--device auto` picks CUDA (`59240e1`); (4) the pilot dir ships
@@ -2301,3 +2327,69 @@ Kept permanently, because the value of this project's claims is that they surviv
    then §5 finds this entry between the two. The rule: **a tick ID in a subject is a claim about
    the plan's state, so it gets read back against the checkbox before the commit is made** — the
    same §9.44 discipline, applied one file earlier.
+50. **The one artifact this project cannot rebuild was kept in a temp directory, so shipping
+   weights stopped being an intention and became a process.**
+   V1-B's `model.pt` and `tokenizer.json` lived under `/private/tmp/kgwork`. That directory is gone
+   — `ls` on the path fails and a filesystem-wide `find` for `v1b-kaggle-3600b` returns nothing —
+   and what survives of the run is only what git holds: `runs/v1b_kaggle_3600b.{metrics,report}.json`
+   and `.train.log`. So the *level* is quotable (0.4893 test macro) while the *weights* are not, the
+   asymmetry §9.47's tail had already been forced to write down for the Tier 0 row. The price of the
+   loss is bigger than one number: every arm that wanted to warm-start from that checkpoint (§9.41
+   names the same gap) and every re-derivation §5 P0 still lists as open is now unspendable. §9.49's
+   "still unspent" survives as a claim about the GPU quota, but on the local lane this entry
+   supersedes it.
+   The regeneration 10c needed anyway got the durability rule attached in the same pass. Both arms
+   run through the canonical launcher on the M5 — `runs/pair_driver.sh` calls `kaggle/run.py`, which
+   prints the expanded command into `runs/antiprior_off_s0/train.log`, and the two arms differ by
+   `--anti-prior` alone. `runs/ckpt_backup.sh` then ships each arm's weights to a GitHub Release with
+   nobody awake for it: the first stable `model_last.pt` as a mid-run insurance copy, then the final
+   `model.pt` plus `tokenizer.json` once the driver writes that arm's exit line. Both are box glue
+   under `runs/`, which `.gitignore` keeps out of the tree — what is published here is the rule and
+   the launcher command, not a wrapper with this laptop's absolute path in it. The uploader was
+   proven before it had anything real to upload — it created a throwaway release, read the asset back
+   at its exact **40,000 B**, and that release was deleted — because an unattended process that
+   publishes is not allowed to fail for the first time at 07:00. And the run's own weights sit in the
+   repository working tree rather than under `/private/tmp`, which is already a different failure
+   class: a reboot does not clear it. Only a disk fault or a `git clean -xdf` does, which is what the
+   insurance copy is for — the first one is `antiprior_off_s0`'s step-250 `model_last.pt` at
+   **203,229,625 B**, roughly three times the final `model.pt` because it carries the optimizer and
+   scheduler as well as the weights, and it shipped: the watcher logged the file stable at 00:53:16
+   and the release went live 19 minutes later, which GitHub stamps `publishedAt
+   2026-09-30T19:27:29Z` — the two clocks agree once the box's UTC+05:45 is applied, and saying so
+   here because an hour reading a mismatched timestamp would conclude the artifact was invented.
+   That is also why a staged run dir reports its step as *not
+   recorded*: `train.py` writes `model.pt` as `{state_dict, cfg, temperature}` and puts the step only
+   in `model_last.pt`.
+   Three things this run must not borrow, said here so the next reader does not try. (i) It is not a
+   Kaggle measurement, and the wall price belongs to this lane: the ~11.2 h in §5 and §9.48 is the
+   T4's price and 0 hours of the 30 h/week quota are spent. This box reads **6.52–6.82 s/update** in
+   the windows between snapshots, 7.27 in the one that carries the step-250 eval and checkpoint
+   write, and 6.75 averaged over the first 480 updates — the log stamps one line per 60, so this is
+   a rate read off a live log rather than a stopwatch, and it is a *mid-run* rate from 480 of 3,600
+   updates that the completed log will supersede (§9.48's bounded-by-polls). Against the T4's
+   measured 5.618 that is 1.20×, i.e. ~6.75 h per arm and ~13.5 h for the pair. (ii) The pair is a
+   control only if it reads the corpus V1-B read, and
+   neither end prints a corpus hash — the mount carried a
+   `SOURCE_SHA256.json` that `runs/v1b_kaggle_3600b.train.log` names without quoting. What closes the
+   chain is statistics derived *from the data*, identical on both sides: `train question-sets:
+   17112`, `params: 16926848`, and the memory plan's `p95 267 tokens` row width — and
+   `runs/v1b_kaggle_3600b.metrics.json` records the same two derived values as its own keys,
+   `state_tokens_p95: 267` and `batch: 10`. On this side `data/decision-v2-pilot/train.jsonl` re-hashes
+   on 2026-10-01 to the `sha256_train` pinned in `upstream_manifest.json` —
+   **`5f5f93ff7ca03e4522dbe5bdff50e0a92cd5467d613d32d6a5988b8a00870a64`**, `MATCH`. One wording
+   difference that is not a difference: V1-B's plan line reads `--batch 32 exceeds it, using 10` and
+   this arm's reads `batch 10 fits`, because the requested flag differs while the *effective* batch is
+   10 in both. The honest remainder is that the Kaggle end of the corpus chain is a filename.
+   (iii) The arm is not a bitwise replay of V1-B and must not be sold as one. At step 250 it prints
+   `dev-mid acc 0.3682` where V1-B's log prints **0.3401** — same seed, same corpus, same effective
+   batch, different device, so the float trajectory differs update by update. The pair therefore
+   prices `--anti-prior` against a *fresh* control on this box; it says nothing about whether that
+   control reproduces 0.4893, and a reader who wants that comparison owes it to the T4 lane. The
+   check worth reading when each arm's `metrics.json` lands is `paraphrase_draws`: V1-B records
+   **225547** over 17,112 sets, and an arm that matches it has pushed the same data through the same
+   re-wording plan — a tighter fingerprint than any single line in a log.
+   The general form: **a checkpoint is an artifact only where git or a release can be read back.
+   Whatever took GPU hours to make gets a remote copy in the same pass that produces it, the
+   publishing path gets proven against a throwaway asset before the real one exists, and a rate
+   lifted from another machine's log is labelled as the price of that machine rather than of the
+   result.**
