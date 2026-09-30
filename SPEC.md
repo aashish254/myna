@@ -2647,11 +2647,16 @@ Kept permanently, because the value of this project's claims is that they surviv
     a whole file to **one** reported skip, so `test_mlx_int8.py` (8 tests) and `test_mlx_parity.py` (3)
     become 2 skip lines on a box that cannot load MLX — eleven items in, two lines out, a net −9. That
     collapse is the same shape the hidden-`mlx` rehearsal printed locally as `2 skipped`, so the gap
-    is arithmetic of the skip design and not a collection failure. Of the 8 skips the runner reported,
-    5 are accounted for by that design (the two collapsed MLX files, the two `macos_only` CLI params,
-    the KEV-gated parity test); the other 3 are named in the log of the run that follows this entry,
-    because CI now runs `pytest -q -rs` — a green that cannot say *why* it skipped is how §9.51's
-    sentence survived seven red runs, so the reasons print on every run from here.
+    is arithmetic of the skip design and not a collection failure. The 8 skips the runner reported
+    are now named by the run itself, because CI moved to `pytest -q -rs` — a green that cannot say
+    *why* it skipped is how §9.51's sentence survived seven red runs:
+    `SKIPPED [1] test_mlx_int8.py:31` and `[1] test_mlx_parity.py:39` (both "MLX unavailable on this
+    box: No module named 'mlx'"), `SKIPPED [2] test_cli_help.py:60` (the two `macos_only` harnesses),
+    `SKIPPED [1]` at each of `test_report.py:330 / :480 / :526` ("the v1-rich … artifact is not on
+    disk"), and `SKIPPED [1] test_upstream.py:131` (needs `KEV_ROOT` plus `datasets`). Four of the
+    eight are this tick's design, three are external artifacts a clone cannot have, one is the KEV
+    gate that has always skipped here too — and that is the whole list, read off the log rather than
+    inferred, which is what makes 545 green mean 545 and not 545-plus-something-quiet.
     The general form: **a clone is a different machine, and green is a claim about whichever one ran.
     Fixing a defect that hid every test does not make the suite green; it lets the suite report the
     thirteen things that were never tested anywhere but here.**
