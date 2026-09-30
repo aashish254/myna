@@ -23,6 +23,14 @@ import myna
 SRC = str(Path(myna.__file__).resolve().parent.parent)
 ROOT = Path.cwd()
 
+# The two MLX harnesses import the engine at module scope, and MLX cannot load off macOS
+# (PyPI's Linux wheel ships the bindings without libmlx.so), so on that runner there is no
+# usage text to render. §9.51's rule applies: absent-or-unloadable is a platform limit and
+# gets named, broken is a defect and stays red. Narrow on purpose — every other row of the
+# table below must answer `--help` on every box.
+macos_only = pytest.mark.skipif(sys.platform != "darwin",
+                                reason="MLX cannot load here, so this harness has no --help to render")
+
 
 def _help(*argv):
     r = subprocess.run([sys.executable, *argv, "--help"], capture_output=True, text=True,
@@ -61,8 +69,8 @@ def test_module_help_renders(module, flag):
     ("bench/eval_needle.py", "--lengths"),
     ("bench/mutation_longctx.py", "Mutation battery"),
     ("bench/mutation_onnx.py", "Mutation battery"),
-    ("bench/bench_mlx.py", "--quantize"),
-    ("bench/diag_mlx_int8_gem.py", "--iters"),
+    pytest.param("bench/bench_mlx.py", "--quantize", marks=macos_only),
+    pytest.param("bench/diag_mlx_int8_gem.py", "--iters", marks=macos_only),
     ("bench/mutation_mlx.py", "Mutation battery"),
     ("bench/eval_scratch.py", "--seeds"),
     ("bench/mutation_scratch.py", "Mutation battery"),

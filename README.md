@@ -577,18 +577,30 @@ uv run python bench/diag_question_ablation.py --run-dir runs/v1b-kaggle-3600b --
 ## Quickstart
 
 ```bash
-uv sync
+uv sync --extra browser
 uv run python -m myna.train          # 4,000 steps by default; v0's 9,000 took 15,693 s on an M5
 uv run pytest                        # equivalence + isolation proofs
 ```
 
-`uv sync` alone runs everything except the 11 MLX tests, which skip (name them with `uv run pytest
--rs`). Add `--extra mlx` **on Apple silicon** to include them; off macOS that is a trap worth naming,
-because PyPI's Linux `mlx` wheel installs the bindings without `libmlx.so`, so the package is present
-and unloadable at once (`uv run python -c "import mlx.core"` is the one command that shows it). The
-four MLX registry rows report the same limit as a note rather than a failure. Both facts are
-CI-measured and in §9.51, which is the entry for the tick this repo's Actions tab had never once gone
-green.
+`--extra browser` (onnx, onnxruntime, onnxscript) is part of the *test* install, not an optional
+add-on: the registry asks `bench/quantize_int8.py --help` for its `int8-quantize` row and that module
+imports onnx at module scope, so a plain `uv sync` leaves **5 tests red** — the row, gate G7's proof
+that every published row binds to a live command, and the four `test_gates.py` arms that read it.
+Those 5 are what the runner printed on its first real collection pass (13 failed, 520 passed, 20
+skipped, §9.52), and CI installs the extra for the same reason this file does.
+
+**And a fresh clone is still missing the weights, which costs another 5.** `--extra browser` alone
+does not make `uv run pytest` green: five tests load `runs/myna-v0/model.pt`, `runs/*` is ignored, and
+`.gitignore` keeps 57 MB of `*.pt` out of git — fetch the two Release assets first (the block under
+"Weights are not in the tree", or `gh release download v0-checkpoint --dir runs/myna-v0`) and both
+classes go away.
+
+The 11 MLX tests are the remaining skip: `uv run pytest -rs` names them, and `--extra mlx` includes
+them **on Apple silicon** only. Off macOS that extra is a trap worth naming, because PyPI's Linux
+`mlx` wheel installs the bindings without `libmlx.so`, so the package is present and unloadable at
+once (`uv run python -c "import mlx.core"` is the one command that shows it). The four MLX registry
+rows report the same limit as a note rather than a failure. Both facts are CI-measured and in §9.51,
+which is the entry for the tick this repo's Actions tab had never once gone green.
 
 **Weights are not in the tree** — `.gitignore` keeps `*.pt` out, and G7's witness is the committed
 JSON, not a binary. The v0 checkpoint that ~20 registry rows read as `--ckpt runs/myna-v0` is
