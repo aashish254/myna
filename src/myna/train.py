@@ -23,7 +23,6 @@ from .model import MynaConfig, MynaModel, typed_loss
 from .real_data import ANTI_PRIOR_SKEW, balance_weights
 from .tokenizer import question_tensors, batch_question_tensors, train_tokenizer, encode_text
 try:
-    try:
     from .config_scaled import MynaConfigScaledT4
 except ImportError:
     MynaConfigScaledT4 = None  # optional; only needed for T4 scaled runs
@@ -720,7 +719,7 @@ def main():
                          "rate is not a budget, and the M5 run died on one).")
     ap.add_argument("--config", choices=["v0", "scaled"], default="v0",
                     help="model architecture config: v0 uses d_model=384, n_layers=6 (~15M params); "
-                         "scaled uses d_model=512, n_layers=8 (~80–100M params) optimized for T4 "
+                         "scaled uses d_model=512, n_layers=8 (~36M params) optimized for T4 "
                          "(≤16GB VRAM), targeting ≥0.60 macro accuracy from V1-B baseline 0.4893.")
     ap.add_argument("--mem-safety", type=float, default=0.6,
                     help="share of the reported headroom the plan may spend, leaving room for "
@@ -1114,6 +1113,7 @@ def main():
                    "mem_plan_free_gib": None if free is None else free / 1024 / MI,
                    "mem_safety": args.mem_safety, "resumed_from_step": start_step,
                    "stopped": stopped, "last_step": last_step,
+                   "steps_requested": args.steps,
                    "stop_factor": args.stop_factor, "save_every": args.save_every,
                    "dev": dev_m, "test": test_m,
                    "dev_unseen": dev_unseen, "qtypes": qtypes}, f, indent=2)

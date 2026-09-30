@@ -1151,6 +1151,43 @@ def test_a_metrics_file_with_no_step_recorded_says_so(fx, tmp_path, capsys):
     assert w["model"]["step"] == -1
 
 
+def test_a_stopped_run_is_printed_as_void_and_recorded(fx, tmp_path, capsys):
+    """A run that trips its own stop rule still leaves a metrics file with a complete table
+    behind it, and six arms scored on that file describe what 24 updates associate -- printed
+    in the same shape as a measurement of a trained checkpoint. Measured the hard way on
+    2026-09-30, on a scaled job that STOPped at step 24 of 6,000. `myna.report` says so
+    (§7.1); this harness reads the same witness, so it has to say the same thing -- in stdout
+    before the arms, and in the artifact beside them."""
+    doc = json.loads(fx.metrics.read_text())
+    doc.update({"last_step": 24, "steps_requested": 6000,
+                "stopped": "step time 2.93s > 1.5x median 1.28s of the last 20"})
+    m = tmp_path / "stopped.json"
+    m.write_text(json.dumps(doc))
+    rc, printed, w = run(fx, tmp_path, capsys, "--metrics", str(m), out="stopped.json")
+    assert rc == 0
+    lines = printed.splitlines()
+    void = [i for i, ln in enumerate(lines) if ln.startswith("VOID:")]
+    assert void, printed[:600]
+    banner = " ".join(lines[void[0]:void[0] + 2])
+    assert "STOPPED at step 24 of 6000 requested" in banner, banner
+    assert "step time 2.93s > 1.5x median" in banner, "carry the reason, not just the fact"
+    assert "No claim may be read from them" in banner
+    arms = [i for i, ln in enumerate(lines) if "rewrote" in ln]
+    assert arms and void[0] < arms[0], "the warning has to be read before the arm table"
+    assert w["stopped"].startswith("step time"), w["stopped"]
+    assert w["steps_requested"] == 6000
+
+
+def test_a_run_that_finished_prints_no_void_banner(fx, tmp_path, capsys):
+    """The clean case is the one every committed artifact is in: a banner that fired on a
+    null `stopped` would be cried wolf, and a reader who has learned to skip it is worse
+    off than one who never had the guard."""
+    rc, printed, w = run(fx, tmp_path, capsys)
+    assert rc == 0
+    assert "VOID" not in printed, printed[:300]
+    assert w["stopped"] is None, "the fixture's metrics come from the trainer's own write"
+
+
 def test_the_split_selects_which_block_of_the_metrics_file_is_the_ruler(fx, tmp_path,
                                                                        capsys):
     """`--split dev` is scored against the file's `dev` block. The fixture gives dev one

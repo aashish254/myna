@@ -384,6 +384,18 @@ def main(argv=None) -> int:
           f"model {meta['model_sha256'][:12]} · tokenizer {meta['tokenizer_sha256'][:12]} "
           f"· device {args.device}", flush=True)
 
+    # A run that tripped its own stop rule still leaves a full per-cell table behind, and
+    # six arms scored on it read as a measurement of the mechanism when they measure what
+    # 24 updates associate. `myna.report` refuses to print such a file clean (§7.1); this
+    # harness reads the same witness, so it has to say the same thing in the same words.
+    if published_raw.get("stopped"):
+        req = published_raw.get("steps_requested")
+        print(f"VOID: this run STOPPED at step {last_step}"
+              + (f" of {req} requested" if req else "")
+              + f": {published_raw['stopped']}", flush=True)
+        print("      The arms below describe a truncated dose, not a trained checkpoint. "
+              "No claim may be read from them.", flush=True)
+
     # The floors, option counts and cell sizes come from the untouched split: an ablated copy
     # is the input under test, never the ruler it is measured with.
     stats = cell_stats(groups)
@@ -457,6 +469,8 @@ def main(argv=None) -> int:
     witness = {"cmd": shlex.join([sys.executable, "bench/diag_question_ablation.py", *given]),
                "run_dir": str(args.run_dir), "split": args.split, "suite": str(args.suite),
                "metrics": str(args.metrics), "last_step": last_step,
+               "stopped": published_raw.get("stopped"),
+               "steps_requested": published_raw.get("steps_requested"),
                "device": args.device, "seed": args.seed, "keep_min": keep_min, "model": meta,
                "guard": {"keys_compared": compared, "tie_flips": slack,
                          "float_tol": FLOAT_TOL, "row_slack_keys": ROW_SLACK_KEYS,

@@ -765,3 +765,48 @@ def test_the_json_report_carries_the_clip_and_brier_as_fields(tmp_path):
     assert j["brier"]["noul_cells"] == 8 and j["brier"]["priced_cells"] == 8
     cell = [c for c in j["cells"] if c["source"] == "sst5"][0]
     assert cell["clip"] == pytest.approx(cell["majority"]) and cell["brier"] is None
+
+
+# ---- a truncated run is a diagnostic, not a measurement (SPEC §7.1) -----------
+#
+# The stop rule in `myna.train` writes metrics.json and exits non-zero, but the file
+# it leaves behind holds a complete accuracy table, and this harness read that table
+# as though 24 updates were a checkpoint. Measured 2026-09-30: a scaled-config job
+# STOPped at step 24 of 6,000 and printed "macro 0.388 · G1: not met" with no mention
+# of either number. These two tests are the difference between a witness that records
+# a stop and a reader that honours it.
+
+def _stopped_metrics(tmp_path, **extra):
+    p = tmp_path / "metrics.json"
+    body = {"test": {}, "dev": {}, "last_step": 24, "steps_requested": 6000,
+            "stopped": "step time 2.93s > 1.5x median 1.28s of the last 20"}
+    body.update(extra)
+    p.write_text(json.dumps(body))
+    return str(p)
+
+
+@pytest.mark.skipif(not (PILOT / "test.jsonl").exists(), reason="pilot corpus not on disk")
+def test_a_stopped_run_is_printed_as_void_before_any_number(tmp_path):
+    r = _cli(["--suite", str(PILOT), "--split", "test",
+              "--metrics", _stopped_metrics(tmp_path)])
+    lines = r.stdout.splitlines()
+    void = [i for i, ln in enumerate(lines) if ln.startswith("VOID:")]
+    assert void, "a metrics file whose own witness says `stopped` must not print clean"
+    banner = " ".join(lines[void[0]:void[0] + 2])
+    assert "STOPPED at step 24 of 6000 requested" in banner, banner
+    assert "step time 2.93s > 1.5x median" in banner, "carry the reason, not just the fact"
+    assert "No gate may be judged" in banner
+    table = [i for i, ln in enumerate(lines) if "stratified test" in ln]
+    assert table and void[0] < table[0], "the warning has to be read before the numbers"
+    assert any(ln.startswith("G1: target") for ln in lines), \
+        "the banner labels the table; suppressing it would hide the dose too"
+
+
+@pytest.mark.skipif(not (PILOT / "test.jsonl").exists(), reason="pilot corpus not on disk")
+def test_a_clean_run_prints_no_void_banner(tmp_path):
+    """The null a finished run writes is the common case; a guard that fired on it
+    would train a reader to skip past the banner."""
+    r = _cli(["--suite", str(PILOT), "--split", "test",
+              "--metrics", _stopped_metrics(tmp_path, stopped=None)])
+    assert "VOID" not in r.stdout, r.stdout[:400]
+    assert any(ln.startswith("G1: target") for ln in r.stdout.splitlines())

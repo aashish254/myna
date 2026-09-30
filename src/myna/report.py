@@ -378,6 +378,18 @@ def main(argv=None) -> int:
     stats = cell_stats(groups)
     cls = strata(groups)
     metrics = json.loads(metrics_path.read_text())
+    # A run that tripped its own stop rule writes metrics.json and exits non-zero, but
+    # the file still carries a full table of accuracies, and every one of them describes
+    # a truncated dose. `stopped` is in the witness; this is the reader that makes the
+    # witness load-bearing. Without it a 24-update run prints "G1: not met" and reads
+    # like a measurement of the architecture rather than of the first 24 updates.
+    if metrics.get("stopped"):
+        req = metrics.get("steps_requested")
+        print(f"VOID: the run that wrote {metrics_path} STOPPED at step "
+              f"{metrics.get('last_step')}"
+              + (f" of {req} requested" if req else "") + f": {metrics['stopped']}")
+        print("      Every accuracy below describes a truncated dose, not a trained "
+              "checkpoint. No gate may be judged from this table. (§7.1)")
     key = "test" if args.split in ("test",) else ("dev" if args.split in ("dev", "development")
                                                   else "calibration")
     if key not in metrics:

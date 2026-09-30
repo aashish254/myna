@@ -70,7 +70,7 @@ Quote the ratio, never the millisecond figure.
 | **G4** | Long-context is *correct*, not just cheap | needle-style typed decision ≥ 0.90 at 4k and ≥ 0.85 at 16k state | **not met, and not yet measurable on this box.** v0's needle curve (`runs/needle_myna-v0.md`) reads 0.188 at 128 tokens against a 0.167 floor — at chance on the shortest rung — so the longer rows are decay of nothing, and the harness now says so itself rather than printing a table (§9.25). The 16k *state* is measured and cheap (§9.22); the 16k *decision* needs the long-context checkpoint, which is 7b / `KAGGLE` |
 | **G5** | Useful confidence, with abstention | risk/coverage curve on `calibration.jsonl`; ≥ 0.95 accuracy at ≥ 60% coverage on banking77 + dbpedia14 + trec | **not met on the level, met on the machinery.** Abstention ships: `Myna(ckpt, abstain_below=t)` withholds the commitment and prints the measured reason, the fallback seam labels every answer with the engine that committed, and the curve is a committed artifact (`runs/risk_coverage.md`, 448 rows / 568 questions). Accuracy on v0 climbs **0.349 → 0.535** as coverage falls 1.00 → 0.20 — the confidence ranks the answers, on a checkpoint that cannot do the task — and setting the 0.693 floor on the engine abstains on **227** questions where the curve withheld **227**. But **no rung reaches 0.95** (max 0.596, at 10% coverage) and G5's own three sources sit at 0.000 / 0.025 / 0.150, so the pass needs the `KAGGLE` checkpoint (§9.24) |
 | **G6** | No regression on what already worked | synthetic v0 test ≥ 0.94 | open — v0's measured test macro is **0.9523** (`runs/train-v0.log`, macro of its nine `=== test ===` rows), so the level clears today; the gate stays open until a v1 checkpoint is run against it, and a draft of this row cited "0.951", which no artifact prints (§9.30) |
-| **G7** | Reproducibility | one command per result, seeds pinned, witness JSONs committed, `pytest` green | **met, as a binding rather than a rebuild.** `bench/reproduce.py` holds 29 registry rows, each binding one published table cell to one command and one committed witness, and `make repro` re-reads the 69 quoted figures out of those artifacts rather than out of the prose; the python commands among those rows are checked against the tool behind them — its `--help` must still print every flag the row publishes (§9.43); the seeds live inside the printed commands (`--seed 0`, `--seeds 0 1`), not in sentences about them. What this does **not** say: no target *executes* the registry end to end — 20 rows re-run on this box, 3 retrain a checkpoint, 2 need a laya checkout on `PYTHONPATH`, 3 need Google Chrome and 1 is `KAGGLE` — which is why TODO 8b stays unticked and why G7 is discipline rather than a one-command rebuild. Every count in this cell is now read back against `ROWS` by `bench/gates.py`, so this row — the table's one hand-copied cell — goes red rather than quietly stale (§9.44) |
+| **G7** | Reproducibility | one command per result, seeds pinned, witness JSONs committed, `pytest` green | **met, as a binding rather than a rebuild.** `bench/reproduce.py` holds 30 registry rows, each binding one published table cell to one command and one committed witness, and `make repro` re-reads the 74 quoted figures out of those artifacts rather than out of the prose; the python commands among those rows are checked against the tool behind them — its `--help` must still print every flag the row publishes (§9.43); the seeds live inside the printed commands (`--seed 0`, `--seeds 0 1`), not in sentences about them. What this does **not** say: no target *executes* the registry end to end — 20 rows re-run on this box, 4 retrain a checkpoint, 2 need a laya checkout on `PYTHONPATH`, 3 need Google Chrome and 1 is `KAGGLE` — which is why TODO 8b stays unticked and why G7 is discipline rather than a one-command rebuild. Every count in this cell is now read back against `ROWS` by `bench/gates.py`, so this row — the table's one hand-copied cell — goes red rather than quietly stale (§9.44) |
 
 **This column is not a claim.** `make gates` (`bench/gates.py --check`) re-reads each cell's
 leading verdict word, the registry row that gate cites, and the named field inside a committed
@@ -2197,10 +2197,24 @@ Kept permanently, because the value of this project's claims is that they surviv
    Why this is a diagnosis and not a fix. The lever it points at is the input distribution, so it is
    P10's question, priced there — and priced *small*: three of the stateless eight sit inside the
    six cells `--anti-prior` reaches, and the other five already carry train majorities below the
-   skew threshold, so an inverse-prior re-weighting has almost nothing to remove for them. The gate
-   stays visibly open: this harness needs `model.pt` from the Kaggle-side checkpoint directory whose
-   *figures* are committed and whose *weights* are not, so it has no registry row and `make repro`
-   cannot re-run it — which is the honest asymmetry, not an omission.
+   skew threshold, so an inverse-prior re-weighting has almost nothing to remove for them.
+   The gate stays visibly open, and the row that was added to close half of it names the other
+   half: this harness scores `model.pt` from the Kaggle-side checkpoint directory, whose *figures*
+   are committed and whose *weights* are not.
+
+   ```bash
+   uv run python bench/diag_question_ablation.py \
+       --run-dir /private/tmp/kgwork/ckptfull/runs/v1b-kaggle-3600b \
+       --tokenizer /private/tmp/kgwork/tok/runs/v1b-kaggle-3600b/tokenizer.json \
+       --out runs/diag_question_ablation.json
+   ```
+
+   That line re-runs on the box holding `/private/tmp/kgwork` (67.7 MB of weights, uncommitted) and
+   not on a fresh clone, so `make repro` records it as a `retrain` row: it ties the six arm macros
+   and the 716-key guard to the committed `runs/diag_question_ablation.json` and `.log`, and asks
+   the tool that every flag in the line still exists — what it cannot do is re-derive the table for
+   a reader who has only this repository. That asymmetry is the honest shape of the artifact, not
+   an omission.
    The general form: **an accuracy is a claim about an input. Ablate the inputs before buying
    parameters, and read a per-cell delta's exact zero as a finding rather than as a rounding — a
    cell whose score does not move when its evidence is replaced is not under-trained, it is not
