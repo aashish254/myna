@@ -11,16 +11,31 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v4
-      # No `--extra mlx` here, and the reason is measured rather than assumed. This step
-      # did try it, and the runner printed `ImportError: libmlx.so: cannot open shared
-      # object file` — PyPI's Linux `mlx` wheel ships the bindings without the native
-      # library (`mlx-metal` is marked `sys_platform == 'darwin'`), so on Linux MLX is
-      # installable and unloadable at once. SPEC §9.51. What that leaves is a base install
-      # where MLX is simply absent, which the two MLX test files skip and the registry
-      # reports as a platform note on its four MLX rows (`bench/reproduce.py`
-      # `mlx_unloadable_here`) instead of failing §9.43's `--help` assertion on a module
-      # this platform cannot load at all.
-      - run: uv sync
+      # `--extra browser` is onnx + onnxruntime + onnxscript, and it is here because the
+      # registry asks `bench/quantize_int8.py --help` for its `int8-quantize` row: that
+      # module imports onnx at module scope, so without the extra the §9.43 runnability
+      # assertion fails and takes gate G7 with it — 5 tests red, all from one missing
+      # package (SPEC §9.52). The reason this is an install rather than a platform note is
+      # that onnx and onnxruntime are built *for* Linux, where MLX is built for Metal — but
+      # §9.51 is exactly the story of a wheel name believed instead of imported, so treat
+      # this step as the measurement of that claim and not its proof. If it goes red on
+      # import, the `int8-quantize` row belongs with the MLX rows under a platform limit.
+      - run: uv sync --extra browser
+      # Five tests load `runs/myna-v0/model.pt`, and a fresh clone has no such file:
+      # `runs/*` is ignored and 57 MB of weights do not belong in git. They travel as the
+      # `v0-checkpoint` Release assets, so CI fetches them — which also puts §5 P0's claim
+      # ("the weights ship as a Release") under test instead of under prose: a broken or
+      # renamed asset fails this step loudly, where skipping the five tests would have
+      # hidden it.
+      - name: Fetch the v0 checkpoint from its Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p runs/myna-v0
+          gh release download v0-checkpoint --repo "$GITHUB_REPOSITORY" --dir runs/myna-v0
+          ls -l runs/myna-v0
+          test -s runs/myna-v0/model.pt
+          test -s runs/myna-v0/tokenizer.json
       - run: uv run pytest -q
       # One assertion, and it is the one that matters to a remote: no credential shape in
       # any blob reachable from a ref. Hits in unreachable leftovers are printed as local

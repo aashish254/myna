@@ -64,8 +64,23 @@ So every "train" item below is split into *prepare/verify the path locally* (thi
       `uv sync`, and README's Quickstart says what that leaves unread and why `--extra mlx` is a
       macOS-only instruction. The probe was wrong twice before it worked (`find_module`, gone in
       3.12, blocked nothing and reported 11 passed; then a bare `ImportError`, which
-      `importorskip` re-raises) — SPEC §9.51. PR #1's run is the remaining witness: after 7 red
-      runs, green is the thing that has to print.
+      `importorskip` re-raises) — SPEC §9.51.
+      **Round 2 (§9.52):** PR #1 run 36779801999 executed the suite for the first time — **519.31 s,
+      13 failed / 520 passed / 20 skipped** — so the collection defect is closed and the 13 are the
+      box assumptions it had been hiding. Four causes, each closed with a real fix rather than a
+      skip: onnx absent made the `int8-quantize` row's `--help` unaskable and took gate G7 with it
+      (5 tests → CI installs `--extra browser`, and README's test-install line changed, since the
+      documented `uv sync` + `uv run pytest` was the recipe that produced the red); five tests load
+      `runs/myna-v0/model.pt`, which a clone does not have because the weights are a Release asset (→
+      CI runs `gh release download v0-checkpoint`, which also makes §5 P0's release claim executable);
+      `bench/bench_mlx.py` and `bench/diag_mlx_int8_gem.py` have no usage text to render off macOS (2
+      → `macos_only` on exactly those two params, after a CPU-only rehearsal that prints the state it
+      simulated and aborts if the patch did not take: **52 passed, 2 skipped**); and
+      `test_explicit_device_never_rewritten` asserted `resolve_device("mps") == "mps"`, which is this
+      laptop's hardware in a policy's clothes (1 → availability monkeypatched for both accelerators).
+      `--extra browser`'s loadability on Linux stays labelled **projected** until the next run
+      measures it; if it goes red on import, `int8-quantize` joins the platform-note path and the 13
+      read as 8. Green on the Actions tab is still the only thing that ticks this.
 
 ## P1 — Data
 - [x] Pull ~5k upstream rows/source from pinned HF revisions (`9e954f9`)

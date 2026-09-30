@@ -51,8 +51,17 @@ def test_synthetic_data_with_no_calibration_key_reports_dev():
     assert (splits, name) == ({"d": 1}, "dev")
 
 
-def test_explicit_device_never_rewritten():
-    assert resolve_device("mps") == "mps" and resolve_device("cpu") == "cpu"
+def test_explicit_device_never_rewritten(monkeypatch):
+    """The policy under test is "an explicit name comes back unchanged", and reading
+    MPS off the machine made that a claim about the laptop: CI's runner is CPU-only, so
+    `resolve_device("mps")` raised there and the test went red on a box that cannot have
+    MPS (§9.52). Availability is monkeypatched for both accelerators — the mirror of the
+    fail-loud test below, which already refuses to assume either way."""
+    assert resolve_device("cpu") == "cpu"
+    monkeypatch.setattr(torch.backends.mps, "is_available", lambda: True)
+    monkeypatch.setattr(torch.cuda, "is_available", lambda: True)
+    assert resolve_device("mps") == "mps"
+    assert resolve_device("cuda") == "cuda"
 
 
 def test_explicit_unavailable_device_fails_loud():

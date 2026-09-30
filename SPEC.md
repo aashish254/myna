@@ -438,8 +438,19 @@ does not advance, it goes in the corrections log (§9).
       guard the import with `try / except ImportError` + a module-level skip, and
       `bench/reproduce.py` learned to tell a dependency this platform cannot load (a printed note on
       exactly 2 error strings, 4 rows) from a missing base dependency or a dropped flag (red, always).
-      README's Quickstart names which rows each install choice leaves unread. Unticked until the
-      Actions tab shows green: after 7 red runs the run is the witness, §9.30.
+      README's Quickstart names which rows each install choice leaves unread. **Round 2, same
+      bullet, one tick later (§9.52):** the collection fix worked — run 36779801999 executed
+      **519.31 s** of tests and printed **13 failed, 520 passed, 20 skipped**, which is the first
+      witness this repo has ever had that a test ran. The 13 are four box assumptions a Linux clone
+      falsified and nothing else could: onnx missing for the `int8-quantize` row's `--help` (5 tests,
+      so CI installs `--extra browser` and the Quickstart now says the *test* install needs it), no
+      `runs/myna-v0/model.pt` in a fresh clone because the weights travel as a Release (5 tests, so
+      CI downloads `gh release download v0-checkpoint`, which also puts §5 P0's own release claim
+      under test instead of under prose), two MLX bench harnesses whose usage text cannot render
+      off macOS (2, marked `macos_only` after a CPU-only rehearsal that prints its own blocker),
+      and one test that asserted `resolve_device("mps") == "mps"` — i.e. that this laptop has MPS
+      (1, now monkeypatched so it reads the policy). Unticked until the Actions tab shows green:
+      after 7 red runs the run is the witness, §9.30.
 - [ ] Kaggle CLI auth is dead, and it gates the GPU lane rather than a row. Reproduced
       2026-10-01: `~/.kaggle/access_token` is present (38 B, `KGAT_…`, never printed here) and both
       credential paths fail identically — `kaggle quota` exits **1** on
@@ -2575,3 +2586,52 @@ Kept permanently, because the value of this project's claims is that they surviv
     optional dependencies, so it must be able to say *why* it could not ask: a dependency this
     platform cannot load becomes a printed note, a dependency that went missing or a flag that went
     away stays red, and no optional import sits at module scope unguarded in a test file.**
+
+52. **CI ran the suite for the first time and printed 13 red, and not one of them was findable
+    from this laptop.** Run 36779801999 (commit `1282457`) executed 519.31 s of tests on
+    `ubuntu-latest` and reported **13 failed, 520 passed, 20 skipped**. The collection defect is
+    dead: the 9 MLX tests skipped on their own, the four MLX registry rows printed the platform
+    note instead of failing §9.43, and `make secrets` was reached at all for the first time. That
+    is §9.51 working on the machine no rehearsal could reach — and it is also the moment the
+    sentence "the suite is green" got its second half, because the 13 are thirteen claims about
+    *this* box that a Linux clone falsified. They split four ways:
+    - **5 from one missing package.** `bench/quantize_int8.py` imports onnx at module scope, so its
+      `--help` could not be asked, which made the `int8-quantize` row red, which made gate G7's
+      proof ("every published row binds to a command that still answers") red, which failed
+      `test_reproduce.py::test_the_committed_tree_passes` and four `test_gates.py` arms. Fixed by
+      installing `--extra browser` in CI — and by README, because the documented contributor recipe
+      was `uv sync` + `uv run pytest`, i.e. the exact two lines that produce this red. That is
+      §9.51's third recurrence of the same shape: a check that re-runs a published command
+      inherits that command's dependencies, and the install text has to carry them.
+    - **5 from a fresh clone having no weights.** `runs/myna-v0/model.pt` is gitignored and travels
+      as a Release asset, so `bench/risk_coverage.py`, `bench/eval_needle.py` and the two
+      `test_latency_matched.py` runs died on `FileNotFoundError`. CI now downloads
+      `gh release download v0-checkpoint` before pytest, deliberately instead of skipping those
+      five: §5 P0's claim that the weights ship as a Release had never been executed by anything,
+      and a renamed or missing asset now fails one loud step rather than hiding behind five
+      legitimate-looking skips.
+    - **2 from the CLI-surface test meeting an unloadable MLX.** `test_cli_help.py` asserts every
+      bench script renders `--help`; `bench/bench_mlx.py` and `bench/diag_mlx_int8_gem.py` import
+      the engine at module scope, so off macOS there is no usage text to render. Same
+      absent/unloadable-vs-broken rule as §9.51, new file: a `macos_only` marker on exactly those
+      two params, with the other 22 rows of the table still required to answer anywhere.
+    - **1 from a test that read the laptop.** `test_explicit_device_never_rewritten` asserted
+      `resolve_device("mps") == "mps"`, which is "this machine has MPS" wearing a policy's clothes.
+      Availability is now monkeypatched for both accelerators, so the test reads the policy — an
+      explicit name comes back unchanged — on any box. Its neighbour already made MPS unavailable by
+      monkeypatch rather than "assumed either way", which is the argument for the shape.
+    The rehearsal that justified the last two was run *before* pushing, and it carried its own
+    negative control: a CPU-only simulation (`sys.platform = "linux"`, both `is_available()` probes
+    forced false) that **prints** the state it simulated and aborts if the patch did not take, then
+    reports **52 passed, 2 skipped** for those two files with the skip reason named. §9.51's probe
+    failed twice because a green probe is not evidence that the probe ran; this one prints its own
+    blocker. What the rehearsal still cannot reach is the Linux *install* — see below.
+    Labelled honestly: onnx and onnxruntime being loadable on Linux is a **projection**, made from
+    the fact that Linux is onnxruntime's primary target rather than from a wheel filename, and the
+    run that installs `--extra browser` is its measurement. The branch is written here before the
+    result: if that step goes red on import, the `int8-quantize` row joins the four MLX rows under
+    the platform-limit path and `mlx_unloadable_here` becomes a general unloadable-module note — and
+    the 13 will then read as 8, not 0.
+    The general form: **a clone is a different machine, and green is a claim about whichever one ran.
+    Fixing a defect that hid every test does not make the suite green; it lets the suite report the
+    thirteen things that were never tested anywhere but here.**
