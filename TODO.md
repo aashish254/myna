@@ -47,7 +47,7 @@ So every "train" item below is split into *prepare/verify the path locally* (thi
       (3 arms: clean repo prints its denominator, planted fakes are named by shape and path and exit 1,
       an `--amend`ed blob no ref points at is still found but classified local debt and exits 0).
       Suite at this tick: **556 passed, 1 skipped**.
-- [ ] **Make CI green** — `.github/workflows/ci.yml` failed all **7** runs this repo has ever
+- [x] **Make CI green** — `.github/workflows/ci.yml` failed all **7** runs this repo has ever
       recorded, at **29–48 s each**, because `tests/test_mlx_int8.py` did a bare module-scope
       `import mlx.core as mx`: `Interrupted: 1 error during collection`, exit 2, **zero tests
       executed** while this box printed 556 green beside them. The obvious fix — `importorskip` plus
@@ -80,7 +80,12 @@ So every "train" item below is split into *prepare/verify the path locally* (thi
       laptop's hardware in a policy's clothes (1 → availability monkeypatched for both accelerators).
       `--extra browser`'s loadability on Linux stays labelled **projected** until the next run
       measures it; if it goes red on import, `int8-quantize` joins the platform-note path and the 13
-      read as 8. Green on the Actions tab is still the only thing that ticks this.
+      read as 8. **Closed 2026-10-01.** The projection resolved in the expected direction and PR #1
+      landed on `main` by rebase; run **36785555798** at SHA `3ba18a3` printed **545 passed, 8
+      skipped, 0 failed in 599.72 s**, exit 0, with the credential scan at 0 matches over its full
+      222-blob clone. CI now runs `pytest -q -rs`, and the log names all 8 skips — 2 collapsed MLX
+      files, 2 `macos_only` CLI harnesses, 3 `test_report.py` artifacts a clone cannot have, 1 KEV
+      gate — which is the accounting §9.52 quotes rather than infers.
 
 ## P1 — Data
 - [x] Pull ~5k upstream rows/source from pinned HF revisions (`9e954f9`)

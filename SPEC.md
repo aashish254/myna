@@ -428,7 +428,10 @@ does not advance, it goes in the corrections log (§9).
       and from a pre-push log.
       What the push did *not* fix is the opposite half of §9.47: the V1-B weights lived under
       `/private/tmp` and are gone, so no remote holds them either.
-- [ ] **CI has never run a test, and the reason is now a gate rather than a surprise.** All 7 runs the
+- [x] **CI has never run a test, and the reason is now a gate rather than a surprise.** Closed
+      2026-10-01: `main` run **36785555798** (SHA `3ba18a3`) printed **545 passed, 8 skipped, 0
+      failed in 599.72 s** and exit 0, with `make secrets` walking 222 of 222 blobs at 0 matches.
+      All 7 runs the
       Actions tab records fail identically at collection — `ModuleNotFoundError: No module named
       'mlx'` in `tests/test_mlx_int8.py`, so **zero tests executed** while this box reported 556
       passing beside them. §9.51 is the full measurement, including the first fix (`--extra mlx` in
@@ -453,10 +456,11 @@ does not advance, it goes in the corrections log (§9).
       36781802262 went green — `--extra browser` installed *and* loaded, `bench/quantize_int8.py
       --help` answered on Linux, `gh release download v0-checkpoint` filled `runs/myna-v0`, and the
       runner printed **545 passed, 8 skipped, 0 failed in 572.45 s** with the credential scan walking
-      **222 of 222** blobs at **0 matches**. First green in this repository's history. Still unticked
-      until the Actions tab shows green *on `main`*: that run is a PR run, and `on: push: main` has to
-      see the same SHA. The pytest line now carries `-rs`, so a future green must name each skip
-      instead of just counting it — after 7 red runs the run is the witness, §9.30.
+      **222 of 222** blobs at **0 matches** — a PR run, so the bullet stayed unticked one more pass.
+      **Closed on `main`:** run **36785555798**, SHA `3ba18a3b822b869eb47c63151550839fb58d782c`,
+      **545 passed, 8 skipped in 599.72 s**, exit 0, scan 0 matches over 222 blobs. The pytest line
+      carries `-rs`, so a future green must name each skip instead of just counting it — after 7 red
+      runs the run is the witness, §9.30, and §9.52 is the entry for what the first real run found.
 - [ ] Kaggle CLI auth is dead, and it gates the GPU lane rather than a row. Reproduced
       2026-10-01: `~/.kaggle/access_token` is present (38 B, `KGAT_…`, never printed here) and both
       credential paths fail identically — `kaggle quota` exits **1** on
