@@ -352,8 +352,14 @@ does not advance, it goes in the corrections log (§9).
       silently train on CPU). **Fixed:** `train.resolve_device` — MPS, then CUDA, then CPU, and an
       explicit `--device` is never rewritten. Order matters and is tested both ways.
 - [ ] Re-derive every V1-B conclusion; numbers in `runs/*.log` predate `385e06c` and are void.
-- [ ] Push the repo. **No remote exists** — 30 commits and 45 tracked files live on one laptop.
-      This is the largest unmanaged risk in the project. User-gated.
+- [x] Push the repo. **Closed 2026-09-30:** the tree is public at
+      `github.com/aashish254/myna` (71 commits, 238 tracked files, pilot corpus included). Two
+      things were checked on the way out rather than assumed: every blob in history was scanned for
+      credential shapes (845 blobs, **0 matches** — the only `KGAT_` string ever committed is prose
+      reading `KGAT_…`), and the v0 weights went onto the repo as a **Release asset** rather than
+      into git history, with the `risk_coverage` witness re-run against them to prove they are the
+      published ones. What the push did *not* fix is the opposite half of §9.47: the V1-B weights
+      lived under `/private/tmp` and are gone, so no remote holds them either.
 
 ### P1 — Data: the accuracy unlock *(tasks #14 and #15 done)*
 The suite froze **300 train rows per source** (contrastive 432, since its generator emits a fixed

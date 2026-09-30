@@ -25,7 +25,9 @@ So every "train" item below is split into *prepare/verify the Kaggle path locall
       `tests/test_cli_help.py` alongside `myna.report --help`. Their V1-B *numbers* remain void and
       are re-derived post-`385e06c` (the KAGGLE item below), which is a different debt.
 - [ ] Re-derive every V1-B conclusion from a post-`385e06c` run — `KAGGLE` (needs the retrain)
-- [ ] Push the repo to a remote — user-gated, no remote exists (SPEC §5 P0: largest unmanaged risk)
+- [x] Push the repo to a remote — done 2026-09-30: public at `github.com/aashish254/myna`, history
+      scanned blob-by-blob for credentials (845 blobs, 0 matches), v0 weights shipped as a Release
+      asset not a git blob (SPEC §5 P0)
 
 ## P1 — Data
 - [x] Pull ~5k upstream rows/source from pinned HF revisions (`9e954f9`)

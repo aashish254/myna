@@ -569,6 +569,20 @@ uv run python -m myna.train          # 4,000 steps by default; v0's 9,000 took 1
 uv run pytest                        # equivalence + isolation proofs
 ```
 
+**Weights are not in the tree** — `.gitignore` keeps `*.pt` out, and G7's witness is the committed
+JSON, not a binary. The v0 checkpoint that ~20 registry rows read as `--ckpt runs/myna-v0` is
+therefore a [Release asset](https://github.com/aashish254/myna/releases/tag/v0-checkpoint), with its
+sha256 and the re-run that ties it to `runs/risk_coverage.json` on the page. The V1-B weights behind
+the 0.4893 macro are **not** there, because they lived in `/private/tmp` and are gone; that Release
+page says which published cell regenerates them.
+
+```bash
+mkdir -p runs/myna-v0
+curl -L -o runs/myna-v0/model.pt       https://github.com/aashish254/myna/releases/download/v0-checkpoint/model.pt
+curl -L -o runs/myna-v0/tokenizer.json https://github.com/aashish254/myna/releases/download/v0-checkpoint/tokenizer.json
+make repro                             # 30/30 rows, with weights to read
+```
+
 ```python
 from myna import Myna
 
