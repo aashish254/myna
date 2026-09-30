@@ -1,0 +1,88 @@
+baseline copy: green (1 test file) 41 passed in 9.76s
+
+[ 1/41] caught      a key that moved by a hundredth becomes rounding
+            FAILED tests/test_diag_question_ablation.py::test_the_tolerance_and_the_row_slack_are_two_different_numbers
+[ 2/41] caught      the one-row slack is an absolute number, not a row
+            FAILED tests/test_diag_question_ablation.py::test_a_key_off_by_more_than_a_row_refuses_and_prints_no_table
+[ 3/41] caught      a sixth tie flip tips the whole table
+            FAILED tests/test_diag_question_ablation.py::test_the_tolerance_and_the_row_slack_are_two_different_numbers
+[ 4/41] caught      a committed key this split never produced is absorbed
+            FAILED tests/test_diag_question_ablation.py::test_a_key_the_split_cannot_produce_is_named_by_key
+[ 5/41] caught      a scored key the metrics file lost is never mentioned
+            FAILED tests/test_diag_question_ablation.py::test_a_scored_key_the_metrics_file_lost_is_named
+[ 6/41] caught      the calibration sidecars are compared as accuracies
+            FAILED tests/test_diag_question_ablation.py::test_the_as_scored_arm_reproduces_what_the_trainer_computed
+[ 7/41] caught      the guard counts the metrics file rather than the keys it compared
+            FAILED tests/test_diag_question_ablation.py::test_the_as_scored_arm_reproduces_what_the_trainer_computed
+[ 8/41] caught      the table prints whatever the guard found
+            FAILED tests/test_diag_question_ablation.py::test_a_key_off_by_more_than_a_row_refuses_and_prints_no_table
+[ 9/41] caught      the ruler is the test block whatever --split said
+            FAILED tests/test_diag_question_ablation.py::test_the_split_selects_which_block_of_the_metrics_file_is_the_rul
+[10/41] caught      an arm is ablated and the untouched split is scored
+            FAILED tests/test_diag_question_ablation.py::test_the_fitted_model_reads_something_it_can_lose
+[11/41] caught      the seed is pinned inside the arms loop
+            FAILED tests/test_diag_question_ablation.py::test_the_seed_reaches_the_scored_numbers_not_only_the_transform
+[12/41] caught      the coverage line measures the split against itself
+            FAILED tests/test_diag_question_ablation.py::test_the_fitted_model_reads_something_it_can_lose
+[13/41] caught      the ablated copy is a shallow one, so arms stack on each other
+            FAILED tests/test_diag_question_ablation.py::test_an_arm_is_a_copy_the_untouched_split_stays_the_ruler
+[14/41] caught      an unknown arm names nothing and scores the untouched split
+            FAILED tests/test_diag_question_ablation.py::test_an_unknown_arm_names_the_arms_that_exist
+[15/41] caught      the permute bucket forgets which question a set asks
+            FAILED tests/test_diag_question_ablation.py::test_permute_instruction_only_exchanges_sets_of_the_same_shape
+[16/41] caught      a cross-source cue may come from the same source
+            FAILED tests/test_diag_question_ablation.py::test_cross_source_instruction_uses_another_source_or_says_nothing
+[17/41] caught      a width with no partner is swapped anyway
+            FAILED tests/test_diag_question_ablation.py::test_the_as_scored_arm_reproduces_what_the_trainer_computed
+[18/41] caught      blanked options stop matching the option count the head reads
+            FAILED tests/test_diag_question_ablation.py::test_blank_options_keeps_the_option_count_the_pointer_head_reads
+[19/41] caught      the blanking arm keeps every cue
+            FAILED tests/test_diag_question_ablation.py::test_blank_instruction_rewrites_every_cue_and_nothing_else
+[20/41] caught      states are swapped inside a question-set, not across a source
+            FAILED tests/test_diag_question_ablation.py::test_swap_state_is_a_permutation_pooled_by_source
+[21/41] caught      the swap-state rebuild is the identity, so the arm scores the split it read
+            FAILED tests/test_diag_question_ablation.py::test_swap_state_is_a_permutation_pooled_by_source
+[22/41] caught      every state is reported as rewritten
+            FAILED tests/test_diag_question_ablation.py::test_the_control_arm_changes_nothing_and_counts_every_input
+[23/41] caught      a rewritten cue is counted as a rewritten option set
+            FAILED tests/test_diag_question_ablation.py::test_blank_instruction_rewrites_every_cue_and_nothing_else
+[24/41] caught      worst-d is a margin over the floor, not a loss against as-scored
+            FAILED tests/test_diag_question_ablation.py::test_the_printed_table_is_the_witness_cell_by_cell
+[25/41] caught      the macro block's delta is against the floor too
+            FAILED tests/test_diag_question_ablation.py::test_the_macro_block_prints_deltas_against_the_as_scored_arm
+[26/41] caught      the header lists arms the run never scored
+            FAILED tests/test_diag_question_ablation.py::test_an_arm_the_run_skipped_leaves_its_column_out
+[27/41] caught      a cell outside --min-rows is printed anyway
+            FAILED tests/test_diag_question_ablation.py::test_min_rows_moves_a_cell_out_of_the_table_the_macro_and_the_flo
+[28/41] caught      state-delta prints the swapped arm's level
+            FAILED tests/test_diag_question_ablation.py::test_the_emission_block_lists_every_kept_cell_and_the_witness_agr
+[29/41] caught      a collapse above its own floor is filtered out of the block
+            FAILED tests/test_diag_question_ablation.py::test_the_as_scored_arm_reproduces_what_the_trainer_computed
+[30/41] caught      collapse_share is the gold's majority, not the model's
+            FAILED tests/test_diag_question_ablation.py::test_the_emission_counts_are_the_predictions_not_the_gold
+[31/41] caught      the per-arm line denominates the rewrite count in itself
+            FAILED tests/test_diag_question_ablation.py::test_each_arms_line_prints_its_own_macro_floor_and_rewrite_counts
+[32/41] caught      the guard note announces zero tie flips whatever it counted
+            FAILED tests/test_diag_question_ablation.py::test_a_single_row_flip_is_counted_as_a_tie_flip_not_a_defect
+[33/41] caught      the tokenizer digest ignores which file scored the split
+            FAILED tests/test_diag_question_ablation.py::test_a_tokenizer_named_by_a_flag_binds_that_file_not_the_default_
+[34/41] caught      the witness names the default path, not the tokenizer it used
+            FAILED tests/test_diag_question_ablation.py::test_a_tokenizer_named_by_a_flag_binds_that_file_not_the_default_
+[35/41] caught      a missing tokenizer raises instead of naming itself
+            FAILED tests/test_diag_question_ablation.py::test_a_tokenizer_that_is_not_where_the_default_points_refuses_by_
+[36/41] caught      the checkpoint's weights are read and never applied
+            FAILED tests/test_diag_question_ablation.py::test_the_as_scored_arm_reproduces_what_the_trainer_computed
+[37/41] caught      a checkpoint with no step recorded becomes step zero
+            FAILED tests/test_diag_question_ablation.py::test_a_metrics_file_with_no_step_recorded_says_so
+[38/41] caught      a set's accuracy is divided by its sets, not its rows
+            FAILED tests/test_diag_question_ablation.py::test_the_as_scored_arm_reproduces_what_the_trainer_computed
+[39/41] caught      the prediction chunks are never kept for the emission block
+            FAILED tests/test_diag_question_ablation.py::test_the_as_scored_arm_reproduces_what_the_trainer_computed
+[40/41] caught      the default --min-rows is zero, not the report's floor
+            FAILED tests/test_diag_question_ablation.py::test_a_min_rows_that_keeps_no_cell_refuses_with_its_own_number
+[41/41] caught      a --min-rows that keeps nothing runs and crashes on an empty macro
+            FAILED tests/test_diag_question_ablation.py::test_a_min_rows_that_keeps_no_cell_refuses_with_its_own_number
+
+41/41 mutations caught
+EXIT=0
+EXIT=0
