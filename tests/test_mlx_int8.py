@@ -19,12 +19,16 @@ import pytest
 
 torch = pytest.importorskip("torch")
 
-# Apple-only package, and this gate belongs on the Mac anyway (SPEC §6: the MLX
-# measurements stay on this box). Imported lazily like `test_mlx_parity.py` does, so a
-# Linux runner skips the file instead of erroring during collection — an ImportError at
-# collection aborts the whole suite, which is how CI went red on main while every local
-# run stayed green.
-mx = pytest.importorskip("mlx.core")
+# MLX is an optional extra and this gate belongs on the Mac anyway (SPEC §6: the MLX
+# measurements stay on this box). Wrapped rather than `importorskip`-ed because the
+# package can also be *present and unloadable* — PyPI's Linux wheel ships bindings
+# without libmlx.so — and `importorskip` re-raises that ImportError, which aborts
+# collection for the whole suite. That is how CI went red on main while every local run
+# stayed green (§9.51).
+try:
+    import mlx.core as mx  # noqa: E402
+except ImportError as exc:  # absent, or installed and unable to load here
+    pytest.skip(f"MLX unavailable on this box: {exc}", allow_module_level=True)
 
 from myna.model import MynaConfig, MynaModel  # noqa: E402
 from myna.mlx_model import MynaMLX  # noqa: E402

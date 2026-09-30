@@ -47,20 +47,25 @@ So every "train" item below is split into *prepare/verify the path locally* (thi
       (3 arms: clean repo prints its denominator, planted fakes are named by shape and path and exit 1,
       an `--amend`ed blob no ref points at is still found but classified local debt and exits 0).
       Suite at this tick: **556 passed, 1 skipped**.
-- [ ] **Make CI green** — `.github/workflows/ci.yml` has failed all **7** runs this repo has ever
+- [ ] **Make CI green** — `.github/workflows/ci.yml` failed all **7** runs this repo has ever
       recorded, at **29–48 s each**, because `tests/test_mlx_int8.py` did a bare module-scope
-      `import mlx.core as mx` and `mlx` is an optional extra that a `ubuntu-latest` runner does not
-      have: `Interrupted: 1 error during collection`, exit 2, **zero tests executed** while this box
-      printed 556 green beside them. Three pieces, each measured: `pytest.importorskip("mlx.core")`
-      in `test_mlx_int8.py` (8) and `test_mlx_parity.py` (3) so a missing extra costs a file not the
-      session; `uv sync --extra mlx` in the workflow, because the rehearsal with `mlx` hidden
-      (**5 failed / 540 passed / 3 skipped**) shows the 5 are `bench/reproduce.py --check` failing the
-      §9.43 runnability assertion on four rows — `arch-params`, `mlx-int8`, `mlx-int8-keepgate`,
-      `mlx-kernel` — so skipping is not a fix; and `--extra mlx` in README's Quickstart, which
-      documented the exact two commands that fail. The probe itself was wrong twice before it worked
-      (`find_module`, gone in 3.12, blocked nothing and reported 11 passed; then a bare `ImportError`,
-      which `importorskip` re-raises instead of skipping) — SPEC §9.51. Lands through a PR: after 7
-      red runs the green Actions tab is the witness.
+      `import mlx.core as mx`: `Interrupted: 1 error during collection`, exit 2, **zero tests
+      executed** while this box printed 556 green beside them. The obvious fix — `importorskip` plus
+      `uv sync --extra mlx` — was tried on a branch and the runner falsified half of it: MLX's Linux
+      wheel installs the bindings without `libmlx.so`, so `import mlx.core` raises a *bare*
+      `ImportError`, which `importorskip` re-raises rather than skipping. What landed instead:
+      (a) `try / except ImportError` + `pytest.skip(allow_module_level=True)` in `test_mlx_int8.py`
+      (8) and `test_mlx_parity.py` (3), measured both ways — `mlx` hidden, and `mlx` present but
+      unloadable — each printing `MLX unavailable on this box: …`; (b) `bench/reproduce.py`
+      `mlx_unloadable_here(tail, platform)`, which turns the four MLX rows' `--help` assertion into a
+      printed note **only** off Darwin and **only** for those two error strings, so a missing base
+      dependency or a dropped flag stays red (§9.43 intact); pinned by 5 arms in
+      `tests/test_reproduce.py`, mutation-checked 4 mutants / 4 caught; (c) CI stays on plain
+      `uv sync`, and README's Quickstart says what that leaves unread and why `--extra mlx` is a
+      macOS-only instruction. The probe was wrong twice before it worked (`find_module`, gone in
+      3.12, blocked nothing and reported 11 passed; then a bare `ImportError`, which
+      `importorskip` re-raises) — SPEC §9.51. PR #1's run is the remaining witness: after 7 red
+      runs, green is the thing that has to print.
 
 ## P1 — Data
 - [x] Pull ~5k upstream rows/source from pinned HF revisions (`9e954f9`)
@@ -744,7 +749,7 @@ So every "train" item below is split into *prepare/verify the path locally* (thi
       comparable deletes the difference the check is about.
 - [ ] **10c** The GPU pair `antiprior_off_s0` / `antiprior_on_s0` — **~11.2 GPU-hours**, unspent *on
       the T4*, and the user's call there. Kaggle auth is broken, so the pair is running on the local
-      M5 lane since 2026-10-01 at the measured 6.75 s/update averaged over its first 480 updates
+      M5 lane since 2026-10-01 at the measured 6.79 s/update averaged over its first 1,440 updates
       (§9.50), and each arm's `model.pt` goes
       to a GitHub Release the pass that writes it — the V1-B weights are gone with `/private/tmp`, so
       a regenerated checkpoint that is not shipped is a repeat of the same loss.

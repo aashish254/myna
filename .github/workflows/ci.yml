@@ -11,24 +11,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v4
-      # `--extra mlx`: without it the suite does not skip, it fails. Measured with a
-      # blocker that makes `import mlx` raise the real `ModuleNotFoundError`, i.e. a
-      # rehearsal of this runner: **5 failed, 540 passed, 3 skipped** — 4 in
-      # `test_gates.py`, 1 in `test_reproduce.py`, all of them `bench/reproduce.py
-      # --check`, whose §9.43 runnability assertion runs `--help` on the module behind
-      # four rows: `arch-params`, `mlx-int8`, `mlx-int8-keepgate`, `mlx-kernel`. So the
-      # registry gate is the reason this is an install problem and not a skip problem.
-      # PyPI ships Linux wheels and `uv.lock` already resolves the extra (pinned `mlx`
-      # 0.32.2, `cp313-cp313-manylinux_2_35_x86_64`), so no pin is added here;
-      # `mlx-metal` is marked `sys_platform == 'darwin'`, so the Linux install is
-      # CPU-only — which is what those tests ask for (`mx.set_default_device(mx.cpu)`),
-      # and it makes the MLX port parity gate run on a second backend rather than never.
-      - run: uv sync --extra mlx
+      # No `--extra mlx` here, and the reason is measured rather than assumed. This step
+      # did try it, and the runner printed `ImportError: libmlx.so: cannot open shared
+      # object file` — PyPI's Linux `mlx` wheel ships the bindings without the native
+      # library (`mlx-metal` is marked `sys_platform == 'darwin'`), so on Linux MLX is
+      # installable and unloadable at once. SPEC §9.51. What that leaves is a base install
+      # where MLX is simply absent, which the two MLX test files skip and the registry
+      # reports as a platform note on its four MLX rows (`bench/reproduce.py`
+      # `mlx_unloadable_here`) instead of failing §9.43's `--help` assertion on a module
+      # this platform cannot load at all.
+      - run: uv sync
       - run: uv run pytest -q
       # One assertion, and it is the one that matters to a remote: no credential shape in
       # any blob reachable from a ref. Hits in unreachable leftovers are printed as local
       # debt and do not fail this — and a clone can carry them: a `git clone` of this path
-      # reported 29 of its 554 blobs unreachable, with the same three findings. SPEC §5 P0:
-      # the claim behind this step used to be a sentence about a one-off command that
-      # walked zero blobs and printed "0 matches" anyway.
+      # measured 2026-09-30 reported 29 of its 554 blobs unreachable, with the same three
+      # findings. SPEC §5 P0: the claim behind this step used to be a sentence about a
+      # one-off command that walked zero blobs and printed "0 matches" anyway.
       - run: make secrets
