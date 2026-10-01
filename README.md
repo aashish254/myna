@@ -608,14 +608,28 @@ which is the entry for the tick this repo's Actions tab had never once gone gree
 JSON, not a binary. The v0 checkpoint that ~20 registry rows read as `--ckpt runs/myna-v0` is
 therefore a [Release asset](https://github.com/aashish254/myna/releases/tag/v0-checkpoint), with its
 sha256 and the re-run that ties it to `runs/risk_coverage.json` on the page. The V1-B weights behind
-the 0.4893 macro are **not** there, because they lived in `/private/tmp` and are gone; that Release
-page says which published cell regenerates them.
+the 0.4893 macro are **also** there now — [v1b-checkpoint](https://github.com/aashish254/myna/releases/tag/v1b-checkpoint),
+recovered on 2026-10-01 from the Kaggle notebook's Output archive after §9.50 had recorded them as
+destroyed with `/private/tmp/kgwork`. The page carries the three hashes that tie those bytes to the
+committed Tier 0 witness (`model 0e73a8f07edc`, `tokenizer 0252c24627ee`, and a `metrics.json` that
+`cmp`s byte-identical to `runs/v1b_kaggle_3600b.metrics.json`), which is why "recovered" is a
+measurement here and not a hope. §9.53 is the entry.
 
 ```bash
 mkdir -p runs/myna-v0
 curl -L -o runs/myna-v0/model.pt       https://github.com/aashish254/myna/releases/download/v0-checkpoint/model.pt
 curl -L -o runs/myna-v0/tokenizer.json https://github.com/aashish254/myna/releases/download/v0-checkpoint/tokenizer.json
 make repro                             # 30/30 rows, with weights to read
+```
+
+The V1-B weights go where `bench/diag_question_ablation.py` already looks by default, so Tier 0
+re-runs on the recovered checkpoint with no flag at all:
+
+```bash
+mkdir -p runs/v1b-kaggle-3600b
+curl -L -o runs/v1b-kaggle-3600b/model.pt       https://github.com/aashish254/myna/releases/download/v1b-checkpoint/model.pt
+curl -L -o runs/v1b-kaggle-3600b/tokenizer.json https://github.com/aashish254/myna/releases/download/v1b-checkpoint/tokenizer.json
+uv run python bench/diag_question_ablation.py   # guard green: 716 committed keys, macro 0.4893271976
 ```
 
 ```python

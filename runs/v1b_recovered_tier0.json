@@ -1,0 +1,788 @@
+{
+  "arms": [
+    "as-scored",
+    "blank-instruction",
+    "permute-instruction",
+    "cross-source-instruction",
+    "blank-options",
+    "swap-state"
+  ],
+  "cells": {
+    "agnews/is_business": {
+      "as-scored": 0.6511627906976745,
+      "blank-instruction": 0.32558139534883723,
+      "blank-options": 0.32558139534883723,
+      "cross-source-instruction": 0.5813953488372093,
+      "permute-instruction": 0.6511627906976745,
+      "swap-state": 0.6744186046511628
+    },
+    "agnews/is_scitech": {
+      "as-scored": 0.6530612244897959,
+      "blank-instruction": 0.30612244897959184,
+      "blank-options": 0.3469387755102041,
+      "cross-source-instruction": 0.7142857142857143,
+      "permute-instruction": 0.6530612244897959,
+      "swap-state": 0.6530612244897959
+    },
+    "agnews/is_sports": {
+      "as-scored": 0.8085106382978723,
+      "blank-instruction": 0.1702127659574468,
+      "blank-options": 0.2127659574468085,
+      "cross-source-instruction": 0.48936170212765956,
+      "permute-instruction": 0.8085106382978723,
+      "swap-state": 0.8085106382978723
+    },
+    "agnews/is_world": {
+      "as-scored": 0.7777777777777778,
+      "blank-instruction": 0.26666666666666666,
+      "blank-options": 0.28888888888888886,
+      "cross-source-instruction": 0.5777777777777777,
+      "permute-instruction": 0.7777777777777778,
+      "swap-state": 0.7777777777777778
+    },
+    "agnews/topic": {
+      "as-scored": 0.3706896551724138,
+      "blank-instruction": 0.25862068965517243,
+      "blank-options": 0.28448275862068967,
+      "cross-source-instruction": 0.3275862068965517,
+      "permute-instruction": 0.3620689655172414,
+      "swap-state": 0.3103448275862069
+    },
+    "amazon/stars": {
+      "as-scored": 0.2375,
+      "blank-instruction": 0.225,
+      "blank-options": 0.2625,
+      "cross-source-instruction": 0.225,
+      "permute-instruction": 0.2375,
+      "swap-state": 0.2375
+    },
+    "banking77/intent": {
+      "as-scored": 0.034482758620689655,
+      "blank-instruction": 0.02586206896551724,
+      "blank-options": 0.02586206896551724,
+      "cross-source-instruction": 0.034482758620689655,
+      "permute-instruction": 0.034482758620689655,
+      "swap-state": 0.034482758620689655
+    },
+    "boolq/answer": {
+      "as-scored": 0.5,
+      "blank-instruction": 0.55,
+      "blank-options": 0.5125,
+      "cross-source-instruction": 0.5125,
+      "permute-instruction": 0.575,
+      "swap-state": 0.5125
+    },
+    "contrastive/decision": {
+      "as-scored": 0.5051020408163265,
+      "blank-instruction": 0.47959183673469385,
+      "blank-options": 0.32653061224489793,
+      "cross-source-instruction": 0.5102040816326531,
+      "permute-instruction": 0.5153061224489796,
+      "swap-state": 0.5051020408163265
+    },
+    "dbpedia14/category": {
+      "as-scored": 0.45689655172413796,
+      "blank-instruction": 0.3793103448275862,
+      "blank-options": 0.05172413793103448,
+      "cross-source-instruction": 0.45689655172413796,
+      "permute-instruction": 0.45689655172413796,
+      "swap-state": 0.06896551724137931
+    },
+    "imdb/positive": {
+      "as-scored": 0.8,
+      "blank-instruction": 0.6,
+      "blank-options": 0.325,
+      "cross-source-instruction": 0.7875,
+      "permute-instruction": 0.8,
+      "swap-state": 0.525
+    },
+    "mnli/relation": {
+      "as-scored": 0.3275862068965517,
+      "blank-instruction": 0.33620689655172414,
+      "blank-options": 0.29310344827586204,
+      "cross-source-instruction": 0.28448275862068967,
+      "permute-instruction": 0.29310344827586204,
+      "swap-state": 0.3275862068965517
+    },
+    "sst5/sentiment": {
+      "as-scored": 0.2875,
+      "blank-instruction": 0.1875,
+      "blank-options": 0.2625,
+      "cross-source-instruction": 0.25,
+      "permute-instruction": 0.2875,
+      "swap-state": 0.2875
+    },
+    "trec/answer_type": {
+      "as-scored": 0.31896551724137934,
+      "blank-instruction": 0.28448275862068967,
+      "blank-options": 0.16379310344827586,
+      "cross-source-instruction": 0.31896551724137934,
+      "permute-instruction": 0.31896551724137934,
+      "swap-state": 0.2413793103448276
+    },
+    "yelp/rating": {
+      "as-scored": 0.3625,
+      "blank-instruction": 0.3625,
+      "blank-options": 0.375,
+      "cross-source-instruction": 0.3875,
+      "permute-instruction": 0.375,
+      "swap-state": 0.225
+    },
+    "yelp/recommend": {
+      "as-scored": 0.7375,
+      "blank-instruction": 0.5875,
+      "blank-options": 0.2125,
+      "cross-source-instruction": 0.525,
+      "permute-instruction": 0.7375,
+      "swap-state": 0.4875
+    }
+  },
+  "cmd": "'/Users/aashish/next ko ne next gen model/.venv/bin/python' bench/diag_question_ablation.py --run-dir runs/v1b-kaggle-3600b --tokenizer runs/v1b-kaggle-3600b/tokenizer.json --metrics runs/v1b_kaggle_3600b.metrics.json --out runs/v1b_recovered_tier0.json",
+  "coverage": {
+    "as-scored": {
+      "instructions_changed": 0,
+      "option_sets_changed": 0,
+      "question_slots": 716,
+      "rows": 1176,
+      "states_changed": 0
+    },
+    "blank-instruction": {
+      "instructions_changed": 716,
+      "option_sets_changed": 0,
+      "question_slots": 716,
+      "rows": 1176,
+      "states_changed": 0
+    },
+    "blank-options": {
+      "instructions_changed": 0,
+      "option_sets_changed": 716,
+      "question_slots": 716,
+      "rows": 1176,
+      "states_changed": 0
+    },
+    "cross-source-instruction": {
+      "instructions_changed": 526,
+      "option_sets_changed": 0,
+      "question_slots": 716,
+      "rows": 1176,
+      "states_changed": 0
+    },
+    "permute-instruction": {
+      "instructions_changed": 260,
+      "option_sets_changed": 0,
+      "question_slots": 716,
+      "rows": 1176,
+      "states_changed": 0
+    },
+    "swap-state": {
+      "instructions_changed": 0,
+      "option_sets_changed": 0,
+      "question_slots": 716,
+      "rows": 1176,
+      "states_changed": 1164
+    }
+  },
+  "device": "cpu",
+  "distributions": {
+    "agnews/is_business": {
+      "acc": 0.6511627906976745,
+      "collapse_share": 0.9534883720930233,
+      "distinct_labels_predicted": 2,
+      "gold_majority_share": 0.6976744186046512,
+      "gold_top": [
+        [
+          0,
+          30
+        ],
+        [
+          1,
+          13
+        ]
+      ],
+      "majority": 0.6976744186046512,
+      "n": 43,
+      "options": 2,
+      "predicted_top": [
+        [
+          0,
+          41
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "type": "noul",
+      "uniform": 0.5
+    },
+    "agnews/is_scitech": {
+      "acc": 0.6530612244897959,
+      "collapse_share": 1.0,
+      "distinct_labels_predicted": 1,
+      "gold_majority_share": 0.6530612244897959,
+      "gold_top": [
+        [
+          0,
+          32
+        ],
+        [
+          1,
+          17
+        ]
+      ],
+      "majority": 0.6530612244897959,
+      "n": 49,
+      "options": 2,
+      "predicted_top": [
+        [
+          0,
+          49
+        ]
+      ],
+      "type": "noul",
+      "uniform": 0.5
+    },
+    "agnews/is_sports": {
+      "acc": 0.8085106382978723,
+      "collapse_share": 1.0,
+      "distinct_labels_predicted": 1,
+      "gold_majority_share": 0.8085106382978723,
+      "gold_top": [
+        [
+          0,
+          38
+        ],
+        [
+          1,
+          9
+        ]
+      ],
+      "majority": 0.8085106382978723,
+      "n": 47,
+      "options": 2,
+      "predicted_top": [
+        [
+          0,
+          47
+        ]
+      ],
+      "type": "noul",
+      "uniform": 0.5
+    },
+    "agnews/is_world": {
+      "acc": 0.7777777777777778,
+      "collapse_share": 1.0,
+      "distinct_labels_predicted": 1,
+      "gold_majority_share": 0.7777777777777778,
+      "gold_top": [
+        [
+          0,
+          35
+        ],
+        [
+          1,
+          10
+        ]
+      ],
+      "majority": 0.7777777777777778,
+      "n": 45,
+      "options": 2,
+      "predicted_top": [
+        [
+          0,
+          45
+        ]
+      ],
+      "type": "noul",
+      "uniform": 0.5
+    },
+    "agnews/topic": {
+      "acc": 0.3706896551724138,
+      "collapse_share": 0.31896551724137934,
+      "distinct_labels_predicted": 5,
+      "gold_majority_share": 0.3275862068965517,
+      "gold_top": [
+        [
+          2,
+          38
+        ],
+        [
+          3,
+          27
+        ],
+        [
+          1,
+          26
+        ]
+      ],
+      "majority": 0.3275862068965517,
+      "n": 116,
+      "options": 5,
+      "predicted_top": [
+        [
+          1,
+          37
+        ],
+        [
+          3,
+          33
+        ],
+        [
+          0,
+          27
+        ]
+      ],
+      "type": "choice",
+      "uniform": 0.24482758620689649
+    },
+    "amazon/stars": {
+      "acc": 0.2375,
+      "collapse_share": 0.3125,
+      "distinct_labels_predicted": 5,
+      "gold_majority_share": 0.2625,
+      "gold_top": [
+        [
+          1,
+          21
+        ],
+        [
+          2,
+          19
+        ],
+        [
+          4,
+          14
+        ]
+      ],
+      "majority": 0.2625,
+      "n": 80,
+      "options": 5,
+      "predicted_top": [
+        [
+          0,
+          25
+        ],
+        [
+          2,
+          17
+        ],
+        [
+          3,
+          16
+        ]
+      ],
+      "type": "score",
+      "uniform": 0.2
+    },
+    "banking77/intent": {
+      "acc": 0.034482758620689655,
+      "collapse_share": 0.3275862068965517,
+      "distinct_labels_predicted": 31,
+      "gold_majority_share": 0.04310344827586207,
+      "gold_top": [
+        [
+          29,
+          5
+        ],
+        [
+          39,
+          4
+        ],
+        [
+          51,
+          4
+        ]
+      ],
+      "majority": 0.04310344827586207,
+      "n": 116,
+      "options": 78,
+      "predicted_top": [
+        [
+          0,
+          38
+        ],
+        [
+          64,
+          34
+        ],
+        [
+          8,
+          4
+        ]
+      ],
+      "type": "choice",
+      "uniform": 0.01296978883185777
+    },
+    "boolq/answer": {
+      "acc": 0.5,
+      "collapse_share": 0.6625,
+      "distinct_labels_predicted": 2,
+      "gold_majority_share": 0.5375,
+      "gold_top": [
+        [
+          1,
+          43
+        ],
+        [
+          0,
+          37
+        ]
+      ],
+      "majority": 0.5375,
+      "n": 80,
+      "options": 2,
+      "predicted_top": [
+        [
+          1,
+          53
+        ],
+        [
+          0,
+          27
+        ]
+      ],
+      "type": "noul",
+      "uniform": 0.5
+    },
+    "contrastive/decision": {
+      "acc": 0.5051020408163265,
+      "collapse_share": 0.5510204081632653,
+      "distinct_labels_predicted": 4,
+      "gold_majority_share": 0.45408163265306123,
+      "gold_top": [
+        [
+          0,
+          89
+        ],
+        [
+          1,
+          84
+        ],
+        [
+          2,
+          20
+        ]
+      ],
+      "majority": 0.45408163265306123,
+      "n": 196,
+      "options": 4,
+      "predicted_top": [
+        [
+          0,
+          108
+        ],
+        [
+          1,
+          70
+        ],
+        [
+          2,
+          13
+        ]
+      ],
+      "type": "noul",
+      "uniform": 0.39625850340136043
+    },
+    "dbpedia14/category": {
+      "acc": 0.45689655172413796,
+      "collapse_share": 0.11206896551724138,
+      "distinct_labels_predicted": 14,
+      "gold_majority_share": 0.12931034482758622,
+      "gold_top": [
+        [
+          7,
+          15
+        ],
+        [
+          9,
+          13
+        ],
+        [
+          13,
+          9
+        ]
+      ],
+      "majority": 0.12931034482758622,
+      "n": 116,
+      "options": 15,
+      "predicted_top": [
+        [
+          4,
+          13
+        ],
+        [
+          10,
+          13
+        ],
+        [
+          5,
+          11
+        ]
+      ],
+      "type": "choice",
+      "uniform": 0.07093596059113294
+    },
+    "imdb/positive": {
+      "acc": 0.8,
+      "collapse_share": 0.6125,
+      "distinct_labels_predicted": 2,
+      "gold_majority_share": 0.5375,
+      "gold_top": [
+        [
+          1,
+          43
+        ],
+        [
+          0,
+          37
+        ]
+      ],
+      "majority": 0.5375,
+      "n": 80,
+      "options": 2,
+      "predicted_top": [
+        [
+          0,
+          49
+        ],
+        [
+          1,
+          31
+        ]
+      ],
+      "type": "noul",
+      "uniform": 0.5
+    },
+    "mnli/relation": {
+      "acc": 0.3275862068965517,
+      "collapse_share": 0.4051724137931034,
+      "distinct_labels_predicted": 4,
+      "gold_majority_share": 0.35344827586206895,
+      "gold_top": [
+        [
+          0,
+          41
+        ],
+        [
+          1,
+          38
+        ],
+        [
+          2,
+          33
+        ]
+      ],
+      "majority": 0.35344827586206895,
+      "n": 116,
+      "options": 4,
+      "predicted_top": [
+        [
+          2,
+          47
+        ],
+        [
+          0,
+          35
+        ],
+        [
+          1,
+          32
+        ]
+      ],
+      "type": "choice",
+      "uniform": 0.32471264367816083
+    },
+    "sst5/sentiment": {
+      "acc": 0.2875,
+      "collapse_share": 0.6,
+      "distinct_labels_predicted": 3,
+      "gold_majority_share": 0.25,
+      "gold_top": [
+        [
+          1,
+          20
+        ],
+        [
+          3,
+          18
+        ],
+        [
+          2,
+          16
+        ]
+      ],
+      "majority": 0.25,
+      "n": 80,
+      "options": 5,
+      "predicted_top": [
+        [
+          1,
+          48
+        ],
+        [
+          3,
+          25
+        ],
+        [
+          4,
+          7
+        ]
+      ],
+      "type": "score",
+      "uniform": 0.2
+    },
+    "trec/answer_type": {
+      "acc": 0.31896551724137934,
+      "collapse_share": 0.5862068965517241,
+      "distinct_labels_predicted": 7,
+      "gold_majority_share": 0.28448275862068967,
+      "gold_top": [
+        [
+          2,
+          33
+        ],
+        [
+          1,
+          22
+        ],
+        [
+          5,
+          22
+        ]
+      ],
+      "majority": 0.28448275862068967,
+      "n": 116,
+      "options": 7,
+      "predicted_top": [
+        [
+          2,
+          68
+        ],
+        [
+          1,
+          28
+        ],
+        [
+          4,
+          6
+        ]
+      ],
+      "type": "choice",
+      "uniform": 0.16420361247947457
+    },
+    "yelp/rating": {
+      "acc": 0.3625,
+      "collapse_share": 0.275,
+      "distinct_labels_predicted": 5,
+      "gold_majority_share": 0.275,
+      "gold_top": [
+        [
+          3,
+          22
+        ],
+        [
+          2,
+          18
+        ],
+        [
+          4,
+          15
+        ]
+      ],
+      "majority": 0.275,
+      "n": 80,
+      "options": 5,
+      "predicted_top": [
+        [
+          0,
+          22
+        ],
+        [
+          4,
+          20
+        ],
+        [
+          1,
+          17
+        ]
+      ],
+      "type": "score",
+      "uniform": 0.2
+    },
+    "yelp/recommend": {
+      "acc": 0.7375,
+      "collapse_share": 0.575,
+      "distinct_labels_predicted": 2,
+      "gold_majority_share": 0.5375,
+      "gold_top": [
+        [
+          0,
+          43
+        ],
+        [
+          1,
+          37
+        ]
+      ],
+      "majority": 0.5375,
+      "n": 80,
+      "options": 2,
+      "predicted_top": [
+        [
+          0,
+          46
+        ],
+        [
+          1,
+          34
+        ]
+      ],
+      "type": "noul",
+      "uniform": 0.5
+    }
+  },
+  "guard": {
+    "float_tol": 1e-06,
+    "keys_compared": 716,
+    "macro_as_scored": 0.4893271976084137,
+    "row_slack_keys": 5,
+    "tie_flips": 0
+  },
+  "keep_min": 30,
+  "last_step": 3599,
+  "macro": {
+    "as-scored": 0.4893271976084137,
+    "blank-instruction": 0.33407236701924536,
+    "blank-options": 0.26685444666756347,
+    "cross-source-instruction": 0.4364336511102789,
+    "permute-instruction": 0.4927397371932131,
+    "swap-state": 0.4172893066701619
+  },
+  "macro_floor": 0.4330647953941198,
+  "macro_uniform": 0.3321192559493052,
+  "metrics": "runs/v1b_kaggle_3600b.metrics.json",
+  "model": {
+    "cfg": {
+      "d_ff": 1024,
+      "d_k": 64,
+      "d_model": 384,
+      "d_ptr": 256,
+      "d_v": 64,
+      "n_heads": 6,
+      "n_layers": 6,
+      "vocab": 8192
+    },
+    "model_sha256": "0e73a8f07edc87d88a2e8e6f740dc9c5ac248e16459c152e5e5ccff312bb7000",
+    "params": 16926848,
+    "step": -1,
+    "temperature": 1.2,
+    "tokenizer_path": "runs/v1b-kaggle-3600b/tokenizer.json",
+    "tokenizer_sha256": "0252c24627eeebc2df5a577576c1c8b24e402da015c1d45519e7e1d8541ffdc3"
+  },
+  "run_dir": "runs/v1b-kaggle-3600b",
+  "seed": 0,
+  "split": "test",
+  "steps_requested": null,
+  "stopped": null,
+  "suite": "data/decision-v2-pilot"
+}

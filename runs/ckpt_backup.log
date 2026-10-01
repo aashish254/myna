@@ -4,3 +4,40 @@ https://github.com/aashish254/myna/releases/tag/antiprior_off_s0-wip
 [2026-10-01 01:12:29] created antiprior_off_s0-wip
 antiprior_off_s0-wip
   model_last.pt 203229625B
+[2026-10-01 08:30:49] runs/antiprior_off_s0/model.pt stable at 67733781 bytes
+error connecting to api.github.com
+check your internet connection or https://githubstatus.com
+error connecting to api.github.com
+check your internet connection or https://githubstatus.com
+[2026-10-01 08:30:56] FAILED to publish antiprior_off_s0-weights for antiprior_off_s0
+[2026-10-01 09:10:14] runs/antiprior_off_s0/model.pt stable at 67733781 bytes
+error connecting to api.github.com
+check your internet connection or https://githubstatus.com
+error connecting to api.github.com
+check your internet connection or https://githubstatus.com
+[2026-10-01 09:10:15] FAILED to publish antiprior_off_s0-weights for antiprior_off_s0
+[2026-10-01 09:37:46] runs/antiprior_off_s0/model.pt stable at 67733781 bytes
+error connecting to api.github.com
+check your internet connection or https://githubstatus.com
+error connecting to api.github.com
+check your internet connection or https://githubstatus.com
+[2026-10-01 09:45:02] FAILED to publish antiprior_off_s0-weights for antiprior_off_s0
+[2026-10-01 09:59:31] runs/antiprior_off_s0/model.pt stable at 67733781 bytes
+HTTP 408: Upload body timed out due to inactivity (https://uploads.github.com/repos/aashish254/myna/releases/400644541/assets?label=&name=model.pt)
+release not found
+[2026-10-01 10:00:37] FAILED to publish antiprior_off_s0-weights for antiprior_off_s0
+[2026-10-01 10:02:52] runs/antiprior_off_s0/model.pt stable at 67733781 bytes
+https://github.com/aashish254/myna/releases/tag/antiprior_off_s0-weights
+[2026-10-01 10:09:58] created antiprior_off_s0-weights
+antiprior_off_s0-weights
+  model.pt 67733781B
+  tokenizer.json 526662B
+[2026-10-01 10:22:14] runs/antiprior_on_s0/model_last.pt stable at 203229625 bytes
+HTTP 408: Upload body timed out due to inactivity (https://uploads.github.com/repos/aashish254/myna/releases/400653713/assets?label=&name=model_last.pt)
+Get "https://api.github.com/repos/aashish254/myna/releases/tags/antiprior_on_s0-wip": net/http: TLS handshake timeout
+[2026-10-01 10:30:41] FAILED to publish antiprior_on_s0-wip for antiprior_on_s0
+[2026-10-01 10:32:56] runs/antiprior_on_s0/model_last.pt stable at 203229625 bytes
+https://github.com/aashish254/myna/releases/tag/antiprior_on_s0-wip
+[2026-10-01 10:44:38] created antiprior_on_s0-wip
+antiprior_on_s0-wip
+  model_last.pt 203229625B

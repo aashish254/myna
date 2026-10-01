@@ -1,0 +1,56 @@
+$ python -m myna.report --suite data/decision-v2-pilot --split test --metrics runs/antiprior_off_s0/metrics.json --laya runs/laya_decision_v2_test.json --out runs/antiprior_off_s0.report.json
+VOID: the run that wrote runs/antiprior_off_s0/metrics.json STOPPED at step 3314 of 3600 requested: step time 596.40s > 3.0x median 6.58s of the last 20
+      Every accuracy below describes a truncated dose, not a trained checkpoint. No gate may be judged from this table. (§7.1)
+laya: runs/laya_decision_v2_test.json (test split, n=546, <= 40/source) — read its own per-cell accuracies
+  contrastive/decision is 2 rows of that JSON over 40 answers: choice 0.417 (24) + noul 0.625 (16) → merged by rows to 0.500 (§9.32)
+suite data/decision-v2-pilot / test.jsonl: 1440 rows over 16 cells, 16 kept at n>=30
+6 cell(s) mix option counts across their sets agnews/topic {4: 104, 5: 12}; banking77/intent {77: 104, 78: 12}; contrastive/decision {2: 80, 3: 104, 4: 12}; dbpedia14/category {14: 104, 15: 12}; mnli/relation {3: 104, 4: 12}; trec/answer_type {6: 104, 7: 12} — the uniform floor is row-weighted over them
+stratified test — one row per (source, question) cell, n = rows in it
+clip = max(model, maj): what the cell scores answering nothing with this split's majority label. It is an oracle (the floor is measured on the rows being scored), so a clip above the model is the clip's worth, not the model's, and 9c prints it beside the number rather than instead of it. brier = mean (p-g)^2 over a noul cell's second option, 0.25 being the coin flip; an empty cell means the metrics file carried no :brier sidecar, which is not a 0.
+
+shared-instruction — 9 source(s): agnews, amazon, banking77, contrastive, dbpedia14, imdb, sst5, trec, yelp
+source/question         type     n sets model  clip  laya   maj  unif brier   -maj
+agnews/is_business      noul    43   41 0.698 0.698 0.786 0.698 0.500 0.211  0.000
+agnews/is_scitech       noul    49   48 0.653 0.653 1.000 0.653 0.500 0.213  0.000
+agnews/is_sports        noul    47   46 0.809 0.809 1.000 0.809 0.500 0.166  0.000
+agnews/is_world         noul    45   43 0.778 0.778 0.733 0.778 0.500 0.178  0.000
+agnews/topic          choice   116  113 0.534 0.534 0.950 0.328 0.245   —    0.207
+amazon/stars           score    80    1 0.250 0.263 0.325 0.263 0.200   —   -0.013
+banking77/intent      choice   116  116 0.017 0.043 0.250 0.043 0.013   —   -0.026
+contrastive/decision    noul   196   29 0.485 0.485 0.500 0.454 0.396 0.247  0.031
+dbpedia14/category    choice   116   37 0.621 0.621 0.775 0.129 0.071   —    0.491
+imdb/positive           noul    80    1 0.750 0.750 0.550 0.537 0.500 0.190  0.213
+sst5/sentiment         score    80    4 0.300 0.300 0.425 0.250 0.200   —    0.050
+trec/answer_type      choice   116   37 0.483 0.483 0.825 0.284 0.164   —    0.198
+yelp/rating            score    80    4 0.425 0.425 0.475 0.275 0.200   —    0.150
+yelp/recommend          noul    80    4 0.838 0.838 0.825 0.537 0.500 0.136  0.300
+  macro: 14 cell(s)                     0.546 0.548 0.673 0.431 0.321 0.192  0.114
+
+per-row-instruction — 2 source(s): boolq, mnli
+source/question         type     n sets model  clip  laya   maj  unif brier   -maj
+boolq/answer            noul    80   80 0.575 0.575 0.575 0.537 0.500 0.237  0.037
+mnli/relation         choice   116  112 0.328 0.353 0.675 0.353 0.325   —   -0.026
+  macro: 2 cell(s)                      0.451 0.464 0.625 0.445 0.412 0.237  0.006
+
+strata, measured on this split (the class is derived, never listed by name):
+  agnews          shared-instruction  1.00 of slots repeat an instruction (8 distinct over 300 slots / 116 rows, 113 exact-signature sets, 0.05 of rows in a reused set)
+  amazon          shared-instruction  1.00 of slots repeat an instruction (1 distinct over 80 slots / 80 rows, 1 exact-signature sets, 1.00 of rows in a reused set)
+  banking77       shared-instruction  0.99 of slots repeat an instruction (4 distinct over 116 slots / 116 rows, 116 exact-signature sets, 0.00 of rows in a reused set)
+  boolq          per-row-instruction  0.00 of slots repeat an instruction (80 distinct over 80 slots / 80 rows, 80 exact-signature sets, 0.00 of rows in a reused set)
+  contrastive     shared-instruction  1.00 of slots repeat an instruction (4 distinct over 196 slots / 196 rows, 29 exact-signature sets, 0.91 of rows in a reused set)
+  dbpedia14       shared-instruction  1.00 of slots repeat an instruction (1 distinct over 116 slots / 116 rows, 37 exact-signature sets, 0.69 of rows in a reused set)
+  imdb            shared-instruction  1.00 of slots repeat an instruction (1 distinct over 80 slots / 80 rows, 1 exact-signature sets, 1.00 of rows in a reused set)
+  mnli           per-row-instruction  0.41 of slots repeat an instruction (80 distinct over 116 slots / 116 rows, 112 exact-signature sets, 0.07 of rows in a reused set)
+  sst5            shared-instruction  1.00 of slots repeat an instruction (4 distinct over 80 slots / 80 rows, 4 exact-signature sets, 1.00 of rows in a reused set)
+  trec            shared-instruction  1.00 of slots repeat an instruction (1 distinct over 116 slots / 116 rows, 37 exact-signature sets, 0.69 of rows in a reused set)
+  yelp            shared-instruction  1.00 of slots repeat an instruction (5 distinct over 160 slots / 80 rows, 4 exact-signature sets, 1.00 of rows in a reused set)
+
+MACRO over the 16 scored cells: model 0.534 · majority floor 0.433 · uniform floor 0.332
+3 of 16 scored cell(s) answer below their own majority floor: amazon/stars 0.250 < 0.263 (worth +0.013), banking77/intent 0.017 < 0.043 (worth +0.026), mnli/relation 0.328 < 0.353 (worth +0.026)
+  clipping those to the split's majority label would print 0.538 where the model prints 0.534: +0.004 of arithmetic and 0 of model. The floor is read off the scored rows, so a real fallback would use a training-set prior and land under this number — that is a leaderboard decision, not a learning improvement, and not what this column claims.
+noul: 8 of 8 scored binary cells carry a :brier sidecar; their mean Brier is 0.197 against 0.250 for a coin flip, which is the number §9.24 asks for beside an accuracy because an argmax alone over-reports a binary cell either way (SPEC §5 P9: 9b)
+
+MACRO over the 16 of 16 cells BOTH scored (per-cell, unweighted — not the row-weighted overall each harness prints):
+  myna 0.534 · laya 0.667 · gap -0.133 · majority floor 0.433 · laya over the floor 0.234
+G1: target 0.7 → not met; +0.15 over the floor (not met, observed 0.101)
+wrote runs/antiprior_off_s0.report.json

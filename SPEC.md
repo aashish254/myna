@@ -427,7 +427,9 @@ does not advance, it goes in the corrections log (§9).
       "71 commits and 238 tracked files", copied from a recursive tree listing that counts directories
       and from a pre-push log.
       What the push did *not* fix is the opposite half of §9.47: the V1-B weights lived under
-      `/private/tmp` and are gone, so no remote holds them either.
+      `/private/tmp` and are gone, so no remote holds them either. *(This held for one day: §9.53
+      recovered them from the notebook's Output download and they are on the `v1b-checkpoint`
+      Release, hash-matched to the committed Tier 0 witness.)*
 - [x] **CI has never run a test, and the reason is now a gate rather than a surprise.** Closed
       2026-10-01: `main` run **36785555798** (SHA `3ba18a3`) printed **545 passed, 8 skipped, 0
       failed in 599.72 s** and exit 0, with `make secrets` walking 222 of 222 blobs at 0 matches.
@@ -1267,25 +1269,41 @@ is measurable **without a model**:
 - [ ] **10c** The GPU pair: `antiprior_off_s0` / `antiprior_on_s0` in `kaggle/campaign.py`
       (`--include-dead`; `--list` labels both *open, unspent*). Two arms × 3,600 updates at the
       measured 5.618 s/update (§2.1's `kaggle-wall-clock` row) is **~11.2 GPU-hours** of the 30
-      h/week free quota — the cheapest mechanism-level question in the repo. That price is the
-      T4's, and the T4 is unreachable: Kaggle auth is broken (the §5 P0 auth line, reproduced
-      2026-10-01), so as of
-      2026-10-01 the pair is running on the local M5 lane through the canonical launcher instead
-      (§9.50). No GPU-hours of the quota are spent, `--list` still labels both arms *open, unspent*
-      on that lane, and this box's wall price is the measured 6.74 s/update averaged over the first
-      2,220 updates (14,970 s of stamped log) — 1.20× the T4's slope, ~6.74 h per arm and ~13.5 h for
-      the pair, still mid-run: the off arm is at 2,220 of 3,600 and ~2.6 h from its final line as of
-      2026-10-01 04:35 local. The verdict stays open until both arms report.
-      The control arm is not yet a verdict, and its live trace says why not: `dev-mid acc` reads
-      0.3682 / 0.3962 / 0.3638 / 0.3758 / 0.4023 / 0.4062 / 0.4173 / 0.4373 at steps 250 through 2,000
-      in 250s (`runs/antiprior_off_s0.train.log`), an ordinary-least-squares slope of **+0.0354 per
-      1,000 updates** over those eight points, mean 0.3959 — about 4.9× V1-B's tail (+0.0072, §9.38),
-      on a dev split this run evaluates every 250 updates and on a 1176-row dev set. That is a
-      *mid-run dev* trend, not a test macro, and it prices nothing about `--anti-prior` because the
-      arm is the `off` side of the pair; the pair's verdict stays on Tier 0's emitter count over the
-      16 cells, not the macro. The slope is also the second reading of the same live number: at 1,250
-      the same regression over five points was +0.0191, so the figure is a property of the window it
-      was drawn over and not of the run (§9.44; the completed log supersedes both).
+      h/week free quota — the cheapest mechanism-level question in the repo. Status as of
+      2026-10-01: **the `off` arm is done, the `on` arm is blocked on the account, not the code.**
+      The `off` arm ran on the local M5 through the canonical launcher (§9.50's lane move) and
+      finished at **3,314 of 3,600** updates — ended by its own `--stop-factor 3.0` guard on a
+      596.40 s step that `pmset` attributes to battery 'Maintenance Sleep', not to allocator paging
+      (§9.53(iv)). Its wall price is the measured **6.719 s/update** averaged over 0→3,300
+      (22,173 s of stamped log), 1.20× the T4's slope, and its weights are on the
+      `antiprior_off_s0-weights` Release.
+      **It reports test macro 0.5339** (floor 0.4331, uniform 0.3321) against V1-B's 0.4893 — a
+      **+0.0446** that belongs to the data path and not to the flag, which is precisely the confound
+      the fresh control was built to expose. G1 is still not met on this arm: 0.70 target, and the
+      "+0.15 over the floor" clause observes **+0.1008**; laya's 0.667 leaves the gap at −0.133.
+      The dev-mid trace flattened rather than climbing: 13 points from 0.3682 to 0.4332, OLS
+      **+0.0231 per 1,000** over all of them, +0.0166 over the last five, +0.0030 over the last three
+      (the earlier +0.0354 and +0.0191 readings were windows of this same live series, §9.44; the
+      completed log supersedes both). Coverage held across the short dose: `paraphrase_draws`
+      **207,411** over 3,314 updates = 62.59 per update, against V1-B's 225,547 over 3,600 = 62.65.
+      The `on` arm moved back to Kaggle because the Mac's thermal budget is spent: the kernel is
+      built (`kaggle/notebooks/antiprior-on-t4`, every arm through `kaggle/run.py`, `--dry-run`
+      printed in-cell) and pinned to the SHA that carries the `ask()` fix, but the new account
+      `aashish124` is handed a CPU session even though the server's own record of the pushed kernel
+      reads `enable_gpu: true` and `machine_shape: "NvidiaTeslaT4"` — five request variants across two
+      notebooks all come back `torch 2.10.0+cpu`, `device_count 0`, `ACCELERATOR_TYPE None`, while
+      `kaggle quota` prints 30.00 h of GPU sitting unused and the identical recipe trained all 3,600
+      updates on `aashishkumarmahato01`'s T4 (§9.53(vi), which also retracts the phone-verification
+      guess first written there). Cell 1 refuses to train on CPU rather than print identical-looking
+      numbers, and
+      that refusal has been fired once on purpose. `--free-gib 9.0` was *not* adapted: V1-B's own
+      recovered `metrics.json` records `mem_plan_free_gib = 9.0` from the T4 run, so the pin is
+      shared by both boxes and changing it would silently re-clamp the batch (§9.53(v)).
+      The verdict therefore carries a stated confound: `off` is M5/3,314 and `on` will be T4/3,600,
+      so the pair prices the flag *and* the machine *and* the dose. Two guards on that: the verdict
+      stays on Tier 0's **emitter count over the 16 cells** — a property of the batching rule, not of
+      the box — and any macro quoted from this pair is provisional until the `off` arm is re-run on
+      the T4 (5.6 h of quota, the user's call to spend).
       The control is *run*, not borrowed, because 0.4893 came off
       the `myna-code` dataset version as it stood before any of the data-loader work landed on this
       branch: judged against that number a difference would price the flag *and* the code drift,
@@ -2436,6 +2454,11 @@ Kept permanently, because the value of this project's claims is that they surviv
    same §9.44 discipline, applied one file earlier.
 50. **The one artifact this project cannot rebuild was kept in a temp directory, so shipping
    weights stopped being an intention and became a process.**
+   *Superseded on its central claim, same day: the weights were recovered from `~/Downloads` and the
+   recovery was hash-verified — §9.53(i)–(ii). What that entry got wrong is not the risk model (a
+   temp directory is still the wrong home) but the word "filesystem-wide", which described a search
+   of `/tmp` and `/private/tmp`. Everything below is kept as written because it is what was true when
+   it was written.*
    V1-B's `model.pt` and `tokenizer.json` lived under `/private/tmp/kgwork`. That directory is gone
    — `ls` on the path fails and a filesystem-wide `find` for `v1b-kaggle-3600b` returns nothing —
    and what survives of the run is only what git holds: `runs/v1b_kaggle_3600b.{metrics,report}.json`
@@ -2667,3 +2690,131 @@ Kept permanently, because the value of this project's claims is that they surviv
     The general form: **a clone is a different machine, and green is a claim about whichever one ran.
     Fixing a defect that hid every test does not make the suite green; it lets the suite report the
     thirteen things that were never tested anywhere but here.**
+53. **The weights §9.50 recorded as destroyed were sitting in a Downloads folder, and the fresh
+    control built to price one flag priced a +0.0446 improvement instead.** Two separate findings
+    landed in one morning on 2026-10-01, and the first one reverses §9.50 outright.
+
+    **(i) "Gone" was a statement about one directory, not about the artifact.** §9.50's whole entry
+    is that V1-B's `model.pt` lived under `/private/tmp/kgwork`, that the directory is ephemeral, and
+    that this was "the one irreversible risk" — and the check that closed it looked at
+    `/private/tmp` and reported the truth: nothing. What nobody checked was that the same bytes had
+    *also* been downloaded through the notebook's Output tab, because that is the ordinary way to get
+    a file off Kaggle and it lands in `~/Downloads`. `results (1).zip` (285 MB, dated 04:36) holds
+    `runs/v1b-kaggle-3600b/{model.pt,tokenizer.json,metrics.json,model_last.pt}`. So the risk was
+    already closed by an action taken for another reason, and the entry that warned about it stayed
+    true-as-written and false-as-current for hours. The general form: **before publishing that an
+    artifact is unrecoverable, enumerate every place a copy could be, not only the place it was made.**
+    A `find` over the directory that produced it is not a search for the artifact.
+
+    **(ii) Recovery was proved by three hashes, not by a filename.** Extracted to
+    `runs/v1b-kaggle-3600b/` (durable, inside the working tree, `*.pt` still gitignored), the files
+    are: `model.pt` 67,734,997 B at sha256 `0e73a8f07edc87d8…`, `tokenizer.json` 526,662 B at
+    `0252c24627eeebc2…`, `metrics.json` 295,060 B at `eb70f25bd775092b…`. The first two prefixes are
+    *already in the tree*: line 2 of the committed `runs/diag_question_ablation.log` reads
+    `model 0e73a8f07edc · tokenizer 0252c24627ee`, and that log is the witness for the 0.4893 macro
+    and the Tier 0 arm table. The third file `cmp`s byte-identical to the committed
+    `runs/v1b_kaggle_3600b.metrics.json`. Then `bench/diag_question_ablation.py` was re-run on the
+    recovered bytes (new witness `runs/v1b_recovered_tier0.json`): **guard green, 716 committed keys,
+    0 tie flips, macro 0.4893271976, and 0 field-level differences across all 16 cells** against the
+    committed JSON. A folder called `v1b-kaggle-3600b` is a claim; 716 reproduced keys are the fact.
+    Both assets are on the `v1b-checkpoint` Release, and the release was verified by downloading it
+    back and re-hashing (`gh release download` → same two digests), because §9.18's rule is that an
+    upload claim needs the round trip.
+
+    **(iii) The `off` control finished, and its number is not what the pair was built to look for.**
+    `antiprior_off_s0` reports **test macro 0.5339** (floor 0.4331, uniform 0.3321) over the 16 of 16
+    cells both harnesses score, against V1-B's 0.4893 — **+0.0446 with the flag off**. That is exactly
+    the confound §9.50 said the fresh control existed to remove: 0.4893 came off the code as it stood
+    before the data-loader work, so the difference belongs to the data path, not to `--anti-prior`.
+    G1 is still not met on this arm either — 0.70 target, and the "+0.15 over the floor" clause
+    observes **+0.1008** — and laya's 0.667 leaves the gap at −0.133. Three secondary readings, all
+    from the committed artifacts: the dose held its coverage (`paraphrase_draws` 207,411 over 3,314
+    updates = 62.59 per update, against V1-B's 225,547 over 3,600 = 62.65, a 0.1 % difference, so the
+    short arm is not a short sample of phrasings); the dev-mid series flattened rather than rising
+    (13 points from 0.3682 to 0.4332, OLS **+0.0231 per 1,000** over all of them, +0.0166 over the
+    last five, +0.0030 over the last three — V1-B's tail was +0.0072 and *still climbing*, §9.38, so
+    this arm is nearer its plateau than V1-B was to hers); and the wall price is
+    **6.719 s/update** over 0→3,300 (22,173 s stamped), 1.20× the T4's 5.618.
+
+    **(iv) It stopped at 3,314 of 3,600 because the laptop went to sleep, and the guard cannot tell
+    that from a memory spiral.** `pair_exit_codes.txt` records `train exit=1`; `metrics.json` records
+    `stopped = "step time 596.40s > 3.0x median 6.58s of the last 20"`. The guard is working as
+    designed — and what it detected was `pmset -g log` showing back-to-back 'Maintenance Sleep'
+    entries on battery at 08:08:17 (244 s), 08:12:40 (222 s), 08:16:41 (194 s) and 08:20:03 (133 s),
+    with the run ending at 08:22:17. `src/myna/train.py` stamps updates with `time.time()`, which
+    advances while the process is frozen, so a nap is indistinguishable from allocator paging. The
+    compute itself was healthy to the last step: across all 56 stamped intervals the median is
+    6.633 s/update and the maximum 7.267. **Open defect, deliberately not fixed in this tick:** the
+    monotonic clock is the right instrument (`mach_absolute_time` stops across sleep on this box), but
+    changing the trainer mid-pair would mean the two arms ran different code, which is the one thing
+    the pair exists to avoid. Also note the guard is inert for its first 20 updates
+    (`len(step_times) >= window + 1`), which is the only reason the `on` arm survived an 86-minute
+    nap inside its first 60 updates.
+
+    **(v) Two premises in the handover were checked against the artifacts and one of them is wrong.**
+    The instruction to "adapt `--free-gib 9.0` for the T4's 16 GB" would have changed the dose: the
+    recovered V1-B `metrics.json` records `mem_plan_free_gib = 9.0` **from the Tesla T4 run itself**
+    (`device: Tesla T4`, `free 14806 MiB of 14911 MiB`), so 9.0 is not a Mac value at all — it is the
+    pin both boxes already share, chosen so the memory plan clamps to batch 10 everywhere. It stays.
+    The other premise, that the Kaggle launcher scripts had been deleted, is half wrong:
+    `kaggle/run.py`, `kaggle/campaign.py` and `kaggle/package_dataset.py` are all present and
+    `campaign.py` still writes a pushable kernel; what is gone is the notebook directory, so the new
+    `kaggle/notebooks/antiprior-on-t4/` is hand-built on the same rule — every arm through
+    `kaggle/run.py`, and its `--dry-run` printed into cell 7 so the command that ran is in the output.
+    Verified against the Mac arm's own log: the two commands differ in `--device` and the output path
+    and in nothing else.
+
+    **(vi) The Mac lane is stopped; the T4 lane is blocked on the account, and the first cause named
+    here for that block was a guess that measurement then killed.** The `on` arm was killed at step
+    540 by exact PID (dev-mid 0.3789 at 500; its log is committed as
+    `runs/antiprior_on_s0.train.log` so the abandoned leg is a record rather than a silence), then the
+    driver and the backup watcher exited with it. The fresh token authenticates — `kaggle kernels list
+    --mine` answers, account `aashish124` — and the kernel pushes and runs, but every session comes
+    back CPU-only: `torch 2.10.0+cpu`, `cuda build None`, `device_count 0`, no `nvidia-smi` binary,
+    no `/dev/nvidia*`, `ACCELERATOR_TYPE None`. What is *not* the cause, each measured rather than
+    assumed:
+    - **Not the metadata.** `kaggle kernels pull -m` on the pushed kernel returns the *server's* record
+      with `"enable_gpu": true` and `"machine_shape": "NvidiaTeslaT4"` in it. The field arrives and is
+      stored; nothing is silently dropped between the laptop and Kaggle.
+    - **Not the CLI's request shape.** Five variants, each its own completed run, all CPU: metadata
+      `NvidiaTeslaT4`; metadata `NvidiaL4`; `--accelerator NvidiaTeslaT4`; `--accelerator
+      NVIDIA_TESLA_T4_X_2` (the value the September run used); and `docker_image_pinning_type:
+      "latest"` with `docker_image` removed, which is Kaggle's documented fix for a pinned image
+      overriding an accelerator request (kaggle-cli #1197, maintainer reply 2026-09-17). Per #1196
+      `NvidiaTeslaT4` *is* the identifier for the editor's "GPU T4 ×2", so the value asked for was
+      never wrong.
+    - **Not the quota.** `kaggle quota` prints `GPU 0.00h used 30.00h remaining, refreshAt
+      2026-10-03` — thirty hours unused. So the sentence I first wrote here, that this "means the
+      account has no GPU entitlement until phone verification", is unsupported: a quota row is a
+      budget, not a provisioning decision, and nothing I can run from this box reaches the gate.
+      **The gate itself stays OPEN** — something between the stored `enable_gpu: true` and session
+      scheduling denies `aashish124` hardware, and the CLI has no verb that reads it.
+
+    The comparison that does locate it is the same recipe on the other account.
+    `runs/v1b_kaggle_3600b.train.log:120–121`, pushed by `kaggle kernels push` for
+    `aashishkumarmahato01`, prints `device: Tesla T4` and `free 14806 MiB of 14911 MiB` — a real T4
+    with 14.5 GiB free — and trained 3,600 updates on it. Same CLI 2.2.4, same
+    `kernel-metadata.json` shape that `kaggle/campaign.py:249–256` writes, same `--accelerator` route,
+    same repo. The failure is specific to `aashish124`, and both closes are the user's, not mine:
+    **look at the Accelerator dropdown in the notebook editor for `aashish124`** (a greyed-out T4 is
+    the witness, and it is only visible in a browser), or **re-mint a token for
+    `aashishkumarmahato01`**, whose GPU path is already committed as a log line.
+
+    Cell 1 of the real notebook still refuses to train on CPU rather than run ~10× longer and print
+    numbers that look identical, and that guard was proved by firing it: kernel version 2 ends in
+    ERROR with exactly its message. **Its message now states the measured denial and the two closes
+    instead of the phone-verification guess**, and firing it again is how version 3 of
+    `https://www.kaggle.com/code/aashish124/antiprior-on-t4` ends — that URL is the launch handle for
+    Task 4's arm, and the version-3 log prints `torch 2.10.0+cpu | cuda build None | device_count 0`
+    above the refusal, so the CPU denial is recorded in the same artifact as the guard that catches it.
+    Training resumes the moment a session holds a T4.
+
+    **(vii) The pair's judging bar has to move, and the move is stated before the result.** The plan
+    was `off` vs `on` on one machine at one dose. What exists is `off` on an M5 at 3,314 updates and,
+    when it runs, `on` on a T4 at 3,600 — so that pair prices the flag *and* the machine *and* the
+    dose, which is the exact shape §9.50 rejected. Two consequences, both cheap to state now: the
+    verdict stays on Tier 0's **emitter count over the 16 cells** (how many cells stop answering a
+    constant label), not on the macro, because the emitter count is a property of the batching rule
+    rather than of the box; and if the macro is quoted at all it is quoted as provisional until the
+    `off` arm is re-run on the T4 — 5.6 h of the 30 h/week quota, which is the user's call to spend,
+    not a step to take quietly.
