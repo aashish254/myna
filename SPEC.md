@@ -3049,3 +3049,24 @@ Kept permanently, because the value of this project's claims is that they surviv
     0.5338735348381732 and 0.4893271976084137, so the gap is **0.0445463372297595**, i.e.
     **+0.0445**. The live prose now prints +0.0445 with the exact value beside it; the dated entries
     keep what they said, which is what makes this one findable.
+
+    **(vii) The checkpoint inventory, because "the last irreversible risk" was never one risk.** An
+    audit of which rows read weights, against which Releases carry them, leaves exactly one gap and
+    one soft one. Covered: `myna-v0` → `v0-checkpoint` (the 7 `here` rows that read it),
+    `v1b-kaggle-3600b` → `v1b-checkpoint`, `antiprior_off_s0` → `antiprior_off_s0-weights`
+    (§9.54(i)), and the `on` arm's ≤step-250 snapshot → `antiprior_on_s0-wip`. **Not covered:**
+    `runs/myna-v1-rich/` — `model.pt` 67,733,781 B and `metrics.json`, both matched by
+    `.gitignore:24`'s `runs/*` rule — is the only input set behind a *quoted* published figure that no
+    Release carries, and row `void-vs-laya` is status `here`, i.e. counted in the G7 cell's "21 rows
+    re-run on this box". It is honestly labelled (the row's own note says the artifact is committed
+    and the metrics file behind it is not, and §5 P1 calls the figure void as evidence because the
+    checkpoint predates the `385e06c` batching fix), so nothing over-claims; the exposure is only that
+    a disclosure number — 0.338 against a 0.346 control — becomes unreproducible with the laptop.
+    Softly uncovered: `runs/antiprior_on_s0/model_last.pt` (the step-500 save, §9.55(ii)) and
+    `runs/myna-v1/model_last.pt`, `runs/myna-v0-rlcd/`, `runs/v1-smoke/` — none of which backs a
+    quoted figure except `rlcd`, whose row is `retrain` and therefore claims no local re-run.
+    **Priced, not decided:** shipping `myna-v1-rich` is one 65 MB Release upload, roughly the size of
+    `antiprior_off_s0-weights`, and it would make every quoted figure in the repository
+    download-reproducible; it is left as the user's call because the figure it protects is explicitly
+    void-as-evidence, and because publishing an artifact is shared state (§9.53's rule that a Release
+    is the user's to open, not the agent's).
