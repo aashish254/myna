@@ -202,7 +202,10 @@ it), `requirements.txt`.
 `tests/`: **561 passing + 1 skipped**, measured on this tick's tree — 562 collected by
 `pytest --collect-only -q`, and the run's own summary line splits it 561/1: 292.95 s before the
 §9.52 test edits and **289.00 s** after them, so the split survived the round-2 fixes and only the
-seconds moved (the first run of this tree read 283.78 s). The **+5**
+seconds moved (the first run of this tree read 283.78 s). The re-read after the checkpoint-recovery and
+GPU-denial commits (§9.53) is **258.29 s** over the same 561 passed / 1 skipped / 562 collected — that
+batch added no test and removed none, so the count is confirmed rather than merely unchanged, which is
+the difference 9k exists to record. The **+5**
 over the 556 this map read earlier in the same tick are §9.51's arms, all five in
 `test_reproduce.py` (the platform-limit table, the note path, the still-red-on-macOS path, the
 missing-base-dependency path, and the guard that names which four rows the limit reaches) — counted
@@ -2807,7 +2810,16 @@ Kept permanently, because the value of this project's claims is that they surviv
     `https://www.kaggle.com/code/aashish124/antiprior-on-t4` ends — that URL is the launch handle for
     Task 4's arm, and the version-3 log prints `torch 2.10.0+cpu | cuda build None | device_count 0`
     above the refusal, so the CPU denial is recorded in the same artifact as the guard that catches it.
-    Training resumes the moment a session holds a T4.
+    Training resumes the moment a session holds a T4. Kernel **version 4** is what a browser
+    "Save & Run All" would then execute, and it hardens the one cell that stands between the clone and
+    5.6 hours: cell 3 used to `grep -n -B1 "def ask"` and *show* the decorator, which is how a silent
+    miss survives to the end of a run — it now raises `THE CLONED TREE LACKS THE ask() FIX` when no
+    `@torch.no_grad()` sits above `def ask(`. That guard was mutation-checked before it was pushed: on
+    the real `src/myna/engine.py` the regex resolves with the group set, and on a copy with the
+    decorator line deleted it resolves empty, so the assert has one passing and one failing arm on
+    this box rather than only the happy path. (Version 4 itself still ends in ERROR at cell 1 — the
+    CPU guard — so the new assert has not yet run on Kaggle, and cannot until the gate in this
+    paragraph opens.)
 
     **(vii) The pair's judging bar has to move, and the move is stated before the result.** The plan
     was `off` vs `on` on one machine at one dose. What exists is `off` on an M5 at 3,314 updates and,
