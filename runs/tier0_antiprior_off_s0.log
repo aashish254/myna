@@ -1,0 +1,60 @@
+$ uv run python bench/diag_question_ablation.py --run-dir runs/antiprior_off_s0 --metrics runs/antiprior_off_s0.metrics.json --out runs/tier0_antiprior_off_s0.json
+run: last_step 3314 (from antiprior_off_s0.metrics.json; the checkpoint records no step) · 16,926,848 params · temperature 1.5 · model 30f0fa937e57 · tokenizer 0252c24627ee · device cpu
+VOID: this run STOPPED at step 3314 of 3600 requested: step time 596.40s > 3.0x median 6.58s of the last 20
+      The arms below describe a truncated dose, not a trained checkpoint. No claim may be read from them.
+as-scored               macro 0.5339 (floor 0.4331) rewrote    0/716 cues,    0 option sets,    0/1176 states in  30.1s
+blank-instruction       macro 0.4315 (floor 0.4331) rewrote  716/716 cues,    0 option sets,    0/1176 states in  28.9s
+permute-instruction     macro 0.5367 (floor 0.4331) rewrote  260/716 cues,    0 option sets,    0/1176 states in  29.6s
+cross-source-instruction macro 0.4902 (floor 0.4331) rewrote  526/716 cues,    0 option sets,    0/1176 states in  30.1s
+blank-options           macro 0.3674 (floor 0.4331) rewrote    0/716 cues,  716 option sets,    0/1176 states in  23.7s
+swap-state              macro 0.4076 (floor 0.4331) rewrote    0/716 cues,    0 option sets, 1164/1176 states in  29.6s
+
+guard green: the as-scored arm reproduces 716 committed keys (0 single-row tie flips) · macro 0.5338735348
+
+cell                       type      n   K  as-scored blank-instruction permute-instruction cross-source-instruction blank-options swap-state  floor  unif  worst-d
+agnews/is_business         noul     43   2      0.698      0.349      0.698      0.674      0.651      0.698   0.698  0.500   -0.349
+agnews/is_scitech          noul     49   2      0.653      0.367      0.653      0.612      0.592      0.653   0.653  0.500   -0.286
+agnews/is_sports           noul     47   2      0.809      0.426      0.809      0.574      0.426      0.809   0.809  0.500   -0.383
+agnews/is_world            noul     45   2      0.778      0.400      0.778      0.444      0.511      0.778   0.778  0.500   -0.378
+agnews/topic               choice  116   5      0.534      0.509      0.543      0.569      0.267      0.233   0.328  0.245   -0.302
+amazon/stars               score    80   5      0.250      0.275      0.250      0.300      0.300      0.250   0.263  0.200   +0.000
+banking77/intent           choice  116  78      0.017      0.009      0.009      0.017      0.026      0.017   0.043  0.013   -0.009
+boolq/answer               noul     80   2      0.575      0.588      0.613      0.500      0.487      0.537   0.537  0.500   -0.087
+contrastive/decision       noul    196   4      0.485      0.474      0.480      0.480      0.464      0.474   0.454  0.396   -0.020
+dbpedia14/category         choice  116  15      0.621      0.595      0.621      0.621      0.069      0.078   0.129  0.071   -0.552
+imdb/positive              noul     80   2      0.750      0.725      0.750      0.775      0.588      0.450   0.537  0.500   -0.300
+mnli/relation              choice  116   4      0.328      0.319      0.353      0.405      0.328      0.319   0.353  0.325   -0.009
+sst5/sentiment             score    80   5      0.300      0.212      0.300      0.312      0.200      0.325   0.250  0.200   -0.100
+trec/answer_type           choice  116   7      0.483      0.457      0.483      0.483      0.207      0.138   0.284  0.164   -0.345
+yelp/rating                score    80   5      0.425      0.425      0.412      0.412      0.312      0.200   0.275  0.200   -0.225
+yelp/recommend             noul     80   2      0.838      0.775      0.838      0.662      0.450      0.562   0.537  0.500   -0.388
+
+macro by arm (the published basis: row-weighted inside each cell, unweighted over cells):
+  as-scored            0.5339 vs floor 0.4331  Δ +0.0000
+  blank-instruction    0.4315 vs floor 0.4331  Δ -0.1024
+  permute-instruction  0.5367 vs floor 0.4331  Δ +0.0029
+  cross-source-instruction 0.4902 vs floor 0.4331  Δ -0.0437
+  blank-options        0.3674 vs floor 0.4331  Δ -0.1665
+  swap-state           0.4076 vs floor 0.4331  Δ -0.1263
+
+per-cell label emission (as-scored): collapse_share is the fraction of rows the cell answers with its most-predicted label,
+and state-Δ is what swapping this row's state for another row's from the same source costs the cell.
+  agnews/is_business         noul   acc 0.698 floor 0.698 unif 0.500 collapse 1.000 (gold 0.698) labels   1/2   state-Δ  +0.000
+  agnews/is_scitech          noul   acc 0.653 floor 0.653 unif 0.500 collapse 1.000 (gold 0.653) labels   1/2   state-Δ  +0.000
+  agnews/is_sports           noul   acc 0.809 floor 0.809 unif 0.500 collapse 1.000 (gold 0.809) labels   1/2   state-Δ  +0.000
+  agnews/is_world            noul   acc 0.778 floor 0.778 unif 0.500 collapse 1.000 (gold 0.778) labels   1/2   state-Δ  +0.000
+  agnews/topic               choice acc 0.534 floor 0.328 unif 0.245 collapse 0.319 (gold 0.328) labels   5/5   state-Δ  -0.302
+  amazon/stars               score  acc 0.250 floor 0.263 unif 0.200 collapse 0.412 (gold 0.263) labels   5/5   state-Δ  +0.000
+  banking77/intent           choice acc 0.017 floor 0.043 unif 0.013 collapse 0.216 (gold 0.043) labels  35/78  state-Δ  +0.000
+  boolq/answer               noul   acc 0.575 floor 0.537 unif 0.500 collapse 0.613 (gold 0.537) labels   2/2   state-Δ  -0.037
+  contrastive/decision       noul   acc 0.485 floor 0.454 unif 0.396 collapse 0.653 (gold 0.454) labels   4/4   state-Δ  -0.010
+  dbpedia14/category         choice acc 0.621 floor 0.129 unif 0.071 collapse 0.103 (gold 0.129) labels  14/15  state-Δ  -0.543
+  imdb/positive              noul   acc 0.750 floor 0.537 unif 0.500 collapse 0.562 (gold 0.537) labels   2/2   state-Δ  -0.300
+  mnli/relation              choice acc 0.328 floor 0.353 unif 0.325 collapse 0.500 (gold 0.353) labels   4/4   state-Δ  -0.009
+  sst5/sentiment             score  acc 0.300 floor 0.250 unif 0.200 collapse 0.525 (gold 0.250) labels   4/5   state-Δ  +0.025
+  trec/answer_type           choice acc 0.483 floor 0.284 unif 0.164 collapse 0.336 (gold 0.284) labels   7/7   state-Δ  -0.345
+  yelp/rating                score  acc 0.425 floor 0.275 unif 0.200 collapse 0.263 (gold 0.275) labels   5/5   state-Δ  -0.225
+  yelp/recommend             noul   acc 0.838 floor 0.537 unif 0.500 collapse 0.550 (gold 0.537) labels   2/2   state-Δ  -0.275
+
+wrote runs/tier0_antiprior_off_s0.json
+exit=0

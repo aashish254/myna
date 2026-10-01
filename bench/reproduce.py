@@ -360,6 +360,33 @@ ROWS = [
         "\"last_step\": 3314` of 3,600 requested is the truncated dose, and `myna.report` prints it as "
         "a VOID line rather than as a clean macro."),
 
+    row("tier0-off-control", "SPEC §5 P10 10c (Tier 0 over the `off` control) · §9.55(iii)",
+        "uv run python bench/diag_question_ablation.py --run-dir runs/antiprior_off_s0 "
+        "--metrics runs/antiprior_off_s0.metrics.json "
+        "--out runs/tier0_antiprior_off_s0.json",
+        RETRAIN,
+        ["runs/tier0_antiprior_off_s0.json", "runs/tier0_antiprior_off_s0.log"],
+        [("runs/tier0_antiprior_off_s0.log", "macro 0.5339 (floor 0.4331)"),
+         ("runs/tier0_antiprior_off_s0.log", "macro 0.4315 (floor 0.4331)"),
+         ("runs/tier0_antiprior_off_s0.log", "macro 0.4076 (floor 0.4331)"),
+         ("runs/tier0_antiprior_off_s0.log", "VOID: this run STOPPED at step 3314 of 3600"),
+         ("runs/tier0_antiprior_off_s0.log", "reproduces 716 committed keys"),
+         ("runs/tier0_antiprior_off_s0.json", '"macro_as_scored": 0.5338735348381732'),
+         ("runs/tier0_antiprior_off_s0.json", '"swap-state": 0.4075622883568221'),
+         ("runs/tier0_antiprior_off_s0.json", '"collapse_share": 1.0')],
+        "The emitter-count baseline 10c's own verdict rule asks for, read off the control's weights. "
+        "The harness prints its blocker before its numbers — the dose is truncated, so "
+        "\"No claim may be read from them\" and every figure here describes these bytes, not a trained "
+        "checkpoint. The as-scored arm reproduces all 716 keys of `antiprior_off_s0.report.json`, which "
+        "is what ties the six arms to the published 0.5339. Against `tier0-ablation` on V1-B: the "
+        "blank-instruction macro rises 0.3341 → 0.4315 and blank-options 0.2669 → 0.3674, both by more "
+        "than as-scored's 0.4893 → 0.5339, so the prompt-reliance gaps close (instruction 0.1553 → "
+        "0.1024, options 0.2225 → 0.1665) while the state gap widens (0.0720 → 0.1263). `grep -c "
+        "\"collapse_share\": 1.0` is 3 in V1-B's witness and 4 in this one: `agnews/is_business` joined, "
+        "answering label 0 on 43/43 rows and landing on its own 0.698 floor (0.6512 → 0.6977). Cells "
+        "whose accuracy moves when their state is swapped go 8 → 10. Note this is the same "
+        "checkpoint as `antiprior-off-macro`, ablated — the two rows are the macro and its mechanism."),
+
     row("v1b-kaggle-dev", "SPEC §9.41 (the dbpedia14 dev→test delta) · TODO 9h",
         "uv run python -m myna.report --split dev --metrics runs/v1b_kaggle_3600b.metrics.json "
         "--out runs/v1b_kaggle_3600b.dev.report.json > runs/v1b_kaggle_3600b.dev.report.log",
