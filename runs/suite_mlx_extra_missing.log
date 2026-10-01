@@ -1,0 +1,40 @@
+THE SEVEN FAILURES, REPRODUCED BY THE ACTUAL MECHANISM — a venv without the mlx extra.
+This session deleted .venv and rebuilt it with `uv sync --extra browser`, which omits mlx
+(the deleted venv had had it). Command sequence, run in one shell:
+
+  uv sync --extra browser                  # mlx absent: import mlx -> ModuleNotFoundError
+  .venv/bin/python -m pytest tests/test_cli_help.py tests/test_reproduce.py tests/test_gates.py -q
+
+  (NOT `uv run pytest` — that re-installed the extra mid-script on the first attempt and printed
+   a meaningless 114 passed; the interpreter has to be the one whose extras are in question.)
+
+sync-no-mlx exit=0
+ModuleNotFoundError: No module named 'mlx'
+E               AssertionError: G7: every published table row is bound to a committed witness that still contains the figure the prose quotes — but @registry: (arch-params: the module behind the command does not answer --help (rc=1): ModuleNotFoundError: No module named 'mlx'; mlx-int8: the module behind the command does not answer --help (rc=1): ModuleNotFoundError: No module named 'mlx'; mlx-int8-keepgate: the module behind the command does not answer --help (rc=1): ModuleNotFoundError: No module named 'mlx'; mlx-kernel: the file behind the command does not answer --help (rc=1): ModuleNotFoundError: No module named 'mlx')
+E               assert False
+
+tests/test_gates.py:175: AssertionError
+________________ test_the_registry_itself_is_part_of_g7s_proof _________________
+
+    def test_the_registry_itself_is_part_of_g7s_proof():
+        ok, detail = G.registry_green()
+>       assert ok, detail
+E       AssertionError: arch-params: the module behind the command does not answer --help (rc=1): ModuleNotFoundError: No module named 'mlx'; mlx-int8: the module behind the command does not answer --help (rc=1): ModuleNotFoundError: No module named 'mlx'; mlx-int8-keepgate: the module behind the command does not answer --help (rc=1): ModuleNotFoundError: No module named 'mlx'; mlx-kernel: the file behind the command does not answer --help (rc=1): ModuleNotFoundError: No module named 'mlx'
+E       assert False
+
+tests/test_gates.py:305: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_cli_help.py::test_bench_script_help_renders[bench/bench_mlx.py---quantize]
+FAILED tests/test_cli_help.py::test_bench_script_help_renders[bench/diag_mlx_int8_gem.py---iters]
+FAILED tests/test_reproduce.py::test_the_committed_tree_passes - AssertionErr...
+FAILED tests/test_gates.py::test_the_committed_tree_passes - AssertionError: ...
+FAILED tests/test_gates.py::test_an_unmutated_verdict_holds - AssertionError:...
+FAILED tests/test_gates.py::test_every_proof_field_still_holds_in_its_artifact
+FAILED tests/test_gates.py::test_the_registry_itself_is_part_of_g7s_proof - A...
+7 failed, 107 passed in 38.18s
+
+RESTORE:
+  uv sync --extra browser --extra mlx
+restore exit=0
+  .venv/bin/python -c "import mlx.core, torch, importlib.metadata as md; print(...)"
+   mlx 0.32.2 | torch 2.14.0 | dist myna-engine 0.1.0   # venv back to the state the 585-pass run used

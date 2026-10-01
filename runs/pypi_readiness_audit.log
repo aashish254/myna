@@ -1,0 +1,333 @@
+$ git log --oneline -3 && git status --short          # 61a2355 on fe11db6 on 2915fdd, tree clean
+
+$ curl -s -o /dev/null -w "%{http_code}\n" https://pypi.org/pypi/myna/json
+200
+  # 200 = the name `myna` is NOT free.
+
+$ curl -s https://pypi.org/pypi/myna/json | jq .info   # abridged; what the project page carries
+  "name": "myna", "version": "0.1", "summary": "", "author": "", "home_page": "",
+  "project_urls": null, "requires_python": null, "classifiers": ["Framework :: BFG"]
+  releases: 0.1 (0 files), 0.1.0.dev1 (0 files) — neither yanked
+
+$ pip install myna            # /tmp/venv-pypi-name, python 3.12.13, --index-url https://pypi.org/simple
+  × No solution found when resolving dependencies:
+  ╰─▶ Because there are no versions of myna and you require myna, you can conclude that your
+      requirements are unsatisfiable.
+
+$ pip install myna==0.1     # the specific version the API lists
+  × No solution found … Because there is no version of myna==0.1 and you require myna==0.1
+
+$ for n in myna myna-engine myna-decision myna-decisions myna-core getmyna myna-weights mynaio myna_py antiprior; do
+    curl -s -o /dev/null -w "%{http_code}  $n\n" https://pypi.org/pypi/$n/json
+  done
+200  myna              # TAKEN
+404  myna-engine       # free
+404  myna-decision     # free
+404  myna-decisions    # free
+404  myna-core         # free
+404  getmyna           # free
+404  myna-weights      # free
+404  mynaio            # free
+404  myna_py           # free
+404  antiprior         # free
+
+$ python3 -m pip install -q build && python3 -m build
+* Creating isolated environment: virtualenv+pip...
+* Installing packages in isolated environment:
+  - uv_build>=0.11.21,<0.12.0
+* Getting build dependencies for sdist...
+* Building sdist...
+* Building wheel from sdist
+* Creating isolated environment: virtualenv+pip...
+* Installing packages in isolated environment:
+  - uv_build>=0.11.21,<0.12.0
+* Getting build dependencies for wheel...
+* Building wheel...
+Successfully built myna-0.1.0.tar.gz and myna-0.1.0-py3-none-any.whl
+  # host python is /usr/bin/python3 = 3.9.6 (Xcode CLT), pip 21.2.4; it installed `build` and `twine`
+  # into ~/Library/Python/3.9 — that is a mutation this runbook made to the machine, reported in step 3.
+
+$ ls -la dist/
+-rw-r--r--@ 1 aashish  staff  95902 Oct  2 02:47 myna-0.1.0-py3-none-any.whl
+-rw-r--r--@ 1 aashish  staff  86155 Oct  2 02:47 myna-0.1.0.tar.gz
+
+$ unzip -l dist/*.whl | grep -iE "\.pt$|secret|token|key"
+     4031  01-01-1980 00:00   myna/tokenizer.py
+  # ONE hit and it is a false positive: `token` is a substring of `tokenizer.py`. The `\.pt$`
+  # alternative matches nothing, so there is no weights file. Full listing is 25 files / 265,052 B
+  # uncompressed. CORRECTION (written below in the post-rename section): an earlier draft of this line
+  # asserted "the same count and size SPEC 11b publishes". The count matched (25) but the size did
+  # not — 11b's 95,644 B / 264,410 B come from `uv build --wheel`, this line's 95,902 B / 265,052 B
+  # from `python3 -m build`; two builders, two byte counts, and I had not run the comparison.
+
+$ unzip -l dist/*.whl | tail   # every entry, for the record
+  myna/{__init__,config_scaled,data,engine,fallback,longctx,mlx_model,model,onnx_export,
+        paraphrase,py.typed,real_data,report,serve,tokenizer,train,trunk,weights}.py
+  + myna-0.1.0.dist-info/{WHEEL,entry_points.txt,METADATA,RECORD}
+  # 20 modules under myna/, py.typed present, no data files, no tests/, no bench/, no runs/,
+  # no LICENSE, no README.
+
+$ sha256 dist/myna-0.1.0-py3-none-any.whl
+0a09390662ab22bb2499338cd23c2f1cd6e1f66c2d9f487b30ad22895fed7537
+  # byte-identical to the wheel pip built from git+https://github.com/aashish254/myna.git at fe11db6
+  # (runs/quickstart_from_public_install.log). Same bytes two ways: the index would ship nothing the
+  # git URL does not already ship.
+
+$ tar -tzf dist/myna-0.1.0.tar.gz | wc -l
+24        # PKG-INFO, pyproject.toml, src/myna/* — no tests/, no bench/, no runs/, no data/
+
+$ twine check dist/*
+Checking dist/myna-0.1.0-py3-none-any.whl: PASSED with warnings
+WARNING  `long_description_content_type` missing. defaulting to `text/x-rst`.
+WARNING  `long_description` missing.
+Checking dist/myna-0.1.0.tar.gz: PASSED with warnings
+WARNING  `long_description_content_type` missing. defaulting to `text/x-rst`.
+WARNING  `long_description` missing.
+exit 0
+
+$ unzip -p dist/myna-0.1.0-py3-none-any.whl myna-0.1.0.dist-info/METADATA   # abridged
+Metadata-Version: 2.3
+Name: myna
+Version: 0.1.0
+Summary: Myna: a persistent-state, delta-encoded System-1 decision engine.
+Author: Aashish
+Author-email: Aashish <145881415+aashish254@users.noreply.github.com>
+Requires-Python: >=3.11
+Requires-Dist: torch>=2.6 / numpy>=2.0 / tokenizers>=0.20 / pyarrow>=18.0 / tqdm>=4.66
+Provides-Extra: bench browser dev mlx serve
+  # and what is NOT in it: License, License-File, Project-URL/Homepage, Classifier, Keywords,
+  # Description-Content-Type, any body text.
+exit 0
+
+================================================================================
+PART 2 — AFTER CLAIMING `myna-engine` (same session, later minute)
+================================================================================
+
+The audit above was read-only. The user then chose `myna-engine` and asked for the
+claim + this witness. pyproject.toml is now sha256
+8e0a2d724315ce873226972fe3d73aeb9bbc838077948ee3ef5165dd37f4d438
+(change is metadata-only: name, readme, license, license-files, keywords,
+classifiers, [project.urls], and a [tool.uv.build-backend] module-name pin).
+
+$ python3 -m build          # FIRST ATTEMPT, before the module-name pin existed
+  × Failed to build /Users/aashish/next ko ne next gen model
+  ╰─▶ Expected a Python module at: src/myna_engine/__init__.py
+  # uv_build infers the module from the DISTRIBUTION name. Renaming the dist would have broken the
+  # build outright, and nothing in the repo would have told us until someone ran `build`. Hence:
+
+[tool.uv.build-backend]
+module-name = "myna"
+
+MUTATION BATTERY (run in /tmp/mut against copies, never by mutating the repo's file):
+  M1  `grep -v '^module-name' pyproject.toml` → uv build exit 2,
+      "Expected a Python module at: src/myna_engine/__init__.py", 0 wheels produced.
+      So the pin is load-bearing, not decoration.
+  M2  `grep -v '^license-files'` → build OK, but the wheel has 0 license entries and METADATA has
+      one `License*` line left (`License-Expression: Apache-2.0`). So `license` and `license-files`
+      are two independent jobs: the SPDX expression names the license, the file ships it.
+  M3  `grep -v '^readme'` → twine check reverts to, verbatim:
+      "WARNING `long_description_content_type` missing. defaulting to `text/x-rst`."
+      "WARNING `long_description` missing."
+      on BOTH artifacts. So `readme = "README.md"` is exactly what the user's step 2 required, and
+      removing it fails that requirement.
+
+ONE MORE FIELD, REMOVED BECAUSE THE BACKEND ITSELF PROTESTED:
+  `uv build` on the first draft printed
+      warning: Found license classifier `License :: OSI Approved :: Apache Software License`.
+      License classifiers are ambiguous and deprecated per PEP 639; projects should use
+      `project.license` and `project.license-files` instead.
+  It emitted that on every build. Since `license = "Apache-2.0"` is already declared and the
+  metadata version is 2.4, that classifier was the deprecated duplicate of a line already present,
+  so it is out; the other nine classifiers stay. After the removal `uv build` is silent.
+
+FINAL BUILD, on the repo's own tree:
+
+$ rm -f dist/* && python3 -m build
+Successfully built myna_engine-0.1.0.tar.gz and myna_engine-0.1.0-py3-none-any.whl   # exit 0
+
+$ shasum -a 256 dist/*
+99718fa7bd0f4896d666ef3c35446bf3c1f42e5c887c11aeda10c4f4ab62cd1c  dist/myna_engine-0.1.0-py3-none-any.whl   # 121,666 B
+b90a672853c0959e8c7b8e622624127889f81051b185f5855f919072ad04eba0  dist/myna_engine-0.1.0.tar.gz             # 131,560 B
+
+$ python3 -m twine check dist/*
+Checking dist/myna_engine-0.1.0-py3-none-any.whl: PASSED
+Checking dist/myna_engine-0.1.0.tar.gz: PASSED
+exit 0
+  # PASSED, and no WARNING line at all. Against PART 1's "PASSED with warnings" ×2, the three
+  # metadata fields did their job. (twine here is the host python3.9 install; its own urllib3
+  # NotOpenSSLWarning fires at import and is not about this package.)
+
+$ unzip -l dist/myna_engine-0.1.0-py3-none-any.whl | grep -E "myna/__init__"
+      193  01-01-1980 00:00   myna/__init__.py
+$ unzip -l dist/…whl | … first path component, sorted unique
+myna
+myna_engine-0.1.0.dist-info
+  # Exactly two top-level entries, and the code one is still `myna/`. The import namespace did not
+  # move; only the distribution name and its dist-info did.
+
+$ unzip -l dist/…whl | tail -2
+   332809                     27 files
+$ unzip -l dist/…whl | grep -cE "\.pt$"
+0          # still no weights in the wheel. The one hit from the user's grep pattern is unchanged:
+$ unzip -l dist/…whl | grep -iE "\.pt$|secret|token|key"
+     4031  01-01-1980 00:00   myna/tokenizer.py     # `token` ⊂ `tokenizer.py`, a false positive
+$ tar tzf dist/myna_engine-0.1.0.tar.gz | wc -l
+26         # and the sdist now carries LICENSE and README.md next to PKG-INFO + src/myna/*
+
+$ unzip -p dist/…whl myna_engine-0.1.0.dist-info/METADATA | grep -E "^(Metadata-Version|Name|License|License-File|Description-Content)"
+Metadata-Version: 2.4
+Name: myna-engine
+License-Expression: Apache-2.0
+License-File: LICENSE
+Description-Content-Type: text/markdown
+  # 843 lines, of which everything after the headers is the README body — the PyPI page will render
+  # the real project, not an empty box. PART 1's METADATA carried none of these five fields.
+  # Counts moved 25 files / 265,052 B → 27 / 332,809 B: +dist-info/licenses/ +LICENSE (11,358 B),
+  # and METADATA grew from ~1.3 KB to 57,404 B by absorbing README.md. `make repro` does not read any
+  # of these numbers, so the registry is untouched; the prose that published them is corrected in
+  # SPEC §9.60.
+
+WHETHER THE ARTIFACT HASH REPRODUCES, STATED RATHER THAN GLOSSED:
+  Same pyproject (8e0a2d72…), two builders, both exit 0:
+    `python3 -m build`   → 121,666 B   sha256 99718fa7bd0f4896d666ef3c35446bf3c1f42e5c887c11aeda10c4f4ab62cd1c
+    `uv build --wheel`   → 121,667 B   sha256 cc6000904009c64b8d8a86ae9cd9cbe47ff420167dd65b1fa1e2778a52cb4d4
+    (uv 0.11.21; python3 -m build resolves uv_build in its own isolated virtualenv, which is where the
+    one-byte compression difference and the different zip hash come from.)
+  Both list **27 files / 332,809 B uncompressed**, so the CONTENT reproduces and the archive hash does
+  not. Two consequences, both accepted rather than hidden:
+  (i) any figure quoted as "the wheel" must name its builder, which 11b now does;
+  (ii) PART 1's byte-identity claim — pip's own `sha256=0a09390662…` at 95,902 B, from
+      runs/quickstart_from_public_install.log:17, matching `python3 -m build` exactly — cannot survive
+      the rename. A wheel built from the pushed tip after this commit is 121,666 B, not 95,902 B.
+  §9.59's four-run agreement on the *answer float* is untouched: same 20 modules, same code bytes, same
+  weights. Only the packaging moves.
+
+THE IMPORT PATH, PROVEN FROM THE INSTALL RATHER THAN FROM THE SOURCE TREE:
+
+$ uv sync --extra browser
+ ~ myna-engine==0.1.0 (from file:///Users/aashish/next%20ko%20ne%20next%20gen%20model)
+$ .venv/bin/python -c "import myna, importlib.metadata as md; print(myna.__file__, md.metadata('myna-engine')['License-Expression'])"
+/Users/aashish/next ko ne next gen model/src/myna/__init__.py Apache-2.0
+$ uv lock --check
+Resolved 77 packages in 2ms                 # exit 0
+$ ls .venv/bin | grep myna
+myna-serve  myna-train  myna-weights        # all three console scripts intact
+$ .venv/bin/myna-weights --help | head -2
+usage: myna-weights [-h] [--tag TAG] [--repo OWNER/NAME] [--dest DIR] [--force] [--check] [--print-path]
+  # uv.lock changed by exactly ONE line (the project's own name at lock line 513) and is committed
+  # with pyproject, or CI's `uv sync` re-locks against a stale file.
+
+DEVIATION, UNPAID-FOR: to test the new name in a throwaway venv I deleted this repo's `.venv` by
+  accident (`rm -rf` aimed at a path that was not the throwaway) and rebuilt it with
+  `uv sync --extra browser`. The rebuild resolved torch 2.14.0; §9.59's witnesses cite 2.14.1. No
+  committed figure depends on the torch patch version, and the re-verify below ran on the rebuilt venv.
+
+NAME PROMISES SWEPT IN THE SAME PASS: three places told the future reader the PyPI command would be
+  `pip install myna` — SPEC §5 11h, TODO 11h, and §9.59(v). The first two now read
+  `pip install myna-engine`. §9.59(v) is **left as written**: it is a dated witness and the rule this
+  session re-established (§9.59(iii)) is that a witness records the tree that produced it; the
+  correction lives in §9.60 instead, which is what points at it.
+
+RE-VERIFY ON THE RENAMED TREE (the user's step 5), and what it caught first:
+
+  The FIRST suite run after the edit printed **7 failed, 567 passed, 3 skipped, exit 1** and every one of
+  the seven was `ModuleNotFoundError: No module named 'mlx'` — two `--help` renders and four G7/registry
+  proofs plus `test_the_committed_tree_passes` in both harnesses. It was NOT the rename: the traceback
+  path is `src/myna/mlx_model.py:24`, and the cause is the `.venv` this session deleted by accident and
+  rebuilt with `uv sync --extra browser`, which never installs the mlx extra the old venv had.
+
+$ uv sync --extra browser --extra mlx
+ + mlx==0.32.2
+ + mlx-metal==0.32.2
+$ uv run pytest -q -rs
+ 585 passed, 1 skipped, 1 warning in 294.27s (0:04:54)                     # exit 0
+  # The same 585 / 1 the §9.59 witness printed, i.e. nothing about the rename moved a test. The single
+  # skip is `tests/test_upstream.py:131`, unchanged. 294.27 s against §9.59's 276.90 s is box load, not
+  # a claim; §9.23 forbids reading timings as figures.
+$ make repro
+ 34/34 rows hold; 101 figures tied to a committed witness, 1 gated with no witness      # exit 0
+$ make gates
+ 7/7 verdicts hold — 3 of 7 met, 3 not met, 1 open — the release gate is NOT clear      # exit 0
+
+THE TORCH PATCH VERSION MY REBUILD CHANGED, CHECKED INSTEAD OF ASSUMED:
+  The rebuilt venv resolved **torch 2.14.0**; §9.59's four snippet runs were made under 2.14.1, and no
+  test asserts the published confidence literal, so the suite could not have caught a drift here. Run
+  from the repo with the renamed editable install:
+
+$ .venv/bin/python    # the README's five quickstart lines, verbatim
+  myna module -> /Users/aashish/next ko ne next gen model/src/myna/__init__.py
+  dist        -> 0.1.0 torch 2.14.0
+  params 16926848 temperature 1.5
+  choice 'billing'
+  confidence 0.7899749875068665
+  weakest 'shipping' 0.00027509400388225913
+  latency_ms 6.82
+  # The published float survives the torch patch change bit-for-bit — so this is a FIFTH run of those
+  # five lines agreeing with §9.59's four, on a third environment. `latency_ms` moves again, as it must.
+
+THE BUILD IS DETERMINISTIC, WHICH IS WHAT MAKES THE DELTA ATTRIBUTABLE:
+  Rebuilding HEAD's own pyproject.toml (`git show HEAD:pyproject.toml` into /tmp/oldb, same builder):
+    95,902 B   25 files / 265,052 B   sha256 0a09390662ab22bb2499338cd23c2f1cd6e1f66c2d9f487b30ad22895fed7537
+    METADATA: 29 lines, and no License / License-File / Classifier / Project-URL / Description-Content-Type
+  pip's own git+https build of fe11db6 printed that same sha256 (quickstart_from_public_install.log:17).
+  So: old wheel reproduced byte-for-byte, new wheel differs only by the metadata this entry adds, and
+  the 29 → 843 METADATA-line jump is README.md being absorbed. Nothing here needed a "roughly".
+
+  One rename hazard that turned out not to exist: if any module called `importlib.metadata.version("myna")`
+  at import, the new dist name would have raised `PackageNotFoundError` on every install.
+  `grep -rn "importlib|__version__|pkg_resources" src/myna/*.py` prints **nothing** — no code reads its
+  own distribution name, which is also why `[project.scripts]` still resolves after the rename.
+
+THE DOCUMENTED VCS INSTALL LINE, RE-RUN AGAINST THE RENAMED TREE (pre-push, so this is the unpushed
+tree — labelled as such, exactly as §9.59 labels its own stand-in):
+
+  /tmp/miga2 = `git ls-files | tar` of HEAD plus the new pyproject.toml, committed locally as 4e5e0be.
+$ uv venv --seed --python 3.12 /tmp/venv-ren          # pip 26.2.1
+$ cd /tmp && /tmp/venv-ren/bin/python -m pip install "git+file:///tmp/miga2"
+  install exit 0
+  site-packages: myna/            myna_engine-0.1.0.dist-info/
+  RECORD lists     ../../../bin/myna-serve, myna-train, myna-weights
+$ cd /tmp && /tmp/venv-ren/bin/python    # the README's five quickstart lines
+  myna module -> /tmp/venv-ren/lib/python3.12/site-packages/myna/__init__.py
+  dist        -> 0.1.0 torch 2.14.1
+  params 16926848 temperature 1.5
+  choice 'billing'
+  confidence 0.7899749875068665
+  weakest 'shipping' 0.00027509400388225913
+  latency_ms 8.69
+  # cwd is /tmp and the checkout is nowhere on sys.path, so the copy that answered is the installed one,
+  # and it is installed under `myna_engine-0.1.0.dist-info` while its package directory is still `myna/`.
+  # That is the rename's whole contract in two lines, and this is the sixth run of those five lines
+  # printing 0.7899749875068665. The `git+file://` transport stands in for `git+https://`; the pushed
+  # tip has to be re-run over the real URL after the push, and this entry does not claim that yet.
+
+ADDENDA, written after the first draft of §9.60 was checked line by line:
+
+  1. PART 1's two failed installs ran under uv's resolver. Re-run with the seeded venv's own pip, so the
+     claim is about `pip install` and not about a tool that happens to print a nicer error:
+$ cd /tmp && /tmp/venv-ren/bin/python -m pip install --index-url https://pypi.org/simple myna
+  ERROR: Could not find a version that satisfies the requirement myna (from versions: none)
+  ERROR: No matching distribution found for myna
+$ … "myna==0.1"
+  ERROR: Could not find a version that satisfies the requirement myna==0.1 (from versions: none)
+  ERROR: No matching distribution found for myna==0.1
+     # pip 26.2.1. "(from versions: none)" is the whole story: a registered name with nothing installable
+     # behind it. The name is blocked and unusable at the same time.
+
+  2. The grep that §9.60(iv) leans on was first written without -E, where `|` is a literal and "no
+     matches" would have been true for the wrong reason. Re-run properly:
+$ grep -rnE "importlib|__version__|pkg_resources|version\(" src/myna/*.py
+     # prints nothing. No module in the shipped package reads its own distribution name, so the rename
+     # cannot raise PackageNotFoundError at import — the check the earlier, broken grep only pretended
+     # to make.
+
+  3. §9.60 originally said "nine alternatives probed, eight free" and named §9.34/§9.50 as the entries
+     carrying the old wheel bytes. Both were wrong against the record above: ten names were probed and
+     nine were free, and the dated figures belong to §9.57(iii). Corrected in SPEC before the commit;
+     listing them here because an entry that quietly edits its own draft is not a corrections log.
+
+  4. The reproduction of the seven mlx failures is its own committed file, `runs/suite_mlx_extra_missing.log`
+     (7 failed, 107 passed in 38.18 s, then the restore line printing `mlx 0.32.2 | torch 2.14.0`).
+     Its header records the two traps: `test_cli_help.py:91` replaces `PYTHONPATH` in the subprocess
+     `env`, so a stub cannot reach it, and `uv run pytest` re-installed the missing extra mid-command
+     and printed a meaningless `114 passed`.

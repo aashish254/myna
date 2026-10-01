@@ -1,9 +1,30 @@
 [project]
-name = "myna"
+name = "myna-engine"
 version = "0.1.0"
 description = "Myna: a persistent-state, delta-encoded System-1 decision engine."
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
 authors = [
     { name = "Aashish", email = "145881415+aashish254@users.noreply.github.com" }
+]
+keywords = [
+    "decision-engine",
+    "non-autoregressive",
+    "agent",
+    "inference",
+    "typed-output",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
 requires-python = ">=3.11"
 dependencies = [
@@ -32,9 +53,20 @@ myna-serve = "myna.serve:main"
 myna-train = "myna.train:main"
 myna-weights = "myna.weights:main"
 
+[project.urls]
+Homepage = "https://github.com/aashish254/myna"
+Source = "https://github.com/aashish254/myna"
+Issues = "https://github.com/aashish254/myna/issues"
+
 [build-system]
 requires = ["uv_build>=0.11.21,<0.12.0"]
 build-backend = "uv_build"
+
+[tool.uv.build-backend]
+# The PyPI distribution name is `myna-engine` (the name `myna` is already registered there), but the
+# import namespace, the git+https install, the module in `src/` and every documented snippet all
+# stay `myna`, so the module name is pinned rather than inferred from the dist name.
+module-name = "myna"
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]

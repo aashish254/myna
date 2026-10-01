@@ -1504,10 +1504,12 @@ run started and no paid resource touched.
       satisfies its own manifest returns **without touching the network** — proved by calling it with
       `repo="no-such-owner/no-such-repo"` and getting the directory back. Cache is
       `$XDG_CACHE_HOME/myna/<tag>` (default `~/.cache/myna/antiprior_off_s0-weights`); `--check`
-      reports and never writes; `--force` re-pulls. Weights are **not** in the wheel: `uv build --wheel`
-      on this tree gives **25 files / 95,644 B** (264,410 B uncompressed), `find … -name "*.pt"` inside
+      reports and never writes; `--force` re-pulls. Weights are **not** in the wheel: `python3 -m build`
+      on this tree gives **27 files / 121,666 B** (332,809 B uncompressed), `find … -name "*.pt"` inside
       it returns **0**, and a test asserts the cache root
       is never under the package directory, so that cannot rot quietly.
+      *(§9.60: this line read **25 files / 95,644 B** (264,410 B) until the PyPI claim renamed the
+      distribution and added `dist-info/licenses/LICENSE` plus a README-sized `METADATA`.)*
 - [x] **11c — a fresh venv installs from git and the quickstart runs inside it.**
       `uv venv --seed --python 3.12` (3.12.13, pip 26.2.1) then `pip install "git+file:///tmp/miga"`,
       where `/tmp/miga` is a scratch git clone of this working tree at `21e9224` (the `git+https`
@@ -1559,10 +1561,14 @@ run started and no paid resource touched.
       package, and both serve guards removed. The first five of those were injected ad hoc before the
       battery existed; §9.57 records why "deliberately not written" was the wrong call.
 - [ ] **11h — the two things that need an account, so they are the user's, not the agent's.**
-      **PyPI**: publishing `myna` turns `pip install "git+…"` into `pip install myna`; it needs his
-      PyPI credentials and it makes the *name* load-bearing, so it is his call — the git line works
-      without it (11c). **Hugging Face Space**: a hosted demo needs his HF token; `myna-serve` already
-      speaks `POST /v1/predict`, so a Space is a thin wrapper over 11f and nothing here blocks it.
+      **PyPI**: publishing now means `pip install myna-engine`, not `pip install myna` — §9.60 records
+      that `myna` returns **200** on `pypi.org/pypi/myna/json` for a project with **0 files** in both of
+      its releases, which is simultaneously blocked and unusable, and a name transfer can only be
+      issued by the current owner's verified email. `pyproject.toml` already carries the claimed name,
+      so what is left is his PyPI credentials and nothing else; it makes the *name* load-bearing, so it
+      is his call — the git line works without it (11c). **Hugging Face Space**: a hosted demo needs
+      his HF token; `myna-serve` already speaks `POST /v1/predict`, so a Space is a thin wrapper over
+      11f and nothing here blocks it.
       Both are *unattempted on purpose*, not unfinished.
 
 What P11 does **not** change is the accuracy story: the best arm is still 0.5339 against G1's 0.70, and
@@ -3714,3 +3720,102 @@ Kept permanently, because the value of this project's claims is that they surviv
     index. G1 is still not met at **0.4785 / 0.5339 / 0.4893** against **0.70**; what got stronger is the
     distance between *the engine works and you can install it* and *the engine is right often enough to
     ship*, and §2.2 keeps both lines in the same table on purpose.
+
+60. **The name `myna` on PyPI is a 0-file placeholder nobody can transfer, so the distribution is now
+    `myna-engine` — and one `module-name` line is the only thing between that rename and a build that
+    cannot find the package.** `runs/pypi_readiness_audit.log` holds the whole exchange, both parts.
+
+    **(i) What the lookup measured.** `curl https://pypi.org/pypi/myna/json` → **200**, and the project
+    behind it is `version 0.1`, `summary ""`, `author ""`, `project_urls null`, one classifier
+    (`Framework :: BFG`), with **0 files in each of its two releases** and neither yanked. Real pip
+    (26.2.1, `--index-url https://pypi.org/simple`) answers both forms with
+    `ERROR: Could not find a version that satisfies the requirement myna (from versions: none)` — so the
+    name is
+    simultaneously blocked and unusable, and a PEP 542 name transfer is issued by the *current owner's*
+    verified email — that half is PyPI's documented policy, not something this repo could measure, and it
+    is why the answer is a new name rather than a claim on that one. Ten names were probed with the same
+    404/200 question and nine came back free; `myna-engine` is the one now claimed.
+
+    **(ii) The load-bearing line, found by the build refusing to work.** `uv_build` infers the module
+    from the *distribution* name, so renaming alone fails at `Getting build dependencies`:
+    `Expected a Python module at: src/myna_engine/__init__.py`, exit 2. The fix is metadata, not code —
+    `[tool.uv.build-backend] module-name = "myna"`. Three mutations, each run against a copy in
+    /tmp/mut rather than by editing the repo's file: deleting that pin reproduces the exit-2 failure
+    with 0 wheels; deleting `license-files` leaves `License-Expression: Apache-2.0` in METADATA but
+    drops the packaged file (0 license entries), which is two independent jobs, not one; deleting
+    `readme` brings twine's `long_description` warnings back verbatim on both artifacts. One classifier
+    left during the same pass: `uv build` warned on *every* build that
+    `License :: OSI Approved :: Apache Software License` is deprecated per PEP 639 once
+    `project.license` is set, so it was the duplicate of a line already present, and `uv build` is now
+    silent.
+
+    **(iii) What ships now, and which builder printed it.** wheel **121,666 B**, sdist **131,560 B**,
+    27 files / **332,809 B** uncompressed, `*.pt` count **0**, and the single hit from the wheel's own
+    `\.pt$|secret|token|key` grep
+    is still `myna/tokenizer.py` — `token` inside `tokenizer`, a false positive and reported as one.
+    `python3 -m twine check dist/*` → both **PASSED** with no warning line at all, against the pre-edit
+    "**PASSED with warnings**" twice. METADATA is now `Metadata-Version: 2.4` with `Name: myna-engine`,
+    `License-Expression`, `License-File: LICENSE`, `Description-Content-Type: text/markdown` and **843
+    lines** where it had 29, because README.md is absorbed as the page body. The builder has to be named
+    with the number: `uv build --wheel` on the identical pyproject gives **121,667 B / sha256 cc600090…**
+    where `python3 -m build` gives **121,666 B / sha256 99718fa7…**, same 27 files and same 332,809 B
+    uncompressed. That is why 11b now says which command it ran. Determinism was checked rather than
+    assumed: rebuilding `git show HEAD:pyproject.toml` in a sandbox reproduces **95,902 B / sha256
+    0a09390662…**, byte-identical to the wheel pip built from `fe11db6` over `git+https`, so the entire
+    delta in the artifact is this entry's metadata and nothing else.
+
+    **(iv) What the rename did not touch, and the one figure it retired.** The import namespace is still
+    `myna`, `[project.scripts]` still resolves `myna-serve` / `myna-train` / `myna-weights`, and `uv
+    sync` installs `myna-engine==0.1.0` while `import myna` lands in `src/myna/__init__.py`. The hazard
+    that would have made this break loudly — a module calling `importlib.metadata.version("myna")` at
+    import — does not exist here: `grep -rnE "importlib|__version__|pkg_resources|version\(" src/myna/*.py`
+    prints nothing (and it has to be `-E`: without it the alternation is a literal string that matches
+    nothing for the wrong reason). `uv.lock` moved by exactly one line (the project's own name) and is committed beside
+    pyproject so CI's `uv sync` does not re-lock against a stale file. What *is* retired: §9.59's
+    byte-identity between the PyPI-candidate wheel and the `git+https` wheel is now history-only — a
+    wheel built after this commit is 121,666 B, not 95,902 B. §5 11b and TODO 11b are corrected in place
+    with a pointer here; §9.57's dated numbers (the 95,644 B / 264,410 B pair, and the 262,941 B that
+    entry retired before it) stay as written; 11h in both files now reads
+    `pip install myna-engine`, while §9.59(v)'s `pip install myna` is left alone because a dated witness
+    records the tree that produced it and the correction lives here instead.
+
+    **(v) The install line re-run, because the pin changes what a reader's pip actually builds.**
+    `git ls-files | tar` of HEAD plus the new pyproject, committed locally as `4e5e0be`, then
+    `uv venv --seed --python 3.12` (pip 26.2.1) and the documented VCS install → **exit 0**, with
+    site-packages holding `myna/` under `myna_engine-0.1.0.dist-info/` and RECORD listing all three
+    console scripts. From `cwd=/tmp`, with the checkout absent from `sys.path`, the installed copy
+    answers `params 16926848` / `temperature 1.5` / `billing` / **0.7899749875068665** — the sixth run of
+    those five lines on a fifth environment. Not claimed: the `git+https://` form over the *pushed* tip.
+    `git+file://` is the stand-in until this is pushed, and then it gets re-run rather than inferred,
+    which is exactly the §9.59 lesson applied one commit later.
+
+    **(vi) What this session damaged, because a re-verify that hides its own footprint is not a
+    re-verify.** Testing the new name in a throwaway venv involved `rm -rf` on this repo's `.venv`, and
+    the rebuild used `uv sync --extra browser` — which does not install the **mlx** extra the deleted venv
+    had. The first suite run after the metadata edit printed **7 failed, 567 passed, 3 skipped**, exit 1,
+    and every failure was `ModuleNotFoundError: No module named 'mlx'` raised at `src/myna/mlx_model.py:24`:
+    two bench-script `--help` renders (`bench_mlx.py`, `diag_mlx_int8_gem.py`), `test_the_committed_tree_passes`
+    in both harnesses, and three gate proofs — `test_an_unmutated_verdict_holds`,
+    `test_every_proof_field_still_holds_in_its_artifact`, `test_the_registry_itself_is_part_of_g7s_proof`.
+    Nothing about that is the rename — it is a registry that gates on *command
+    runnability* (8b's falsifiable half) noticing a missing optional dependency, which is the only reason
+    a broken environment produced seven loud failures instead of a green count. Repaired with
+    `uv sync --extra browser --extra mlx` (+ `mlx 0.32.2`, `mlx-metal 0.32.2`), and the seven are
+    re-created on purpose in `runs/suite_mlx_extra_missing.log` — the transcript of the original failing
+    run having been overwritten by the passing re-run under the same filename, which is this session's
+    own mistake and is the reason the reproduction exists. Two traps that log records: those help-render
+    tests replace `PYTHONPATH` in their subprocess `env`, so a stub package on the path cannot reach
+    them and only a genuinely mlx-less venv fails them; and `uv run pytest` re-installed the missing
+    extra mid-command on the first attempt, printing a meaningless `114 passed`, so the reproduction has
+    to invoke `.venv/bin/python -m pytest` directly. The rebuilt venv also
+    resolved **torch 2.14.0** where §9.59's witnesses cite 2.14.1, and since no test asserts the
+    published confidence literal, the snippet was re-run directly: **0.7899749875068665**, unchanged.
+
+    **(vii) Re-verification on the tree this entry leaves.** `uv run pytest -q -rs` → **585 passed, 1
+    skipped, 1 warning in 294.27 s**, exit 0 (`runs/suite_post_pypi_rename.log`) — the same 585/1 §9.59
+    printed, so the metadata edit moved no test; `make repro` → **34/34 rows, 101 figures tied to a
+    committed witness, 1 gated** (exit 0); `make gates` → **7/7 verdicts — 3 met / 3 not met / 1 open,
+    the release gate NOT clear** (exit 0). No model measurement moved, so no registry row changes.
+    **Nothing was uploaded**: `twine upload` was never run, no credential was used, and publishing
+    remains 11h's user-side call with a name now chosen and claimed. G1 is still **0.4785 / 0.5339 /
+    0.4893** against **0.70**; a registered name changes none of it.

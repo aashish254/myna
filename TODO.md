@@ -845,9 +845,10 @@ published arm is still **0.5339** against G1's 0.70.
       bytes that do not hash to it, writes `SHA256SUMS` in the `sha256sum -c` shape (2/2 `OK`), and
       returns a self-verifying cache **without touching the network**. Cache is
       `$XDG_CACHE_HOME/myna/<tag>`; `--check` reports and never writes; `--force` re-pulls;
-      `--print-path` composes into a shell line. Wheel: `uv build --wheel` → 25 files / **95,644 B**
-      (264,410 B uncompressed), `*.pt` count **0**, and
-      a test asserts the cache root is never under the package.
+      `--print-path` composes into a shell line. Wheel: `python3 -m build` → 27 files / **121,666 B**
+      (332,809 B uncompressed), `*.pt` count **0**, and
+      a test asserts the cache root is never under the package. *(§9.60: the rename to `myna-engine`
+      moved this from 25 files / 95,644 B by adding LICENSE and a README-sized METADATA.)*
 - [x] **11c** Fresh-venv git install, end to end, fixing `pyproject.toml` until it works.
       Done: `uv venv --seed --python 3.12` (3.12.13, pip 26.2.1) + `pip install "git+file:///tmp/miga"`
       (scratch clone of the tree at `21e9224`) → `Successfully installed … myna-0.1.0 … torch-2.14.1`,
@@ -893,8 +894,9 @@ published arm is still **0.5339** against G1's 0.70.
       sharing the box with the wheel build and the two doc checks). No new registry row: a usage
       example is not a measurement *of the model*.
 - [ ] **11h** The two opens that need an account, so they are the user's, not the agent's.
-      **PyPI** (`pip install myna` instead of the git line) needs his credentials and makes the *name*
-      load-bearing. A **Hugging Face Space** needs his HF token; `myna-serve` already speaks
+      **PyPI** (`pip install myna-engine` instead of the git line) needs his credentials and makes the
+      *name* load-bearing — `myna` itself is taken by an empty 0-file project, so §9.60 claims
+      `myna-engine` in `pyproject.toml` and that part is already done. A **Hugging Face Space** needs his HF token; `myna-serve` already speaks
       `POST /v1/predict`, so a Space is a thin wrapper over 11f. Both unattempted on purpose — the git
       install path is verified without either.
 
