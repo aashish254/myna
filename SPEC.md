@@ -70,7 +70,7 @@ Quote the ratio, never the millisecond figure.
 | **G4** | Long-context is *correct*, not just cheap | needle-style typed decision ≥ 0.90 at 4k and ≥ 0.85 at 16k state | **not met, and not yet measurable on this box.** v0's needle curve (`runs/needle_myna-v0.md`) reads 0.188 at 128 tokens against a 0.167 floor — at chance on the shortest rung — so the longer rows are decay of nothing, and the harness now says so itself rather than printing a table (§9.25). The 16k *state* is measured and cheap (§9.22); the 16k *decision* needs the long-context checkpoint, which is 7b / `KAGGLE` |
 | **G5** | Useful confidence, with abstention | risk/coverage curve on `calibration.jsonl`; ≥ 0.95 accuracy at ≥ 60% coverage on banking77 + dbpedia14 + trec | **not met on the level, met on the machinery.** Abstention ships: `Myna(ckpt, abstain_below=t)` withholds the commitment and prints the measured reason, the fallback seam labels every answer with the engine that committed, and the curve is a committed artifact (`runs/risk_coverage.md`, 448 rows / 568 questions). Accuracy on v0 climbs **0.349 → 0.535** as coverage falls 1.00 → 0.20 — the confidence ranks the answers, on a checkpoint that cannot do the task — and setting the 0.693 floor on the engine abstains on **227** questions where the curve withheld **227**. But **no rung reaches 0.95** (max 0.596, at 10% coverage) and G5's own three sources sit at 0.000 / 0.025 / 0.150, so the pass needs the `KAGGLE` checkpoint (§9.24) |
 | **G6** | No regression on what already worked | synthetic v0 test ≥ 0.94 | open — v0's measured test macro is **0.9523** (`runs/train-v0.log`, macro of its nine `=== test ===` rows), so the level clears today; the gate stays open until a v1 checkpoint is run against it, and a draft of this row cited "0.951", which no artifact prints (§9.30) |
-| **G7** | Reproducibility | one command per result, seeds pinned, witness JSONs committed, `pytest` green | **met, as a binding rather than a rebuild.** `bench/reproduce.py` holds 32 registry rows, each binding one published table cell to one command and one committed witness, and `make repro` re-reads the 88 quoted figures out of those artifacts rather than out of the prose; the python commands among those rows are checked against the tool behind them — its `--help` must still print every flag the row publishes (§9.43); the seeds live inside the printed commands (`--seed 0`, `--seeds 0 1`), not in sentences about them. What this does **not** say: no target *executes* the registry end to end — 21 rows re-run on this box, 5 retrain a checkpoint, 2 need a laya checkout on `PYTHONPATH`, 3 need Google Chrome and 1 is `KAGGLE` — which is why TODO 8b stays unticked and why G7 is discipline rather than a one-command rebuild. Every count in this cell is now read back against `ROWS` by `bench/gates.py`, so this row — the table's one hand-copied cell — goes red rather than quietly stale (§9.44) |
+| **G7** | Reproducibility | one command per result, seeds pinned, witness JSONs committed, `pytest` green | **met, as a binding rather than a rebuild.** `bench/reproduce.py` holds 34 registry rows, each binding one published table cell to one command and one committed witness, and `make repro` re-reads the 101 quoted figures out of those artifacts rather than out of the prose; the python commands among those rows are checked against the tool behind them — its `--help` must still print every flag the row publishes (§9.43); the seeds live inside the printed commands (`--seed 0`, `--seeds 0 1`), not in sentences about them. What this does **not** say: no target *executes* the registry end to end — 22 rows re-run on this box, 6 retrain a checkpoint, 2 need a laya checkout on `PYTHONPATH`, 3 need Google Chrome and 1 is `KAGGLE` — which is why TODO 8b stays unticked and why G7 is discipline rather than a one-command rebuild. Every count in this cell is now read back against `ROWS` by `bench/gates.py`, so this row — the table's one hand-copied cell — goes red rather than quietly stale (§9.44) |
 
 **This column is not a claim.** `make gates` (`bench/gates.py --check`) re-reads each cell's
 leading verdict word, the registry row that gate cites, and the named field inside a committed
@@ -1272,16 +1272,21 @@ is measurable **without a model**:
       `bench/mutation_kaggle_bundle.py` went 42 → **48, 48 caught, exit 0**
       (`runs/mutation_kaggle_bundle.log`), and §9.48's last paragraph records the one that went green
       until its test was fixed.
-- [ ] **10c** The GPU pair: `antiprior_off_s0` / `antiprior_on_s0` in `kaggle/campaign.py`
+- [x] **10c** The GPU pair: `antiprior_off_s0` / `antiprior_on_s0` in `kaggle/campaign.py`
       (`--include-dead`; `--list` labels both *open, unspent*). Two arms × 3,600 updates at the
       measured 5.618 s/update (§2.1's `kaggle-wall-clock` row) is **~11.2 GPU-hours** of the 30
       h/week free quota — the cheapest mechanism-level question in the repo. Status as of
-      2026-10-01 12:52 NPT: **the `off` arm is done, and the `on` arm is training on this Mac.** The
-      owner's decision moved it off Kaggle: *"run the on arm on the Mac, not Kaggle. Continue it to
+      2026-10-01 18:22 NPT: **both arms are done, and the pair's answer is that the shortcut was
+      carrying 0.0554 of the macro.** The `on` arm scored **0.4784612299508689** against the `off`
+      control's **0.5338735348381732** at the same dose on the same box (§9.56(ix)), and Tier 0 over
+      the same weights prints **0** constant emitters where the control prints **4** — so the
+      batching rule did what §10a designed and the accuracy went *down*, which is the sentence §10a
+      predicted: *"It removes a shortcut; it does not add an ability."*
+      The owner's decision moved it off Kaggle: *"run the on arm on the Mac, not Kaggle. Continue it to
       3,314 updates (dose-matched to the off control), one run at a time, keep the Mac from sleeping
       for the whole run, then download + Release the weights immediately and eval macro vs the
-      control's 0.5339."* §9.56 records the launch and the two mechanics that make the dose-matching
-      real (the step index, and which scheduler the resumed run carries).
+      control's 0.5339."* §9.56 records the launch, the two mechanics that make the dose-matching
+      real (the step index, and which scheduler the resumed run carries), and the result.
       The `off` arm ran on the local M5 through the canonical launcher (§9.50's lane move) and
       finished at **3,314 of 3,600** updates — ended by its own `--stop-factor 3.0` guard on a
       596.40 s step that `pmset` attributes to battery 'Maintenance Sleep', not to allocator paging
@@ -1328,6 +1333,66 @@ is measurable **without a model**:
       interval costs 6.75), the `on` arm runs **6.63–7.65 s/update** against the `off` arm's
       **6.43–7.27** over the same intervals. `--anti-prior` buys no wall, so the ~11.2 GPU-hour
       estimate at the top of this bullet needs no correction for the flag.
+      **The completed `on` arm, and the two commands that carry 10c's verdict.** It reached the dose it
+      asked for: `"last_step": 3314` of `"steps_requested": 3315` with `"stopped": null`, the trainer
+      exiting at 18:19:55 NPT. The continuation's 2,814 updates cost **19,405 s of stamped log = 6.896
+      s/update**, inside the `off` arm's own 6.43–7.27 band, so the wall finding from the stopped arm
+      stands at full dose too.
+      ```bash
+      uv run python -m myna.report --suite data/decision-v2-pilot --split test \
+          --metrics runs/antiprior_on_s0c.metrics.json \
+          --laya runs/laya_decision_v2_test.json \
+          --out runs/antiprior_on_s0c.report.json
+      ```
+      prints **0.4784612299508689**, `margin_observed` **0.04539643455674913** over the same 0.4331
+      floor, and a laya gap that widens to **−0.18835424623960728**. Against the control's
+      0.5338735348381732 the flag is worth **−0.0554123048873043** — registry row
+      `antiprior-on-macro`. The mechanism half, registry row `tier0-on-arm`:
+      ```bash
+      uv run python bench/diag_question_ablation.py --run-dir runs/antiprior_on_s0c \
+          --metrics runs/antiprior_on_s0c.metrics.json \
+          --out runs/tier0_antiprior_on_s0c.json
+      ```
+      prints **0** constant emitters where `tier0-off-control` prints **4** and V1-B's `tier0-ablation`
+      prints 3 (`grep -c '"collapse_share": 1.0'` over the three witnesses; the highest share in this
+      run's 16 cells is `agnews/is_scitech` at **0.9183673469387755**), and state-swap movers go
+      **8 → 10 → 15** of 16. Its as-scored arm rewrites 0 keys, reproduces **716** committed ones with
+      **0** tie flips, and — because the run finished rather than stopped — prints no VOID line, so
+      this is the pair's first untruncated Tier 0 record.
+      The two halves are not in tension; they are the same fact. The audit block inside the run's own
+      `metrics.json` shows the batching rule fired on every treated cell, cutting the majority label's
+      share in the training stream by 0.099–0.137 (is_business 0.7545 → 0.6176, is_scitech 0.7467 →
+      0.6310, is_sports 0.7483 → 0.6322, is_world 0.7390 → 0.6254, boolq 0.6243 → 0.5017,
+      yelp/recommend 0.6055 → 0.5063 across 176,003 drawn rows at `skew 0.55`). So the shortcut was
+      removed, the model stopped emitting it, and the accuracy came down with it:
+
+      | treated cell | `off` | `on` | Δ | `on` collapse |
+      |---|---|---|---|---|
+      | agnews/is_business | 0.6977 | 0.6512 | −0.0465 | 0.674 |
+      | agnews/is_scitech | 0.6531 | 0.5714 | −0.0816 | 0.918 |
+      | agnews/is_sports | 0.8085 | 0.7660 | −0.0426 | 0.872 |
+      | agnews/is_world | 0.7778 | 0.7333 | −0.0444 | 0.911 |
+      | boolq/answer | 0.5750 | 0.5125 | −0.0625 | 0.575 |
+      | yelp/recommend | 0.8375 | 0.7375 | −0.1000 | 0.500 |
+
+      All six treated cells lose, and they average **−0.0629** — which is why the macro is where it
+      is. Outside the treated set the flag costs more still where a prior had been load-bearing:
+      `dbpedia14/category` −0.3621 and `agnews/topic` −0.2069 (topic lands on **exactly its own 0.328
+      floor**, i.e. it becomes the constant emitter the four stopped being), `trec/answer_type`
+      −0.1207, `sst5/sentiment` −0.0750. Four cells improve, and none of them is treated:
+      `amazon/stars` +0.1000, `contrastive/decision` +0.0867, `mnli/relation` +0.0603,
+      `banking77/intent` +0.0086. `imdb/positive` (0.7500) and `yelp/rating` (0.4250) do not move.
+      **One residue this adds to the pair, and it is not the flag's meaning.** The `on` arm reached
+      **176,003** phrasing draws over 3,315 updates (53.09/update) against the control's 207,411 over
+      3,314 (62.58) — **15% less paraphrase coverage per step**, at identical `paraphrase_sets`
+      17,112, identical seed, identical flags bar `--anti-prior` and `--out`. The anti-prior sampler
+      spends its budget flattening batch priors and therefore draws fewer paraphrases, so this
+      comparison is *not* a pure two-flag pair after all: part of the −0.0554 could be coverage
+      rather than the prior. §9.56(x) states the size of that possibility and what would settle it;
+      what settles nothing is a claim of parity, so the honest headline stays: **at the dose this box
+      can afford, removing the shortcut costs 0.0554 of the macro, and the mechanism moved exactly as
+      designed — the answer to "was the constant answer the training signal's fault" is that it was a
+      signal, and there is no reading underneath it that the extra 15% of coverage bought back.**
       The `on` arm had moved back to Kaggle because the Mac's thermal budget was thought spent; that
       lane is now closed by the owner's decision above and the measurements below stand as the record
       of why it cannot be run there at all. The kernel is
@@ -3239,3 +3304,85 @@ Kept permanently, because the value of this project's claims is that they surviv
     flushed, so its presence also certifies the file the chain reads next. The chain was relaunched on
     the new marker (PID 11305, after `bash -n` and a kill of 82187 by exact PID — a bash script being
     edited while bash is still reading it is why restarting it is not optional).
+
+    **(ix) The run completed at the requested dose, and the pre-registered rule scores as follows.**
+    `metrics.json` stamps `"last_step": 3314`, `"steps_requested": 3315`, `"stopped": null` — §9.56(ii)'s
+    index arithmetic held, so the arms really do execute the same 3,315 updates and the comparison is the
+    repo's first dose-matched pair on one box. Against the baselines fixed *before* the run in §9.56(vii),
+    verbatim and without renegotiation:
+
+    | the rule said | the run printed | |
+    |---|---|---|
+    | macro vs **0.5338735348381732** | **0.4784612299508689** | −0.0554123048873043 |
+    | emitters vs **4** | **0** | moved as designed |
+    | movers vs **10** | **15** of 16 | moved as designed |
+    | 13 dev points | 13 (250…3,250) | grid held |
+    | predicted **flat to down, 0.42–0.49** | 0.4785 | inside the band |
+
+    The dev-mid trace agreed with the scenario early and stayed there: eight of its ten first points are
+    below the control's matching step, and the two worst (−0.0421 at 2,000, −0.0397 at 2,250) exceed any
+    single adjacent-eval swing in the control's own series (0.0324), which is what made "not resolvable at
+    540 updates" (§9.55) the right sentence *then* and a resolvable negative the right sentence now. The
+    scenario file's headline estimate was *"flat to down — 0.42–0.49, worst credible 0.356, best credible
+    0.539"*; the measurement landed in the band, and its best credible case (every treated cell reading
+    and hitting laya per-cell, +0.049) is the one the run rules out.
+
+    **(x) A residue the completed run exposes that the 540-update partial could not: the arms are not
+    coverage-matched.** `paraphrase_draws` is **176,003** on the `on` arm against **207,411** on the
+    `off`, over identical `paraphrase_sets` 17,112, the same seed, the same 3,315 updates and 18 of 20
+    flags byte-identical (§9.55(i)) — **53.09 draws/update against 62.58, i.e. 15.2% less paraphrase
+    coverage**, which the anti-prior sampler spends out of the same 8-sets-per-update budget. So
+    `--anti-prior` is not a pure two-flag pair after all: the flag changes the augmentation rate as well
+    as the label mix. **The size of that is unmeasured** — this repo has no `--paraphrase off` arm anywhere
+    in `SPEC.md`, so there is no committed witness for what 15% of coverage is worth, and the correct label
+    on "part of the −0.0554 is coverage, not the prior" is *projected, unbounded*, not measured. Two ways
+    to settle it, priced: a third arm at the control's coverage with the sampler forced to the same draw
+    count (another 2,814-update interval ≈ **5.4 h** of this box at the measured 6.896 s/update), or reading
+    the sampler's draw budget in `src/myna/data.py` and proving whether the prior-balancing selection and
+    the paraphrase draw compete for one counter — which costs no GPU hours and is the next thing to try
+    before spending any.
+    What the residue does *not* touch is the mechanism verdict: the in-run `anti_prior_audit` shows the
+    majority label's share cut 0.099–0.137 on all six treated cells, and Tier 0 shows all four emitters
+    stop emitting. Those are readings of this checkpoint, not of the macro, and a coverage-matched arm
+    could raise 0.4785 without changing either.
+
+    **(xi) Durability, measured rather than assumed: the shipped bytes are the trained bytes.** `gh release
+    download antiprior_on_s0c-weights` into a scratch directory and re-hashing gives `model.pt`
+    67,733,781 B sha256 `4a720e4d7e15e3621edb05d8927f1e47aeaa442dcae23b1c8e52c903440d44a9` and
+    `tokenizer.json` 526,662 B sha256 `0252c24627eeebc2df5a577576c1c8b24e402da015c1d45519e7e1d8541ffdc3`,
+    each **identical to the local trained file** — the digest is also the one Tier 0 prints in its own
+    header, so the ablation in `tier0-on-arm` demonstrably ran on the shipped weights rather than a local
+    look-alike. What is *not* durable: the end-state `model_last.pt` (optimizer + scheduler, 203,229,625 B)
+    stays gitignored, so this checkpoint can be evaluated and cannot be continued. §9.56(ii)'s durability
+    gap is therefore half-closed — the weights shipped, the training state did not — and the only snapshot
+    of training state on the Release is the step-749 one under `antiprior_on_s0c-wip`.
+
+    **(xii) What 10c is now evidence for, stated at the width the pair supports.** G1 is not met on either
+    arm and is 0.2215 away on the better one (the `off` control's 0.5339, whose margin clause observes
+    +0.1008 against the required +0.15). The training signal's association rule was worth 0.0554 of macro
+    and there is no reading underneath it that this experiment recovered, so §6's data-volume finding
+    (0.28 tokens/param) survives as the only un-tested lever, and Tier 0 survives as the reason: 15 of 16
+    cells now answer differently when their state is swapped, which means the inputs reach the decision —
+    they just reach a worse one. Nothing in this entry should be read as the mechanism being *wrong*: it
+    did what it was built to do, twice over, in the audit and in the ablation.
+
+    **(xiii) The closing gate pass, with its own logs, since a row without a witness is a projection.**
+    Nothing trained for these numbers and nothing was borrowed: each is the printed line of a command run
+    on this box with no other job on it.
+    - `make repro` → **34/34 rows hold; 101 figures tied to a committed witness, 1 gated with no witness**
+      (was 32 rows / 88 figures before rows `antiprior-on-macro` and `tier0-on-arm`), in 8 s.
+    - `make gates` → **7/7 verdicts hold — 3 of 7 met, 3 not met, 1 open — the release gate is NOT clear**,
+      in 8 s. G1 remains not met; (xii) is the width of that claim.
+    - `uv run pytest -q` → **561 passed, 1 skipped, 1 warning in 289.92s**, exit 0, in
+      `runs/suite_post_10c.log`.
+    - `bench/mutation_reproduce.py` → **29/29 mutations caught**, exit 0, in
+      `runs/mutation_reproduce_post_10c.log`. The count did not move with the row count, and that is the
+      right outcome rather than a missed test: these 29 mutants attack the *checker* (a quote assertion
+      that stopped appending, a tracked-witness branch made unreachable, a runner that runs what it should
+      refuse), so adding two rows adds no new way for the checker to lie. What the two rows do move is the
+      coverage literal in `tests/test_reproduce.py`, which went **25 → 27** of 34 rows checkable — the
+      mutation battery stays green only because that test reads the real `ROWS`, and the file prints
+      **38 passed** against it now.
+    The two logs are committed with this entry (`git add -f`; `.gitignore:24` covers `runs/*` and the only
+    thing that keeps a witness honest here is that it is tracked), so a future session can re-run all four
+    and diff against bytes rather than against prose.

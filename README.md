@@ -31,7 +31,7 @@ are the two that cannot be closed on this box.
 | **G4** — Long-context is *correct*, not just cheap | **not met** | v0's needle curve prints **0.188 at 128 tokens** against a 0.167 uniform floor — at chance on the *shortest* rung — so the longer rows are the decay of nothing, and `runs/needle_myna-v0.md` prints `G4: not measured by this run` in place of a table a reader could quote. | not met, and not met by a run that cannot answer the question. The 16k *state* is measured, fixed at 576 KiB and cheap (§9.22); the 16k *decision* needs the 4k truncated-backprop checkpoint, which is 7b / `KAGGLE`. Those are two different claims and only the first one is settled. |
 | **G5** — Useful confidence, with abstention | **not met** | the curve's own `g5.pass` is `false`: accuracy climbs **0.349 → 0.535** as coverage falls 1.00 → 0.20 over 448 rows / 568 questions, **no rung reaches 0.95** (the max is 0.596, at 10% coverage), and G5's three named sources measure 0.000 / 0.025 / 0.150. | not met on the level, met on the machinery, and the gate is the level. `Myna(abstain_below=t)` withholds the commitment with a measured reason and the fallback seam labels which engine committed — a confidence that ranks the answers of a model that cannot answer is routing, not the product G5 describes (§9.24). |
 | **G6** — No regression on what already worked | **open** | v0's measured test macro is **0.9523** — the macro of the nine `=== test ===` rows in `runs/train-v0.log`, recomputed from its rows because the log prints no overall line — so the level clears today. | open rather than met, because the gate is written against the *next* checkpoint: it says "no regression", and there is no trained v1 artifact in this repo to regress. A draft of this row cited 0.951, a figure no artifact prints (§9.30), which is why the value here is computed from the log's own rows. |
-| **G7** — Reproducibility | **met** | `make repro` is green at this tick: 32 registry rows bind every published table cell to one command and one committed witness, and the 88 quoted figures are re-read out of those files rather than out of the prose. The python commands among those rows are checked against the tool behind them — its `--help` must still print every flag the row publishes (§9.43). The seeds live inside the printed commands (`--seed 0`, `--seeds 0 1`), not in sentences about them. | met as a binding, not as a rebuild, and the gap is disclosed rather than absorbed: no target *executes* the registry end to end — 21 rows re-run on this box, 5 retrain a checkpoint, 2 need a laya checkout on `PYTHONPATH`, 3 need Google Chrome and 1 is `KAGGLE`. That is TODO 8b, which stays unticked for exactly this reason. |
+| **G7** — Reproducibility | **met** | `make repro` is green at this tick: 34 registry rows bind every published table cell to one command and one committed witness, and the 101 quoted figures are re-read out of those files rather than out of the prose. The python commands among those rows are checked against the tool behind them — its `--help` must still print every flag the row publishes (§9.43). The seeds live inside the printed commands (`--seed 0`, `--seeds 0 1`), not in sentences about them. | met as a binding, not as a rebuild, and the gap is disclosed rather than absorbed: no target *executes* the registry end to end — 22 rows re-run on this box, 6 retrain a checkpoint, 2 need a laya checkout on `PYTHONPATH`, 3 need Google Chrome and 1 is `KAGGLE`. That is TODO 8b, which stays unticked for exactly this reason. |
 
 <!-- gates:release:end -->
 
@@ -563,6 +563,10 @@ uv run python -m myna.report --suite data/decision-v2-pilot --split test --metri
 uv run python -m myna.report --suite data/decision-v2-pilot --split test --metrics runs/antiprior_off_s0.metrics.json --laya runs/laya_decision_v2_test.json --out runs/antiprior_off_s0.report.json
 # SPEC §5 P10 10c (Tier 0 over the `off` control) · §9.55(iii)  [retrain]
 uv run python bench/diag_question_ablation.py --run-dir runs/antiprior_off_s0 --metrics runs/antiprior_off_s0.metrics.json --out runs/tier0_antiprior_off_s0.json
+# SPEC §5 P10 10c (the `on` arm, dose-matched) · §9.56  [here]
+uv run python -m myna.report --suite data/decision-v2-pilot --split test --metrics runs/antiprior_on_s0c.metrics.json --laya runs/laya_decision_v2_test.json --out runs/antiprior_on_s0c.report.json
+# SPEC §5 P10 10c (Tier 0 over the `on` arm) · §9.56  [retrain]
+uv run python bench/diag_question_ablation.py --run-dir runs/antiprior_on_s0c --metrics runs/antiprior_on_s0c.metrics.json --out runs/tier0_antiprior_on_s0c.json
 # SPEC §9.41 (the dbpedia14 dev→test delta) · TODO 9h  [here]
 uv run python -m myna.report --split dev --metrics runs/v1b_kaggle_3600b.metrics.json --out runs/v1b_kaggle_3600b.dev.report.json > runs/v1b_kaggle_3600b.dev.report.log
 # SPEC §5 P9 9d · TODO 9d  [here]
@@ -632,18 +636,22 @@ prints its own 0.698 floor. §9.55(iii) is the entry and `tier0-off-control` is 
 `antiprior_on_s0-wip` asset is the ≤step-250 bytes (203,229,625 B, sha256 `8ed38b240bd843bf…`,
 downloaded and re-hashed), while this box's `runs/antiprior_on_s0/model_last.pt` is the step-500 save —
 same byte count, sha256 `3b45dd6a4ae65e77…` — and it is gitignored, so §9.55(ii) keeps that as an open
-durability gap rather than a covered one. The `on` arm is now training on this box rather than waiting
-on a GPU: continued from that step-500 save through the canonical launcher with `--resume`, stopped at
-the step index the control reached, so the pair's comparison is one machine and one dose and the only
-residue is the re-seeded data RNG that a continuation cannot avoid. §9.56 is the launch note, and it
-fixes the judgement — test macro against 0.5338735348381732, constant-emitter count against 4 — before
-the run prints its last step.
+durability gap rather than a covered one. The `on` arm has since run to completion **on this box**:
+continued from that step-500 save through the canonical launcher with `--resume`, ending at
+`"last_step": 3314` of `"steps_requested": 3315` with `"stopped": null`, so the pair is one machine and
+one dose and the residues are the re-seeded data RNG a continuation cannot avoid **and** a coverage
+asymmetry the completed run exposed — 176,003 paraphrase draws against the control's 207,411 over the
+same 17,112 sets, 15.2% fewer per update (§9.56(x)). The judgement §9.56(vii) fixed before the run
+printed: **test macro 0.4784612299508689 against 0.5338735348381732, −0.0554 from the flag alone**, and
+**0 constant emitters where the control has 4**, so the shortcut is gone and nothing readable arrived in
+its place. `antiprior-on-macro` and `tier0-on-arm` are the two rows; the weights are on the
+`antiprior_on_s0c-weights` Release and re-hash identical to the trained files.
 
 ```bash
 mkdir -p runs/myna-v0
 curl -L -o runs/myna-v0/model.pt       https://github.com/aashish254/myna/releases/download/v0-checkpoint/model.pt
 curl -L -o runs/myna-v0/tokenizer.json https://github.com/aashish254/myna/releases/download/v0-checkpoint/tokenizer.json
-make repro                             # 32/32 rows hold here, with weights to read
+make repro                             # 34/34 rows hold here, with weights to read
 ```
 
 The V1-B weights go where `bench/diag_question_ablation.py` already looks by default, so Tier 0

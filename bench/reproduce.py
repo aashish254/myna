@@ -387,6 +387,57 @@ ROWS = [
         "whose accuracy moves when their state is swapped go 8 → 10. Note this is the same "
         "checkpoint as `antiprior-off-macro`, ablated — the two rows are the macro and its mechanism."),
 
+    row("antiprior-on-macro", "SPEC §5 P10 10c (the `on` arm, dose-matched) · §9.56",
+        "uv run python -m myna.report --suite data/decision-v2-pilot --split test "
+        "--metrics runs/antiprior_on_s0c.metrics.json "
+        "--laya runs/laya_decision_v2_test.json "
+        "--out runs/antiprior_on_s0c.report.json",
+        HERE,
+        ["runs/antiprior_on_s0c.report.json", "runs/antiprior_on_s0c.metrics.json"],
+        [("runs/antiprior_on_s0c.report.json", '"macro_acc": 0.4784612299508689'),
+         ("runs/antiprior_on_s0c.report.json", '"margin_observed": 0.04539643455674913'),
+         ("runs/antiprior_on_s0c.report.json", '"macro_majority": 0.4330647953941198'),
+         ("runs/antiprior_on_s0c.metrics.json", '"anti_prior": "on"'),
+         ("runs/antiprior_on_s0c.metrics.json", '"last_step": 3314'),
+         ("runs/antiprior_on_s0c.metrics.json", '"steps_requested": 3315')],
+        "10c's verdict, and it is a cost: 0.4784612299508689 against `antiprior-off-macro`'s "
+        "0.5338735348381732 is **−0.0554123048873043** from the flag alone. Both arms execute 3,315 "
+        "updates — `\"last_step\": 3314` of `\"steps_requested\": 3315` here, the completed run "
+        "(`\"stopped\": null`), against 3,314 of 3,600 for the truncated control (§9.56(ii)) — on this "
+        "box, same seed, flags identical but for `--anti-prior` and `--out` (§9.55). G1 moves the wrong "
+        "way on both halves: margin over the floor 0.10080873944405344 → 0.04539643455674913, and the "
+        "laya gap widens −0.13294194135230297 → −0.18835424623960728. The shipped bytes round-trip: the "
+        "`antiprior_on_s0c-weights` Release's `model.pt` hashes 4a720e4d7e15e3621edb05d8927f1e47aeaa442"
+        "dcae23b1c8e52c903440d44a9, the same digest `runs/antiprior_on_s0c/model.pt` carries locally."),
+
+    row("tier0-on-arm", "SPEC §5 P10 10c (Tier 0 over the `on` arm) · §9.56",
+        "uv run python bench/diag_question_ablation.py --run-dir runs/antiprior_on_s0c "
+        "--metrics runs/antiprior_on_s0c.metrics.json "
+        "--out runs/tier0_antiprior_on_s0c.json",
+        RETRAIN,
+        ["runs/tier0_antiprior_on_s0c.json", "runs/tier0_antiprior_on_s0c.log"],
+        [("runs/tier0_antiprior_on_s0c.json", '"macro_as_scored": 0.4784612299508689'),
+         ("runs/tier0_antiprior_on_s0c.json", '"swap-state": 0.3860646597087993'),
+         ("runs/tier0_antiprior_on_s0c.json", '"blank-options": 0.32090059476922256'),
+         ("runs/tier0_antiprior_on_s0c.log", "macro 0.4785 (floor 0.4331)"),
+         ("runs/tier0_antiprior_on_s0c.log", "macro 0.3209 (floor 0.4331)"),
+         ("runs/tier0_antiprior_on_s0c.log", "guard green: the as-scored arm reproduces 716 committed keys"),
+         ("runs/tier0_antiprior_on_s0c.json", '"collapse_share": 0.9183673469387755')],
+        "The mechanism half of the same weights, and the count 10c's own judgement rule asked for. "
+        "`grep -c '\"collapse_share\": 1.0'` is **0** here, against **4** in `tier0-off-control` and "
+        "**3** in V1-B's `tier0-ablation`: the highest share in the whole 16 is `agnews/is_scitech` at "
+        "0.918, so every constant emitter stopped emitting, which is the batching rule doing exactly "
+        "what SPEC §10a designed and bought nothing — the macro above is 0.0554 lower. Cells whose "
+        "accuracy moves when their state is swapped go 8 → 10 → **15** of 16; only `banking77/intent` "
+        "is still inert. The four treated-by-name cells that were emitters fall to 0.674 / 0.918 / "
+        "0.872 / 0.911 while their accuracies drop (is_business 0.698 → 0.651, is_scitech 0.653 → "
+        "0.571, is_sports 0.809 → 0.766, is_world 0.778 → 0.733). Prompt-reliance gaps shrink as the "
+        "shortcut goes: instruction 0.1024 → 0.0199, options 0.1665 → 0.1576, while the state gap "
+        "narrows 0.1263 → 0.0924. Unlike `tier0-off-control` this run prints **no VOID line** — "
+        "`stopped: null` and the requested step is reached — so it is the pair's first untruncated "
+        "Tier 0 record, and its as-scored arm rewrites 0 keys while reproducing 716 committed ones "
+        "with 0 tie flips."),
+
     row("v1b-kaggle-dev", "SPEC §9.41 (the dbpedia14 dev→test delta) · TODO 9h",
         "uv run python -m myna.report --split dev --metrics runs/v1b_kaggle_3600b.metrics.json "
         "--out runs/v1b_kaggle_3600b.dev.report.json > runs/v1b_kaggle_3600b.dev.report.log",

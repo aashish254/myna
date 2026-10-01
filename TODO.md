@@ -6,8 +6,9 @@ the item claims, per SPEC §7.1.
 
 **Training policy for this loop:** the 2026-09-26 directive ("nothing trains on the MacBook; all
 model training runs on **Kaggle**") was **lifted by the account holder on 2026-10-01** because the
-Kaggle token no longer authenticates (SPEC §5 P0 `KAGGLE`, §9.50). The 10c pair therefore runs here
-on the M5. Everything else about the old directive still holds: the on-device/MLX/MPS measurements
+Kaggle token no longer authenticates (SPEC §5 P0 `KAGGLE`, §9.50). The 10c pair therefore ran here
+on the M5 and is **complete and judged** (§5 P10 10c: `on` 0.4785 vs `off` 0.5339). Everything else
+about the old directive still holds: the on-device/MLX/MPS measurements
 *must* stay on this box (SPEC §6), and only one training run at a time.
 So every "train" item below is split into *prepare/verify the path locally* (this loop) and
 *run it on Kaggle* (user's credentials — labelled `KAGGLE`, blocked until the token is re-minted).
@@ -767,23 +768,31 @@ So every "train" item below is split into *prepare/verify the path locally* (thi
       `on` and `off` to the same token, so a generator emitting `off` twice still yields two
       identical commands. §9.46 from the other side again: a normalization that makes two things
       comparable deletes the difference the check is about.
-- [ ] **10c** The pair `antiprior_off_s0` / `antiprior_on_s0` — **~11.2 GPU-hours**, unspent *on
-      the T4*, and the user's call there. Kaggle auth is broken, so the pair is running on the local
+- [x] **10c** The pair `antiprior_off_s0` / `antiprior_on_s0` — **~11.2 GPU-hours**, never spent *on
+      the T4* (that lane is closed: §9.53(vi) measures this account being denied an accelerator), and
+      **spent on this Mac instead**. Kaggle auth is broken, so the pair ran on the local
       M5 lane since 2026-10-01 at the measured 6.74 s/update averaged over its first 2,220 updates
-      (§9.50), and each arm's `model.pt` goes
-      to a GitHub Release the pass that writes it — the V1-B weights are gone with `/private/tmp`, so
+      (§9.50), and each arm's `model.pt` went
+      to a GitHub Release the pass that wrote it — the V1-B weights are gone with `/private/tmp`, so
       a regenerated checkpoint that is not shipped is a repeat of the same loss.
-      **Status 2026-10-01 12:56 NPT: `off` is done and shipped; `on` is training here.** The owner put
-      it on the Mac ("continue it to 3,314 updates, dose-matched to the off control ... then download +
-      Release the weights immediately and eval macro vs the control's 0.5339"), so the arm is
+      **Status 2026-10-01 18:22 NPT: both arms are done, shipped and judged. The flag costs 0.0554.**
+      `on` = **0.4784612299508689**, `off` = **0.5338735348381732**; Tier 0 constant emitters **0**
+      against the control's **4**, state-swap movers **15** against 10 — the shortcut is gone and no
+      reading arrived with it, which is SPEC §10a's own sentence measured rather than asserted. The
+      owner put it on the Mac ("continue it to 3,314 updates, dose-matched to the off control ... then
+      download + Release the weights immediately and eval macro vs the control's 0.5339"), so the arm is
       `runs/antiprior_on_s0c/` — the step-500 snapshot continued through the canonical launcher with
-      `--steps 3315 --resume`, driver 80297 / trainer 80299 / `caffeinate -i -s -w 80297` at 80330, and
-      `runs/ckpt_backup_on_s0c.sh` (80600) shipping both snapshots untended. §9.56 is the entry, and
+      `--steps 3315 --resume`, ending `"last_step": 3314` of 3,315 with `"stopped": null` at 18:19:55,
+      6.896 s/update over the 2,814 continued updates (the control's own band is 6.43–7.27, so the flag
+      still buys no wall). `runs/ckpt_backup_on_s0c.sh` shipped the weights to `antiprior_on_s0c-weights`
+      and `runs/post_on_s0c.sh` ran the report and Tier 0 unattended; §9.56 is the entry, and
       3,315 rather than 3,314 is in it: the loop's last executed index is `steps − 1`, and the control
-      stamped `last_step: 3314`. Nothing else may run on this box until it finishes — `--stop-factor
-      3.0` is armed, and a job the size of the 293 s suite, a mutation battery or a Tier 0 re-run is
-      the shape that trips it (§9.56(v) records the one 26 s slice that was taken deliberately, and that
-      the interval containing it still printed at the control's own 6.58 s/update).
+      stamped `last_step: 3314`. **One thing the completed run changed about the pair's cleanliness:**
+      the arms are not coverage-matched — 176,003 paraphrase draws against 207,411 over the same
+      17,112 sets, 15.2% fewer per update, because the anti-prior sampler spends from the same budget
+      (§9.56(x)). No `--paraphrase off` arm exists, so how much of the −0.0554 is coverage is
+      *unmeasured*; the zero-GPU-hour way to attack it is to read the sampler's draw counter in
+      `src/myna/data.py` before buying another 5.4 h interval.
       Two arms × 3,600 updates at the measured 5.618 s/update (`kaggle-wall-clock`). Printed by
       `python kaggle/campaign.py --include-dead`; `--list` labels both *open, unspent* rather than
       borrowing the ablation cells' *measured, not resolved*. The control is run, not borrowed:
