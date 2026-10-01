@@ -3038,7 +3038,12 @@ Kept permanently, because the value of this project's claims is that they surviv
     are the only thing that moved. Before
     these edits, CI answered for both pushed SHAs of the last tick: run **36822216666** at `8c346a7`
     and run **36823676017** at `0e77d72` each printed **545 passed, 8 skipped** (12m38s–13m17s) with
-    the credential scan at **0 matches for 9 shapes across 230 blobs**. §9.52's arithmetic still
+    the credential scan at **0 matches for 9 shapes across 230 blobs**. This tick's own tree is
+    covered by run **36826569290** at `d2e0dc9`, the tip: **545 passed, 8 skipped in 582.78 s**, scan
+    **0 matches for 9 shapes across 232 blobs** — the same 545/8 split again, which is the expected
+    signature of a tick that adds one registry row and edits one test's counts without adding tests.
+    The intervening `4eca685` run was still `in_progress` when the tip's result was read, so the tip's
+    green is the witness for the tree §9.55 ships in, not for that SHA. §9.52's arithmetic still
     closes on the pair of boxes (562 collected here − 11 items in the two MLX modules + the 2
     module-level skip lines they collapse to = 553 there), and adding a registry row added no
     collected test, which is why both runs print the same 545.
