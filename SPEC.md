@@ -3214,15 +3214,28 @@ Kept permanently, because the value of this project's claims is that they surviv
     3,600-request run, and it will be written that way. *(OPEN: every figure in this bullet is gated
     until the run stamps its last step; the only measured numbers in this entry are the ones above.)*
 
-    **(viii) The judgement runs itself, and the trigger is the last file written rather than a
-    wall-clock guess.** `runs/post_on_s0c.sh` (PID 82187) waits for the trainer's PID to disappear
-    *and* `runs/antiprior_on_s0c/tokenizer.json` to exist — `train.py` writes `metrics.json`, then
-    `model.pt`, then `tokenizer.json` (`:1105`, `:1121`, `:1123`), so the third of the three is the
-    only one that says the run reached its end block rather than started it — then flattens
+    **(viii) The judgement runs itself, and the trigger is a file only the end block writes rather
+    than a wall-clock guess.** `runs/post_on_s0c.sh` waits for the trainer's PID to disappear *and*
+    `runs/antiprior_on_s0c/model.pt` to exist, then flattens
     `runs/antiprior_on_s0c.{metrics,train.log}`, reports the macro against the committed laya witness,
     and re-runs Tier 0 over the new weights. Every path it writes is a new `runs/` file; no committed
-    witness is in its way. If the trainer disappears with no `tokenizer.json`, the chain logs that it
+    witness is in its way. If the trainer disappears with no `model.pt`, the chain logs that it
     died before its end block and exits 1 rather than reporting a half-run. Its own progress log and
     marker are gitignored beside the uploader's, because they are box glue; the five files it produces
     are the witnesses a registry row will bind — **that row is not written yet, because a row quotes
     figures and these do not exist until the run stamps.**
+
+    **(viii-b) The trigger's first choice was wrong, and the check that killed it was `ls`.** As
+    originally written the chain waited on `tokenizer.json`, reasoning that `train.py` writes
+    `metrics.json`, then `model.pt`, then `tokenizer.json` (`:1105`, `:1121`, `:1123`), so the last of
+    the three says the end block *completed*. It does not: `save_snapshot()` saves the tokenizer
+    alongside the weights at **every** rolling save (`:405`, called from `:1041`, `:1045`, `:1056`), so
+    `runs/antiprior_on_s0c/tokenizer.json` has existed since step 249 — and did, at 526,662 B, spotted
+    mid-run at 16:36 while `model.pt` was absent. The practical damage was the *negative* branch: the
+    "trainer gone with no tokenizer" case could never fire on a run that reached its first save, so a
+    crash at step 3,000 would have sent the chain on to `cp` a `metrics.json` that does not exist and
+    then print a report error instead of one honest `train-died` line. `model.pt` is the only path the
+    end block writes that no rolling save touches, and it is written *after* `metrics.json` is fully
+    flushed, so its presence also certifies the file the chain reads next. The chain was relaunched on
+    the new marker (PID 11305, after `bash -n` and a kill of 82187 by exact PID — a bash script being
+    edited while bash is still reading it is why restarting it is not optional).
