@@ -3178,15 +3178,19 @@ Kept permanently, because the value of this project's claims is that they surviv
     trainer 80299, and the pre-existing unrelated `caffeinate` and Chrome were left exactly as found.
     This is not belt-and-braces: the `off` control's own death was `step time 596.40s > 3.0x median
     6.58s of the last 20`, which §9.53(iv) attributes to battery 'Maintenance Sleep' rather than to
-    anything the model does. The corollary is a rule for the next five hours on this box: **no test
-    suite, no Tier 0 re-run, no `make repro` while the arm runs**, because `--stop-factor 3.0` is armed
-    here and a heavy local job is exactly the shape that trips it — a self-inflicted version of the
-    event that truncated the control.
-    Wall clock, measured rather than hoped: the first 50 resumed updates stamped **355 s = 7.10 s/update**,
-    inside the control's 6.43–7.27 band, and there is no repeat of the 89.55 s/update first interval
-    because AdamW's state came back with the snapshot instead of warming up. At that slope the remaining
-    2,764 updates are **5.45 h (projected)**, plus eleven dev-mid evals at the ~37 s the control's
-    intervals imply, so the projected finish is ≈ 18:35 NPT.
+    anything the model does. The corollary is a size rule rather than a prohibition: nothing on the
+    order of the 293 s suite, a mutation battery or a Tier 0 re-run may run while an arm is live,
+    because that is the shape that trips the guard and truncates the dose. One exception was taken
+    deliberately and is recorded here — `uv run pytest tests/test_reproduce.py tests/test_gates.py`
+    (**67 passed in 26.07 s**) to prove the `.gitignore` edit broke nothing — and the interval that
+    contains it still printed at 6.58 s/update, so the guard did not bite.
+    Wall clock, measured rather than hoped: the first 50 resumed updates stamped **355 s = 7.10 s/update**
+    and the next 55 stamped **362 s = 6.58 s/update** — the second number is the `off` control's own
+    median step time to the hundredth (`3.0x median 6.58s` is the line that ended that run), and there is
+    no repeat of the 89.55 s/update first interval because AdamW's state came back with the snapshot
+    instead of warming up. At 6.58 s/update the remaining 2,709 updates from step 605 are **4.95 h
+    (projected)**, plus eleven dev-mid evals at the ~37 s the control's intervals imply, so the projected
+    finish is ≈ 18:10 NPT.
 
     **(vi) The weights ship without anyone awake, and the tag says the step the run reached.**
     `runs/ckpt_backup_on_s0c.sh` (PID 80600) does two uploads and neither is what

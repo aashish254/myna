@@ -781,8 +781,9 @@ So every "train" item below is split into *prepare/verify the path locally* (thi
       `runs/ckpt_backup_on_s0c.sh` (80600) shipping both snapshots untended. §9.56 is the entry, and
       3,315 rather than 3,314 is in it: the loop's last executed index is `steps − 1`, and the control
       stamped `last_step: 3314`. Nothing else may run on this box until it finishes — `--stop-factor
-      3.0` is armed, and a heavy local job would be a self-inflicted repeat of whatever truncated the
-      control.
+      3.0` is armed, and a job the size of the 293 s suite, a mutation battery or a Tier 0 re-run is
+      the shape that trips it (§9.56(v) records the one 26 s slice that was taken deliberately, and that
+      the interval containing it still printed at the control's own 6.58 s/update).
       Two arms × 3,600 updates at the measured 5.618 s/update (`kaggle-wall-clock`). Printed by
       `python kaggle/campaign.py --include-dead`; `--list` labels both *open, unspent* rather than
       borrowing the ablation cells' *measured, not resolved*. The control is run, not borrowed:

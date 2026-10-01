@@ -34,6 +34,10 @@ runs/antiprior_on_s0c.driver.log
 # first token is this laptop's absolute interpreter path.
 runs/ckpt_backup_on_s0c.log
 runs/ckpt_backup_on_s0c.state
+# the post-run chain's own progress log and its marker: box glue, not witnesses. The files it
+# produces (runs/antiprior_on_s0c.*, runs/tier0_antiprior_on_s0c.*) are the witnesses.
+runs/post_on_s0c.log
+runs/post_on_s0c.exit
 
 # Derived corpora: the rows are upstream text, so the default is that only the provenance file
 # stays in git (it pins revisions, seeds, collision counts and the sha256 of the generated
