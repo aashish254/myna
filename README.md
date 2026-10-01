@@ -11,6 +11,62 @@ decision models, and both re-encode the entire state on every request. Agent
 loops don't work that way — the state grows at the edge and the questions are
 short. Myna is an architecture built for that shape from the ground up.
 
+## Quickstart: install, fetch the weights, ask one question
+
+```bash
+pip install "git+https://github.com/aashish254/myna.git"
+myna-weights          # → ~/.cache/myna/antiprior_off_s0-weights/{model.pt,tokenizer.json}
+```
+
+```python
+from myna import Myna, fetch_weights
+myna = Myna(fetch_weights())          # the best published arm: test macro 0.5339
+out = myna.predict("My order never arrived and I want a refund.", {
+    "department": {"type": "choice",
+                   "instructions": "Which team should handle this ticket?",
+                   "criteria": ["billing", "technical", "shipping", "returns", "other"]}})
+print(out["answers"]["department"]["choice"])
+```
+
+That prints **`billing`**, at `confidence` `0.7899749875068665` with `shipping` the
+weakest of the five at `0.00027509400388225913`, over the Release bytes whose
+`sha256` is `30f0fa937e57e8ce8b21c58315dc7e800151a0c95e003dc0930e0f75d588f1e5` —
+16,926,848 params at temperature 1.5, measured 2026-10-01 on an M5 at
+`latency_ms` **7.84** (`runs/quickstart_from_gh_download.log`) and **6.98** from inside
+the pip-installed package (`runs/quickstart_from_git_install.log`).
+
+`myna-weights` takes `--tag` (every published arm is a tag: `antiprior_off_s0-weights`
+is the 0.5339 control, `antiprior_on_s0c-weights` the 0.4785 one, `v1b-checkpoint` the
+0.4893 Kaggle run), `--dest DIR`, `--force`, and `--check`, which prints whether the
+cache hashes and exits 1 without writing anything. It needs no `gh`, no token and no
+extra: it is stdlib `urllib`, it verifies each file against the digest GitHub publishes
+for that asset, and it writes a `SHA256SUMS` beside them that `shasum -a 256 -c` reads.
+Weights are deliberately **not** in the wheel — a `pip install` that downloaded a
+particular training run would make every published macro a side effect of an install.
+
+Prefer the tool you already have? The same bytes:
+
+```bash
+gh release download antiprior_off_s0-weights -D ~/.cache/myna/antiprior_off_s0-weights
+```
+
+Over HTTP, the server already ships (the extra is one install away:
+`pip install "myna[serve] @ git+https://github.com/aashish254/myna.git"`):
+
+```bash
+myna-serve --ckpt ~/.cache/myna/antiprior_off_s0-weights --port 8080
+curl -s localhost:8080/v1/predict -H 'content-type: application/json' \
+     -d '{"state":"My order never arrived and I want a refund.","questions":{"department":{"type":"choice","instructions":"Which team should handle this ticket?","criteria":["billing","technical","shipping","returns","other"]}}}'
+```
+
+`/v1/predict` takes `{state, questions}` and returns the same `answers` object the
+engine prints; `/v1/sessions` keeps an observation so `/ask` and `/append` never
+re-read the state.
+
+Everything above runs today. What those weights are *worth* is the table below, and its
+headline is not good: the engine answers, and on the benchmark that decides G1 it does
+not answer well enough to ship.
+
 <!-- gates:release:begin -->
 ## Where this stands: the release gate, all seven rows
 

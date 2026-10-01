@@ -813,6 +813,73 @@ So every "train" item below is split into *prepare/verify the path locally* (thi
       passes either half of G1 — so this is a decision about what the claim means, and it is not
       a reason to spend the ~31.2 GPU h on the expectation of clearing the bar.
 
+## P11 — Installable and usable as-is (SPEC §5 P11)
+
+The brief: a reader who has the repo can ask the model a question in five lines, without `gh`,
+without this SPEC, and without a training run. Nothing here is an accuracy claim — the best
+published arm is still **0.5339** against G1's 0.70.
+
+- [x] **11a** Verify inference from a clean state before building anything on top of it.
+      Done: `gh release download antiprior_off_s0-weights -D /tmp/ckpt-05339` → `Myna(dir).predict(
+      "My order never arrived and I want a refund.", {"department": choice-of-five})` prints
+      **`billing`** at `confidence` **0.7899749875068665**, weakest option `shipping` at
+      **0.00027509400388225913**, 16,926,848 params at temperature 1.5, `latency_ms` **7.84**. The
+      downloaded `model.pt` hashes to the digest the Release API publishes
+      (`30f0fa93…f1e5`). Witness: `runs/quickstart_from_gh_download.log`.
+- [x] **11b** A weights-fetch helper: `myna.fetch_weights(tag=…, dest=…)` and a console script,
+      stdlib only, no `gh`, weights never in the wheel.
+      Done: `src/myna/weights.py` + `myna-weights = "myna.weights:main"`. Resolves the release through
+      `api.github.com`, reads GitHub's per-asset `digest`, downloads over the public asset URL, refuses
+      bytes that do not hash to it, writes `SHA256SUMS` in the `sha256sum -c` shape (2/2 `OK`), and
+      returns a self-verifying cache **without touching the network**. Cache is
+      `$XDG_CACHE_HOME/myna/<tag>`; `--check` reports and never writes; `--force` re-pulls;
+      `--print-path` composes into a shell line. Wheel: `uv build --wheel` → 25 files / **95,644 B**
+      (264,410 B uncompressed), `*.pt` count **0**, and
+      a test asserts the cache root is never under the package.
+- [x] **11c** Fresh-venv git install, end to end, fixing `pyproject.toml` until it works.
+      Done: `uv venv --seed --python 3.12` (3.12.13, pip 26.2.1) + `pip install "git+file:///tmp/miga"`
+      (scratch clone of the tree at `21e9224`) → `Successfully installed … myna-0.1.0 … torch-2.14.1`,
+      `fetch_weights` imports, `myna-weights --dest /tmp/venv-fetch` pulls and verifies the real 65 MB
+      with no `gh` on the box, and the snippet prints `billing` / **0.7899749875068665** /
+      `latency_ms` **6.98** from inside the installed package. `pyproject.toml` needed **no** fix; what
+      needed fixing was `myna-serve`, which is §9.57. Witness: `runs/quickstart_from_git_install.log`.
+- [x] **11d** The documented URL itself, not a stand-in.
+      Done: `pip install "git+https://github.com/aashish254/myna.git"` installs the pushed tip
+      `c29494e`, loads the same weights, answers with the same probability — and reports
+      `fetch_weights` **absent**, because this work is unpushed. Printed rather than glossed.
+- [x] **11e** README quickstart at the very top, before the gate table.
+      Done: install line, `myna-weights`, the verified snippet, its printed answer with the digest it
+      came from, the `--tag` list naming every published arm, the `gh release download` equivalent, and
+      the HTTP block. The gate table follows immediately with **"3 of 7 met, 3 not met, 1 open — the
+      release gate is NOT clear"** unchanged, joined by one bridging sentence: the engine works like
+      this, what it is *worth* is the table below, and the answer to the second is not good.
+- [x] **11f** Document the HTTP option.
+      Done: three lines in the quickstart — `myna-serve --ckpt <dir> --port 8080` then
+      `POST /v1/predict` with `{state, questions}` — plus the extra-install line it needs. Booted and
+      checked: `GET /v1/health` → `{"ok":true,"params":16926848,"temperature":1.5,"abstain_below":null}`,
+      `POST /v1/predict` → the byte-identical `answers` object. Started and stopped by exact PID, port
+      verified closed after.
+- [x] **11g** Tests for the fetch and for predict on the real weights format, suite green.
+      Done: `tests/test_weights.py` **19** over a faked GitHub (no network, no credentials, no 65 MB to
+      prove a hash), including the seam test that hands the fetched directory straight to `Myna(...)`;
+      `tests/test_serve.py` **+2** for the two messages 11f required; `tests/test_cli_help.py` **+2**
+      cases so the new module's `--help` is gated like every published command.
+      `bench/mutation_weights.py` **16/16 caught**, exit 0, 190.46 s (`runs/mutation_weights.log`).
+      Writing the battery found the gap the ad-hoc pass had left: nothing exercised `download()`'s
+      failure branch, so a `.part` left beside a refused checkpoint would have survived — hence the
+      mid-body-death and short-200 tests (§9.57). Suite at this tick: **584 passed, 1 skipped,
+      1 warning in 285.38s**, exit 0 (`runs/suite_post_P11.log`); registry **34/34 rows, 101 figures**
+      in 7.65 s; gates **7/7, 3 met / 3 not met / 1 open — NOT clear** in 8.30 s; `bench/mutation_reproduce.py`
+      re-run over the new tree: **29/29 caught**, exit 0, 308.23 s wall (`runs/mutation_reproduce_post_P11.log`,
+      sharing the box with the wheel build and the two doc checks). No new registry row: a usage
+      example is not a measurement *of the model*.
+- [ ] **11h** The two opens that need an account, so they are the user's, not the agent's.
+      **PyPI** (`pip install myna` instead of the git line) needs his credentials and makes the *name*
+      load-bearing. A **Hugging Face Space** needs his HF token; `myna-serve` already speaks
+      `POST /v1/predict`, so a Space is a thin wrapper over 11f. Both unattempted on purpose — the git
+      install path is verified without either.
+
+
 ## Cross-cutting
 - [ ] Every new gate mutation-checked, witness quoted in the commit message (SPEC §7.1)
 - [ ] `pytest` green at every tick; 0 skips other than the KEV-gated parity test

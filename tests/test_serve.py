@@ -18,7 +18,7 @@ from fastapi.testclient import TestClient
 from myna.data import WORKFLOWS, generate
 from myna.engine import Myna
 from myna.model import MynaConfig, MynaModel
-from myna.serve import create_app
+from myna.serve import create_app, main
 
 
 def _build_ckpt(maker):
@@ -150,3 +150,26 @@ def test_session_stream_matches_direct(client):
             assert abs(a["noul"] - b["noul"]) < tol, name
     assert client.delete(f"/v1/sessions/{sid}").status_code == 200
     assert client.post(f"/v1/sessions/{sid}/ask", json={"questions": QUESTIONS}).status_code == 404
+
+
+def test_a_missing_ckpt_names_the_fetch_that_fixes_it(tmp_path):
+    """`--ckpt` defaults to `runs/myna-v0`, which exists only inside this checkout.
+    A reader following the README from a pip install gets a torch `FileNotFoundError`
+    for a directory with no weights in it, which names neither the directory nor the
+    way to fill it."""
+    empty = tmp_path / "no-weights"
+    with pytest.raises(SystemExit) as e:
+        main(["--ckpt", str(empty), "--port", "8099"])
+    msg = str(e.value)
+    assert "model.pt" in msg and "tokenizer.json" in msg
+    assert "myna-weights" in msg and str(empty) in msg
+
+
+def test_the_serve_extra_missing_is_a_sentence_not_a_traceback(ckpt, monkeypatch):
+    """Same class as the `--help` defects `tests/test_cli_help.py` pins: an optional
+    dependency may be absent, but the reader has to be told which install adds it."""
+    monkeypatch.setitem(sys.modules, "uvicorn", None)
+    with pytest.raises(SystemExit) as e:
+        main(["--ckpt", str(ckpt), "--port", "8099"])
+    assert "myna[serve]" in str(e.value)
+    assert "uv sync --extra serve" in str(e.value)

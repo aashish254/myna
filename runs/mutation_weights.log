@@ -1,0 +1,36 @@
+baseline copy: green (3 test files)
+
+[ 1/16] caught      GitHub's published digest is never read, so any bytes are the right ones
+            FAILED tests/test_weights.py::test_a_tampered_asset_is_caught_by_its_own_manifest
+[ 2/16] caught      the digest comparison is made unconditional
+            FAILED tests/test_weights.py::test_a_digest_mismatch_raises_and_leaves_no_bad_bytes
+[ 3/16] caught      bytes the release refused stay on disk
+            FAILED tests/test_weights.py::test_a_digest_mismatch_raises_and_leaves_no_bad_bytes
+[ 4/16] caught      a cache is trusted on the files existing alone, not on their hashes
+            FAILED tests/test_weights.py::test_a_tampered_asset_is_caught_by_its_own_manifest
+[ 5/16] caught      a directory with no manifest counts as cached
+            FAILED tests/test_weights.py::test_fetch_writes_both_assets_and_returns_their_directory
+[ 6/16] caught      the manifest is never written, so later reuse has nothing to check
+            FAILED tests/test_weights.py::test_fetch_writes_both_assets_and_returns_their_directory
+[ 7/16] caught      the manifest's gap becomes one space, which `sha256sum -c` cannot parse
+            FAILED tests/test_weights.py::test_the_manifest_is_readable_by_a_tool_that_is_not_this_module
+[ 8/16] caught      a release missing an asset is fetched anyway
+            FAILED tests/test_weights.py::test_a_release_missing_one_asset_says_which_one
+[ 9/16] caught      the default checkpoint becomes an arm the registry does not quote
+            FAILED tests/test_weights.py::test_default_tag_and_repo_are_the_ones_the_registry_quotes
+[10/16] caught      an empty body is kept as a checkpoint
+            FAILED tests/test_weights.py::test_an_empty_body_leaves_no_zero_byte_file - a...
+[11/16] caught      a download that died mid-body leaves its partial file behind
+            FAILED tests/test_weights.py::test_a_connection_that_dies_mid_download_leaves_no_temp_file
+[12/16] caught      --check writes into the directory it is auditing
+            FAILED tests/test_weights.py::test_check_is_a_verb_that_never_writes - Assert...
+[13/16] caught      the fetcher gains a third-party dependency
+            ERROR tests/test_weights.py
+[14/16] caught      the cache moves inside the package
+            FAILED tests/test_weights.py::test_weights_never_land_inside_the_package - As...
+[15/16] caught      a wrong --ckpt is left to torch to report
+            FAILED tests/test_serve.py::test_a_missing_ckpt_names_the_fetch_that_fixes_it
+[16/16] caught      the missing serve extra is a traceback again
+            FAILED tests/test_serve.py::test_the_serve_extra_missing_is_a_sentence_not_a_traceback
+
+16/16 mutations caught

@@ -30,6 +30,7 @@ browser = [
 [project.scripts]
 myna-serve = "myna.serve:main"
 myna-train = "myna.train:main"
+myna-weights = "myna.weights:main"
 
 [build-system]
 requires = ["uv_build>=0.11.21,<0.12.0"]

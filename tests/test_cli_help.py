@@ -48,6 +48,8 @@ def _help(*argv):
     ("myna.rlcd", "--score"),
     ("myna.serve", "--port"),
     ("myna.serve", "--abstain-below"),
+    ("myna.weights", "--tag"),
+    ("myna.weights", "--check"),
     ("myna.report", "--min-rows"),
     ("myna.onnx_export", "--q-len"),
 ])

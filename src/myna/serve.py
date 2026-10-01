@@ -19,6 +19,7 @@ Run:  uv run --extra serve python -m myna.serve --ckpt runs/myna-v0 --port 8080
 
 import argparse
 import uuid
+from pathlib import Path
 
 from .engine import Myna
 
@@ -86,20 +87,44 @@ def create_app(myna: Myna):
     return app
 
 
-def main():
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--ckpt", default="runs/myna-v0")
+def main(argv: list[str] | None = None):
+    ap = argparse.ArgumentParser(
+        prog="myna-serve",
+        description="Serve the typed decision engine over HTTP: POST /v1/predict with "
+                    "{state, questions}, or /v1/sessions to scan a state once and ask "
+                    "it repeatedly.")
+    ap.add_argument("--ckpt", default="runs/myna-v0", metavar="DIR",
+                    help="directory holding model.pt and tokenizer.json (default "
+                         "runs/myna-v0; fetch one with `myna-weights --dest DIR`)")
     ap.add_argument("--device", default="cpu")
     ap.add_argument("--abstain-below", type=float, default=None, metavar="P",
                     help="refuse any decision whose top probability is under P and say why "
                          "(default: never abstain). /v1/health reports the value in force.")
     ap.add_argument("--host", default="127.0.0.1")
     ap.add_argument("--port", type=int, default=8080)
-    args = ap.parse_args()
+    args = ap.parse_args(argv)
+
+    # The default path only exists inside this repo, and `Myna` would answer with a
+    # torch FileNotFoundError for a directory that simply has no weights in it. Check
+    # that first, because a wrong `--ckpt` is the common mistake and a missing extra
+    # is the rare one — and because this check is the half a reader can hit anywhere.
+    ckpt = Path(args.ckpt)
+    missing = [name for name in ("model.pt", "tokenizer.json") if not (ckpt / name).is_file()]
+    if missing:
+        raise SystemExit(
+            f"{ckpt} has no {', '.join(missing)}. Fetch a published checkpoint with "
+            f"`myna-weights --dest {args.ckpt}`, or name a directory that already has one "
+            "with --ckpt.")
 
     # imported after parse_args so `--help` works on a box without the `serve`
     # extra: an optional dependency must not be what breaks the usage text
-    import uvicorn
+    try:
+        import uvicorn
+    except ImportError:
+        raise SystemExit(
+            "myna-serve needs the serve extra. Installed from git: "
+            'pip install "myna[serve] @ git+https://github.com/aashish254/myna.git". '
+            "In this checkout: uv sync --extra serve.")
 
     myna = Myna(args.ckpt, device=args.device, abstain_below=args.abstain_below)
     uvicorn.run(create_app(myna), host=args.host, port=args.port)

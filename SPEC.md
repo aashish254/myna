@@ -1467,6 +1467,91 @@ is measurable **without a model**:
       (`DEFAULTS["anti_prior"]`, every existing cell, `train.py`'s own default), which is what keeps
       every published number standing.
 
+### P11 — Installable and usable as-is *(the brief of 2026-10-01 evening: a reader who has the repo
+should be able to ask the model a question in five lines, without `gh` and without this SPEC)*
+
+Everything below is measured on this box, on the best published arm
+(`antiprior_off_s0-weights`, test macro 0.5339, registry row `antiprior-off-macro`), with no training
+run started and no paid resource touched.
+
+- [x] **11a — inference verified from a clean state.** `gh release download antiprior_off_s0-weights
+      -D /tmp/ckpt-05339`, then `Myna(dir).predict(state, {"department": choice-of-five})` prints
+      **`billing`** at `confidence` **0.7899749875068665**, `shipping` the weakest at
+      **0.00027509400388225913**, 16,926,848 params at temperature 1.5, `latency_ms` **7.84**. The
+      downloaded `model.pt` hashes to the digest the Release API publishes for that asset
+      (`30f0fa937e57e8ce8b21c58315dc7e800151a0c95e003dc0930e0f75d588f1e5`). Witness:
+      `runs/quickstart_from_gh_download.log`, which prints its own commands (§7.1).
+- [x] **11b — `myna.fetch_weights()` and `myna-weights`.** `src/myna/weights.py`: stdlib `urllib`
+      only — no `gh`, no token, no new dependency. It resolves the release's assets through
+      `api.github.com/repos/<repo>/releases/tags/<tag>`, reads the `digest` GitHub publishes per
+      asset, downloads over the public asset URL, and **refuses bytes that do not hash to it** by
+      deleting them rather than leaving a truncated `model.pt` that `myna.report` would happily score.
+      It writes `SHA256SUMS` in the shape `shasum -a 256 -c` reads (run: 2/2 `OK`), and a cache that
+      satisfies its own manifest returns **without touching the network** — proved by calling it with
+      `repo="no-such-owner/no-such-repo"` and getting the directory back. Cache is
+      `$XDG_CACHE_HOME/myna/<tag>` (default `~/.cache/myna/antiprior_off_s0-weights`); `--check`
+      reports and never writes; `--force` re-pulls. Weights are **not** in the wheel: `uv build --wheel`
+      on this tree gives **25 files / 95,644 B** (264,410 B uncompressed), `find … -name "*.pt"` inside
+      it returns **0**, and a test asserts the cache root
+      is never under the package directory, so that cannot rot quietly.
+- [x] **11c — a fresh venv installs from git and the quickstart runs inside it.**
+      `uv venv --seed --python 3.12` (3.12.13, pip 26.2.1) then `pip install "git+file:///tmp/miga"`,
+      where `/tmp/miga` is a scratch git clone of this working tree at `21e9224` (the `git+https`
+      vector is pip-identical and is separately confirmed in 11d). `Successfully installed …
+      myna-0.1.0 … torch-2.14.1`; `myna.fetch_weights` imports; `myna-weights --dest /tmp/venv-fetch`
+      pulls the real 65 MB from GitHub and verifies it with no `gh` on the box; and the five-line
+      snippet prints **`billing`** / **0.7899749875068665** / `latency_ms` **6.98** from inside the
+      installed package. `pyproject.toml` needed no fix for any of that — what needed fixing is
+      §9.57. Witness: `runs/quickstart_from_git_install.log`.
+- [x] **11d — the documented URL itself.** `pip install "git+https://github.com/aashish254/myna.git"`
+      into a third fresh venv installs the *pushed* tip `c29494e`, loads the same weights and answers
+      the same question with the same probability, and reports `fetch_weights` **absent** — the
+      correct reading of an unpushed change, printed rather than glossed. It becomes true the moment
+      this is pushed.
+- [x] **11e — README quickstart above the gate table.** Install line, fetch line, the verified
+      five-line snippet, its printed answer with the digest it came from, the `--tag` list naming every
+      published arm, and the `gh release download` equivalent. The gate table follows immediately, its
+      **"3 of 7 met, 3 not met, 1 open — the release gate is NOT clear"** headline unchanged, with one
+      bridging sentence saying the plain thing: the engine works like this, what it is *worth* is the
+      table below, and the answer to the second question is not good.
+- [x] **11f — HTTP documented and booted.** `myna-serve --ckpt ~/.cache/myna/antiprior_off_s0-weights
+      --port 8080` answers `GET /v1/health` with `{"ok":true,"params":16926848,"temperature":1.5,
+      "abstain_below":null}` and `POST /v1/predict` with `{state, questions}` returns the identical
+      `answers` object — same `billing`, same `0.7899749875068665` as the in-process engine. Started by
+      exact PID, stopped by exact PID, port verified closed afterwards.
+- [x] **11g — tests.** `tests/test_weights.py`: **19** over a faked GitHub (no network in CI, no
+      credentials, no 65 MB to prove a hash) — both assets land and hash to the published digest; the
+      manifest is `sha256sum -c` shaped; a complete cache is reused with `api_calls == 0`; a flipped
+      byte is caught and *only* the damaged asset is re-pulled; a hand-made cache is verified before
+      being adopted; a lying digest raises and leaves neither file nor manifest; an empty body leaves no
+      zero-byte file and no `.part`; a connection that dies mid-body leaves no `.part` and no manifest;
+      a short 200 — which is not an error to urllib — is refused by its digest; an unknown tag names the
+      tag and the command to type; a release missing `tokenizer.json` says which one; `--check` never
+      writes; the CLI prints a sentence, not a traceback; `weights.py` imports stdlib only; and the seam
+      test hands the fetched directory straight to `Myna(...)` and gets a typed answer.
+      `tests/test_serve.py` grows **2** for the messages 11f required; `tests/test_cli_help.py` grows
+      **2** parametrised cases so `--help` on the new module is gated like every other published
+      command. `bench/mutation_weights.py`: **16 mutations over `weights.py` and `serve.py`, 16/16
+      caught, exit 0, 190.46 s**, in `runs/mutation_weights.log` — the digest comparison made
+      unconditional, GitHub's `digest` field never read, refused bytes left on disk, `cached()` satisfied
+      by existence, a manifest-less directory counted as cached, no manifest written, the gap becoming
+      one space, a missing asset fetched anyway, `DEFAULT_TAG` repointed, an empty body kept, a mid-body
+      death leaving its `.part`, `--check` writing, a `requests` import, the cache rooted inside the
+      package, and both serve guards removed. The first five of those were injected ad hoc before the
+      battery existed; §9.57 records why "deliberately not written" was the wrong call.
+- [ ] **11h — the two things that need an account, so they are the user's, not the agent's.**
+      **PyPI**: publishing `myna` turns `pip install "git+…"` into `pip install myna`; it needs his
+      PyPI credentials and it makes the *name* load-bearing, so it is his call — the git line works
+      without it (11c). **Hugging Face Space**: a hosted demo needs his HF token; `myna-serve` already
+      speaks `POST /v1/predict`, so a Space is a thin wrapper over 11f and nothing here blocks it.
+      Both are *unattempted on purpose*, not unfinished.
+
+What P11 does **not** change is the accuracy story: the best arm is still 0.5339 against G1's 0.70, and
+§9.56(xii) already prices how far that is. A working install path makes the number reachable by a
+stranger, which is the whole ask. The registry stays at 34 rows and no figure in this section becomes a
+row, because a usage example is not a measurement *of the model* — its witness is a log that prints its
+own commands, named above — while `macro 0.5339` was already bound by `antiprior-off-macro`.
+
 ---
 
 ## 6. Compute and budget
@@ -3386,3 +3471,59 @@ Kept permanently, because the value of this project's claims is that they surviv
     The two logs are committed with this entry (`git add -f`; `.gitignore:24` covers `runs/*` and the only
     thing that keeps a witness honest here is that it is tracked), so a future session can re-run all four
     and diff against bytes rather than against prose.
+57. **Nobody had ever typed the commands a reader has to type, and the repo said "usable" anyway.**
+    §9.51's finding was that CI had never run the suite; this is the same failure one level closer to the
+    reader. Everything published before P11 was reproducible by someone holding this checkout, and the
+    first thing a stranger met in `README.md` was a gate table — there was **no install command anywhere
+    in it**. Four specific things broke, or would have broken, the moment someone tried:
+    - **`myna-serve`'s default `--ckpt runs/myna-v0` is a repo path.** A pip reader has no `runs/`, and
+      `Myna` answered with torch's `FileNotFoundError` for a directory that simply holds no weights. The
+      guard now checks `model.pt` and `tokenizer.json` and names the fix (`myna-weights --dest DIR`).
+    - **`serve.main()` took no argv.** So neither guard could be tested at all, which by §7.1 makes a
+      guard a projection: code that has never been observed to fire. `main(argv=None)` is what makes the
+      two new `tests/test_serve.py` cases possible.
+    - **The order was wrong.** The uvicorn import came first, so on a box without the `serve` extra the
+      checkpoint mistake — the common one — was unreachable behind a `ModuleNotFoundError` traceback. The
+      check now precedes the import, which is also the only reason the message is testable in CI, where
+      the extra is absent by design.
+    - **A missing extra was a traceback, not a sentence.** It now prints the pip line that installs it.
+    Also recorded here so nobody reads it as new weight: a fresh venv pulls one more transitive
+    dependency than the wheel's own list suggests, `huggingface-hub`, and that is required by
+    `tokenizers`, not by the fetcher — `weights.py` imports stdlib only, and
+    `tests/test_weights.py::test_the_fetcher_adds_no_dependency` keeps that a fact rather than an intent
+    (battery mutation 13, adding `import requests`, breaks it). One cosmetic consequence of exporting
+    `fetch_weights` from `myna/__init__.py`: `python -m myna.weights` prints a runpy `RuntimeWarning`
+    because the package `__init__` already loaded the module being run as `__main__`; the README
+    documents `myna-weights`, and the warning is a fact of that shape rather than something to paper over.
+
+    **(ii) Retracting a sentence written four hours earlier in this same section.** 11g said a
+    `bench/mutation_weights.py` battery was "deliberately not written", because the five lies had been
+    injected ad hoc and **5/5 caught**. Two things were wrong with that. The ad-hoc pass leaves no
+    re-runnable witness, so the claim "5/5" could only be checked by repeating it by hand — which is
+    exactly the §9.30 shape this repo refuses. And the pass was under-scoped in a way only writing the
+    battery exposed: nothing in `tests/test_weights.py` ever made `download()` fail, so its
+    `except`-branch cleanup had no coverage, and the obvious rot — a `.part` left beside a checkpoint the
+    release refused — would have **survived**. Making that reachable cost two tests
+    (`test_a_connection_that_dies_mid_download_leaves_no_temp_file`,
+    `test_a_truncated_body_is_refused_by_its_digest`: a truncated body is *not* an error to urllib, so the
+    digest is the only thing between a short download and a number `myna.report` will print for it) and
+    the file went 17 → **19**. The committed battery is `bench/mutation_weights.py`: **16 mutations over
+    `weights.py` and `serve.py`, 16/16 caught**, exit 0, in `runs/mutation_weights.log` — with what each
+    broke printed beside it, including mutation 1 (GitHub's `digest` field never read) being caught by the
+    tampered-asset test while mutation 2 (the comparison made unconditional) is caught by the mismatch
+    test, which is the pair that shows the check is load-bearing on both sides of the cache: the download
+    and the reuse. "Deliberately not written" was therefore not a scope
+    decision, it was an untested assumption about coverage.
+    Suite at this tick: **584 passed, 1 skipped, 1 warning in 285.38 s** (`runs/suite_post_P11.log`) —
+    561 + 19 new weights + 2 serve + 2 `--help` cases, exit 0, and `make repro` (7.65 s) / `make gates`
+    (8.30 s) still printing **34/34 rows, 101 figures** and **3 met / 3 not met / 1 open — NOT clear**,
+    because P11 adds no measurement *of the model* and so no registry row.
+
+    **(iii) One figure in this section's own draft was carried, not read, and rebuilding caught it.**
+    11b first said the built wheel is "25 files / **262,941 B**". `uv build --wheel` on this tree produces
+    **95,644 B** — 264,410 B uncompressed, which is what the carried number was close to and therefore
+    why it read plausible. The file count was right, the byte count belonged to no artifact on disk. It
+    is corrected in place before the commit rather than left as a live citation of a build nobody has,
+    which is the §9.30 failure this log exists to keep counting. Nothing published quoted it, so no
+    registry row and no README line moves: `grep -rn 262,941 README.md SPEC.md TODO.md` hits only the two
+    lines of this entry.
