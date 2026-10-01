@@ -91,6 +91,7 @@ class Observation:
             str(path),
         )
 
+    @torch.no_grad()
     def ask(self, questions: dict) -> dict:
         t0 = time.perf_counter()
         specs = [(name, spec) for name, spec in questions.items()]
