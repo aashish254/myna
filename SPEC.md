@@ -3799,7 +3799,13 @@ Kept permanently, because the value of this project's claims is that they surviv
     `test_every_proof_field_still_holds_in_its_artifact`, `test_the_registry_itself_is_part_of_g7s_proof`.
     Nothing about that is the rename — it is a registry that gates on *command
     runnability* (8b's falsifiable half) noticing a missing optional dependency, which is the only reason
-    a broken environment produced seven loud failures instead of a green count. Repaired with
+    a broken environment produced seven loud failures instead of a green count. The asymmetry with CI is
+    deliberate and lives at `bench/reproduce.py:684-691`: `MLX_UNLOADABLE` excuses exactly
+    `ModuleNotFoundError: No module named 'mlx'` and `ImportError: libmlx.so`, and `mlx_unloadable_here`
+    grants that excuse only when `platform != "darwin"`, because off macOS the wheel installs and cannot
+    load (§9.51) — so the
+    runner's `uv sync --extra browser` is correctly green while this Mac's must carry
+    `--extra mlx`. Repaired with
     `uv sync --extra browser --extra mlx` (+ `mlx 0.32.2`, `mlx-metal 0.32.2`), and the seven are
     re-created on purpose in `runs/suite_mlx_extra_missing.log` — the transcript of the original failing
     run having been overwritten by the passing re-run under the same filename, which is this session's

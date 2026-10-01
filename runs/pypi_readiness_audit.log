@@ -331,3 +331,10 @@ $ grep -rnE "importlib|__version__|pkg_resources|version\(" src/myna/*.py
      Its header records the two traps: `test_cli_help.py:91` replaces `PYTHONPATH` in the subprocess
      `env`, so a stub cannot reach it, and `uv run pytest` re-installed the missing extra mid-command
      and printed a meaningless `114 passed`.
+
+  5. After `87215c9`: §9.60(vi) gained the one mechanism it had asserted without reading — why the SAME
+     venv state is a defect on this Mac and correct on CI. `bench/reproduce.py:684-691` defines
+     `MLX_UNLOADABLE = ("ModuleNotFoundError: No module named 'mlx'", "ImportError: libmlx.so")` and
+     `mlx_unloadable_here` grants the excuse only when `platform != "darwin"`. So CI's
+     `uv sync --extra browser` (`.github/workflows/ci.yml:23`) is green by design and this laptop's must
+     carry `--extra mlx`. Committed as its own follow-up rather than folded back into `87215c9`.
