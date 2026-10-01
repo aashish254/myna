@@ -16,10 +16,14 @@ worst kind (it looks like the tests are weak, when the harness is dead). Hence t
 two guards: the unmutated baseline must be green, and if the *first* mutation
 survives the run aborts as broken rather than reporting a weak suite.
 
-29/29 caught as of this writing. It found two real holes on its second pass, both
-now tested: an editing of boolq's own question text when a row's question happens
-to end with one of the suite's randomized suffixes, and content frames whose nine
-variants all ended the same way. One candidate mutation was dropped as equivalent
+32/32 caught as of this writing. Its second pass found two real holes, both now
+tested: an editing of boolq's own question text when a row's question happens to
+end with one of the suite's randomized suffixes, and content frames whose nine
+variants all ended the same way. Its third pass added the three §9.58 mutations
+that pin the draw-rate denominator — the rate over executed updates, the executed
+dose reading `--resume`, and `updates_executed` in `metrics.json` — because the
+claim being retracted there was made by a print, not by a test. One candidate
+mutation was dropped as equivalent
 rather than weak: `strip_suite_suffix` ends with `.rstrip()`, and every
 `SUITE_SUFFIXES` entry starts with a space, so deleting that call cannot change
 any output on this data. It stayed in the code as insurance against a future
@@ -110,6 +114,18 @@ MUTATIONS = [
     ("long-context + paraphrase runs instead of refusing", TR,
      'if args.paraphrase == "on":\n            # the needle corpus',
      'if False:\n            # the needle corpus'),
+    # the denominator the counter is divided by (§9.58): a rate over `--steps` is a rate over
+    # updates that never happened, which is how a 15.2% coverage gap was printed out of a pair
+    # that was coverage-matched to 0.04%.
+    ("the draw rate is reported over the steps asked for", TR,
+     'f"{updates_executed} updates executed (of {args.steps} requested"',
+     'f"{args.steps} updates executed (of {args.steps} requested"'),
+    ("the executed dose ignores --resume", TR,
+     "    updates_executed = max(last_step - start_step + 1, 0)",
+     "    updates_executed = max(last_step, 0)"),
+    ("metrics records the requested dose as the executed one", TR,
+     '"steps_requested": args.steps, "updates_executed": updates_executed,',
+     '"steps_requested": args.steps, "updates_executed": args.steps,'),
 ]
 
 

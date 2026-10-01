@@ -222,9 +222,9 @@ def _write_suite(dirpath: Path):
     return dirpath
 
 
-def _run_trainer(tmp_path, extra):
-    suite = _write_suite(tmp_path / "suite")
-    out = tmp_path / "out"
+def _run_trainer(tmp_path, extra, suite=None, out=None):
+    suite = suite if suite is not None else _write_suite(tmp_path / "suite")
+    out = out if out is not None else tmp_path / "out"
     cmd = [sys.executable, "-m", "myna.train", "--suite", str(suite), "--out", str(out),
            "--device", "cpu", "--steps", "1", "--batch", "2", "--vocab", "128",
            "--max-q-cells", "4096", "--eval-every", "0"] + extra
@@ -236,6 +236,27 @@ def _run_trainer(tmp_path, extra):
     r = subprocess.run(cmd, capture_output=True, text=True, env=env, cwd=Path.cwd())
     assert r.returncode == 0, r.stderr[-2000:]
     return r.stdout, json.loads((out / "metrics.json").read_text())
+
+
+def test_the_draw_rate_divides_by_updates_that_ran_not_by_steps_asked_for(tmp_path):
+    """`--steps` is an ask, not a dose. A `--resume` process runs the tail of it and a
+    stopped one runs less than it asked, so a rate printed over `--steps` divides a real
+    counter by updates that never happened — which is precisely how §9.56(x) produced a
+    15.2% paraphrase-coverage gap that §9.58 retracts. The second run here asks for 5 and
+    executes 3."""
+    suite = _write_suite(tmp_path / "suite")
+    out = tmp_path / "out"
+    _run_trainer(tmp_path, ["--paraphrase", "on", "--row-batch", "--save-every", "1",
+                            "--steps", "2"], suite=suite, out=out)
+    o2, m2 = _run_trainer(tmp_path, ["--paraphrase", "on", "--row-batch", "--save-every", "1",
+                                     "--steps", "5", "--resume"], suite=suite, out=out)
+    assert m2["resumed_from_step"] == 2 and m2["steps_requested"] == 5
+    assert m2["updates_executed"] == 3 == m2["last_step"] - m2["resumed_from_step"] + 1
+    line = [ln for ln in o2.splitlines() if "phrasing draws reached the batches" in ln]
+    assert len(line) == 1, "the loop must report consulting the table, once"
+    assert "over 3 updates executed (of 5 requested, resumed from step 2)" in line[0]
+    assert "over 5 steps" not in line[0], "the requested count is not the dose"
+    assert "per update" in line[0]
 
 
 @pytest.mark.parametrize("extra", [["--row-batch"], []])

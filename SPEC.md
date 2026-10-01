@@ -151,11 +151,18 @@ observation tokens  ──► embedding ──► bidirectional GLA trunk (6 lay
 `rlcd.py` (strictly-proper scoring + KL leash) · `longctx.py` (needle
 generator) · `mlx_model.py` (Apple inference mirror) · `serve.py` (`/v1/sessions`, `/v1/predict`) ·
 `report.py` (the 3g stratified table: per-(source, question) cells, both floors recomputed from the
-split, instruction-derived strata, laya's own accuracies joined by cell, G1 verdict).
+split, instruction-derived strata, laya's own accuracies joined by cell, G1 verdict) ·
+`weights.py` (P11's release fetcher: stdlib `urllib` only, GitHub's own asset digest checked per file
+and again on cache reuse, `SHA256SUMS` written last, and every failure a sentence with the command to
+type).
 `bench/`: streaming bench, laya witness runners, needle eval, MLX bench, result summarizer,
 `pull_upstream.py` (P1 data pipeline), `mem_profile.py` (per-axis step memory),
 `pilot_topology.py` (question-set topology + rows-per-forward under each contract),
-`mutation_paraphrase.py` (the P1 gate's mutation battery, 29/29),
+`mutation_paraphrase.py` (the P1 gate's mutation battery, 32/32),
+`coverage_replay.py` (§9.58's CPU-only sampler replay: both drawers over the committed corpus at each
+arm's executed dose, no model and no device, exit 1 unless the banner is byte-equal to the runs' and
+each arm's replayed total equals its own `paraphrase_draws`),
+`mutation_weights.py` (the P11 fetch/serve gate, 16 mutations),
 `mutation_memory_plan.py` (the P3 sizing/stop/resume gate, 44 mutations),
 `mutation_report.py` (the 3g reporting gate: every floor, weight and stratum in the table),
 `scope_pricing.py` (the 9d scope table: the committed report's cells subset four ways, the
@@ -546,13 +553,15 @@ admits **4,472** of 4,800 (the 328 dropped are its collisions with eval + frozen
       `id()`-keyed length cache stays valid, and `worst_case_tokens` pricing every set at its
       **longest** phrasing so `--max-q-cells` remains an upper bound rather than a hope. The run
       prints `paraphrase: N question sets re-worded …` *and* `paraphrase: D phrasing draws reached
-      the batches over S steps`, with both numbers in `metrics.json` — the warm-up line alone would
+      the batches over U updates executed (of S requested…)`, with all three in `metrics.json` — the
+      warm-up line alone would
       still print if the loop never consulted the table. `--long-context` refuses `--paraphrase on`
       instead of claiming a gate the needle corpus cannot run.
-      Witness: `bench/mutation_paraphrase.py`, **29/29 caught** (§9.12 for the false-green first
+      Witness: `bench/mutation_paraphrase.py`, **32/32 caught** (§9.12 for the false-green first
       pass, which is what found the two real holes: boolq rows whose question *ends* with one of
       the suite's randomized suffixes were having that suffix edited, and content frames whose
-      nine variants all ended the same way).
+      nine variants all ended the same way; §9.58 adds the three that pin the draw-rate
+      denominator).
 - [x] Pilot corpus target: ≥ 55,000 states ≈ **4.1M tokens**, vs 0.26M before — **57,904 states /
       4.25M tokens, measured** (§6 recomputed from it).
 
@@ -1315,7 +1324,8 @@ is measurable **without a model**:
       **+0.0231 per 1,000** over all of them, +0.0166 over the last five, +0.0030 over the last three
       (the earlier +0.0354 and +0.0191 readings were windows of this same live series, §9.44; the
       completed log supersedes both). Coverage held across the short dose: `paraphrase_draws`
-      **207,411** over 3,314 updates = 62.59 per update, against V1-B's 225,547 over 3,600 = 62.65.
+      **207,411** over the **3,315** updates that actually ran = 62.57 per update, against V1-B's
+      225,547 over 3,600 = 62.65 (§9.58 — this line first divided by 3,314, the last executed index).
       The pair has since been audited on the commands that *ran*, not on the cells the generator
       prints: `runs/antiprior_off_s0/run.json` and `runs/antiprior_on_s0/run.json` each carry 20
       flags and **18 compare equal — the only differences are `--out` and `--anti-prior`**
@@ -1382,17 +1392,21 @@ is measurable **without a model**:
       −0.1207, `sst5/sentiment` −0.0750. Four cells improve, and none of them is treated:
       `amazon/stars` +0.1000, `contrastive/decision` +0.0867, `mnli/relation` +0.0603,
       `banking77/intent` +0.0086. `imdb/positive` (0.7500) and `yelp/rating` (0.4250) do not move.
-      **One residue this adds to the pair, and it is not the flag's meaning.** The `on` arm reached
-      **176,003** phrasing draws over 3,315 updates (53.09/update) against the control's 207,411 over
-      3,314 (62.58) — **15% less paraphrase coverage per step**, at identical `paraphrase_sets`
-      17,112, identical seed, identical flags bar `--anti-prior` and `--out`. The anti-prior sampler
-      spends its budget flattening batch priors and therefore draws fewer paraphrases, so this
-      comparison is *not* a pure two-flag pair after all: part of the −0.0554 could be coverage
-      rather than the prior. §9.56(x) states the size of that possibility and what would settle it;
-      what settles nothing is a claim of parity, so the honest headline stays: **at the dose this box
-      can afford, removing the shortcut costs 0.0554 of the macro, and the mechanism moved exactly as
-      designed — the answer to "was the constant answer the training signal's fault" is that it was a
-      signal, and there is no reading underneath it that the extra 15% of coverage bought back.**
+      **One residue this *appeared* to add to the pair, and §9.58 withdraws it.** The `on` arm reached
+      **176,003** phrasing draws against the control's **207,411**, and divided by denominators taken
+      from each run's *report* rather than its dose — `steps_requested` for one, `last_step` for the
+      other — that reads as 15% less paraphrase coverage, which would have made this a
+      two-variable comparison rather than a two-flag one. It is not: the `on` process resumed at step
+      501 and executed **2,814** updates, so its rate is **62.55** draws per executed update against
+      the control's **62.57** over its own 3,315, at identical `paraphrase_sets` 17,112, identical
+      seed, identical flags bar `--anti-prior` and `--out`. `bench/coverage_replay.py` replays both
+      drawers on this corpus with no model and no device and lands on **both counters exactly**
+      (207,411 and 176,003; 21.7 s wall), because `Paraphraser.draw` counts accepted rows and the
+      weighted drawer accepts the same number per batch as the uniform one. So this *is* a pure
+      two-flag pair and the judgement is undiluted: **at the dose this box can afford, removing the
+      shortcut costs 0.0554 of the macro, the mechanism moved exactly as designed, and none of that
+      −0.0554 is coverage** — the answer to "was the constant answer the training signal's fault" is
+      that it was a signal, and there is no reading underneath it that the run recovered.
       The `on` arm had moved back to Kaggle because the Mac's thermal budget was thought spent; that
       lane is now closed by the owner's decision above and the measurements below stand as the record
       of why it cannot be run there at all. The kernel is
@@ -2966,9 +2980,9 @@ Kept permanently, because the value of this project's claims is that they surviv
     before the data-loader work, so the difference belongs to the data path, not to `--anti-prior`.
     G1 is still not met on this arm either — 0.70 target, and the "+0.15 over the floor" clause
     observes **+0.1008** — and laya's 0.667 leaves the gap at −0.133. Three secondary readings, all
-    from the committed artifacts: the dose held its coverage (`paraphrase_draws` 207,411 over 3,314
-    updates = 62.59 per update, against V1-B's 225,547 over 3,600 = 62.65, a 0.1 % difference, so the
-    short arm is not a short sample of phrasings); the dev-mid series flattened rather than rising
+    from the committed artifacts: the dose held its coverage (`paraphrase_draws` 207,411 over the 3,315
+    updates that ran = 62.57 per update, against V1-B's 225,547 over 3,600 = 62.65, a 0.1 % difference, so the
+    short arm is not a short sample of phrasings — §9.58 corrects this clause's first denominator, 3,314); the dev-mid series flattened rather than rising
     (13 points from 0.3682 to 0.4332, OLS **+0.0231 per 1,000** over all of them, +0.0166 over the
     last five, +0.0030 over the last three — V1-B's tail was +0.0072 and *still climbing*, §9.38, so
     this arm is nearer its plateau than V1-B was to hers); and the wall price is
@@ -3413,7 +3427,13 @@ Kept permanently, because the value of this project's claims is that they surviv
     and hitting laya per-cell, +0.049) is the one the run rules out.
 
     **(x) A residue the completed run exposes that the 540-update partial could not: the arms are not
-    coverage-matched.** `paraphrase_draws` is **176,003** on the `on` arm against **207,411** on the
+    coverage-matched.** *[Withdrawn by §9.58, which also corrects this bracket's first draft: the two
+    rates below do not even divide by the* same *kind of denominator — 62.58 is the control's counter over
+    its `last_step` 3,314 and 53.09 is this arm's counter over its `steps_requested` 3,315, a number that
+    process never executed because it resumed from 501. On executed updates the pair is 62.55 against
+    62.57 draws — coverage-matched, and reproduced exactly by a
+    CPU replay of both drawers. The rest of this clause stays as the record of what was believed and
+    why the arithmetic looked right.]* `paraphrase_draws` is **176,003** on the `on` arm against **207,411** on the
     `off`, over identical `paraphrase_sets` 17,112, the same seed, the same 3,315 updates and 18 of 20
     flags byte-identical (§9.55(i)) — **53.09 draws/update against 62.58, i.e. 15.2% less paraphrase
     coverage**, which the anti-prior sampler spends out of the same 8-sets-per-update budget. So
@@ -3428,8 +3448,9 @@ Kept permanently, because the value of this project's claims is that they surviv
     before spending any.
     What the residue does *not* touch is the mechanism verdict: the in-run `anti_prior_audit` shows the
     majority label's share cut 0.099–0.137 on all six treated cells, and Tier 0 shows all four emitters
-    stop emitting. Those are readings of this checkpoint, not of the macro, and a coverage-matched arm
-    could raise 0.4785 without changing either.
+    stop emitting. Those are readings of this checkpoint, not of the macro, and an arm with more
+    coverage could raise 0.4785 without changing either — which §9.58 settles by showing this pair
+    already had the same coverage, so there was never a coverage reading left to buy.
 
     **(xi) Durability, measured rather than assumed: the shipped bytes are the trained bytes.** `gh release
     download antiprior_on_s0c-weights` into a scratch directory and re-hashing gives `model.pt`
@@ -3527,3 +3548,104 @@ Kept permanently, because the value of this project's claims is that they surviv
     which is the §9.30 failure this log exists to keep counting. Nothing published quoted it, so no
     registry row and no README line moves: `grep -rn 262,941 README.md SPEC.md TODO.md` hits only the two
     lines of this entry.
+58. **The anti-prior pair's "15% less paraphrase coverage" was a denominator, not a measurement — and
+    the free replay the entry told us to run before spending GPU hours says so in 21.7 seconds.** §9.56(x)
+    closed 10c with a residue: the `on` arm's **176,003** `paraphrase_draws` against the control's
+    **207,411**, called **53.09 against 62.58 draws per update — 15.2% less coverage**, and left the
+    −0.0554 *partly unattributed* because of it ("part of the −0.0554 could be coverage rather than the
+    prior"). It priced two settlements — a third arm at the control's coverage (≈ **5.4 h** of this box)
+    or reading the sampler for free — and said the free one is what to try first. The free one answers
+    the question outright, and the answer is that the residue never existed.
+
+    **(i) The two numbers divided by two different kinds of denominator.** Every figure needed for this
+    is already in the two committed `metrics.json` files; nobody had lined them up:
+
+    | arm | `paraphrase_draws` | `last_step` | `steps_requested` | `resumed_from_step` | updates that **ran** |
+    |---|---|---|---|---|---|
+    | `antiprior_off_s0` | 207,411 | 3,314 | 3,600 | 0 | **3,315** (the step-time guard stopped it) |
+    | `antiprior_on_s0c` | 176,003 | 3,314 | 3,315 | 501 | **2,814** |
+
+    `last_step − resumed_from_step + 1` is the dose a counter belongs to. The control's 62.58 is
+    207,411 over its `last_step` 3,314 — exact value 62.5863, so the entry's "62.58" is also a
+    truncation, printed here at full width because a quoted rate gets re-derived rather than re-read;
+    the `on` arm's 53.09 is 176,003 over
+    its `steps_requested` 3,315 — a number that process never executed, because it resumed from 501. On
+    the denominator each counter is actually attached to, the pair is **62.57 against 62.55 draws per
+    executed update, ratio 0.9996**. The two runs are coverage-matched to within 0.04% (1 − 0.99965),
+    and the 15.2% is arithmetic on a mismatch (ratio 0.8483).
+
+    **(ii) The print itself was the source of the wrong instinct, and it is fixed.** Both trainers ended
+    with `paraphrase: 207411 phrasing draws reached the batches over 3600 steps`
+    (`runs/antiprior_off_s0.train.log:3415`) and `… 176003 … over 3315 steps`
+    (`runs/antiprior_on_s0c.train.log:3417`) — `--steps`, i.e. what was *asked*, which is neither the
+    3,314 §9.56(x) used for one arm nor the 3,315 it used for the other. `train.py` now computes
+    `updates_executed = max(last_step - start_step + 1, 0)`, prints "over {N} updates executed (of
+    {steps} requested, resumed from step {k})", and writes `updates_executed` beside `steps_requested`
+    in `metrics.json`, so the next reader gets the denominator off the same artifact as the numerator.
+    Gate: `tests/test_paraphrase_wiring.py::test_the_draw_rate_divides_by_updates_that_ran_not_by_steps_asked_for`
+    runs two short processes over one shared suite and asserts the resumed one reports `3` of `5` with
+    `resumed_from_step == 2`. `bench/mutation_paraphrase.py` grows 29 → **32** with the three mutations
+    that revert each half of that (rate over `--steps`; dose ignoring `--resume`; metrics recording the
+    requested dose as the executed one); **32/32 caught**, exit 0, 1:31.83, in
+    `runs/mutation_paraphrase_post_958.log`. The two 14-battery rosters in this file and in `TODO.md`
+    still print paraphrase **29/29**, and correctly so: each says plainly that its numbers were read off
+    the log a watched process closed in *that* session, and `runs/mutation_paraphrase.log` is that
+    witness, untouched — a battery count is a record of a run, not a version number. The live count is
+    the one §5 15g and §3.4 now print.
+
+    **(iii) The replay reproduces both counters exactly, so this is a fact about the sampler and not
+    about my reading of it.** `bench/coverage_replay.py` imports `draw_row_batch`, `WeightedDraw` and
+    `Paraphraser` from the shipping modules and consumes the RNG stream the way the training loop does —
+    the batch attempts, then one `paraphraser.draw(...)` per accepted row, K times per update — with no
+    model, no device and no training. Nothing else in the loop touches that `random.Random`, which is why
+    the totals are comparable to the runs' rather than merely analogous. Two guards make that claim
+    falsifiable rather than asserted: the corpus banner must come out byte-equal to the line in both
+    arms' train logs (`57904 rows in one pool, 17112 question sets, widest row 3 questions x 40 tokens`),
+    and each arm's replayed total must equal the `paraphrase_draws` in its own `metrics.json` — exit 1 if
+    either fails. Both arms pass: **off 207,411 EXACT, on 176,003 EXACT**, 21.7 s wall on this box
+    (`runs/coverage_replay.log`). So `--anti-prior` does not spend the augmentation budget:
+    `self.draws += 1` (`src/myna/paraphrase.py:405`) is per *accepted row*, and
+    `WeightedDraw.index` (`src/myna/train.py:59`) consumes one `rng.random()` per *attempt* — no shared
+    counter, no trade, nothing for the prior-balancer to eat. What §9.56(x) told the next reader to open
+    — "the sampler's draw budget in `src/myna/data.py`" — names the wrong file: `data.py` is the
+    synthetic generator and has no draw counter at all; the sampler is `train.py` plus `paraphrase.py`.
+    A pointer written mid-run that nobody re-read against the tree, which is the §9.30 shape again.
+
+    **(iv) What the replay found that nobody was looking for: `--batch 10` is not what the model
+    sees.** The uniform drawer reaches a full 10-row batch on **56.5%** of its batches (14,982 of
+    26,520) and the anti-prior drawer on **56.2%** (12,651 of 22,512); mean **7.821** rows/batch against
+    **7.818**. So the arms ran ≈ **62.6** rows/update, not the 80 that `--batch 10 × --accum-groups 8`
+    suggests, and the shortfall is `--max-q-cells 2048` plus the distinctness rule (`draw_row_batch`
+    takes at most `batch` *distinct* rows and gives up after `batch × 40` attempts) — not the
+    re-weighting. This is a property of the batching both arms share, so it moves no published figure;
+    it does mean any future dose claim should be stated in rows, because the row count is what the
+    gradient sees, and 43.5% of the uniform drawer's batches and 43.8% of the anti-prior drawer's are
+    shorter than the flag says.
+
+    **(v) What this entry changes and what it refuses to change.** Changed: the sentence "at the dose
+    this box can afford, removing the shortcut costs 0.0554 of the macro, and part of that could be
+    coverage" becomes **removing the shortcut costs 0.0554, attributed entirely to the label prior** —
+    the pair is coverage-matched, so the mechanism reading underneath the number is the whole number,
+    and §9.56(x)'s proposed third arm is not worth its 5.4 h. Also withdrawn from the record as live:
+    10c's "one residue this adds to the pair", SPEC §5 10c's coverage clause, and the README's draw-rate
+    sentence — all three now name the executed dose. Unchanged, because nothing here re-measures the
+    model: `on` **0.4784612299508689** against `off` **0.5338735348381732** (−0.0554123048873043), 0
+    emitters against 4, 15 movers against 10, G1 still not met, `make gates` still
+    **3 met / 3 not met / 1 open — NOT clear**. One thing this entry cannot say: the `on` arm's *total*
+    draws across both of its processes is recorded nowhere — the resuming process overwrote `metrics.json`
+    and its counter starts at zero, so the first process's counter is gone. The comparison that is
+    supported is the rate per executed update, which is what both arms report and what the replay ties
+    out; nobody should read 176,003 as the arm's lifetime augmentation count, and no total for it exists
+    to quote (501 updates at the replayed rate would be ≈31,000 draws — that is arithmetic on a replay,
+    labelled projected, not a number any artifact printed).
+
+    **(vi) Re-verification on the tree this entry changes, each number a line a command printed on an
+    otherwise idle box.** `uv run pytest -q` → **585 passed, 1 skipped, 1 warning in 287.10 s**, exit 0,
+    in `runs/suite_post_958.log` (584 + the one new draw-rate test). `make repro` → **34/34 rows hold,
+    101 figures tied to a committed witness, 1 gated with no witness**, 9.80 s — no row moves, because
+    this entry re-attributes a figure that was already published rather than measuring a new one.
+    `make gates` → **7/7 verdicts hold — 3 of 7 met, 3 not met, 1 open, the release gate NOT clear**,
+    9.74 s. The two new logs (`runs/coverage_replay.log`, `runs/mutation_paraphrase_post_958.log`) and
+    the suite log are committed with this entry, so the withdrawal can be re-derived:
+    `python bench/coverage_replay.py` must print `EXACT` twice and exit 0, and if the sampler ever drifts
+    from what the runs did it exits 1 instead of printing a comforting table.

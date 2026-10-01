@@ -1,0 +1,21 @@
+cmd: python bench/coverage_replay.py --suite data/decision-v2-pilot --batch 10 --k 8 --max-q-cells 2048 --seed 0 --vocab 8192
+
+
+
+row-batch: 57904 rows in one pool, 17112 question sets, widest row 3 questions x 40 tokens; budget 2048 cells/forward
+
+arm   drawer       updates   batches  rows drawn  rows/batch  draws/update    full   short  metrics.json
+off   uniform        3,315    26,520     207,411       7.821         62.57   56.5%  11,538       207,411   (1.5s)
+on    anti-prior     2,814    22,512     176,003       7.818         62.55   56.2%   9,861       176,003   (1.6s)
+
+replay vs the committed counters:
+  off: replay 207,411 vs metrics.json 207,411 -> EXACT
+  on: replay 176,003 vs metrics.json 176,003 -> EXACT
+
+batch fill under `--batch 10`: uniform fills it 56.5% of the time (14,982 of 26,520 batches), anti-prior 56.2% (12,651 of 22,512); the shortfalls are the --max-q-cells budget and the distinctness rule, not the re-weighting.
+coverage per executed update: 62.57 (off) vs 62.55 (on), ratio 0.9996
+what §9.56(x) divided: the `off` counter by its metrics `last_step` (207,411 / 3,314 = 62.59) and the `on` counter by its `steps_requested` (176,003 / 3,315 = 53.09) — two different kinds of denominator, ratio 0.8483, which is where its 15.2% came from.
+neither is what `train.py` printed: its own line divides by `--steps`, so the control said 57.61 over 3,600 and the `on` arm 53.09 over 3,315 — the `on` process ran 2,814 of the 3,315 it asked for, while the control asked 3,600 and ran 3,315.
+the `on` arm's whole dose is its first process's 501 updates plus this one's 2,814 = 3,315, exactly the control's executed dose — but only this process's counter survived into metrics.json, so the pair's comparison is the rate, not the total.
+
+VERDICT: the two arms reach the same paraphrase coverage per update, and the replay lands on both of their published counters exactly. `--anti-prior` does not spend the augmentation budget — `draws` counts accepted rows, and the weighted drawer accepts the same number per batch as the uniform one. The −0.0554 stands attributed to the label prior alone; §9.56(x)'s coverage residue is withdrawn.

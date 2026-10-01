@@ -695,9 +695,11 @@ same byte count, sha256 `3b45dd6a4ae65e77…` — and it is gitignored, so §9.5
 durability gap rather than a covered one. The `on` arm has since run to completion **on this box**:
 continued from that step-500 save through the canonical launcher with `--resume`, ending at
 `"last_step": 3314` of `"steps_requested": 3315` with `"stopped": null`, so the pair is one machine and
-one dose and the residues are the re-seeded data RNG a continuation cannot avoid **and** a coverage
-asymmetry the completed run exposed — 176,003 paraphrase draws against the control's 207,411 over the
-same 17,112 sets, 15.2% fewer per update (§9.56(x)). The judgement §9.56(vii) fixed before the run
+one dose and the residue left is the re-seeded data RNG a continuation cannot avoid. The coverage
+asymmetry this README used to report — 176,003 paraphrase draws against the control's 207,411 over the
+same 17,112 sets, "15.2% fewer per update" — was a denominator, not a dose: the continued process ran
+2,814 updates, so the two arms reach **62.55 and 62.57 draws per executed update**, and a CPU replay of
+both drawers lands on both counters exactly (§9.58). The judgement §9.56(vii) fixed before the run
 printed: **test macro 0.4784612299508689 against 0.5338735348381732, −0.0554 from the flag alone**, and
 **0 constant emitters where the control has 4**, so the shortcut is gone and nothing readable arrived in
 its place. `antiprior-on-macro` and `tier0-on-arm` are the two rows; the weights are on the

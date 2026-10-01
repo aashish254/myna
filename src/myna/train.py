@@ -1082,6 +1082,11 @@ def main():
     # the instruction holds; a model that matched a template falls.
     dev_unseen = None
     n_draws = 0
+    # The dose is the number of updates that *ran*, not `--steps`: a run that asked for
+    # 3,600 and STOPped at 3,314 ran 3,315, and a `--resume` process that started at 501
+    # of 3,315 ran 2,814. Dividing a counter by the requested count is how §9.56(x)
+    # printed a 15.2% coverage gap that did not exist (§9.58).
+    updates_executed = max(last_step - start_step + 1, 0)
     if paraphraser is not None:
         dev_unseen = held_out_eval(model, tok, data["dev"], device, temperature)
         print(f"=== dev, HELD-OUT phrasing === macro {macro_acc(dev_unseen):.4f}   "
@@ -1089,8 +1094,10 @@ def main():
         # the warm-up banner only proves the table loaded; this one proves the
         # loop consulted it, which no earlier check did for the shared-set path
         n_draws = paraphraser.draws
+        rate = f"; {n_draws / updates_executed:.2f} per update" if updates_executed else ""
         print(f"paraphrase: {n_draws} phrasing draws reached the batches over "
-              f"{args.steps} steps", flush=True)
+              f"{updates_executed} updates executed (of {args.steps} requested"
+              f"{f', resumed from step {start_step}' if start_step else ''}){rate}", flush=True)
 
     # machine-readable metrics + a key->type map so downstream tables can roll
     # up by source x question-type (apples-to-apples with the laya witness).
@@ -1113,7 +1120,7 @@ def main():
                    "mem_plan_free_gib": None if free is None else free / 1024 / MI,
                    "mem_safety": args.mem_safety, "resumed_from_step": start_step,
                    "stopped": stopped, "last_step": last_step,
-                   "steps_requested": args.steps,
+                   "steps_requested": args.steps, "updates_executed": updates_executed,
                    "stop_factor": args.stop_factor, "save_every": args.save_every,
                    "dev": dev_m, "test": test_m,
                    "dev_unseen": dev_unseen, "qtypes": qtypes}, f, indent=2)

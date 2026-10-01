@@ -105,8 +105,10 @@ So every "train" item below is split into *prepare/verify the path locally* (thi
       pre-built and stable so `question_tokens` identity-caching holds, and `worst_case_tokens`
       prices every set at its **longest** phrasing so `--max-q-cells` stays an upper bound.
       Witness: `paraphrase: 19 question sets re-worded …` + `paraphrase: N phrasing draws reached
-      the batches over S steps` + `paraphrase_draws` in `metrics.json` — the warm-up banner alone
-      would still print if the loop never consulted the table
+      the batches over U updates executed (of S requested…)` + `paraphrase_draws`, `updates_executed`
+      and `steps_requested` in `metrics.json` — the warm-up banner alone
+      would still print if the loop never consulted the table (§9.58: the denominator is the executed
+      dose, not `--steps`)
 - [x] **15e** Held-out gate: dev/test/calibration keep the exact suite strings, and `dev_unseen`
       (metrics.json + `=== dev, HELD-OUT phrasing ===`) scores the reserved phrasing via
       `held_out_eval`, whose single `EVAL_INDEX` call site is pinned by test. `--long-context`
@@ -114,8 +116,9 @@ So every "train" item below is split into *prepare/verify the path locally* (thi
 - [x] **15f** Pilot coverage test: 17,112 sets / 19,596 question shapes / 57,904 rows /
       **73,804 labelled slots** paraphrased, 10,629 distinct instruction strings on disk
       (boolq 5,300 + mnli 5,300 of them per-row content), zero train↔eval wording overlap
-- [x] **15g** `bench/mutation_paraphrase.py`: **29/29 mutations caught**, both batch paths, the
-      budget, the index, the flag and the guard. Its first pass reported 0/29 because
+- [x] **15g** `bench/mutation_paraphrase.py`: **32/32 mutations caught**, both batch paths, the
+      budget, the index, the flag and the guard, and since §9.58 the draw-rate denominator.
+      Its first pass reported 0/29 because
       `pyproject`'s `pythonpath = ["src"]` outranks `PYTHONPATH`, i.e. it was testing the
       unmutated tree — hence the green-baseline and first-mutation guards (SPEC §9.12).
       Two real holes it then found and closed: boolq rows whose question ends with a suite
@@ -787,12 +790,21 @@ So every "train" item below is split into *prepare/verify the path locally* (thi
       still buys no wall). `runs/ckpt_backup_on_s0c.sh` shipped the weights to `antiprior_on_s0c-weights`
       and `runs/post_on_s0c.sh` ran the report and Tier 0 unattended; §9.56 is the entry, and
       3,315 rather than 3,314 is in it: the loop's last executed index is `steps − 1`, and the control
-      stamped `last_step: 3314`. **One thing the completed run changed about the pair's cleanliness:**
-      the arms are not coverage-matched — 176,003 paraphrase draws against 207,411 over the same
-      17,112 sets, 15.2% fewer per update, because the anti-prior sampler spends from the same budget
-      (§9.56(x)). No `--paraphrase off` arm exists, so how much of the −0.0554 is coverage is
-      *unmeasured*; the zero-GPU-hour way to attack it is to read the sampler's draw counter in
-      `src/myna/data.py` before buying another 5.4 h interval.
+      stamped `last_step: 3314`. **The one thing that looked like it contaminated the pair did not:**
+      176,003 paraphrase draws against the control's 207,411 over the same 17,112 sets is a denominator
+      difference, not a coverage difference — the continued process ran 2,814 updates of the 3,315 it
+      asked for, so the rates are **62.55 against 62.57 per executed update**. `bench/coverage_replay.py`
+      replays both drawers on the committed corpus with no model and no device and reproduces **both
+      counters exactly** (207,411 and 176,003) in 21.7 s, and the code says why: `Paraphraser.draw`
+      increments once per accepted row and `WeightedDraw` only consumes the RNG, so nothing shares a
+      budget with the paraphrase count. §9.56(x)'s "part of the −0.0554 could be coverage" is withdrawn
+      in §9.58, the unmeasured label is gone, and **the 5.4 h third arm it proposed is not worth
+      running**. (The same entry's pointer to `src/myna/data.py` was wrong — the counter lives in
+      `paraphrase.py:405` and the drawer in `train.py:59` — which is part of why it stayed open.)
+      A real finding fell out of the replay: `--batch 10` is only reached on **56.5%** of batches, the
+      mean being **7.821 rows** (uniform) and **7.818** (anti-prior), because the `--max-q-cells` 2048
+      budget and the distinctness rule stop a batch early — so every figure from this loop trained on
+      ~62.6 rows/update, not 80, and the drawer does not change that.
       Two arms × 3,600 updates at the measured 5.618 s/update (`kaggle-wall-clock`). Printed by
       `python kaggle/campaign.py --include-dead`; `--list` labels both *open, unspent* rather than
       borrowing the ablation cells' *measured, not resolved*. The control is run, not borrowed:
