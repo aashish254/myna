@@ -29,6 +29,11 @@ runs/*
 # its first line echoes the launcher's absolute interpreter path, and the per-arm flat
 # witnesses (`runs/antiprior_off_s0.train.log`) are what the registry reads. §9.50's rule.
 runs/pair_driver.log
+runs/antiprior_on_s0c.driver.log
+# same reason as pair_driver.log above: this log echoes the launcher's expanded command, whose
+# first token is this laptop's absolute interpreter path.
+runs/ckpt_backup_on_s0c.log
+runs/ckpt_backup_on_s0c.state
 
 # Derived corpora: the rows are upstream text, so the default is that only the provenance file
 # stays in git (it pins revisions, seeds, collision counts and the sha256 of the generated

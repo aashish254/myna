@@ -632,7 +632,12 @@ prints its own 0.698 floor. §9.55(iii) is the entry and `tier0-off-control` is 
 `antiprior_on_s0-wip` asset is the ≤step-250 bytes (203,229,625 B, sha256 `8ed38b240bd843bf…`,
 downloaded and re-hashed), while this box's `runs/antiprior_on_s0/model_last.pt` is the step-500 save —
 same byte count, sha256 `3b45dd6a4ae65e77…` — and it is gitignored, so §9.55(ii) keeps that as an open
-durability gap rather than a covered one.
+durability gap rather than a covered one. The `on` arm is now training on this box rather than waiting
+on a GPU: continued from that step-500 save through the canonical launcher with `--resume`, stopped at
+the step index the control reached, so the pair's comparison is one machine and one dose and the only
+residue is the re-seeded data RNG that a continuation cannot avoid. §9.56 is the launch note, and it
+fixes the judgement — test macro against 0.5338735348381732, constant-emitter count against 4 — before
+the run prints its last step.
 
 ```bash
 mkdir -p runs/myna-v0

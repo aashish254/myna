@@ -767,19 +767,30 @@ So every "train" item below is split into *prepare/verify the path locally* (thi
       `on` and `off` to the same token, so a generator emitting `off` twice still yields two
       identical commands. §9.46 from the other side again: a normalization that makes two things
       comparable deletes the difference the check is about.
-- [ ] **10c** The GPU pair `antiprior_off_s0` / `antiprior_on_s0` — **~11.2 GPU-hours**, unspent *on
+- [ ] **10c** The pair `antiprior_off_s0` / `antiprior_on_s0` — **~11.2 GPU-hours**, unspent *on
       the T4*, and the user's call there. Kaggle auth is broken, so the pair is running on the local
       M5 lane since 2026-10-01 at the measured 6.74 s/update averaged over its first 2,220 updates
       (§9.50), and each arm's `model.pt` goes
       to a GitHub Release the pass that writes it — the V1-B weights are gone with `/private/tmp`, so
       a regenerated checkpoint that is not shipped is a repeat of the same loss.
+      **Status 2026-10-01 12:56 NPT: `off` is done and shipped; `on` is training here.** The owner put
+      it on the Mac ("continue it to 3,314 updates, dose-matched to the off control ... then download +
+      Release the weights immediately and eval macro vs the control's 0.5339"), so the arm is
+      `runs/antiprior_on_s0c/` — the step-500 snapshot continued through the canonical launcher with
+      `--steps 3315 --resume`, driver 80297 / trainer 80299 / `caffeinate -i -s -w 80297` at 80330, and
+      `runs/ckpt_backup_on_s0c.sh` (80600) shipping both snapshots untended. §9.56 is the entry, and
+      3,315 rather than 3,314 is in it: the loop's last executed index is `steps − 1`, and the control
+      stamped `last_step: 3314`. Nothing else may run on this box until it finishes — `--stop-factor
+      3.0` is armed, and a heavy local job would be a self-inflicted repeat of whatever truncated the
+      control.
       Two arms × 3,600 updates at the measured 5.618 s/update (`kaggle-wall-clock`). Printed by
       `python kaggle/campaign.py --include-dead`; `--list` labels both *open, unspent* rather than
       borrowing the ablation cells' *measured, not resolved*. The control is run, not borrowed:
       0.4893 came off the `myna-code` version before any of the data-loader work, so judging one new
       arm against it would price the flag *and* the code drift. `tests/test_kaggle_bundle.py` asserts
-      the two generated cells are byte-identical after normalizing the one flag value, so no third
-      variable can enter the pair later. Default stays `off` at every layer.
+      the two generated cells are byte-identical after normalizing the one flag value — for the two
+      *generated Kaggle cells*; the local pair's continuation added `--steps` and `--resume`, which
+      §9.56(iv) names rather than hiding. Default stays `off` at every layer.
       What is *not* promised: that removing the shortcut makes the model read. If the macro does not
       move, the finding is that the constant answer was never what the training signal was buying.
 - [ ] **9d** `banking77/intent` and `mnli/relation` are inside or outside G1's scope — a decision

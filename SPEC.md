@@ -1276,7 +1276,12 @@ is measurable **without a model**:
       (`--include-dead`; `--list` labels both *open, unspent*). Two arms × 3,600 updates at the
       measured 5.618 s/update (§2.1's `kaggle-wall-clock` row) is **~11.2 GPU-hours** of the 30
       h/week free quota — the cheapest mechanism-level question in the repo. Status as of
-      2026-10-01: **the `off` arm is done, the `on` arm is blocked on the account, not the code.**
+      2026-10-01 12:52 NPT: **the `off` arm is done, and the `on` arm is training on this Mac.** The
+      owner's decision moved it off Kaggle: *"run the on arm on the Mac, not Kaggle. Continue it to
+      3,314 updates (dose-matched to the off control), one run at a time, keep the Mac from sleeping
+      for the whole run, then download + Release the weights immediately and eval macro vs the
+      control's 0.5339."* §9.56 records the launch and the two mechanics that make the dose-matching
+      real (the step index, and which scheduler the resumed run carries).
       The `off` arm ran on the local M5 through the canonical launcher (§9.50's lane move) and
       finished at **3,314 of 3,600** updates — ended by its own `--stop-factor 3.0` guard on a
       596.40 s step that `pmset` attributes to battery 'Maintenance Sleep', not to allocator paging
@@ -1323,7 +1328,9 @@ is measurable **without a model**:
       interval costs 6.75), the `on` arm runs **6.63–7.65 s/update** against the `off` arm's
       **6.43–7.27** over the same intervals. `--anti-prior` buys no wall, so the ~11.2 GPU-hour
       estimate at the top of this bullet needs no correction for the flag.
-      The `on` arm moved back to Kaggle because the Mac's thermal budget is spent: the kernel is
+      The `on` arm had moved back to Kaggle because the Mac's thermal budget was thought spent; that
+      lane is now closed by the owner's decision above and the measurements below stand as the record
+      of why it cannot be run there at all. The kernel is
       built (`kaggle/notebooks/antiprior-on-t4`, every arm through `kaggle/run.py`, `--dry-run`
       printed in-cell) and pinned to the SHA that carries the `ask()` fix, but the new account
       `aashish124` is handed a CPU session even though the server's own record of the pushed kernel
@@ -1360,12 +1367,22 @@ is measurable **without a model**:
       '"collapse_share": 1.0'`, which is 3 in V1-B's witness — is **4** here: `agnews/is_business`
       became a constant emitter, answering label 0 on 43/43 rows and landing exactly on its own 0.698
       floor, which is how its accuracy rose 0.6512 → 0.6977 (§9.55(iii), row `tier0-off-control`).
-      The verdict therefore carries a stated confound: `off` is M5/3,314 and `on` will be T4/3,600,
-      so the pair prices the flag *and* the machine *and* the dose. Two guards on that: the verdict
-      stays on Tier 0's **emitter count over the 16 cells** — a property of the batching rule, not of
-      the box — and any macro quoted from this pair is provisional until the `off` arm is re-run on
-      the T4 (5.6 h of quota, the user's call to spend). **The middle clause of that first guard is
-      now measured and wrong**: `off` (M5, 3,314) and V1-B (T4, 3,600) share `--anti-prior off` and
+      The confound this bullet used to carry — `off` on the M5 at 3,314 against `on` on a T4 at 3,600,
+      so the pair priced the flag *and* the machine *and* the dose — is gone, and the reason is the
+      owner's decision above: both arms are now this box at this step index. What replaces it is
+      narrower and has to be named: the `on` arm is a **continuation**, not an uninterrupted run. It
+      resumes the step-500 snapshot with `--resume`, which re-seeds the data RNG from `--seed 0` at
+      step 501, so the batch sequence after 500 is a fresh draw rather than the one an
+      uninterrupted 3,600-request `on` arm would have made, and its `--steps` request reads 3,315
+      because that is the value whose last executed index is the control's 3,314 (§9.56(ii)). The
+      learning-rate curve is *not* a third variable — the resumed scheduler carries the saved
+      `T_max = 3600`, which is what the control annealed against. Two guards on the read: the verdict
+      stays on Tier 0's **emitter count over the 16 cells**, measured against the **4** the `off`
+      control prints on this same box at this same step, and any macro quoted from this pair is
+      quoted *with* the resume sentence attached, never as the flag alone.
+      The clause the first of those guards leaned on — that the emitter count is "a property of the
+      batching rule, not of the box" — is **measured and wrong**: `off` (M5, 3,314) and V1-B (T4, 3,600)
+      share `--anti-prior off` and
       differ only in box and dose, and their emitter counts are 3 and 4. The emitter count is
       therefore *not* box- or dose-invariant, and it can only be read as a verdict against a baseline
       from the same box at the same dose (§9.55(iv)). With the baseline measured, that rule is now
@@ -1378,7 +1395,10 @@ is measurable **without a model**:
       judged against a fresh `off` arm it prices the flag. Both arms keep `--score-loss ce`, `--seed
       0`, `--stop-factor 3.0`, `--save-every 250` and the same `--free-gib` pin; `tests/test_kaggle_bundle.py`
       asserts the two generated cells are byte-identical after normalizing the one flag value, so a
-      third variable cannot enter the pair later. `off` stays the default at every layer
+      third variable cannot enter the pair later. That last clause is about the two generated Kaggle
+      cells, and the local lane did get two more differences when its `on` arm was continued rather
+      than restarted — `--steps` and `--resume` — which §9.56 names instead of letting this sentence
+      stand as a guarantee it never covered. `off` stays the default at every layer
       (`DEFAULTS["anti_prior"]`, every existing cell, `train.py`'s own default), which is what keeps
       every published number standing.
 
@@ -3075,3 +3095,117 @@ Kept permanently, because the value of this project's claims is that they surviv
     download-reproducible; it is left as the user's call because the figure it protects is explicitly
     void-as-evidence, and because publishing an artifact is shared state (§9.53's rule that a Release
     is the user's to open, not the agent's).
+
+56. **The `on` arm came home to this Mac, and dose-matching it turned out to be a question about
+    which index the loop stops on and which schedule the snapshot carries.** The owner's decision at
+    2026-10-01 12:52 NPT: *"run the on arm on the Mac, not Kaggle. Continue it to 3,314 updates
+    (dose-matched to the off control), one run at a time, keep the Mac from sleeping for the whole
+    run, then download + Release the weights immediately and eval macro vs the control's 0.5339."*
+    That closes the Kaggle lane for 10c (the kernel and its five CPU-only measurements stay in §9.53(vi)
+    as the record of why the account cannot run it) and it makes this entry a launch note, so every
+    number below is either stamped by the run or labelled projected.
+
+    **(i) The canonical launcher already knew how to do this, which is why nothing was hand-typed.**
+    `kaggle/run.py`'s `continuation()` returns `["--resume"]` when `out/model_last.pt` exists, and
+    refuses — naming `--warm-start` and a longer `--steps` as the two things that are not a resume —
+    when `metrics.json` says the schedule is already spent. §5 P9 9e measured that refusal's failure:
+    resuming a finished run restores a spent scheduler and trains at lr ~0 while printing numbers that
+    read as drift. Here the snapshot is at step 500 and the target is 3,314, so the resume is *before*
+    the decay ends and the branch is the right one. The expanded command, printed by `--dry-run` before
+    anything was launched and then by the run itself:
+
+    ```bash
+    uv run python kaggle/run.py --corpus data/decision-v2-pilot --out-root runs --device mps \
+        --config v0 --steps 3315 --batch 10 --seed 0 --score-loss ce --stop-factor 3.0 \
+        --save-every 250 --free-gib 9.0 --name antiprior_on_s0c --anti-prior on
+    ```
+
+    which is `myna.train` with 21 flags, i.e. the `off` control's 20 plus `--resume`. A fresh `--name`
+    was required twice over: `build_command` raises on `--warm-start` with a snapshot present, and
+    `runs/antiprior_on_s0/` is the directory §9.55(i) and §9.55(ii) make claims about. Writing into it
+    would have replaced the `run.json` whose 20 flags that audit counts, and would have overwritten the
+    step-500 `model_last.pt` whose digest `3b45dd6a4ae65e77…` that entry quotes. So `runs/antiprior_on_s0c/`
+    holds a *copy* of the seed, and both directories survive: `shasum -a 256` returns the same
+    `3b45dd6a4ae65e77c7f9cbfa800ccb185637da4d57c3863c84644a800e700917` for `203,229,625 B` on both
+    sides of the copy, which is the round trip that says the resumed weights are the weights the
+    partial trained.
+
+    **(ii) Dose-matching is `--steps 3315`, not `3314`, because the loop's last executed index is
+    `args.steps − 1`.** `train.py:1000` reads `for step in range(start_step, args.steps)` and
+    `train.py:1032` stamps `last_step = step` inside it, while the control's committed
+    `runs/antiprior_off_s0.metrics.json` records `last_step: 3314` under `steps_requested: 3600` — so
+    the control *executed* index 3314. Requesting 3,314 here would have stopped the arm one update
+    early, at index 3,313, and broken the comparison with the literal the registry already binds
+    (`antiprior-off-macro` quotes `"last_step": 3314`). One consequence of changing the request is not
+    cosmetic: `log_every = max(1, min(200, args.steps // 60))` (`train.py:924`) makes the *print
+    cadence* a function of the requested dose, so the control stamped every 60 updates and this run
+    stamps every 55 — visible as the first line arriving at `step 550` where the partial's stopped at
+    `step 540`. The *eval* grid did not move, and that is the one that matters for the comparison:
+    `--eval-every 250` still fires at 750, 1,000 … 3,250 (11 points), which with the partial's 250 and
+    500 is the control's 13 dev-mid readings on the same steps.
+
+    **(iii) The scheduler is the part that could have quietly ruined the arm, and it was read out of
+    the file rather than inferred.** `--warm-start` would have loaded those weights onto a fresh cosine
+    fitted to 3,315 updates — a third learning-rate curve beside the control's. `--resume` restores the
+    saved one, and `torch.load` on the seed prints `step 500`, `T_max 3600`, `last_epoch 501`,
+    `lr 5.717815913939212e-4`, `eta_min 0.0`. So the continuation walks the control's own 3,600-step
+    annealing curve and stops at index 3,314 on it, which is precisely where the control stopped
+    (about 1.5 % of the 6e-4 base lr, low but not the ~0 that §9e's failure mode is).
+
+    **(iv) The flag audit, run on the three commands rather than asserted.** As parsed flag-by-flag:
+    `off` 20, `on` partial 20, continuation 21. Against the partial, the continuation differs in
+    `--out`, `--steps` and `--resume`. Against the `off` control it differs in `--anti-prior` (the
+    variable), `--out` (a directory cannot be shared), `--steps 3600 → 3315` and the presence of
+    `--resume`. Every other flag compares equal, including the four that move the numbers: `--batch 10`,
+    `--seed 0`, `--score-loss ce`, `--stop-factor 3.0`, `--save-every/--eval-every 250`, `--accum-groups 8`,
+    `--max-q-cells 2048`, `--mem-safety 0.6`, `--vocab 8192`, `--free-gib 9.0`, `--row-batch`,
+    `--paraphrase on`, `--group-sample pool`. Two lines of the new run's own output are the witness that
+    the regime really is shared, not merely the argv: `memory plan: batch 10 fits 9.0 GiB free x 0.6,
+    less 3.2 GiB of question branch at p95 267 tokens (needs 5.3 GiB)` — byte-identical to the
+    control's, which is what the `--free-gib` pin is for (§9.53(v)) — and `anti-prior: mini-batches
+    drawn by inverse label prior; 6 of 16 cells carry a majority label at or above 0.55`, identical to
+    the partial's. The resume line the trainer stamped is `resume: runs/antiprior_on_s0c/model_last.pt
+    at step 500 -> continuing at 501 of 3315; data RNG re-seeded from --seed 0, so this is a
+    continuation, not a bit-identical replay` — that re-seed is the honest residue in the pair and
+    §5 P10 10c now names it instead of claiming a clean two-flag pair.
+
+    **(v) Sleep, thermals and the one-run-at-a-time rule were checked before the launch, not after.**
+    `pmset -g batt`: 'Now drawing from AC Power', 74 % charging on a 70 W Apple adapter — which is what
+    makes `caffeinate -s` mean anything, since that assertion does not hold on battery. `pgrep -fl
+    myna.train` before launch: no matches, so nothing was already training. `caffeinate -i -s -w 80297`
+    is PID 80330 and `pmset -g assertions` confirms both halves with "caffeinate asserting on behalf of
+    Process ID 80297": `PreventUserIdleSystemSleep` and `PreventSystemSleep`. The driver is 80297, the
+    trainer 80299, and the pre-existing unrelated `caffeinate` and Chrome were left exactly as found.
+    This is not belt-and-braces: the `off` control's own death was `step time 596.40s > 3.0x median
+    6.58s of the last 20`, which §9.53(iv) attributes to battery 'Maintenance Sleep' rather than to
+    anything the model does. The corollary is a rule for the next five hours on this box: **no test
+    suite, no Tier 0 re-run, no `make repro` while the arm runs**, because `--stop-factor 3.0` is armed
+    here and a heavy local job is exactly the shape that trips it — a self-inflicted version of the
+    event that truncated the control.
+    Wall clock, measured rather than hoped: the first 50 resumed updates stamped **355 s = 7.10 s/update**,
+    inside the control's 6.43–7.27 band, and there is no repeat of the 89.55 s/update first interval
+    because AdamW's state came back with the snapshot instead of warming up. At that slope the remaining
+    2,764 updates are **5.45 h (projected)**, plus eleven dev-mid evals at the ~37 s the control's
+    intervals imply, so the projected finish is ≈ 18:35 NPT.
+
+    **(vi) The weights ship without anyone awake, and the tag says the step the run reached.**
+    `runs/ckpt_backup_on_s0c.sh` (PID 80600) does two uploads and neither is what
+    `runs/ckpt_backup.sh` would have done with these paths: it ships the first snapshot *this* run
+    writes — identified by a digest different from the `3b45dd6a…` seed, because uploading the seed
+    would insure nothing (it is byte-identical to a file already in the working tree) — and then the
+    final `model.pt` + `tokenizer.json` once `stable()` sees the size stop moving. Its titles take the
+    step from `metrics.json`'s `last_step`, never from the requested dose, which is the §9.54 defect
+    this script exists to not repeat. Its log and state file are gitignored alongside
+    `runs/pair_driver.log`, because line 2 of the log is the expanded command and its first token is
+    this laptop's absolute interpreter path.
+
+    **(vii) What this run is judged against, fixed before it finishes.** Test macro against the
+    control's committed **0.5338735348381732** (not V1-B's 0.4893, which is a different code path and a
+    different box); Tier 0's constant-emitter count against the **4** the same harness printed for this
+    control on this box at this step, so 5 or more means the batching rule bought the mechanism nothing
+    and 3 or fewer means it moved as designed; `cells that move at all` against 10; and the dev-mid
+    trace on the control's 13 points. The pre-registered direction from the scenario work is **flat to
+    down** (0.42–0.49), because `--anti-prior` re-weights the six cells myna already scores best in — so
+    a rise here is a finding about a continued 500-update partial not being the same object as a fresh
+    3,600-request run, and it will be written that way. *(OPEN: every figure in this bullet is gated
+    until the run stamps its last step; the only measured numbers in this entry are the ones above.)*
