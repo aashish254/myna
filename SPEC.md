@@ -70,7 +70,7 @@ Quote the ratio, never the millisecond figure.
 | **G4** | Long-context is *correct*, not just cheap | needle-style typed decision ≥ 0.90 at 4k and ≥ 0.85 at 16k state | **not met, and not yet measurable on this box.** v0's needle curve (`runs/needle_myna-v0.md`) reads 0.188 at 128 tokens against a 0.167 floor — at chance on the shortest rung — so the longer rows are decay of nothing, and the harness now says so itself rather than printing a table (§9.25). The 16k *state* is measured and cheap (§9.22); the 16k *decision* needs the long-context checkpoint, which is 7b / `KAGGLE` |
 | **G5** | Useful confidence, with abstention | risk/coverage curve on `calibration.jsonl`; ≥ 0.95 accuracy at ≥ 60% coverage on banking77 + dbpedia14 + trec | **not met on the level, met on the machinery.** Abstention ships: `Myna(ckpt, abstain_below=t)` withholds the commitment and prints the measured reason, the fallback seam labels every answer with the engine that committed, and the curve is a committed artifact (`runs/risk_coverage.md`, 448 rows / 568 questions). Accuracy on v0 climbs **0.349 → 0.535** as coverage falls 1.00 → 0.20 — the confidence ranks the answers, on a checkpoint that cannot do the task — and setting the 0.693 floor on the engine abstains on **227** questions where the curve withheld **227**. But **no rung reaches 0.95** (max 0.596, at 10% coverage) and G5's own three sources sit at 0.000 / 0.025 / 0.150, so the pass needs the `KAGGLE` checkpoint (§9.24) |
 | **G6** | No regression on what already worked | synthetic v0 test ≥ 0.94 | open — v0's measured test macro is **0.9523** (`runs/train-v0.log`, macro of its nine `=== test ===` rows), so the level clears today; the gate stays open until a v1 checkpoint is run against it, and a draft of this row cited "0.951", which no artifact prints (§9.30) |
-| **G7** | Reproducibility | one command per result, seeds pinned, witness JSONs committed, `pytest` green | **met, as a binding rather than a rebuild.** `bench/reproduce.py` holds 30 registry rows, each binding one published table cell to one command and one committed witness, and `make repro` re-reads the 74 quoted figures out of those artifacts rather than out of the prose; the python commands among those rows are checked against the tool behind them — its `--help` must still print every flag the row publishes (§9.43); the seeds live inside the printed commands (`--seed 0`, `--seeds 0 1`), not in sentences about them. What this does **not** say: no target *executes* the registry end to end — 20 rows re-run on this box, 4 retrain a checkpoint, 2 need a laya checkout on `PYTHONPATH`, 3 need Google Chrome and 1 is `KAGGLE` — which is why TODO 8b stays unticked and why G7 is discipline rather than a one-command rebuild. Every count in this cell is now read back against `ROWS` by `bench/gates.py`, so this row — the table's one hand-copied cell — goes red rather than quietly stale (§9.44) |
+| **G7** | Reproducibility | one command per result, seeds pinned, witness JSONs committed, `pytest` green | **met, as a binding rather than a rebuild.** `bench/reproduce.py` holds 31 registry rows, each binding one published table cell to one command and one committed witness, and `make repro` re-reads the 80 quoted figures out of those artifacts rather than out of the prose; the python commands among those rows are checked against the tool behind them — its `--help` must still print every flag the row publishes (§9.43); the seeds live inside the printed commands (`--seed 0`, `--seeds 0 1`), not in sentences about them. What this does **not** say: no target *executes* the registry end to end — 21 rows re-run on this box, 4 retrain a checkpoint, 2 need a laya checkout on `PYTHONPATH`, 3 need Google Chrome and 1 is `KAGGLE` — which is why TODO 8b stays unticked and why G7 is discipline rather than a one-command rebuild. Every count in this cell is now read back against `ROWS` by `bench/gates.py`, so this row — the table's one hand-copied cell — goes red rather than quietly stale (§9.44) |
 
 **This column is not a claim.** `make gates` (`bench/gates.py --check`) re-reads each cell's
 leading verdict word, the registry row that gate cites, and the named field inside a committed
@@ -205,7 +205,8 @@ it), `requirements.txt`.
 seconds moved (the first run of this tree read 283.78 s). The re-read after the checkpoint-recovery and
 GPU-denial commits (§9.53) is **258.29 s** over the same 561 passed / 1 skipped / 562 collected — that
 batch added no test and removed none, so the count is confirmed rather than merely unchanged, which is
-the difference 9k exists to record. The **+5**
+the difference 9k exists to record. The registry-row tick that follows it (§9.54) re-reads **261.60 s**
+on the identical split, because it edited one test's coverage count and added none. The **+5**
 over the 556 this map read earlier in the same tick are §9.51's arms, all five in
 `test_reproduce.py` (the platform-limit table, the note path, the still-red-on-macOS path, the
 missing-base-dependency path, and the guard that names which four rows the limit reaches) — counted
@@ -1282,7 +1283,20 @@ is measurable **without a model**:
       `antiprior_off_s0-weights` Release.
       **It reports test macro 0.5339** (floor 0.4331, uniform 0.3321) against V1-B's 0.4893 — a
       **+0.0446** that belongs to the data path and not to the flag, which is precisely the confound
-      the fresh control was built to expose. G1 is still not met on this arm: 0.70 target, and the
+      the fresh control was built to expose. The registry row `antiprior-off-macro` binds that figure
+      to one command over committed bytes:
+      ```bash
+      uv run python -m myna.report --suite data/decision-v2-pilot --split test \
+          --metrics runs/antiprior_off_s0.metrics.json \
+          --laya runs/laya_decision_v2_test.json \
+          --out runs/antiprior_off_s0.report.json
+      ```
+      Re-run on 2026-10-01 to a scratch path rather than over the witness, and the diff is the artifact
+      `runs/antiprior_off_s0.report_repro.log`: **372 leaves compared, 2 differ — `cmd` and
+      `metrics_file`, both provenance strings naming the pre-flatten
+      `runs/antiprior_off_s0/metrics.json` — and the whole `g1` block plus all 16 cells compare equal.**
+      A row whose own command rewrites the file it is checked against cannot show that, so this re-run
+      printed elsewhere and left the witness byte-unchanged. G1 is still not met on this arm: 0.70 target, and the
       "+0.15 over the floor" clause observes **+0.1008**; laya's 0.667 leaves the gap at −0.133.
       The dev-mid trace flattened rather than climbing: 13 points from 0.3682 to 0.4332, OLS
       **+0.0231 per 1,000** over all of them, +0.0166 over the last five, +0.0030 over the last three
@@ -2830,3 +2844,56 @@ Kept permanently, because the value of this project's claims is that they surviv
     rather than of the box; and if the macro is quoted at all it is quoted as provisional until the
     `off` arm is re-run on the T4 — 5.6 h of the 30 h/week quota, which is the user's call to spend,
     not a step to take quietly.
+
+54. **A Release title claimed a dose the run never did, and closing it took a hash round trip plus a
+    registry row that refuses to overwrite its own witness.**
+
+    **(i) The off control's weights are on a Release, proved the only way that means anything.**
+    `runs/antiprior_off_s0/model.pt` (67,733,781 B) hashes to
+    `30f0fa937e57e8ce8b21c58315dc7e800151a0c95e003dc0930e0f75d588f1e5`, which is the digest
+    `antiprior_off_s0-weights`'s own body already printed, and `gh release download` +
+    `shasum -a 256` returns that digest at that byte count, plus `tokenizer.json` at 526,662 B /
+    `0252c24627ee…` — the same tokenizer digest as V1-B, which is what a shared vocab should do. So §5
+    P10 10c's "its weights are on the release" is now a witnessed sentence rather than the shape of
+    sentence §9.50 wrote before it had to be retracted.
+
+    **(ii) What was wrong was the label, and a label is where a stranger reads.** Both the release
+    name and its first line said `3,600 updates`. `runs/antiprior_off_s0.metrics.json` says
+    `last_step: 3314` beside `steps_requested: 3600`, and `myna.report` prints the VOID line over those
+    bytes — so the title wore the request as if it were the achieved dose, the exact category §9.53(iv)
+    is about, in the one place with no surrounding prose to correct it. The tag now reads *"antiprior_off_s0
+    weights (3,314 of 3,600 updates — the off control, stopped by its own sleep guard)"*, and the body
+    carries the 596.40 s-against-6.58 s guard reading, the three digests, and the curl-and-re-hash
+    commands a fresh clone needs. No bytes were re-uploaded: the assets are untouched, which is why the
+    hashes above still match after the edit.
+
+    **(iii) `antiprior-off-macro` is the 31st row, and it was verified without letting it eat its own
+    receipt.** The row's command ends `--out runs/antiprior_off_s0.report.json`, so running it as
+    written would rewrite the file `--check` compares against — a registry whose proof overwrites its
+    witness can only ever report itself green. The re-run therefore printed to a scratch path and the
+    *comparison* became the artifact: `runs/antiprior_off_s0.report_repro.log` prints
+    **372 leaves compared, 2 differing — `/cmd` and `/metrics_file`** — with `g1` equal, all 16 cells
+    equal, and `macro_acc 0.5338735348381732` on both sides. Those two leaves are provenance, not
+    measurement: the committed report was computed while the arm's directory still existed, and the row
+    names the flattened `runs/antiprior_off_s0.metrics.json`. A row that reprints the number and moves
+    the provenance is a row that reproduced it.
+
+    **(iv) The counts moved because the registry said so, not because prose did.** `make repro` went
+    **30/31 → FAIL** on the new row (`no doc quotes the command`), which is §9.30's rule biting on the
+    author rather than on a stranger: the command had to be printed in the prose next to the published
+    figure, inside SPEC §5 P10 10c, before the row could hold — README's generated block was not
+    accepted as the quote, and `doc_text()` cuts that block out precisely so the registry cannot check
+    itself. Then `make gates` named the three live numbers the G7 cell owed it (**31 registry rows, 80
+    quoted figures, 21 rows re-run on this box**), and `tests/test_reproduce.py`'s coverage assertion
+    went red at 24 checked commands. All four are now consistent: `make repro` prints
+    **31/31 rows hold; 80 figures tied to a committed witness**, `make gates` prints **6/7 verdicts
+    hold — 3 of 7 met, 3 not met, 1 open**, so the release gate is still not clear for the reasons
+    §9.53 records rather than for a stale count. The suite is **561 passed / 1 skipped in 261.60 s**
+    (562 collected), and CI was green on `38ad176` at run 36821510754 before this tick's edits.
+
+    **(v) The new coverage number was mutation-checked, and the mutation that matters is a shape, not a
+    typo.** Rewriting the row's command as `grep -o macro_acc …` drops the checked-command count
+    24 → 23 and the assertion fires; stripping the `uv run` prefix leaves it at 24, because
+    `python_target` resolves `python -m myna.report` just as happily. So the guard bites when a python
+    row quietly degrades into something the `--help` question cannot be asked of — the failure §9.43
+    exists to catch — and does not bite on formatting.

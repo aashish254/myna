@@ -31,7 +31,7 @@ are the two that cannot be closed on this box.
 | **G4** — Long-context is *correct*, not just cheap | **not met** | v0's needle curve prints **0.188 at 128 tokens** against a 0.167 uniform floor — at chance on the *shortest* rung — so the longer rows are the decay of nothing, and `runs/needle_myna-v0.md` prints `G4: not measured by this run` in place of a table a reader could quote. | not met, and not met by a run that cannot answer the question. The 16k *state* is measured, fixed at 576 KiB and cheap (§9.22); the 16k *decision* needs the 4k truncated-backprop checkpoint, which is 7b / `KAGGLE`. Those are two different claims and only the first one is settled. |
 | **G5** — Useful confidence, with abstention | **not met** | the curve's own `g5.pass` is `false`: accuracy climbs **0.349 → 0.535** as coverage falls 1.00 → 0.20 over 448 rows / 568 questions, **no rung reaches 0.95** (the max is 0.596, at 10% coverage), and G5's three named sources measure 0.000 / 0.025 / 0.150. | not met on the level, met on the machinery, and the gate is the level. `Myna(abstain_below=t)` withholds the commitment with a measured reason and the fallback seam labels which engine committed — a confidence that ranks the answers of a model that cannot answer is routing, not the product G5 describes (§9.24). |
 | **G6** — No regression on what already worked | **open** | v0's measured test macro is **0.9523** — the macro of the nine `=== test ===` rows in `runs/train-v0.log`, recomputed from its rows because the log prints no overall line — so the level clears today. | open rather than met, because the gate is written against the *next* checkpoint: it says "no regression", and there is no trained v1 artifact in this repo to regress. A draft of this row cited 0.951, a figure no artifact prints (§9.30), which is why the value here is computed from the log's own rows. |
-| **G7** — Reproducibility | **met** | `make repro` is green at this tick: 30 registry rows bind every published table cell to one command and one committed witness, and the 74 quoted figures are re-read out of those files rather than out of the prose. The python commands among those rows are checked against the tool behind them — its `--help` must still print every flag the row publishes (§9.43). The seeds live inside the printed commands (`--seed 0`, `--seeds 0 1`), not in sentences about them. | met as a binding, not as a rebuild, and the gap is disclosed rather than absorbed: no target *executes* the registry end to end — 20 rows re-run on this box, 4 retrain a checkpoint, 2 need a laya checkout on `PYTHONPATH`, 3 need Google Chrome and 1 is `KAGGLE`. That is TODO 8b, which stays unticked for exactly this reason. |
+| **G7** — Reproducibility | **met** | `make repro` is green at this tick: 31 registry rows bind every published table cell to one command and one committed witness, and the 80 quoted figures are re-read out of those files rather than out of the prose. The python commands among those rows are checked against the tool behind them — its `--help` must still print every flag the row publishes (§9.43). The seeds live inside the printed commands (`--seed 0`, `--seeds 0 1`), not in sentences about them. | met as a binding, not as a rebuild, and the gap is disclosed rather than absorbed: no target *executes* the registry end to end — 21 rows re-run on this box, 4 retrain a checkpoint, 2 need a laya checkout on `PYTHONPATH`, 3 need Google Chrome and 1 is `KAGGLE`. That is TODO 8b, which stays unticked for exactly this reason. |
 
 <!-- gates:release:end -->
 
@@ -559,6 +559,8 @@ uv run python -m myna.report --suite data/decision-v2-pilot --split test --metri
 python bench/ordinal_ab.py --ab-dir /tmp/ab2
 # SPEC §2.1 G1 myna row · §5 P8 · KAGGLE_LAUNCH_INSTRUCTIONS.md  [here]
 uv run python -m myna.report --suite data/decision-v2-pilot --split test --metrics runs/v1b_kaggle_3600b.metrics.json --laya runs/laya_decision_v2_test.json --out runs/v1b_kaggle_3600b.report.json
+# SPEC §5 P10 10c (the fresh `off` control) · §9.53(iii)  [here]
+uv run python -m myna.report --suite data/decision-v2-pilot --split test --metrics runs/antiprior_off_s0.metrics.json --laya runs/laya_decision_v2_test.json --out runs/antiprior_off_s0.report.json
 # SPEC §9.41 (the dbpedia14 dev→test delta) · TODO 9h  [here]
 uv run python -m myna.report --split dev --metrics runs/v1b_kaggle_3600b.metrics.json --out runs/v1b_kaggle_3600b.dev.report.json > runs/v1b_kaggle_3600b.dev.report.log
 # SPEC §5 P9 9d · TODO 9d  [here]
@@ -613,13 +615,17 @@ recovered on 2026-10-01 from the Kaggle notebook's Output archive after §9.50 h
 destroyed with `/private/tmp/kgwork`. The page carries the three hashes that tie those bytes to the
 committed Tier 0 witness (`model 0e73a8f07edc`, `tokenizer 0252c24627ee`, and a `metrics.json` that
 `cmp`s byte-identical to `runs/v1b_kaggle_3600b.metrics.json`), which is why "recovered" is a
-measurement here and not a hope. §9.53 is the entry.
+measurement here and not a hope. §9.53 is the entry. The `off` control of the P10 pair ships the same
+way — [antiprior_off_s0-weights](https://github.com/aashish254/myna/releases/tag/antiprior_off_s0-weights),
+`model.pt` 67,733,781 B at sha256 `30f0fa937e57e8ce…`, downloaded back and re-hashed on 2026-10-01 —
+and its title says **3,314 of 3,600 updates**, because the tag previously claimed the requested dose as
+if it were the achieved one (§9.54).
 
 ```bash
 mkdir -p runs/myna-v0
 curl -L -o runs/myna-v0/model.pt       https://github.com/aashish254/myna/releases/download/v0-checkpoint/model.pt
 curl -L -o runs/myna-v0/tokenizer.json https://github.com/aashish254/myna/releases/download/v0-checkpoint/tokenizer.json
-make repro                             # 30/30 rows, with weights to read
+make repro                             # 31/31 rows hold here, with weights to read
 ```
 
 The V1-B weights go where `bench/diag_question_ablation.py` already looks by default, so Tier 0

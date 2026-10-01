@@ -337,6 +337,29 @@ ROWS = [
         "clamping `--batch 32` against the pinned 9.0 GiB, so the row also witnesses "
         "the T4 regime."),
 
+    row("antiprior-off-macro", "SPEC §5 P10 10c (the fresh `off` control) · §9.53(iii)",
+        "uv run python -m myna.report --suite data/decision-v2-pilot --split test "
+        "--metrics runs/antiprior_off_s0.metrics.json "
+        "--laya runs/laya_decision_v2_test.json "
+        "--out runs/antiprior_off_s0.report.json",
+        HERE,
+        ["runs/antiprior_off_s0.report.json", "runs/antiprior_off_s0.metrics.json"],
+        [("runs/antiprior_off_s0.report.json", '"macro_acc": 0.5338735348381732'),
+         ("runs/antiprior_off_s0.report.json", '"margin_observed": 0.10080873944405344'),
+         ("runs/antiprior_off_s0.report.json", '"macro_majority": 0.4330647953941198'),
+         ("runs/antiprior_off_s0.metrics.json", '"anti_prior": "off"'),
+         ("runs/antiprior_off_s0.metrics.json", '"last_step": 3314'),
+         ("runs/antiprior_off_s0.metrics.json", '"batch": 10')],
+        "The control that made the +0.0446 visible: same corpus, same seed, same 3,600-update "
+        "request, `--anti-prior off`, on the tree after the data-loader work. Its 0.5339 is 0.4893's "
+        "twin and the gap between them belongs to the data path, not to the flag (§9.53(iii)) — which "
+        "is the whole reason the pair has a fresh `off` arm instead of reusing V1-B's number. A re-run "
+        "differs from the committed report in exactly two provenance leaves (`cmd`, and `metrics_file` "
+        "naming the pre-flatten `runs/antiprior_off_s0/metrics.json`); every measured leaf, the whole "
+        "`g1` block and all 16 cells, compares equal. `"
+        "\"last_step\": 3314` of 3,600 requested is the truncated dose, and `myna.report` prints it as "
+        "a VOID line rather than as a clean macro."),
+
     row("v1b-kaggle-dev", "SPEC §9.41 (the dbpedia14 dev→test delta) · TODO 9h",
         "uv run python -m myna.report --split dev --metrics runs/v1b_kaggle_3600b.metrics.json "
         "--out runs/v1b_kaggle_3600b.dev.report.json > runs/v1b_kaggle_3600b.dev.report.log",

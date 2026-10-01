@@ -1,0 +1,18 @@
+# registry row 'antiprior-off-macro': the published command re-run against the committed witness, 2026-10-01
+# the row's cmd writes --out runs/antiprior_off_s0.report.json; run here to /tmp instead, because
+# a re-run must not rewrite a committed witness (SPEC §9.30: the witness is the receipt).
+
+$ uv run python -m myna.report --suite data/decision-v2-pilot --split test --metrics runs/antiprior_off_s0.metrics.json --laya runs/laya_decision_v2_test.json --out /tmp/off_report_repro.json
+exit=0
+
+$ python -m myna.report --suite data/decision-v2-pilot --split test --metrics runs/antiprior_off_s0.metrics.json --laya runs/laya_decision_v2_test.json --out /tmp/off_report_repro.json
+VOID: the run that wrote runs/antiprior_off_s0.metrics.json STOPPED at step 3314 of 3600 requested: step time 596.40s > 3.0x median 6.58s of the last 20
+      Every accuracy below describes a truncated dose, not a trained checkpoint. No gate may be judged from this table. (§7.1)
+
+$ cmp -s /tmp/off_report_repro.json runs/antiprior_off_s0.report.json
+/tmp/off_report_repro.json runs/antiprior_off_s0.report.json differ: char 110, line 2
+  ^ differ at the two provenance leaves, enumerated next
+
+leaves compared: 372 | differing: 2 -> ['/cmd', '/metrics_file']
+g1 block equal: True | cells equal: True | cells: 16
+macro_acc: 0.5338735348381732 == committed 0.5338735348381732
