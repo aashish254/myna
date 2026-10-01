@@ -1,0 +1,522 @@
+{
+  "cmd": "python -m myna.report --suite data/decision-v2-pilot --split test --metrics runs/antiprior_on_s0c.metrics.json --laya runs/laya_decision_v2_test.json --out runs/antiprior_on_s0c.report.json",
+  "metrics_file": "runs/antiprior_on_s0c.metrics.json",
+  "laya_file": "runs/laya_decision_v2_test.json",
+  "laya_merged": {
+    "contrastive/decision": {
+      "acc": 0.5,
+      "n": 40,
+      "rows": 2,
+      "parts": [
+        {
+          "type": "choice",
+          "acc": 0.4166666666666667,
+          "n": 24
+        },
+        {
+          "type": "noul",
+          "acc": 0.625,
+          "n": 16
+        }
+      ]
+    }
+  },
+  "suite": "data/decision-v2-pilot",
+  "split": "test",
+  "file": "test.jsonl",
+  "min_rows": 30,
+  "dropped_cells": [],
+  "unmatched_sets": [],
+  "strata": {
+    "banking77": {
+      "rows": 116,
+      "sets": 116,
+      "slots": 116,
+      "distinct_instructions": 4,
+      "multi_row_set_share": 0.0,
+      "repeated_instruction_share": 0.9913793103448276,
+      "class": "shared-instruction"
+    },
+    "boolq": {
+      "rows": 80,
+      "sets": 80,
+      "slots": 80,
+      "distinct_instructions": 80,
+      "multi_row_set_share": 0.0,
+      "repeated_instruction_share": 0.0,
+      "class": "per-row-instruction"
+    },
+    "agnews": {
+      "rows": 116,
+      "sets": 113,
+      "slots": 300,
+      "distinct_instructions": 8,
+      "multi_row_set_share": 0.05172413793103448,
+      "repeated_instruction_share": 1.0,
+      "class": "shared-instruction"
+    },
+    "mnli": {
+      "rows": 116,
+      "sets": 112,
+      "slots": 116,
+      "distinct_instructions": 80,
+      "multi_row_set_share": 0.06896551724137931,
+      "repeated_instruction_share": 0.41379310344827586,
+      "class": "per-row-instruction"
+    },
+    "sst5": {
+      "rows": 80,
+      "sets": 4,
+      "slots": 80,
+      "distinct_instructions": 4,
+      "multi_row_set_share": 1.0,
+      "repeated_instruction_share": 1.0,
+      "class": "shared-instruction"
+    },
+    "yelp": {
+      "rows": 80,
+      "sets": 4,
+      "slots": 160,
+      "distinct_instructions": 5,
+      "multi_row_set_share": 1.0,
+      "repeated_instruction_share": 1.0,
+      "class": "shared-instruction"
+    },
+    "trec": {
+      "rows": 116,
+      "sets": 37,
+      "slots": 116,
+      "distinct_instructions": 1,
+      "multi_row_set_share": 0.6896551724137931,
+      "repeated_instruction_share": 1.0,
+      "class": "shared-instruction"
+    },
+    "dbpedia14": {
+      "rows": 116,
+      "sets": 37,
+      "slots": 116,
+      "distinct_instructions": 1,
+      "multi_row_set_share": 0.6896551724137931,
+      "repeated_instruction_share": 1.0,
+      "class": "shared-instruction"
+    },
+    "amazon": {
+      "rows": 80,
+      "sets": 1,
+      "slots": 80,
+      "distinct_instructions": 1,
+      "multi_row_set_share": 1.0,
+      "repeated_instruction_share": 1.0,
+      "class": "shared-instruction"
+    },
+    "imdb": {
+      "rows": 80,
+      "sets": 1,
+      "slots": 80,
+      "distinct_instructions": 1,
+      "multi_row_set_share": 1.0,
+      "repeated_instruction_share": 1.0,
+      "class": "shared-instruction"
+    },
+    "contrastive": {
+      "rows": 196,
+      "sets": 29,
+      "slots": 196,
+      "distinct_instructions": 4,
+      "multi_row_set_share": 0.9132653061224489,
+      "repeated_instruction_share": 1.0,
+      "class": "shared-instruction"
+    }
+  },
+  "cells": [
+    {
+      "source": "agnews",
+      "question": "is_business",
+      "type": "noul",
+      "n": 43,
+      "options": 2,
+      "options_by_size": {
+        "2": 43
+      },
+      "sets": 41,
+      "majority": 0.6976744186046512,
+      "uniform": 0.5,
+      "acc": 0.6511627906976745,
+      "n_scored": 43,
+      "clip": 0.6976744186046512,
+      "clip_worth": 0.046511627906976716,
+      "brier": 0.21635457821363627
+    },
+    {
+      "source": "agnews",
+      "question": "is_scitech",
+      "type": "noul",
+      "n": 49,
+      "options": 2,
+      "options_by_size": {
+        "2": 49
+      },
+      "sets": 48,
+      "majority": 0.6530612244897959,
+      "uniform": 0.5,
+      "acc": 0.5714285714285714,
+      "n_scored": 49,
+      "clip": 0.6530612244897959,
+      "clip_worth": 0.08163265306122447,
+      "brier": 0.26201476514035343
+    },
+    {
+      "source": "agnews",
+      "question": "is_sports",
+      "type": "noul",
+      "n": 47,
+      "options": 2,
+      "options_by_size": {
+        "2": 47
+      },
+      "sets": 46,
+      "majority": 0.8085106382978723,
+      "uniform": 0.5,
+      "acc": 0.7659574468085106,
+      "n_scored": 47,
+      "clip": 0.8085106382978723,
+      "clip_worth": 0.04255319148936165,
+      "brier": 0.1582239290818255
+    },
+    {
+      "source": "agnews",
+      "question": "is_world",
+      "type": "noul",
+      "n": 45,
+      "options": 2,
+      "options_by_size": {
+        "2": 45
+      },
+      "sets": 43,
+      "majority": 0.7777777777777778,
+      "uniform": 0.5,
+      "acc": 0.7333333333333333,
+      "n_scored": 45,
+      "clip": 0.7777777777777778,
+      "clip_worth": 0.04444444444444451,
+      "brier": 0.19626729517347283
+    },
+    {
+      "source": "agnews",
+      "question": "topic",
+      "type": "choice",
+      "n": 116,
+      "options": 5,
+      "options_by_size": {
+        "4": 104,
+        "5": 12
+      },
+      "sets": 113,
+      "majority": 0.3275862068965517,
+      "uniform": 0.24482758620689649,
+      "acc": 0.3275862068965517,
+      "n_scored": 116,
+      "clip": 0.3275862068965517,
+      "clip_worth": 0.0,
+      "brier": null
+    },
+    {
+      "source": "amazon",
+      "question": "stars",
+      "type": "score",
+      "n": 80,
+      "options": 5,
+      "options_by_size": {
+        "5": 80
+      },
+      "sets": 1,
+      "majority": 0.2625,
+      "uniform": 0.2,
+      "acc": 0.35,
+      "n_scored": 80,
+      "clip": 0.35,
+      "clip_worth": 0.0,
+      "brier": null
+    },
+    {
+      "source": "banking77",
+      "question": "intent",
+      "type": "choice",
+      "n": 116,
+      "options": 78,
+      "options_by_size": {
+        "77": 104,
+        "78": 12
+      },
+      "sets": 116,
+      "majority": 0.04310344827586207,
+      "uniform": 0.01296978883185777,
+      "acc": 0.02586206896551724,
+      "n_scored": 116,
+      "clip": 0.04310344827586207,
+      "clip_worth": 0.01724137931034483,
+      "brier": null
+    },
+    {
+      "source": "boolq",
+      "question": "answer",
+      "type": "noul",
+      "n": 80,
+      "options": 2,
+      "options_by_size": {
+        "2": 80
+      },
+      "sets": 80,
+      "majority": 0.5375,
+      "uniform": 0.5,
+      "acc": 0.5125,
+      "n_scored": 80,
+      "clip": 0.5375,
+      "clip_worth": 0.025000000000000022,
+      "brier": 0.24881823932519181
+    },
+    {
+      "source": "contrastive",
+      "question": "decision",
+      "type": "noul",
+      "n": 196,
+      "options": 4,
+      "options_by_size": {
+        "2": 80,
+        "3": 104,
+        "4": 12
+      },
+      "sets": 29,
+      "majority": 0.45408163265306123,
+      "uniform": 0.39625850340136043,
+      "acc": 0.5714285714285714,
+      "n_scored": 196,
+      "clip": 0.5714285714285714,
+      "clip_worth": 0.0,
+      "brier": 0.23803151845932008
+    },
+    {
+      "source": "dbpedia14",
+      "question": "category",
+      "type": "choice",
+      "n": 116,
+      "options": 15,
+      "options_by_size": {
+        "14": 104,
+        "15": 12
+      },
+      "sets": 37,
+      "majority": 0.12931034482758622,
+      "uniform": 0.07093596059113294,
+      "acc": 0.25862068965517243,
+      "n_scored": 116,
+      "clip": 0.25862068965517243,
+      "clip_worth": 0.0,
+      "brier": null
+    },
+    {
+      "source": "imdb",
+      "question": "positive",
+      "type": "noul",
+      "n": 80,
+      "options": 2,
+      "options_by_size": {
+        "2": 80
+      },
+      "sets": 1,
+      "majority": 0.5375,
+      "uniform": 0.5,
+      "acc": 0.75,
+      "n_scored": 80,
+      "clip": 0.75,
+      "clip_worth": 0.0,
+      "brier": 0.17864544987678527
+    },
+    {
+      "source": "mnli",
+      "question": "relation",
+      "type": "choice",
+      "n": 116,
+      "options": 4,
+      "options_by_size": {
+        "3": 104,
+        "4": 12
+      },
+      "sets": 112,
+      "majority": 0.35344827586206895,
+      "uniform": 0.32471264367816083,
+      "acc": 0.3879310344827586,
+      "n_scored": 116,
+      "clip": 0.3879310344827586,
+      "clip_worth": 0.0,
+      "brier": null
+    },
+    {
+      "source": "sst5",
+      "question": "sentiment",
+      "type": "score",
+      "n": 80,
+      "options": 5,
+      "options_by_size": {
+        "5": 80
+      },
+      "sets": 4,
+      "majority": 0.25,
+      "uniform": 0.2,
+      "acc": 0.225,
+      "n_scored": 80,
+      "clip": 0.25,
+      "clip_worth": 0.024999999999999994,
+      "brier": null
+    },
+    {
+      "source": "trec",
+      "question": "answer_type",
+      "type": "choice",
+      "n": 116,
+      "options": 7,
+      "options_by_size": {
+        "6": 104,
+        "7": 12
+      },
+      "sets": 37,
+      "majority": 0.28448275862068967,
+      "uniform": 0.16420361247947457,
+      "acc": 0.3620689655172414,
+      "n_scored": 116,
+      "clip": 0.3620689655172414,
+      "clip_worth": 0.0,
+      "brier": null
+    },
+    {
+      "source": "yelp",
+      "question": "rating",
+      "type": "score",
+      "n": 80,
+      "options": 5,
+      "options_by_size": {
+        "5": 80
+      },
+      "sets": 4,
+      "majority": 0.275,
+      "uniform": 0.2,
+      "acc": 0.425,
+      "n_scored": 80,
+      "clip": 0.425,
+      "clip_worth": 0.0,
+      "brier": null
+    },
+    {
+      "source": "yelp",
+      "question": "recommend",
+      "type": "noul",
+      "n": 80,
+      "options": 2,
+      "options_by_size": {
+        "2": 80
+      },
+      "sets": 4,
+      "majority": 0.5375,
+      "uniform": 0.5,
+      "acc": 0.7375,
+      "n_scored": 80,
+      "clip": 0.7375,
+      "clip_worth": 0.0,
+      "brier": 0.16228354759514332
+    }
+  ],
+  "macro": {
+    "acc": 0.4784612299508689,
+    "majority": 0.4330647953941198,
+    "uniform": 0.3321192559493052,
+    "clip": 0.4961101859641409,
+    "clip_worth": 0.017648956013271988,
+    "brier_noul": 0.20757991535821607,
+    "cells_scored": 16,
+    "cells_kept": 16,
+    "both": {
+      "cells": 16,
+      "cells_scored": 16,
+      "myna": 0.4784612299508689,
+      "laya": 0.6668154761904762,
+      "majority": 0.4330647953941198,
+      "gap": -0.18835424623960728
+    }
+  },
+  "below_majority_floor": [
+    {
+      "cell": "agnews/is_business",
+      "acc": 0.6511627906976745,
+      "majority": 0.6976744186046512,
+      "clip": 0.6976744186046512,
+      "clip_worth": 0.046511627906976716
+    },
+    {
+      "cell": "agnews/is_scitech",
+      "acc": 0.5714285714285714,
+      "majority": 0.6530612244897959,
+      "clip": 0.6530612244897959,
+      "clip_worth": 0.08163265306122447
+    },
+    {
+      "cell": "agnews/is_sports",
+      "acc": 0.7659574468085106,
+      "majority": 0.8085106382978723,
+      "clip": 0.8085106382978723,
+      "clip_worth": 0.04255319148936165
+    },
+    {
+      "cell": "agnews/is_world",
+      "acc": 0.7333333333333333,
+      "majority": 0.7777777777777778,
+      "clip": 0.7777777777777778,
+      "clip_worth": 0.04444444444444451
+    },
+    {
+      "cell": "banking77/intent",
+      "acc": 0.02586206896551724,
+      "majority": 0.04310344827586207,
+      "clip": 0.04310344827586207,
+      "clip_worth": 0.01724137931034483
+    },
+    {
+      "cell": "boolq/answer",
+      "acc": 0.5125,
+      "majority": 0.5375,
+      "clip": 0.5375,
+      "clip_worth": 0.025000000000000022
+    },
+    {
+      "cell": "sst5/sentiment",
+      "acc": 0.225,
+      "majority": 0.25,
+      "clip": 0.25,
+      "clip_worth": 0.024999999999999994
+    }
+  ],
+  "brier": {
+    "noul_cells": 8,
+    "priced_cells": 8,
+    "macro": 0.20757991535821607,
+    "cells": {
+      "agnews/is_business": 0.21635457821363627,
+      "agnews/is_scitech": 0.26201476514035343,
+      "agnews/is_sports": 0.1582239290818255,
+      "agnews/is_world": 0.19626729517347283,
+      "boolq/answer": 0.24881823932519181,
+      "contrastive/decision": 0.23803151845932008,
+      "imdb/positive": 0.17864544987678527,
+      "yelp/recommend": 0.16228354759514332
+    }
+  },
+  "g1": {
+    "target": 0.7,
+    "margin": 0.15,
+    "meets_target": false,
+    "meets_margin": false,
+    "pass": false,
+    "macro_acc": 0.4784612299508689,
+    "macro_majority": 0.4330647953941198,
+    "margin_observed": 0.04539643455674913
+  }
+}
