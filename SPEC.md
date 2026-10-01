@@ -3213,3 +3213,16 @@ Kept permanently, because the value of this project's claims is that they surviv
     a rise here is a finding about a continued 500-update partial not being the same object as a fresh
     3,600-request run, and it will be written that way. *(OPEN: every figure in this bullet is gated
     until the run stamps its last step; the only measured numbers in this entry are the ones above.)*
+
+    **(viii) The judgement runs itself, and the trigger is the last file written rather than a
+    wall-clock guess.** `runs/post_on_s0c.sh` (PID 82187) waits for the trainer's PID to disappear
+    *and* `runs/antiprior_on_s0c/tokenizer.json` to exist — `train.py` writes `metrics.json`, then
+    `model.pt`, then `tokenizer.json` (`:1105`, `:1121`, `:1123`), so the third of the three is the
+    only one that says the run reached its end block rather than started it — then flattens
+    `runs/antiprior_on_s0c.{metrics,train.log}`, reports the macro against the committed laya witness,
+    and re-runs Tier 0 over the new weights. Every path it writes is a new `runs/` file; no committed
+    witness is in its way. If the trainer disappears with no `tokenizer.json`, the chain logs that it
+    died before its end block and exits 1 rather than reporting a half-run. Its own progress log and
+    marker are gitignored beside the uploader's, because they are box glue; the five files it produces
+    are the witnesses a registry row will bind — **that row is not written yet, because a row quotes
+    figures and these do not exist until the run stamps.**
