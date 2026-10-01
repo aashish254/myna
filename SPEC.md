@@ -1521,7 +1521,12 @@ run started and no paid resource touched.
       into a third fresh venv installs the *pushed* tip `c29494e`, loads the same weights and answers
       the same question with the same probability, and reports `fetch_weights` **absent** — the
       correct reading of an unpushed change, printed rather than glossed. It becomes true the moment
-      this is pushed.
+      this is pushed. **It is pushed now**, and the same line re-run from a fresh venv resolves to
+      `fe11db6`, imports `myna.fetch_weights` out of `site-packages`, and has the console script pull
+      the Release into a new directory and answer **`billing`** / **0.7899749875068665** /
+      `latency_ms` **7.93** from it, with `shasum -a 256 -c SHA256SUMS` printing 2/2 `OK` and `cmp`
+      matching both files against the cache. Witness: `runs/quickstart_from_public_install.log`; the
+      resolution of this clause's conditional is §9.59.
 - [x] **11e — README quickstart above the gate table.** Install line, fetch line, the verified
       five-line snippet, its printed answer with the digest it came from, the `--tag` list naming every
       published arm, and the `gh release download` equivalent. The gate table follows immediately, its
@@ -3649,3 +3654,63 @@ Kept permanently, because the value of this project's claims is that they surviv
     the suite log are committed with this entry, so the withdrawal can be re-derived:
     `python bench/coverage_replay.py` must print `EXACT` twice and exit 0, and if the sampler ever drifts
     from what the runs did it exits 1 instead of printing a comforting table.
+59. **§5 11d's conditional resolved: the install line the README prints has now been executed exactly as
+    printed, and four runs of its five lines answer with one identical float.** 11d could only
+    report what an unpushed tree permitted — the documented `git+https` line installed the pushed tip
+    `c29494e` and printed `fetch_weights` **absent** — and it closed with *"It becomes true the moment this
+    is pushed."* `fe11db6` is on `origin/main`, so the sentence had to be re-run rather than re-read, and it
+    now passes.
+
+    **(i) What changed on disk, as the command printed it.** A fresh venv (`uv venv --seed --python
+    3.12`, pip 26.2.1) takes the README's own line verbatim: `Resolved https://github.com/aashish254/myna.git
+    to commit fe11db6fc67bb7a69e63088f5dea594870a4d2ff` → `Successfully installed … myna-0.1.0 … torch-2.14.1`,
+    exit 0. `import myna` resolves to `/tmp/venv-pub/lib/python3.12/site-packages/myna/__init__.py` with
+    `cwd=/tmp`, so the checkout is nowhere on `sys.path` and cannot answer about itself — the run has to
+    prove which copy replied before it is allowed to report what that copy said. Inside that copy:
+    `myna.fetch_weights` is present, `find … -name "*.pt" | wc -l` is **0** so the wheel still ships no
+    weights, and `myna-weights --dest /tmp/pub-fetch --force` pulls the Release over
+    stdlib `urllib` with no `gh` and no token, printing **30f0fa93…** / **0252c246…**. Those two files pass
+    `shasum -a 256 -c SHA256SUMS` (2/2 `OK`, exit 0 — a tool that is not myna checking the fetcher) and
+    `cmp` byte-identical against `~/.cache/myna/antiprior_off_s0-weights`.
+
+    **(ii) Four runs of the snippet, three environments, two fetch mechanisms, one float.** The quickstart's
+    five lines, run from the pip-installed copy against the default cache, print **`billing`** /
+    confidence **0.7899749875068665** / weakest `shipping`
+    **0.00027509400388225913** / `params 16926848` / `temperature 1.5` / `latency_ms` **7.93**; the same
+    engine pointed at `/tmp/pub-fetch` (bytes fetched minutes earlier by the console script) prints the same
+    choice and the same confidence at **6.67** ms. Read beside `runs/quickstart_from_gh_download.log`
+    (**7.84** ms, `gh release download`, in the repo's own `uv` environment) and
+    `runs/quickstart_from_git_install.log` (**6.98** ms, the unpushed tree over `git+file://`), that is
+    **four snippet runs across three environments and two fetch mechanisms, agreeing on
+    0.7899749875068665 exactly**. Only `latency_ms` moves, which is the §9.23 rule in miniature: quote the
+    float, never the milliseconds. The published `0.5338735348381732` macro is a property of the Release
+    bytes, and this is the witness that a stranger who has only the README and a laptop reaches those same
+    bytes.
+
+    **(iii) Why this is a correction and not a checkmark.** 11c's witness had to substitute
+    `git+file:///tmp/miga` for the documented URL, and its committed header still says *"the packaging under
+    test is unpushed"* — true at the moment it was written (the clone it installed, `21e9224`, was on no
+    remote) and stale as an answer to "what does the README's line do" now. That header is **left
+    exactly as it is**: a witness records the tree that produced it, and rewriting a committed transcript to
+    match today is how a log stops being evidence. The relabelling lives here and in 11d's own text instead.
+    The class behind it is §9.57's — *"nobody had ever typed the commands a reader has to type"* — one
+    level further out: not typed on a machine that happens to hold the checkout, but typed exactly as the
+    README writes it, from outside the repo, resolving to a commit that is on the remote. §9.51 is the same
+    failure at the other end (CI had never run a single test behind a green count), which is why the
+    re-run had to be done after the push rather than argued from the pre-push witness.
+
+    **(iv) CI answered for the pushed tip.** Run **36903335716**, `ci` workflow, `headSha` `fe11db6…`:
+    `createdAt` 2026-10-01T17:58:16Z → `updatedAt` 2026-10-01T18:12:29Z, `status` `completed`,
+    `conclusion` **`success`** (14 m 13 s). `c29494e` and `9682639a` both report `success` behind it, so
+    main has been green for three consecutive tips. What this entry adds afterwards is prose and one log
+    file, so it needs its own run: the three checks re-run on the tree this entry leaves print
+    **585 passed, 1 skipped, 1 warning in 276.90 s**, exit 0 (`runs/suite_post_959.log`; the 585/1 count is
+    unchanged because no test moved), `make repro` **34/34 rows, 101 figures, 1 gated** (exit 0, 8.24 s) and
+    `make gates` **7/7 verdicts — 3 met / 3 not met / 1 open, the release gate NOT clear** (exit 0, 8.06 s).
+    No model measurement moved, so no registry row changes.
+
+    **(v) Unchanged by this entry.** PyPI and the Hugging Face Space stay user-side — this repo has no
+    credential for either, and 11d passing says nothing about `pip install myna` resolving from the
+    index. G1 is still not met at **0.4785 / 0.5339 / 0.4893** against **0.70**; what got stronger is the
+    distance between *the engine works and you can install it* and *the engine is right often enough to
+    ship*, and §2.2 keeps both lines in the same table on purpose.

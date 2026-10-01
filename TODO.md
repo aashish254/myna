@@ -855,10 +855,17 @@ published arm is still **0.5339** against G1's 0.70.
       with no `gh` on the box, and the snippet prints `billing` / **0.7899749875068665** /
       `latency_ms` **6.98** from inside the installed package. `pyproject.toml` needed **no** fix; what
       needed fixing was `myna-serve`, which is §9.57. Witness: `runs/quickstart_from_git_install.log`.
+      **The `git+file` stand-in is no longer the only witness**: after the push, 11d runs the documented
+      URL for real and `runs/quickstart_from_public_install.log` carries it. §9.59.
 - [x] **11d** The documented URL itself, not a stand-in.
-      Done: `pip install "git+https://github.com/aashish254/myna.git"` installs the pushed tip
-      `c29494e`, loads the same weights, answers with the same probability — and reports
-      `fetch_weights` **absent**, because this work is unpushed. Printed rather than glossed.
+      Done twice. Before the push it could only report the truth about an unpushed tree: the line installs
+      the pushed tip `c29494e`, answers with the same probability, and reports `fetch_weights` **absent** —
+      printed rather than glossed, and the correct reading *then*. After the push the same line resolves to
+      `fe11db6`, imports `myna.fetch_weights` from `site-packages`, and the console script downloads the
+      65 MB Release into a fresh `--dest` with no `gh` on the box: `billing` / **0.7899749875068665** /
+      `latency_ms` **7.93**, with the fetched `model.pt`/`tokenizer.json` `shasum -a 256 -c` **OK** and
+      `cmp`-identical to the cache at **30f0fa93…** / **0252c246…**. Witness:
+      `runs/quickstart_from_public_install.log`. §9.59.
 - [x] **11e** README quickstart at the very top, before the gate table.
       Done: install line, `myna-weights`, the verified snippet, its printed answer with the digest it
       came from, the `--tag` list naming every published arm, the `gh release download` equivalent, and

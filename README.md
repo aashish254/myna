@@ -31,9 +31,12 @@ print(out["answers"]["department"]["choice"])
 That prints **`billing`**, at `confidence` `0.7899749875068665` with `shipping` the
 weakest of the five at `0.00027509400388225913`, over the Release bytes whose
 `sha256` is `30f0fa937e57e8ce8b21c58315dc7e800151a0c95e003dc0930e0f75d588f1e5` —
-16,926,848 params at temperature 1.5, measured 2026-10-01 on an M5 at
-`latency_ms` **7.84** (`runs/quickstart_from_gh_download.log`) and **6.98** from inside
-the pip-installed package (`runs/quickstart_from_git_install.log`).
+16,926,848 params at temperature 1.5. Measured 2026-10-01 on an M5 at `latency_ms`
+**7.84** (`runs/quickstart_from_gh_download.log`), **6.98** from a package installed off an
+unpushed tree (`runs/quickstart_from_git_install.log`), and **7.93** from the install line above
+pasted literally into a fresh venv, which resolved to `fe11db6` and fetched its own weights
+(`runs/quickstart_from_public_install.log`). Same choice, same float, three harnesses; only the
+milliseconds move.
 
 `myna-weights` takes `--tag` (every published arm is a tag: `antiprior_off_s0-weights`
 is the 0.5339 control, `antiprior_on_s0c-weights` the 0.4785 one, `v1b-checkpoint` the

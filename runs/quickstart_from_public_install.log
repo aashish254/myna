@@ -1,0 +1,81 @@
+# Post-push witness: the README quickstart's own install line, typed literally.
+# 2026-10-01 NPT, after `fe11db6` landed on origin/main. Every line below is answered by the
+# pip-installed copy in site-packages; the repo checkout is nowhere on sys.path (cwd is /tmp
+# for all of it), so this closes the one deviation `runs/quickstart_from_git_install.log`
+# recorded — that witness had to use `git+file:///tmp/miga` because the code was unpushed.
+
+$ uv venv --seed --python 3.12 /tmp/venv-pub
+Creating virtual environment with seed packages at: /tmp/venv-pub
+ + pip==26.2.1
+
+$ /tmp/venv-pub/bin/pip install "git+https://github.com/aashish254/myna.git"
+Collecting git+https://github.com/aashish254/myna.git
+  Cloning https://github.com/aashish254/myna.git to /private/var/folders/jn/.../T/pip-req-build-wgeby234
+  Running command git clone --filter=blob:none --quiet https://github.com/aashish254/myna.git /private/var/folders/jn/.../T/pip-req-build-wgeby234
+  Resolved https://github.com/aashish254/myna.git to commit fe11db6fc67bb7a69e63088f5dea594870a4d2ff
+  Building wheel for myna (pyproject.toml): finished with status 'done'
+  Created wheel for myna: filename=myna-0.1.0-py3-none-any.whl size=95902 sha256=0a09390662ab22bb2499338cd23c2f1cd6e1f66c2d9f487b30ad22895fed7537
+Successfully installed MarkupSafe-3.0.3 anyio-4.15.1 certifi-2026.7.22 click-8.5.0 filelock-4.0.8 fsspec-2026.9.0 h11-0.16.0 hf-xet-1.6.0 httpcore-1.0.9 httpx-0.28.1 huggingface-hub-1.33.0 idna-3.20 jinja2-3.1.6 mpmath-1.3.0 myna-0.1.0 networkx-3.7 numpy-2.5.3 packaging-26.3 pyarrow-25.0.1 pyyaml-6.0.3 setuptools-84.0.0 sympy-1.14.0 tokenizers-0.23.2 torch-2.14.1 tqdm-4.70.1 typing-extensions-4.16.0
+  # exit 0; 94-line full transcript at /tmp/pip_public_install.log. The wheel's own sha256 is
+  # byte-identical to the one the unpushed-tree run built from the same commit — 95,902 B, no
+  # weights inside it.
+
+$ /tmp/venv-pub/bin/python -c "import myna, torch; print(myna.__file__); print(torch.__version__); print(myna.fetch_weights)"
+/tmp/venv-pub/lib/python3.12/site-packages/myna/__init__.py
+2.14.1
+<function fetch_weights at 0x10e1a14e0>
+
+$ find /tmp/venv-pub/lib/python3.12/site-packages/myna -name "*.pt" | wc -l   # weights are not in the wheel
+       0
+
+$ /tmp/venv-pub/bin/myna-weights --dest /tmp/pub-fetch --force    # stdlib urllib: no gh, no token
+tag   antiprior_off_s0-weights
+dir   /tmp/pub-fetch
+      model.pt  30f0fa937e57e8ce8b21c58315dc7e800151a0c95e003dc0930e0f75d588f1e5
+      tokenizer.json  0252c24627eeebc2df5a577576c1c8b24e402da015c1d45519e7e1d8541ffdc3
+      Myna("/tmp/pub-fetch") is ready
+exit 0
+
+$ (cd /tmp/pub-fetch && shasum -a 256 -c SHA256SUMS)   # a tool that is not myna checks the fetcher
+model.pt: OK
+tokenizer.json: OK
+exit 0
+
+$ cmp /tmp/pub-fetch/model.pt ~/.cache/myna/antiprior_off_s0-weights/model.pt \
+  && cmp /tmp/pub-fetch/tokenizer.json ~/.cache/myna/antiprior_off_s0-weights/tokenizer.json
+both cmp: identical
+  # and 30f0fa93… / 0252c246… are the digests the Release API publishes for those two assets.
+
+$ /tmp/venv-pub/bin/python    # the README snippet, verbatim, plus the three numbers it claims
+from myna import Myna, fetch_weights
+myna = Myna(fetch_weights())
+out = myna.predict("My order never arrived and I want a refund.", {
+    "department": {"type": "choice",
+                   "instructions": "Which team should handle this ticket?",
+                   "criteria": ["billing", "technical", "shipping", "returns", "other"]}})
+print(out["answers"]["department"]["choice"])
+a = out["answers"]["department"]
+p = a["probabilities"]
+low = min(p, key=p.get)
+print(f"confidence {a['confidence']} weakest {low} {p[low]}")
+print(f"params {myna.n_params} temperature {myna.temperature} latency_ms {out['latency_ms']}")
+billing
+confidence 0.7899749875068665 weakest shipping 0.00027509400388225913
+params 16926848 temperature 1.5 latency_ms 7.93
+exit 0
+
+$ /tmp/venv-pub/bin/python    # the same five lines against /tmp/pub-fetch, the bytes fetched above
+billing 0.7899749875068665 6.67 16926848
+exit 0
+  # choice and confidence identical to `runs/quickstart_from_gh_download.log` (7.84 ms) and to
+  # the unpushed-tree witness (6.98 ms). Three different install/fetch paths, one float: the
+  # answer is a property of the released bytes, not of the harness that reads them.
+
+$ /tmp/venv-pub/bin/myna-weights --check
+/Users/aashish/.cache/myna/antiprior_off_s0-weights: verified
+exit 0
+
+$ /tmp/venv-pub/bin/pip show huggingface-hub | grep Required-by
+Required-by: tokenizers
+  # arrived transitively via tokenizers, not via the fetcher: `myna.weights` imports urllib only
+  # (guarded by tests/test_weights.py::test_the_fetcher_adds_no_dependency).
