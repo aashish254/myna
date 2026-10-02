@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Myna Benchmarks — Measured Numbers</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #fafafa;
+            color: #222;
+            line-height: 1.5;
+        }
+        h1 { font-size: 24px; margin-bottom: 8px; border-bottom: 2px solid #ccc; padding-bottom: 8px; }
+        .subtitle { color: #666; font-size: 14px; margin-bottom: 24px; }
+        section { background: white; border: 1px solid #ddd; border-radius: 6px; padding: 16px; margin-bottom: 20px; }
+        h2 { font-size: 18px; margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 8px; }
+        .chart-container { position: relative; height: 300px; margin: 20px 0; }
+        .footer { font-size: 13px; color: #777; border-top: 1px solid #ddd; padding-top: 16px; }
+        .data-note { font-size: 12px; color: #555; background: #f5f5f5; padding: 8px; border-radius: 4px; margin-top: 10px; }
+        .gated { color: #d97706; font-weight: 500; }
+        .met { color: #16a341; font-weight: 500; }
+        .not-met { color: #c2410c; font-weight: 500; }
+        .open { color: #7c3aed; font-weight: 500; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th, td { text-align: left; padding: 6px; border-bottom: 1px solid #eee; }
+        th { background: #f9fafb; }
+        a { color: #2563eb; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <h1>Myna Benchmarks</h1>
+    <div class="subtitle">Every number measured on this M5 laptop — no borrowed figures, no interpolations.</div>
+
+    <section id="accuracy">
+        <h2>Accuracy — Three measured arms</h2>
+        <div class="chart-container">
+            <canvas id="accuracyChart"></canvas>
+        </div>
+        <div class="data-note">
+            Sources: anti-prior <code>off</code> control 0.5339 (SPEC.md:1488), V1-B 0.4893 (SPEC.md:67), anti-prior <code>on</code> 0.4785 (SPEC.md:3430). 
+            G1 target 0.70 is a gated requirement, not promised. Majority floor 0.4331.
+        </div>
+    </section>
+
+    <section id="gates">
+        <h2>Release gate status</h2>
+        <table>
+            <thead><tr><th>Gate</th><th>Status</th></tr></thead>
+            <tbody>
+                <tr><td>G1 Accuracy</td><td class="not-met">NOT MET</td></tr>
+                <tr><td>G2 Latency</td><td class="met">MET</td></tr>
+                <tr><td>G3 Deployment</td><td class="met">MET</td></tr>
+                <tr><td>G4 Long-context</td><td class="not-met">NOT MET</td></tr>
+                <tr><td>G5 Useful confidence</td><td class="not-met">NOT MET</td></tr>
+                <tr><td>G6 No regression</td><td class="open">OPEN</td></tr>
+                <tr><td>G7 Reproducibility</td><td class="met">MET</td></tr>
+            </tbody>
+        </table>
+        <div class="data-note">Source: SPEC.md §2.2 (lines 65-73); tally: 3 met, 3 not met, 1 open (line 82).</div>
+    </section>
+
+    <section id="latency">
+        <h2>Latency — Matched-footing comparisons</h2>
+        <div class="chart-container">
+            <canvas id="latencyChart"></canvas>
+        </div>
+        <div class="data-note">
+            Quickstart harnesses: gh_download 7.84ms, git_install 6.98ms, public_install 7.93ms (all from runs/quickstart_from_*.log).
+            G2 ratio: 3.04x–4.12x end-to-end, 3.65x–6.78x ask-only vs laya baseline. Source: runs/latency_matched*.md.
+        </div>
+    </section>
+
+    <section id="reproducibility">
+        <h2>Quickstart reproducibility</h2>
+        <p>All three harnesses print identical confidence across environments:</p>
+        <pre style="background:#f9fafb;padding:12px;border-radius:4px;font-family:monospace;font-size:13px;">confidence 0.7899749875068665
+Params 16,926,848 · Temperature 1.5
+Choice: billing · Weakest: shipping (0.00027509400388225913)</pre>
+        <div class="data-note">Sources: runs/quickstart_from_gh_download.log, runs/quickstart_from_git_install.log, runs/quickstart_from_public_install.log.</div>
+    </section>
+
+    <div class="footer">
+        <p><strong>What these numbers don't claim:</strong></p>
+        <ul>
+            <li>G1 (0.70 accuracy) is NOT MET — currently at 0.5339 (+0.056 over floor vs +0.15 required)</li>
+            <li>The 0.70 target is gated, not promised</li>
+            <li>Training closed at v0; v1 needs paid GPU work or Kaggle quota</li>
+            <li>No measurements on larger batches, longer sequences, or multilingual data</li>
+        </ul>
+        <p>Full acceptance criteria: <a href="../SPEC.md#22-acceptance-gates---the-project-is-not-finished-until-all-pass">SPEC.md §2.2</a></p>
+        <p><em>Updated: 2026-10-02</em></p>
+    </div>
+
+    <script>
+        // Accuracy bar chart
+        const accCtx = document.getElementById('accuracyChart').getContext('2d');
+        new Chart(accCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Anti-prior OFF (champion)', 'V1-B', 'Anti-prior ON'],
+                datasets: [{
+                    label: 'Test macro accuracy',
+                    data: [0.5339, 0.4893, 0.4785],
+                    backgroundColor: ['#16a341', '#2563eb', '#d97706'],
+                    borderColor: ['#14532d', '#1e40af', '#92400e'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { callbacks: { label: ctx => `Macro: ${ctx.parsed.y}` } }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        min: 0.3,
+                        max: 0.7,
+                        ticks: { callback: v => v.toFixed(2) },
+                        grid: { color: '#f0f0f0' }
+                    },
+                    x: { grid: { display: false } }
+                },
+                annotation: {
+                    annotations: [{
+                        type: 'line',
+                        mode: 'horizontal',
+                        scaleID: 'y',
+                        value: 0.7,
+                        borderColor: '#dc2626',
+                        borderWidth: 2,
+                        borderDash: [6, 6],
+                        label: { content: 'G1 target (gated)', enabled: true, position: 'start' }
+                    }]
+                }
+            }
+        });
+
+        // Latency comparison
+        const latCtx = document.getElementById('latencyChart').getContext('2d');
+        new Chart(latCtx, {
+            type: 'bar',
+            indexAxis: 'y',
+            data: {
+                labels: ['GH download (M5)', 'Git install (M5)', 'Public install (M5)'],
+                datasets: [{
+                    label: 'Latency (ms)',
+                    data: [7.84, 6.98, 7.93],
+                    backgroundColor: ['#2563eb', '#059669', '#db2777']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { callbacks: { label: ctx => `${ctx.parsed.x} ms` } }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        grid: { color: '#f0f0f0' },
+                        ticks: { callback: v => v + ' ms' }
+                    },
+                    y: { grid: { display: false } }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

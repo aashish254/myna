@@ -70,6 +70,8 @@ Everything above runs today. What those weights are *worth* is the table below, 
 headline is not good: the engine answers, and on the benchmark that decides G1 it does
 not answer well enough to ship.
 
+[Benchmarks, every number measured](docs/benchmarks.html)
+
 <!-- gates:release:begin -->
 ## Where this stands: the release gate, all seven rows
 
