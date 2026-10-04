@@ -1,4 +1,4 @@
-# Myna v1.0 — Usability Release
+# Myna v0.1.0 — Usability Release
 
 **Status:** Production-ready distribution package only.  
 **What this is not:** A feature-complete system that cleared all acceptance gates (G1 accuracy still not met).
@@ -79,7 +79,7 @@ uv build
 uv upload dist/myna_engine-*.whl
 ```
 
-No credentials stored in repo. Tags and releases follow SemVer; v1.0 is usability-only.
+No credentials stored in repo. Tags and releases follow SemVer; v0.1.0 is usability-only.
 
 ## Benchmarks dashboard
 
@@ -94,7 +94,7 @@ View: [`docs/benchmarks.html`](../docs/benchmarks.html)
 
 1. Enable GitHub Pages on `myna` (Settings → Pages → `docs/` branch)
 2. Upload wheels to PyPI under `myna-engine`
-3. Create formal GitHub release tag v1.0
+3. Create formal GitHub release tag v0.1.0
 4. Execute cleanup of `-wip` releases after explicit approval
 
 ---
