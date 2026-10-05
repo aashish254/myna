@@ -3173,7 +3173,7 @@ Kept permanently, because the value of this project's claims is that they surviv
     remaining eight intervals run **6.63–7.65 s/update** against the control's **6.43–7.27** over the
     same windows. `--anti-prior` buys no wall, so 10c's ~11.2 GPU-hour price needed no correction.
     One labelling trap worth writing down, because it is the class that ate V1-B: the
-    `antiprior_on_s0-wip` Release asset and this box's `runs/antiprior_on_s0/model_last.pt` are both
+    `antiprior_on_s0-wip` Release asset (deleted 2026-10-05) and this box's `runs/antiprior_on_s0/model_last.pt` are both
     **203,229,625 bytes** and are **not the same weights** — the asset hashes to
     `8ed38b240bd843bf…` (downloaded back and re-hashed to prove it) and is the ≤step-250 save its body
     dates at 10:21:55, while the local file hashes to `3b45dd6a4ae65e77…` and is the step-500 save.
@@ -3254,7 +3254,7 @@ Kept permanently, because the value of this project's claims is that they surviv
     audit of which rows read weights, against which Releases carry them, leaves exactly one gap and
     one soft one. Covered: `myna-v0` → `v0-checkpoint` (the 7 `here` rows that read it),
     `v1b-kaggle-3600b` → `v1b-checkpoint`, `antiprior_off_s0` → `antiprior_off_s0-weights`
-    (§9.54(i)), and the `on` arm's ≤step-250 snapshot → `antiprior_on_s0-wip`. **Not covered:**
+    (§9.54(i)), and the `on` arm's ≤step-250 snapshot → `antiprior_on_s0-wip` (deleted 2026-10-05). **Not covered:**
     `runs/myna-v1-rich/` — `model.pt` 67,733,781 B and `metrics.json`, both matched by
     `.gitignore:24`'s `runs/*` rule — is the only input set behind a *quoted* published figure that no
     Release carries, and row `void-vs-laya` is status `here`, i.e. counted in the G7 cell's "21 rows
@@ -3472,7 +3472,7 @@ Kept permanently, because the value of this project's claims is that they surviv
     look-alike. What is *not* durable: the end-state `model_last.pt` (optimizer + scheduler, 203,229,625 B)
     stays gitignored, so this checkpoint can be evaluated and cannot be continued. §9.56(ii)'s durability
     gap is therefore half-closed — the weights shipped, the training state did not — and the only snapshot
-    of training state on the Release is the step-749 one under `antiprior_on_s0c-wip`.
+    of training state on the Release is the step-749 one under `antiprior_on_s0c-wip` (deleted 2026-10-05).
 
     **(xii) What 10c is now evidence for, stated at the width the pair supports.** G1 is not met on either
     arm and is 0.2215 away on the better one (the `off` control's 0.5339, whose margin clause observes

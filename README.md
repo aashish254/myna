@@ -694,7 +694,7 @@ further (+0.0974) than its
 as-scored one (+0.0445), and a fourth cell (`agnews/is_business`) has become a constant emitter that
 prints its own 0.698 floor. §9.55(iii) is the entry and `tier0-off-control` is the row. The stopped
 `on` arm's snapshots are labelled by step, because size does not identify them: the
-`antiprior_on_s0-wip` asset is the ≤step-250 bytes (203,229,625 B, sha256 `8ed38b240bd843bf…`,
+`antiprior_on_s0-wip` asset (release deleted 2026-10-05) is the ≤step-250 bytes (203,229,625 B, sha256 `8ed38b240bd843bf…`,
 downloaded and re-hashed), while this box's `runs/antiprior_on_s0/model_last.pt` is the step-500 save —
 same byte count, sha256 `3b45dd6a4ae65e77…` — and it is gitignored, so §9.55(ii) keeps that as an open
 durability gap rather than a covered one. The `on` arm has since run to completion **on this box**:
