@@ -8,7 +8,7 @@
 ### Distribution install from Git
 
 ```bash
-pip install "git+https://github.com/aashish254/myna.git@61a2355e#subdirectory=pkg-myna"
+pip install "git+https://github.com/aashish254/myna.git"
 pip install myna-engine[extra]  # optional extras: browser, mlx, serve
 ```
 
