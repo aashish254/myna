@@ -1,5 +1,7 @@
 # Myna
 
+[![PyPI](https://img.shields.io/pypi/v/myna-engine)](https://pypi.org/project/myna-engine/)
+
 **The decision engine that never re-reads.** Typed `choice` / `score` / `noul`
 decisions over growing observations — tickets, threads, page states,
 documents — where the observation is scanned **once** and every later request
@@ -11,10 +13,27 @@ decision models, and both re-encode the entire state on every request. Agent
 loops don't work that way — the state grows at the edge and the questions are
 short. Myna is an architecture built for that shape from the ground up.
 
+**Live demo: [myna-demo.onrender.com](https://myna-demo.onrender.com)** — one
+observation scanned into the fixed-size state, then questions asked of it without a
+re-read. It runs a published checkpoint, and it is a *mechanism* demo: nothing on that
+page is a claim that the model passes G1. It runs on a free Render instance, so a cold wake is
+slow and a warm answer is not — both measured on 2026-10-06 in `runs/render_probe.log`:
+**112.52 s** and **82.9 s** to the first HTTP 200 from cold (two instances of idling, one
+unrepeatable on demand), then **0.35 s** and **0.33 s** warm. Same log holds the three live
+readouts behind the two behaviours the demo offers: `observation reused (scan-once)` on the
+second question over the same message, `⊘ abstained on department` at floor **0.95**, and
+`margin n/a` when the floor is off and the engine returns `None` rather than a number.
+
+The honest headline, before any of it: the best published arm measures **0.5339** test
+macro against a **0.4331** majority floor — `measured`, and the harness that scored it
+marks that table **VOID** for a truncated dose (3,315 of 3,600 updates). The complete run
+gate G1 rests on measures **0.4893**. G1's **0.70** is **gated — not met**. Every figure
+beside its witness: [docs/index.html](docs/index.html).
+
 ## Quickstart: install, fetch the weights, ask one question
 
 ```bash
-pip install "git+https://github.com/aashish254/myna.git"
+pip install myna-engine==0.1.0
 myna-weights          # → ~/.cache/myna/antiprior_off_s0-weights/{model.pt,tokenizer.json}
 ```
 
@@ -33,10 +52,14 @@ weakest of the five at `0.00027509400388225913`, over the Release bytes whose
 `sha256` is `30f0fa937e57e8ce8b21c58315dc7e800151a0c95e003dc0930e0f75d588f1e5` —
 16,926,848 params at temperature 1.5. Measured 2026-10-01 on an M5 at `latency_ms`
 **7.84** (`runs/quickstart_from_gh_download.log`), **6.98** from a package installed off an
-unpushed tree (`runs/quickstart_from_git_install.log`), and **7.93** from the install line above
-pasted literally into a fresh venv, which resolved to `fe11db6` and fetched its own weights
+unpushed tree (`runs/quickstart_from_git_install.log`), and **7.93** from
+`pip install "git+https://github.com/aashish254/myna.git"` pasted literally into a fresh venv,
+which resolved to `fe11db6` and fetched its own weights
 (`runs/quickstart_from_public_install.log`). Same choice, same float, three harnesses; only the
-milliseconds move.
+milliseconds move. There is **no committed `latency_ms` measurement for the PyPI wheel route** —
+the install line at the top of this section. The three numbers above are the ones a log
+supports; the wheel is the same package bytes the git line builds, so the quickstart runs, but
+this repo does not print a millisecond figure it has not measured.
 
 `myna-weights` takes `--tag` (every published arm is a tag: `antiprior_off_s0-weights`
 is the 0.5339 control, `antiprior_on_s0c-weights` the 0.4785 one, `v1b-checkpoint` the
@@ -70,7 +93,9 @@ Everything above runs today. What those weights are *worth* is the table below, 
 headline is not good: the engine answers, and on the benchmark that decides G1 it does
 not answer well enough to ship.
 
-[Benchmarks, every number measured](docs/benchmarks.html)
+[Benchmark page — every printed literal recomputed from a committed artifact](docs/index.html)
+· [the older hand-written charts](docs/benchmarks.html), kept for history and marked
+superseded where its claims drifted
 
 <!-- gates:release:begin -->
 ## Where this stands: the release gate, all seven rows

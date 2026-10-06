@@ -1,0 +1,75 @@
+# Live demo probe — myna PHASE 2 (https://myna-demo.onrender.com)
+# captured 2026-10-06 by: node bench/out/demo_probe2.mjs   (harness is throwaway: bench/out/ is gitignored)
+#
+# warm-instance HTTP timing, same box, same minute:
+#   GET /  -> 200 in 112.520775s
+#   GET /  -> 200 in 0.351842s
+#   GET /  -> 200 in 0.326203s
+#
+# cold-start sample, taken earlier the same day from the terminal, NOT reproducible on demand
+# here (a free Render instance cannot be forced to sleep without the dashboard): HTTP 200 after 82.9 s.
+
+load 2.5s
+
+### 1-floor-0 (8.7s)
+department → billing
+
+confidence 0.7900 · margin n/a
+
+label	p
+billing	0.7900
+other	0.1054
+returns	0.0673
+technical	0.0370
+shipping	0.0003
+
+latency 5498.93 ms · state tokens 10 · observation re-scanned (message changed) · abstain floor 0.00 · abstained here: none
+
+### 2-floor-095 (6.1s)
+⊘ abstained on department
+
+billing at p=0.790, 0.685 ahead of the runner-up, under the 0.950 floor
+
+label	p
+billing	0.7900
+other	0.1054
+returns	0.0673
+technical	0.0370
+shipping	0.0003
+
+latency 5185.73 ms · state tokens 10 · observation reused (scan-once) · abstain floor 0.95 · abstained here: department
+
+### 3-second-question (5.6s)
+urgency → low (score 0.004)
+
+confidence 0.9959 · margin 0.9920
+
+label	p
+low	0.9959
+medium	0.0038
+high	0.0003
+
+latency 5156.99 ms · state tokens 10 · observation reused (scan-once) · abstain floor 0.95 · abstained here: none
+
+=== checks {
+ "floor_0_printed": true,
+ "floor_0_na": true,
+ "floor_095_printed": true,
+ "abstained": true,
+ "scan_reused": true,
+ "first_rescanned": true,
+ "console_clean": false
+}
+=== console/page errors: 3 [
+  'requestfailed: https://myna-demo.onrender.com/gradio_api/queue/data?session … net::ERR_ABORTED',
+  'requestfailed: https://myna-demo.onrender.com/gradio_api/queue/data?session … net::ERR_ABORTED',
+  'requestfailed: https://myna-demo.onrender.com/gradio_api/queue/data?session … net::ERR_ABORTED'
+]
+
+# --- trailer (added by hand, interpretation only; everything above is the raw capture) ---
+# Exit code 1 is the harness's `console_clean` check, not the app: the three requestfailed lines
+# are net::ERR_ABORTED on Gradio's own /gradio_api/queue/data server-sent stream, which the client
+# re-opens per submit. Zero pageerror, zero console errors, zero failed non-SSE requests.
+# The six behavioural checks above are all true: floor 0.00 prints `margin n/a`, floor 0.95 prints
+# `⊘ abstained on` + `abstained here: department`, and the second question over the same message
+# prints `observation reused (scan-once)` while the first prints `re-scanned (message changed)`.

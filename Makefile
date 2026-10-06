@@ -1,8 +1,14 @@
-# The published numbers, and the six ways to touch them.
+# The published numbers, and the ways this file is allowed to touch them.
 #
 #   make repro          check every table row against its committed witness (the gate)
 #   make rows           print the registry as a markdown table
 #   make gates          check the seven release-gate verdicts against their witnesses
+#   make site           write docs/index.html from the artifacts (bench/gen_site.py is the
+#                       only writer, and it holds no numeric literals)
+#   make site-check     the page is current, and every literal it prints re-derives from a
+#                       committed artifact (bench/site_witness.py, 334 checks)
+#   make site-mutate    prove the site check can fail: 20 mutated page values and 10
+#                       mutated source artifacts must each be caught
 #   make secrets        scan every blob in history for credential shapes, and print how
 #                       many blobs were scanned (SPEC §5 P0: "0 matches" without a
 #                       denominator is how a vacuous green got published once already)
@@ -18,8 +24,13 @@
 # 10c pair is on it, SPEC §9.50 — but a registry check must never launch a multi-hour
 # one); both refusals are the point, not an inconvenience. `gates` is the row above it:
 # it imports this registry, so a gate cannot be greener than the witness behind it.
+#
+# The `site` targets hold the same line for the published page: `bench/gen_site.py` is the only
+# writer of `docs/index.html` and carries no numeric literals, so `site-check` asks whether the
+# committed page still follows from the artifacts, and `site-mutate` is the check on that check
+# (a witness that cannot fail is not verification — §9.12). `pytest` already runs the first two.
 
-.PHONY: repro rows gates secrets repro-show repro-run
+.PHONY: repro rows gates site site-check site-mutate secrets repro-show repro-run
 
 PY = uv run python
 
@@ -31,6 +42,16 @@ rows:
 
 gates:
 	$(PY) bench/gates.py --check
+
+site:
+	$(PY) bench/gen_site.py
+
+site-check:
+	$(PY) bench/gen_site.py --check
+	$(PY) bench/site_witness.py
+
+site-mutate:
+	$(PY) bench/mutation_site.py
 
 secrets:
 	$(PY) bench/scan_secrets.py

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Myna Benchmarks — Measured Numbers</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
     <style>
         * { box-sizing: border-box; }
         body {
@@ -28,15 +29,40 @@
         .not-met { color: #c2410c; font-weight: 500; }
         .open { color: #7c3aed; font-weight: 500; }
         table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        pre { white-space: pre-wrap; overflow-wrap: anywhere; }
         th, td { text-align: left; padding: 6px; border-bottom: 1px solid #eee; }
         th { background: #f9fafb; }
         a { color: #2563eb; text-decoration: none; }
         a:hover { text-decoration: underline; }
+        .superseded { background: #fffbeb; border: 1px solid #fcd34d; border-radius: 6px; padding: 12px 14px; margin-bottom: 20px; font-size: 13px; }
+        .superseded p { margin: 0 0 8px; }
+        .superseded ul { margin: 0; padding-left: 18px; }
+        .superseded li { margin-bottom: 4px; }
     </style>
 </head>
 <body>
     <h1>Myna Benchmarks</h1>
-    <div class="subtitle">Every number measured on this M5 laptop — no borrowed figures, no interpolations.</div>
+    <div class="subtitle">Three measured arms. The anti-prior pair ran on this M5 (mps); V1-B ran on a Kaggle Tesla T4.</div>
+
+    <div class="superseded">
+        <p><strong>This page is the older, hand-written view. The published benchmark page is
+        <a href="index.html">index.html</a>.</strong> Every literal on that page is recomputed from a
+        committed artifact by <code>bench/site_witness.py</code> (334 checks) before the file is
+        written, and the check itself is tested by <code>bench/mutation_site.py</code>. The figures
+        below were typed into this file and are <em>not</em> verified against the artifacts by
+        anything.</p>
+        <ul>
+            <li>No gate may be judged from the <code>off</code> control's own table: its harness
+                prints "STOPPED at step" with 3,315 of 3,600 updates executed, and marks the run
+                VOID (SPEC.md §7.1). The complete run gate G1 rests on is V1-B at 0.4893. The chart
+                below labels the control "VOID dose" for that reason.</li>
+            <li>The bars are drawn from 0, and the dashed line is G1's <strong>0.70 target</strong> —
+                gated, <strong>not met</strong>. Nothing here closes it.</li>
+            <li><a href="https://github.com/aashish254/myna/blob/main/README.md">The README</a>
+                links this page for history; treat
+                <a href="index.html">index.html</a> as the figure of record.</li>
+        </ul>
+    </div>
 
     <section id="accuracy">
         <h2>Accuracy — Three measured arms</h2>
@@ -44,8 +70,13 @@
             <canvas id="accuracyChart"></canvas>
         </div>
         <div class="data-note">
-            Sources: anti-prior <code>off</code> control 0.5339 (SPEC.md:1488), V1-B 0.4893 (SPEC.md:67), anti-prior <code>on</code> 0.4785 (SPEC.md:3430). 
-            G1 target 0.70 is a gated requirement, not promised. Majority floor 0.4331.
+            Sources, each the artifact's own <code>macro.acc</code> field: <code>off</code> 0.5339
+            (<code>runs/antiprior_off_s0.report.json</code>), V1-B 0.4893
+            (<code>runs/v1b_kaggle_3600b.report.json</code>), <code>on</code> 0.4785
+            (<code>runs/antiprior_on_s0c.report.json</code>). G1 target 0.70 and the +0.15 margin
+            requirement are gated, not promised (<code>…report.json · g1.target</code>,
+            <code>g1.pass: false</code>). Majority floor 0.4331
+            (<code>runs/antiprior_off_s0.report.json · macro.majority</code>).
         </div>
     </section>
 
@@ -73,7 +104,10 @@
         </div>
         <div class="data-note">
             Quickstart harnesses: gh_download 7.84ms, git_install 6.98ms, public_install 7.93ms (all from runs/quickstart_from_*.log).
-            G2 ratio: 3.04x–4.12x end-to-end, 3.65x–6.78x ask-only vs laya baseline. Source: runs/latency_matched*.md.
+            G2 ratios are the per-row <em>minimum</em> over the two committed matched runs
+            (runs/latency_matched.md, runs/latency_matched_run1_superseded.md), printed cell by cell by
+            bench/gates.py: 3.04× / 3.21× / 4.12× / 3.60× end-to-end and 6.78× / 4.67× / 4.75× / 3.65×
+            ask-only at 1 / 5 / 10 / 50 questions, so the spans are 3.04×–4.12× and 3.65×–6.78×.
         </div>
     </section>
 
@@ -89,13 +123,22 @@ Choice: billing · Weakest: shipping (0.00027509400388225913)</pre>
     <div class="footer">
         <p><strong>What these numbers don't claim:</strong></p>
         <ul>
-            <li>G1 (0.70 accuracy) is NOT MET — currently at 0.5339 (+0.056 over floor vs +0.15 required)</li>
+            <li>G1 (≥ 0.70 macro, ≥ +0.15 over the 0.4331 floor) is NOT MET. The best published arm
+                is 0.5339 = +0.10080873944405344 over that floor, and its own harness marks the run
+                VOID; the complete run G1 was judged on is V1-B at 0.4893 = +0.056262402214293905.
+                Neither clears it.</li>
             <li>The 0.70 target is gated, not promised</li>
-            <li>Training closed at v0; v1 needs paid GPU work or Kaggle quota</li>
+            <li>Training closed at v0. The Kaggle lane that produced V1-B is now measured closed for
+                this account — five request variants all come back CPU (SPEC.md §9.53(vi)) — and the
+                paid-GPU plan was reversed: v1 scaling is free-only, so nothing on this page will
+                move without a new free accelerator.</li>
             <li>No measurements on larger batches, longer sequences, or multilingual data</li>
         </ul>
-        <p>Full acceptance criteria: <a href="../SPEC.md#22-acceptance-gates---the-project-is-not-finished-until-all-pass">SPEC.md §2.2</a></p>
-        <p><em>Updated: 2026-10-02</em></p>
+        <p>Full acceptance criteria:
+        <a href="https://github.com/aashish254/myna/blob/main/SPEC.md#22-acceptance-gates---the-project-is-not-finished-until-all-pass">SPEC.md
+        §2.2</a> — the witnessed figures: <a href="index.html">index.html</a></p>
+        <p><em>Written 2026-10-02, superseded by <a href="index.html">index.html</a> and annotated
+        2026-10-06.</em></p>
     </div>
 
     <script>
@@ -104,7 +147,7 @@ Choice: billing · Weakest: shipping (0.00027509400388225913)</pre>
         new Chart(accCtx, {
             type: 'bar',
             data: {
-                labels: ['Anti-prior OFF (champion)', 'V1-B', 'Anti-prior ON'],
+                labels: ['Anti-prior OFF (VOID dose)', 'V1-B (complete)', 'Anti-prior ON'],
                 datasets: [{
                     label: 'Test macro accuracy',
                     data: [0.5339, 0.4893, 0.4785],
@@ -118,29 +161,35 @@ Choice: billing · Weakest: shipping (0.00027509400388225913)</pre>
                 maintainAspectRatio: false,
                 plugins: {
                     legend: { display: false },
-                    tooltip: { callbacks: { label: ctx => `Macro: ${ctx.parsed.y}` } }
+                    tooltip: { callbacks: { label: ctx => `Macro: ${ctx.parsed.y}` } },
+                    annotation: {
+                        annotations: {
+                            g1: {
+                                type: 'line',
+                                yMin: 0.7,
+                                yMax: 0.7,
+                                borderColor: '#dc2626',
+                                borderWidth: 2,
+                                borderDash: [6, 6],
+                                label: {
+                                    display: true,
+                                    content: 'G1 accuracy target 0.70 — gated, not met',
+                                    position: 'start',
+                                    backgroundColor: 'rgba(220, 38, 38, 0.9)',
+                                    color: '#fff'
+                                }
+                            }
+                        }
+                    }
                 },
                 scales: {
                     y: {
                         beginAtZero: true,
-                        min: 0.3,
-                        max: 0.7,
+                        max: 0.75,
                         ticks: { callback: v => v.toFixed(2) },
                         grid: { color: '#f0f0f0' }
                     },
                     x: { grid: { display: false } }
-                },
-                annotation: {
-                    annotations: [{
-                        type: 'line',
-                        mode: 'horizontal',
-                        scaleID: 'y',
-                        value: 0.7,
-                        borderColor: '#dc2626',
-                        borderWidth: 2,
-                        borderDash: [6, 6],
-                        label: { content: 'G1 accuracy target (gated)', enabled: true, position: 'start' }
-                    }]
                 }
             }
         });

@@ -83,6 +83,9 @@ def test_module_help_renders(module, flag):
     ("bench/mutation_scope_pricing.py", "Mutation battery"),
     ("bench/anti_prior_audit.py", "--compare"),
     ("bench/mutation_anti_prior.py", "Mutation battery"),
+    ("bench/site_witness.py", "--html"),
+    ("bench/gen_site.py", "--check"),
+    ("bench/mutation_site.py", "Mutation battery"),
 ])
 def test_bench_script_help_renders(script, expect):
     """The diag scripts took `sys.argv[1]` positionally, so `--help` was parsed as a
@@ -115,6 +118,7 @@ def test_percent_in_a_help_string_survives_argparse_formatting():
     "bench/mutation_ordinal.py",
     "bench/mutation_scope_pricing.py",
     "bench/mutation_anti_prior.py",
+    "bench/mutation_site.py",
 ])
 def test_mutation_help_does_not_run_the_battery(script):
     """Each run is ~30 pytest passes; `--help` must not be one of them."""
