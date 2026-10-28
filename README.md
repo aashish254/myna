@@ -138,7 +138,10 @@ and it is **gated**: the needle test puts v0 at 0.188 on a 128-token state again
 a 0.167 floor, i.e. at chance before length even enters, and
 `runs/needle_myna-v0.md` prints `G4: NOT MEASURED here` rather than a decay curve.
 The context column is a **cost** statement, and the only 16k number this repo has
-measured. Long-context *correctness* waits on the checkpoint trained for it
+measured. Long-context *correctness* waits on the checkpoint trained for it, and the
+first attempt at that checkpoint — 425 updates at 4k states, run on this box rather
+than on a GPU — stopped at its own Stage A boundary with the 128-token rung at the
+floor (§9.62, `runs/needle_lc1_stageA.json`).
 ([SPEC.md](SPEC.md) §2.2 G4, §9.25).
 
 </div>

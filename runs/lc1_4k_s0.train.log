@@ -1,0 +1,28 @@
+
+
+
+long-context: state=4096 grad=1024 params=15353984
+memory plan: batch 3 fits 9.0 GiB free x 0.6 at 1024 grad tokens (needs 2.4 GiB retained)
+long-context plan: 3 rows x 4106 p95 state tokens -> 3082 detached scan + 1024 gradient-carrying per row (split at 3072); 2.4 GiB retained per step, stops at 3.0x the median of the last 20, free under 1.25x the projection, or 4.0 GiB of swap
+step     0  loss 1.861  ema 1.861  batch-acc 0.333  2.39s/update  2s
+snapshot: runs/lc1-4k-s0/model_last.pt at step 24 (every 25 updates)
+snapshot: runs/lc1-4k-s0/model_last.pt at step 49 (every 25 updates)
+snapshot: runs/lc1-4k-s0/model_last.pt at step 74 (every 25 updates)
+snapshot: runs/lc1-4k-s0/model_last.pt at step 99 (every 25 updates)
+step   100  loss 1.885  ema 2.117  batch-acc 0.333  1.91s/update  196s
+snapshot: runs/lc1-4k-s0/model_last.pt at step 124 (every 25 updates)
+snapshot: runs/lc1-4k-s0/model_last.pt at step 149 (every 25 updates)
+snapshot: runs/lc1-4k-s0/model_last.pt at step 174 (every 25 updates)
+snapshot: runs/lc1-4k-s0/model_last.pt at step 199 (every 25 updates)
+step   200  loss 1.806  ema 1.901  batch-acc 0.000  2.02s/update  397s
+snapshot: runs/lc1-4k-s0/model_last.pt at step 224 (every 25 updates)
+snapshot: runs/lc1-4k-s0/model_last.pt at step 249 (every 25 updates)
+snapshot: runs/lc1-4k-s0/model_last.pt at step 274 (every 25 updates)
+snapshot: runs/lc1-4k-s0/model_last.pt at step 299 (every 25 updates)
+step   300  loss 1.819  ema 1.826  batch-acc 0.333  2.26s/update  610s
+snapshot: runs/lc1-4k-s0/model_last.pt at step 324 (every 25 updates)
+snapshot: runs/lc1-4k-s0/model_last.pt at step 349 (every 25 updates)
+snapshot: runs/lc1-4k-s0/model_last.pt at step 374 (every 25 updates)
+snapshot: runs/lc1-4k-s0/model_last.pt at step 399 (every 25 updates)
+step   400  loss 1.823  ema 1.817  batch-acc 0.000  2.16s/update  830s
+snapshot: runs/lc1-4k-s0/model_last.pt at step 424 (every 25 updates)

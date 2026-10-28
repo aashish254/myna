@@ -67,7 +67,7 @@ Quote the ratio, never the millisecond figure.
 | **G1** | Accuracy beats the witness | macro decision-v2 test ≥ 0.70 on the frozen split, per-source table published, ≥ 0.4331 majority floor by ≥ +0.15 | **not met, measured** — it was open on a missing *artifact*, not a missing *run*: `v1b-kaggle-3600b` trained 3,600 updates on Kaggle and its `metrics.json`, report roll-up and `train.log` are now committed (`runs/v1b_kaggle_3600b.*`), so the verdict comes from the artifact rather than from a transcript. Over the 16 cells both harnesses score, per-cell unweighted: **myna 0.4893 · laya 0.6668 · floor 0.4331**, which is +0.056 over the floor against the +0.15 required and 0.211 short of 0.70 — the report's own line reads `target 0.7 → not met`. `bench/reproduce.py`'s `v1b-kaggle-macro` row re-derives it. Still in the row for contrast: the untrained control (**0.346 / 0.351**, `runs/scratch_decision_v2_test.md`) and the void pre-`385e06c` checkpoint (**0.338**). The tail slope of that run's own dev curve is why *dose* is not the answer (§9.38) |
 | **G2** | Latency claim survives equal-footing re-measurement | same box, same window, same question count, direct `Agent` call not `Router`; published ratio recomputed from that or withdrawn | **met** (4a/4c): one M5 process, both fp32, `Agent.system_one`, ladder capped inside laya's 1024 window — **3.04×/3.21×/4.12×/3.60×** at 1/5/10/50 questions end-to-end and **6.78×/4.67×/4.75×/3.65×** on the ask-only path, each the minimum of two committed runs, `runs/latency_matched*.md`. G1 is *not* implied: v0's accuracy still fails (§4.2) |
 | **G3** | Deployment works for real | ONNX browser build answers a live page's decisions; bytes + p50 + cold-load measured in Chrome | **met, as a mechanics gate only.** `browser/index.html` runs the exported artifact in real Chrome 153 and answers three typed decisions with the same probabilities the torch engine prints (6/6 parity checks, both isolation modes, desktop and mobile widths, `runs/browser_g3.json`); bytes, cold-load and p50 are measured there with the box's load average recorded beside them. What this does **not** say: the artifact it deploys is v0, which still fails G1 and G5, the ≤ 20 MB int8 route is open at the byte level and closed at the agreement level (§9.28), and the Apple-silicon int8 route closes for the opposite reason — 17.40 MiB at 9.24e-03 and **no** latency win at all, so fp32 is the artifact on both paths (§9.29) |
-| **G4** | Long-context is *correct*, not just cheap | needle-style typed decision ≥ 0.90 at 4k and ≥ 0.85 at 16k state | **not met, and not yet measurable on this box.** v0's needle curve (`runs/needle_myna-v0.md`) reads 0.188 at 128 tokens against a 0.167 floor — at chance on the shortest rung — so the longer rows are decay of nothing, and the harness now says so itself rather than printing a table (§9.25). The 16k *state* is measured and cheap (§9.22); the 16k *decision* needs the long-context checkpoint, which is 7b / `KAGGLE` |
+| **G4** | Long-context is *correct*, not just cheap | needle-style typed decision ≥ 0.90 at 4k and ≥ 0.85 at 16k state | **not met — measured, and no longer gated on hardware.** v0's needle curve (`runs/needle_myna-v0.md`) reads 0.188 at 128 tokens against a 0.167 floor — at chance on the shortest rung — so the longer rows are decay of nothing, and the harness says so itself rather than printing a table (§9.25). The 4k needle run then executed *on this box* (§6 prices it at 2.4 GiB retained, 1c measured 2.0194742679595947 s/update) and was aborted at 425 of 1200 updates by 7b's own Stage A rule with the 128-rung at 0.1667 = the floor (§9.62). The 4k and 16k **decisions were never measured on that checkpoint** — a stopped run does not judge G4 — and the 16k *state* remains measured and cheap (§9.22) |
 | **G5** | Useful confidence, with abstention | risk/coverage curve on `calibration.jsonl`; ≥ 0.95 accuracy at ≥ 60% coverage on banking77 + dbpedia14 + trec | **not met on the level, met on the machinery.** Abstention ships: `Myna(ckpt, abstain_below=t)` withholds the commitment and prints the measured reason, the fallback seam labels every answer with the engine that committed, and the curve is a committed artifact (`runs/risk_coverage.md`, 448 rows / 568 questions). Accuracy on v0 climbs **0.349 → 0.535** as coverage falls 1.00 → 0.20 — the confidence ranks the answers, on a checkpoint that cannot do the task — and setting the 0.693 floor on the engine abstains on **227** questions where the curve withheld **227**. But **no rung reaches 0.95** (max 0.596, at 10% coverage) and G5's own three sources sit at 0.000 / 0.025 / 0.150, so the pass needs the `KAGGLE` checkpoint (§9.24) |
 | **G6** | No regression on what already worked | synthetic v0 test ≥ 0.94 | open — v0's measured test macro is **0.9523** (`runs/train-v0.log`, macro of its nine `=== test ===` rows), so the level clears today; the gate stays open until a v1 checkpoint is run against it, and a draft of this row cited "0.951", which no artifact prints (§9.30) |
 | **G7** | Reproducibility | one command per result, seeds pinned, witness JSONs committed, `pytest` green | **met, as a binding rather than a rebuild.** `bench/reproduce.py` holds 34 registry rows, each binding one published table cell to one command and one committed witness, and `make repro` re-reads the 101 quoted figures out of those artifacts rather than out of the prose; the python commands among those rows are checked against the tool behind them — its `--help` must still print every flag the row publishes (§9.43); the seeds live inside the printed commands (`--seed 0`, `--seeds 0 1`), not in sentences about them. What this does **not** say: no target *executes* the registry end to end — 22 rows re-run on this box, 6 retrain a checkpoint, 2 need a laya checkout on `PYTHONPATH`, 3 need Google Chrome and 1 is `KAGGLE` — which is why TODO 8b stays unticked and why G7 is discipline rather than a one-command rebuild. Every count in this cell is now read back against `ROWS` by `bench/gates.py`, so this row — the table's one hand-copied cell — goes red rather than quietly stale (§9.44) |
@@ -996,9 +996,21 @@ are counted, and if nothing is left the run refuses. See §9.14.
       float-equality annoyance, which made "exclusive versus inclusive" untestable by construction.
       The tolerance is gone and the boundary is now checked on exactly representable values
       (0.25 + 0.125 = 0.375), which is the only honest way to claim a boundary is inclusive.
-- [ ] **7b** Train the 4k truncated-backprop checkpoint (`--long-context --init`) — code complete,
-      committed and tested; `KAGGLE`. G4's numbers come from re-running 7a against *that* checkpoint,
-      and only if its 128-token rung clears the floor by the margin the guard requires.
+- [ ] **7b** Train the 4k truncated-backprop checkpoint. **Preconditions met as code first** (§9.61:
+      1a the generator's uniform draw over fitting positions, 15 tests + 24/24 mutants; 1b the
+      suite's five claims on this loop, `tests/test_train_longctx.py` 20 + `bench/mutation_train_longctx.py`
+      24/24; 1c the smoke probe, **measured** 2.0194742679595947 s/update and 3899131392 B peak
+      footprint, not a projected band). The approved 1200-update run then executed **here**, not on
+      `KAGGLE` — and aborted at its own Stage A boundary at 425 updates, 128-rung 0.1667 = the floor,
+      1024-rung 0.2167, both inside 1 s.e. (0.0481) of chance (§9.62; witnesses
+      `runs/lc1_4k_s0.train.log`, `runs/lc1_4k_s0.stageA.log`, `runs/needle_lc1_stageA.{md,json}`).
+      The `KAGGLE` label on this line was stale: the M5 carries a 4k needle run at 2.4 GiB retained
+      with swap unmoved. **Open, and it is an owner decision, not a code task:** 425 of 1200 updates
+      is 35 % of the dose, so this is a *stopped* run and judges nothing about G4 — the question the
+      next run answers is whether a longer dose at this size reaches the floor + margin at all, or
+      whether a 15.35M cold-started trunk at §6's 0.28 tok/param-class dose cannot learn needle
+      retrieval at any dose. `--init` (warm from the suite checkpoint) was ruled out for this arm by
+      the owner and stays untested on this path.
 
 ### P8 — Write it up
 - [x] README + PLAN headline tables from committed artifacts only, each cell labelled
@@ -1043,8 +1055,8 @@ are counted, and if nothing is left the run refuses. See §9.14.
       that run exists). `make gates` is the
       check and SPEC §2.2 is the prose it reads. What keeps this line unticked is the release
       itself: G1 is measured and short by 0.211, raising it is a GPU decision whose price §9.38
-      writes down, G4 still needs Kaggle, and P0's push is user-gated with no remote yet
-      created.
+      writes down, G4's dose question is now a *local* one — the 4k needle run executes on the M5 and
+      the first attempt aborted at Stage A at chance (§9.62) — and P0's push is user-gated.
 
 ### P9 — The three defects the first valid checkpoint named *(9a shipped; 9b's fix measured dead; 9c local; 9d the user's call, now priced (§9.45); 9e measured dead too; 9f–9j are TODO's ticks: G1 is now `not met` on a committed witness, one mutation battery had never finished, the last unexplained V1-B number resolved into an aggregation, the §9.40 sweep across all 14 batteries found no second unaffordable probe, and the 15th battery — 9j's, for 9d's own scope table — found its tests could not see `main()` (§9.46)*
 
@@ -3920,3 +3932,103 @@ Kept permanently, because the value of this project's claims is that they surviv
     `uv run python -c "import sys; print(sys.executable)"` proved both routes are the same
     `.venv/bin/python3` at torch 2.14.0. A measurement whose instrument is aimed at the wrong process
     is not a conservative estimate; it is a different measurement.
+
+62. **7b was labelled `KAGGLE`, and the compute was never what blocked it: the M5 carried the 4k
+    needle run exactly as §6 prices it, and the run stopped because the task was not being learned.**
+    PHASE 2's approved command, 2026-10-28, aborted at its own pre-committed Stage A rule.
+
+    **(i) The run.** `uv run python -m myna.train --long-context 4096 --grad-tokens 1024 --batch 3
+    --steps 1200 --lr 6e-4 --seed 0 --device auto --save-every 25 --free-gib 9.0 --stop-factor 3.0
+    --out runs/lc1-4k-s0` — cold start, no `--init`, no `--warm-start`, no `--paraphrase`, no
+    `--score-loss emd`, no `--anti-prior`. Launched 19:33:07Z as uv PID 53623 / python PID 53625;
+    nothing else training alongside. The plan it printed before the first allocation is 61(iv)'s
+    discipline working as designed: `state=4096 grad=1024 params=15353984`, `memory plan: batch 3 fits
+    9.0 GiB free x 0.6 at 1024 grad tokens (needs 2.4 GiB retained)` — no clamp, so the batch that ran
+    is the batch asked for — and `3 rows x 4106 p95 state tokens -> 3082 detached scan + 1024
+    gradient-carrying per row (split at 3072)`.
+
+    **(ii) What the box did.** 425 updates executed in ~15 minutes (the log's own elapsed counter
+    reads 830 s at step 400), per-step readings 1.91 / 2.02 / 2.16 / 2.26 / 2.39 s against 1c's
+    measured median 2.0194742679595947 s. **No machine abort fired**: `grep -c "STOP at step"` is 0,
+    swap sat at `used = 0.25M` of a `total = 1024.00M` the whole time, and there was no Metal OOM. So
+    §6's 32 GB ceiling was not approached, and a 4k-token needle run is a ~2 s/update job on this
+    laptop. The `KAGGLE` tag on 7b was inherited from a plan written before the plan-printing code
+    existed; it attributed the gate to a GPU. The gate is data and dose, not compute.
+
+    **(iii) What the model did.** Loss at the logged steps: 1.861 (0), 1.885 (100), 1.806 (200), 1.819
+    (300), 1.823 (400); ema 1.817 at step 400. A uniform 6-way answer scores `ln(6) = 1.7918`, so the
+    training loss after 400 updates is **0.031 nats above chance** and has not moved monotonically;
+    batch-acc alternates 0.333 and 0.000 on a batch of 3 sharing one entity, which is one row right or
+    none. This is the constant-emitter signature §9.43 already knows, at the needle task.
+
+    **(iv) The Stage A boundary, and the rule doing its job.** `model_last.pt` at step 399 copied
+    outside `runs/` to `~/myna-staging/lc1-4k-s0/stageA/` and re-hashed on both sides
+    (`f389bde507f381c1fb0540d3095b552f26d539be2a6e1eb506b31419e49ca335`, re-verified after the kill;
+    the in-repo file has since been overwritten by the step-424 save). Reconstructed into a
+    ladder-loadable dir — `model.pt` from `state_dict`/`cfg`/`temperature` plus the snapshot's
+    `tokenizer.json`, and `scheduler T_max = 1200`, which is the witness that the schedule still
+    covered the whole dose rather than a re-scaled remainder. `bench/eval_needle.py --n 60 --seed 0
+    --device cpu --lengths 128 1024` on that checkpoint: **128 → 0.16666666666666666 (10 of 60),
+    1024 → 0.21666666666666667 (13 of 60)**, 1 s.e. 0.0481, `readable: false`. The rule is "abort and
+    report if the 128-rung is below 0.267"; 0.167 is the floor itself (`chance + margin = 0.2667`), so
+    it fired with no room for interpretation, and the 1024 rung's 3-row lead over 10/60 is inside one
+    s.e. — no rung is separable from chance. Killed by exact PID (53625, then 53623, which was already
+    gone when its child died), `pgrep -fl myna.train` empty afterwards. **G4 stays not met and this
+    stopped run does not judge it** (Condition 3), which is also why the ladder stops at two rungs:
+    the remaining three would have cost ~9 more minutes of CPU to measure decay on a curve that has no
+    recall in it.
+
+    **(v) What a 35 % dose does and does not prove.** 425 of 1200 updates is not the approved dose,
+    the cosine schedule had barely begun to decay, and so this run does **not** establish that 1200
+    updates would fail. What it establishes is narrower and is the thing the rule was written for: at
+    a quarter of the way in, on a box with 2.4 GiB of the plan actually retained and swap untouched,
+    the checkpoint is no better than chance at the *shortest* rung, where the whole state fits in one
+    window and no retrieval distance is involved. Continuing to 1200 to find out would spend 41
+    minutes of the owner's machine against a pre-committed instruction not to.
+
+    **(vi) The witness gap an outside kill leaves, which is 61(iv)'s claim read correctly.**
+    `runs/lc1-4k-s0/` holds `model_last.pt` + `tokenizer.json` and **no `model.pt`, no
+    `metrics.json`**: the guaranteed final save, the ladder file and the record of the dose all live
+    after the step loop, so an external `kill` produces none of them. What bounds the loss from an
+    outside kill is the `--save-every 25` cadence and nothing else — the final save guards the loop's
+    own exits, not a signal. The dose here is therefore read from the log (425 updates, last snapshot
+    step 424, 830 s at step 400) rather than from a `metrics.json` that does not exist, and this entry
+    says so instead of quoting a file it did not get.
+
+    **(vii) Why the `ms` column in this witness is not a latency figure.** The eval had to run while
+    the trainer kept running — one continuous process is what makes the cosine schedule honest across
+    a staged dose — so it was capped at `OMP_NUM_THREADS=2 nice -n 15` to keep its own CPU work from
+    inflating a step time and tripping the 3.0× median abort. Result: 113.93 ms/sample at 128 and
+    1318.74 ms at 1024, versus v0's untuned 59.5 and 448.8. Accuracy cannot move with thread count and
+    G4 is stated over accuracy, so the throttle costs a latency comparison and nothing else; the
+    latency axis is left unmeasured rather than quietly claimed.
+
+    **(viii) The curves are beside each other, not one in place of the other.** n=60 vs n=16 (1 s.e.
+    0.0481 vs 0.0932), 15.35M params vs 14.45M, a cold-started needle model vs v0's suite checkpoint,
+    device cpu and seed 0 identical. `temperature` reads 1.0 here and 3.0 in `runs/needle_myna-v0.json`
+    and is **not** a confound: `bench/eval_needle.py:116` records `myna.temperature` into the witness
+    and never applies it to the score, so no accuracy can differ on that axis. Witnesses:
+    `runs/lc1_4k_s0.train.log`, `runs/lc1_4k_s0.stageA.log`, `runs/needle_lc1_stageA.{md,json}`.
+
+    **(ix) What writing this up broke, and the hole it exposed in the doc layer.** The first pass of
+    correcting README's G4 row by hand went red: `tests/test_gates.py`
+    `test_readme_carries_the_generated_block_verbatim` asserts that README lines 75–97 are byte-for-byte
+    `bench/gates.py --readme-block`, so README's gate table is **derived text** and cannot be corrected
+    where it is read. The fix is the generator's own output re-emitted between the markers (done; the
+    only surviving README change from this entry is prose outside the block). The check then points at
+    the real defect: the stale claim this entry corrects lives *inside* `bench/gates.py` —
+    `gate("G4", …)` at line 188 says the 16k decision "needs the 4k truncated-backprop checkpoint,
+    which is 7b / `KAGGLE`", and `readme_block()`'s intro at line 450 says G1 and G4 "are the two that
+    cannot be closed on this box". Both are falsified by a run that closed the compute half on this box.
+    They stay as written: editing the gate table's prose is outside this run's authorised scope, and
+    README cannot carry the correction without it, so README's block and SPEC §2.2 now disagree in
+    words while agreeing in verdict. **The structural finding is the one to keep:** all 21 mutants in
+    `bench/mutation_gates.py` target `bench/gates.py`'s checking logic — the row parser, the drift
+    comparison, the verdict read — and none reaches `readme_block()`'s strings, so the generated block
+    is drift-checked and not truth-checked. A sentence in it can go stale exactly the way §9.44's
+    hand-copied counts did, and the suite will stay green while it does. The follow-up is a two-field
+    `GATES` edit plus a `--readme-block` regeneration plus `tests/test_gates.py` (29 tests), and — if
+    the class is to close, a mutant over the intro sentence itself. Suite after the regeneration:
+    **609 passed, 1 skipped in 603.33 s** (`test_upstream.py`'s `KEV_ROOT` skip, unchanged from 61(v)),
+    and `bench/gates.py --check` still prints **7/7 verdicts hold — 3 of 7 met, 3 not met, 1 open — the
+    release gate is NOT clear**.

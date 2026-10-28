@@ -1,0 +1,77 @@
+# lc1-4k-s0 Stage A boundary: eval, verdict, abort
+
+captured 2026-10-28T19:49:26Z on the approved command (SPEC 61 preconditions 1a/1b/1c); run launched 2026-10-28T19:33:07Z as uv PID 53623 / python PID 53625.
+
+## the boundary transcript (verbatim from /tmp/lc1_stageA.out, sysctl line corrected after the fact)
+/tmp/lc1_stage.zsh:21: no such file or directory: /usr/bin/sysctl
+swap: total = 1024.00M  used = 0.25M  free = 1023.75M  (encrypted)  (the script s-quoted sysctl at a wrong path; read separately, below)
+train.log tail:
+snapshot: runs/lc1-4k-s0/model_last.pt at step 399 (every 25 updates)
+step   400  loss 1.823  ema 1.817  batch-acc 0.000  2.16s/update  830s
+hashes (must match):
+f389bde507f381c1fb0540d3095b552f26d539be2a6e1eb506b31419e49ca335  /Users/aashish/next ko ne next gen model/runs/lc1-4k-s0/model_last.pt
+f389bde507f381c1fb0540d3095b552f26d539be2a6e1eb506b31419e49ca335  /Users/aashish/myna-staging/lc1-4k-s0/stageA/model_last.pt
+reconstructed model.pt from snapshot step 399; scheduler T_max=1200
+needle recall vs context length — stageA (cpu)
+
+  tokens |    acc |       ms
+     128 |  0.167 |   113.93
+    1024 |  0.217 |  1318.74
+
+uniform floor 0.167 (6 desks), 1 s.e. at n=60 is 0.048
+G4: NOT MEASURED here — the 128-token rung is at the 0.167 uniform floor, so this curve cannot be read as decay — the checkpoint does not answer this task at any length
+
+wrote /Users/aashish/myna-staging/lc1-4k-s0/stageA/needle_stageA.md and /Users/aashish/myna-staging/lc1-4k-s0/stageA/needle_stageA.json
+STAGE stageA DONE
+
+## swap read at the boundary, separately
+total = 1024.00M  used = 0.25M  free = 1023.75M  (encrypted)
+
+## the run's own trajectory to the boundary
+long-context: state=4096 grad=1024 params=15353984
+memory plan: batch 3 fits 9.0 GiB free x 0.6 at 1024 grad tokens (needs 2.4 GiB retained)
+long-context plan: 3 rows x 4106 p95 state tokens -> 3082 detached scan + 1024 gradient-carrying per row (split at 3072); 2.4 GiB retained per step, stops at 3.0x the median of the last 20, free under 1.25x the projection, or 4.0 GiB of swap
+step     0  loss 1.861  ema 1.861  batch-acc 0.333  2.39s/update  2s
+step   100  loss 1.885  ema 2.117  batch-acc 0.333  1.91s/update  196s
+step   200  loss 1.806  ema 1.901  batch-acc 0.000  2.02s/update  397s
+step   300  loss 1.819  ema 1.826  batch-acc 0.333  2.26s/update  610s
+step   400  loss 1.823  ema 1.817  batch-acc 0.000  2.16s/update  830s
+
+## decision
+Condition 3 pre-commits: abort and report if the 128-rung is below 0.267.
+measured 128-rung = 0.167 (10 correct of 60) = the uniform floor over 6 desks. 0.167 < 0.267 -> ABORT.
+No machine abort had fired: grep -c 'STOP at step' = 0, swap never moved from 0.25M of 1024M,
+step times 1.91-2.39s against the 1c median 2.0194742679595947s (3.0x = 6.06s).
+Kill by exact PID: kill 53625 (python) then kill 53623 (uv: already gone when the child died).
+Verified after: pgrep -fl myna.train -> empty. Nothing else was running.
+
+## what an outside kill does NOT leave behind
+runs/lc1-4k-s0/ holds model_last.pt + tokenizer.json only. The loop's guaranteed final save,
+model.pt, and metrics.json are written after the step loop, so an external kill produces none of
+them. The dose that ran is therefore read from the log (425 updates executed, last snapshot step
+424, 830s elapsed at step 400), not from a metrics.json that does not exist.
+The staged step-399 copy is the immutable witness: sha256 f389bde507f381c1fb0540d3095b552f26d539be2a6e1eb506b31419e49ca335
+re-verified after the kill; runs/lc1-4k-s0/model_last.pt has since been overwritten by the step-424 save.
+
+## ms column caveat
+the eval ran at OMP_NUM_THREADS=2 nice 15 while the trainer kept using the box, so these ms are
+2.3-2.9x the v0 curve's (128: 113.93 vs 59.5; 1024: 1318.74 vs 448.8) and are NOT comparable.
+G4 is stated over accuracy (SPEC 2.2: >=0.90 at 4k, >=0.85 at 16k), so the throttle cannot change
+the verdict; it can only make a latency claim dishonest, which is why it is not made.
+
+## the differences between this curve and the published v0 curve, itemised
+n 60 vs 16 (1 s.e. 0.0481 vs 0.0932); params_m 15.35 vs 14.45 (this is a cold-started model,
+not v0's checkpoint); temperature 1.0 vs 3.0 is metadata only -- eval_needle.py:116 records
+myna.temperature into the witness and never applies it to the score, so no accuracy can
+differ on that axis; device cpu and seed 0 are the same. The ms column is additionally
+throttled (above). So: same task, same generator, same harness, different checkpoint and
+a 3.75x larger sample -- which is why this curve is reported beside the v0 one, not in place
+of it and not as a decay measurement.
+
+## the snapshot the kill left behind is resumable, and it says so
+torch.load of runs/lc1-4k-s0/model_last.pt (the step-424 save): step 424, scheduler T_max 1200,
+last_epoch 425, Adam per-parameter step 425, cfg vocab 4096. So the schedule was built for the
+whole 1200-update dose and is only 425 in -- the reason this run stayed one continuous process
+(1b's --resume restores T_max, so a resumed leg continues this cosine rather than rebuilding it).
+If the owner asks for the full dose, --resume --steps 1200 is 775 more updates at the run's own
+830 s / 400 updates = 2.075 s/update, i.e. ~27 minutes projected from a measured rate.
