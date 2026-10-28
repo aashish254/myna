@@ -3831,3 +3831,92 @@ Kept permanently, because the value of this project's claims is that they surviv
     **Nothing was uploaded**: `twine upload` was never run, no credential was used, and publishing
     remains 11h's user-side call with a name now chosen and claimed. G1 is still **0.4785 / 0.5339 /
     0.4893** against **0.70**; a registered name changes none of it.
+
+61. **The `--long-context` loop was the one path in the repo that could be launched at 4k tokens with
+    none of the suite's survival discipline, and the gate written for it found two holes in *itself*
+    before it reported on the code.** TODO 7b's preconditions, 2026-10-28/29, all three of them
+    executed as code work with tests and mutants before any training clock was started.
+
+    **(i) What was missing.** `train_long_context` printed a state/grad/params line, then trained. It
+    had no memory plan, no `--save-every` cadence, no `--resume`, no stop rule and no `metrics.json`;
+    the only write in the loop was a weights-only blob on the eval cadence — no optimizer, no step
+    counter, no record of the dose. A 4k run killed at 90% would have left nothing to continue from
+    and nothing to say what had run, which is the failure class §6 was written after. It also carried
+    three defects that only show up when you try to *measure* the path: `--config scaled` named
+    `MynaConfigScaled`, a symbol that function never imported (`MynaConfigScaledT4` is the one), so
+    asking for the bigger trunk raised `NameError` *after* the refusal it was supposed to be able to
+    print; `--warm-start` was accepted and silently ignored; and the eval cadence's blob was not a
+    resumable file, so the one save the path made was the one `--resume` could not use.
+
+    **(ii) 1a — the generator's grad window.** `make_needle`'s `tail_cap` branch walked back to the
+    earliest sentence boundary whose suffix fit and then drew from that single index, so every
+    training row put the needle at the deepest position the cap allowed: the run taught one depth,
+    not retrieval. It now draws uniformly over the whole fitting window. The `tail_cap is None`
+    branch — every eval row — is byte-identical, which is what keeps the published n=16 ladder a
+    control for the n=60 ladder rather than a different experiment. `tests/test_longctx.py` 13 → 15,
+    `bench/mutation_longctx.py` 20 → 24 (**24/24 caught**, `runs/mutation_longctx.log`).
+
+    **(iii) The first pass of 1a's spread test caught nothing, and the reason was the test.** Adding
+    "pin the draw to the window's earliest edge" as a mutant scored 23/24: absolute `pos` and
+    trailing-token count both still move from draw to draw when the *relative* depth is fixed, so an
+    assertion written on the absolute numbers passes against a needle pinned to one depth. The test
+    now normalises depth to the window (`(pos - earliest) / (len(filler) - earliest)`) and asserts the
+    spread on that — mean in (0.25, 0.75), maximum above 0.5, at least five distinct rounded depths,
+    and 30 of 60 draws strictly deeper than the edge. A gate that measures the quantity the mutant
+    leaves untouched is not a gate.
+
+    **(iv) 1b — the same five claims, re-witnessed rather than assumed to travel.** The plan is priced
+    off the **gradient window** (`min(grad_tokens, p95)`) and not the state length, because the prefix
+    is scanned under `no_grad` and retains no backward activations; pricing the state would halve the
+    batch this box can carry and the run would still finish, which is the silent direction. The
+    witness for that choice is a headroom that separates the two axes (0.2083 GiB buys batch 2 on a
+    64-token window and batch 1 on the 290-token state), so "sized by the state" is a caught mutation
+    and not a reading. Cadence default 25 with 50 enforced as a refusal rather than a clamp — clamping
+    would train a different run than the one asked for. `--long-context` now refuses `--warm-start`
+    instead of ignoring it. Swap is a stop signal on this loop alone (`parse_swapusage` /
+    `swap_used_bytes` / `swap_abort_reason`, Darwin-only, 4.0 GiB inclusive ceiling), because §6's
+    ceiling for this box is a *system* budget and a run that has started paging is already the failure
+    the OOM would finish. `tests/test_train_longctx.py` (20) and `bench/mutation_train_longctx.py`
+    (24) are new; `tests/test_memory_plan.py` keeps the suite path and now says so in its docstring.
+
+    **(v) Its first pass reported 22/24 and both survivors were holes in the gate.**
+    "the tail is estimated from one state" survived because `metrics.json` recorded
+    `LONG_CTX_P95_SAMPLES` — the constant the source asks for, not the number of states it drew — and
+    because this generator has no tail to measure: at a 4096-token target the 60 probes come back
+    **min 4096 / p95 4106 / max 4108**, so a one-state sample produces the same number as a
+    sixty-state one and the arithmetic cannot tell them apart. The record now carries `len(probe)`
+    with `state_tokens_min`/`state_tokens_max` beside it, which is the only form of this claim that
+    is checkable. "resume loads the weights but not the optimizer" survived because *every* counter
+    the resume test read came from the snapshot, so a weights-only resume prints a perfectly correct
+    dose while continuing on a fresh Adam; the test now compares the schedule's `T_max` (4 — the first
+    command's, where a rebuilt scheduler would say 6) against Adam's own per-parameter step count (6 —
+    four restored plus two executed). **24/24 caught**, exit 0, `runs/mutation_train_longctx.log`;
+    suite **609 passed, 1 skipped** (`test_upstream.py`'s `KEV_ROOT` skip, unchanged).
+
+    **(vi) 1c — the smoke probe, and the instrument that would have lied.** Five updates on the exact
+    approved flags (`--long-context 4096 --grad-tokens 1024 --batch 3 --device auto --free-gib 9.0
+    --stop-factor 3.0`) take a median of **2.0194742679595947 s/update** on this box (torch 2.14.0,
+    MPS, 15,353,984 params), which *projects* 1200 updates at ~41 minutes rather than the hours the
+    token count suggests — measured per-update, extrapolated only by multiplication. The detached
+    3072-token prefix costs compute and no retained activations; the 1024-token tail is the only half
+    the plan prices. The plan it printed before the first allocation says `batch 3 fits 9.0 GiB free x 0.6
+    at 1024 grad tokens (needs 2.4 GiB retained)`; no clamp fired, so the approved batch is the batch
+    that ran (`batch == batch_requested == 3`). Peak bytes are reported twice because the two
+    instruments disagree on Apple Silicon: `ps` sampled at 2 Hz through the whole run peaks at
+    **700368 KiB of RSS**, while `/usr/bin/time -l` on the same command reports a max RSS of
+    **674725888 B** and a **peak memory footprint of 3899131392 B (3.63 GiB)** — the Metal working set
+    is not fully charged to RSS, so the footprint column is the one that belongs beside §6, and the
+    2.4 GiB projection sits inside it. Swap never moved off `used = 0.25M` of a 1024.00M total, and
+    the run exited 0 with `stopped: null`. Two cold runs of one command agreed to the printed digit on
+    the steps they share (loss 1.861 then 2.316; batch-acc 0.333 then 0.000), so `--seed 0` pins init
+    and data order on this path too. Witness: `runs/lc0_smoke_s0.train.log` +
+    `runs/lc0_smoke_s0.metrics.json`.
+
+    **(vii) The other half of 1c's lesson.** The first attempt wrapped `/usr/bin/time -l` around
+    `uv run python -m myna.train`, which is the command the runbook prints. It reported a peak of
+    **14320120 bytes** — 13.7 MiB — because `time` measured `uv`, which spawns the interpreter rather
+    than becoming it. A clean bill of health for a job that actually holds gigabytes, printed with the
+    same confidence as the real number. The re-run puts the wrapper on the interpreter itself, after
+    `uv run python -c "import sys; print(sys.executable)"` proved both routes are the same
+    `.venv/bin/python3` at torch 2.14.0. A measurement whose instrument is aimed at the wrong process
+    is not a conservative estimate; it is a different measurement.
