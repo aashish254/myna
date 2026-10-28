@@ -188,7 +188,8 @@ risk/coverage curve, its floor re-run and the G5 verdict) and its gate `mutation
 (49 mutations across the engine's commitment, the seam's labels, the transport and the curve),
 `eval_needle.py` (the 7a recall ladder — `--lengths` so the published ladder *is* the command that
 ran it, and `baseline_verdict`, which refuses to let a curve that starts at the uniform floor be
-read as decay) and its gate `mutation_longctx.py` (20 mutations),
+read as decay) and its gate `mutation_longctx.py` (24 mutations — the last four over the
+`tail_cap` grad window, which is what 7b's truncated-backprop run trains on),
 `bench_mlx.py` (the 6c Apple harness: both engines over one checkpoint at real state/question
 widths, artifact bytes read from disk, and the drift table with a name beside every maximum),
 `diag_mlx_int8_gem.py` (the 6c mechanism probe: myna's own linear shapes, 200 matmuls queued per

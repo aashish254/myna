@@ -14,6 +14,9 @@ The families below are the ways that happens without anything looking broken:
   the end of every state measures suffix reading and prints "16k recall";
 * **the scoring compares the wrong things**: option index instead of option text,
   min instead of max, a denominator that is the number of lengths;
+* **the grad window stops being a window**: `tail_cap` is the range a truncated
+  backprop step still gets gradient through, and the draw has to be uniform inside
+  it — pinned to one boundary, every update shows the model the same depth.
 * **the run lies about its own reproducibility**: a seed that is parsed, printed and
   then ignored is the worst of these, because the command line looks like a witness.
 
@@ -67,6 +70,27 @@ MUTATIONS = [
     ("the state stops being built to the requested length", LC,
      "    while ntok < target_tokens:",
      "    while ntok < target_tokens // 2:"),
+    # --- the grad window (`tail_cap`): a window, drawn inside -------------------
+    # The training branch has two jobs and they fail in opposite directions: it must
+    # keep the needle's trailing tokens inside the cap (or the step that truncated
+    # the backprop at `long_context - grad_tokens` detaches the evidence), and it
+    # must draw *uniformly over* the positions that do (or every update shows the
+    # model one depth and the curve measures suffix reading at 4k). The first bug
+    # this file ever caught here was the second one, shipped: the walk found the
+    # earliest fitting boundary and then used it as the answer, so the draw was
+    # implicit and the position was fixed.
+    ("the grad-window draw is pinned to the window's earliest edge", LC,
+     "        pos = rng.randrange(earliest, len(sentences) + 1)",
+     "        pos = earliest"),
+    ("the grad-window draw spreads over the whole state, so the tail escapes the cap", LC,
+     "        pos = rng.randrange(earliest, len(sentences) + 1)",
+     "        pos = rng.randrange(len(sentences) + 1)"),
+    ("the window walk counts sentences, not their tokens", LC,
+     "            suffix += encs[earliest - 1]",
+     "            suffix += 1"),
+    ("the eval branch takes the window and the training branch loses its cap", LC,
+     "    if tail_cap is None:",
+     "    if tail_cap is not None:"),
     # --- what counts as right ---------------------------------------------------
     ("the wrong option is scored correct", LC,
      "            correct += int(pick == nd.options[nd.gold])",

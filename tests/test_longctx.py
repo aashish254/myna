@@ -172,6 +172,79 @@ def test_the_needle_lands_everywhere_in_the_state_not_just_at_the_ends():
     assert len(instructions) > 1, instructions
 
 
+def _split_sentences(state: str) -> list[str]:
+    """Recover the generator's sentence list.
+
+    Every FILLER/needle sentence ends in the only "." it contains, so splitting on
+    periods recovers the exact strings `make_needle` encoded one at a time — which
+    is what makes the assertions below equal to the generator's own arithmetic
+    instead of an approximation of it. The needle is then removed, leaving the
+    filler list in the index space the generator drew `pos` in."""
+    sents = re.findall(r"[^.]+\.", state)
+    needle_i = next(i for i, s in enumerate(sents) if "owned by the" in s)
+    return needle_i, sents[:needle_i] + sents[needle_i + 1:]
+
+
+def _earliest_fitting(tok, filler: list[str], tail_cap: int) -> int:
+    """The generator's own backward walk: the first boundary from which the
+    trailing filler fits in `tail_cap`, so everything at or after it keeps grad."""
+    suffix, earliest = 0, len(filler)
+    while earliest > 0 and suffix + len(encode_text(tok, filler[earliest - 1])) <= tail_cap:
+        suffix += len(encode_text(tok, filler[earliest - 1]))
+        earliest -= 1
+    return earliest
+
+
+def test_a_grad_window_needle_is_uniform_over_the_window_not_pinned_to_its_edge():
+    """Truncated backprop detaches everything before the split, so a training needle
+    must sit inside the trailing `tail_cap` — but one position there is one depth,
+    not retrieval. This is the branch the 4k run trains on: the old walk returned
+    the earliest fitting boundary and *used* it, so every needle of every update
+    landed at the same depth inside the window.
+
+    The depth is measured *relative to the window*, not in absolute indices: the
+    filler count and the cap both vary from draw to draw, so a pinned needle still
+    produces a spread of absolute positions. Normalising to the window is what
+    separates a uniform draw from a fixed one."""
+    tok = _tok()
+    rng = random.Random(7)
+    tail_cap, target = 256, 1024
+    depths, tail_tokens, wide = [], [], 0
+    for _ in range(60):
+        nd = make_needle(tok, target, rng, tail_cap=tail_cap)
+        pos, filler = _split_sentences(nd.state)
+        earliest = _earliest_fitting(tok, filler, tail_cap)
+        assert pos >= earliest, (pos, earliest)
+        tail = sum(len(encode_text(tok, s)) for s in filler[pos:])
+        assert tail <= tail_cap, (pos, tail)
+        tail_tokens.append(tail)
+        if pos > earliest:
+            wide += 1
+        if len(filler) > earliest:
+            depths.append((pos - earliest) / (len(filler) - earliest))
+    assert wide >= 30, f"only {wide}/60 draws sat deeper than the window's edge"
+    assert len(depths) >= 50, f"{len(depths)} draws had a window wider than one boundary"
+    assert max(depths) > 0.5, f"nothing reached the shallow half of the window: {max(depths)}"
+    assert 0.25 < sum(depths) / len(depths) < 0.75, sum(depths) / len(depths)
+    assert len({round(d, 1) for d in depths}) >= 5, f"{sorted(set(depths))[:8]}"
+    assert max(tail_tokens) > 0, "no draw escaped the end of the state"
+
+
+def test_the_grad_window_is_wide_enough_for_that_spread_to_mean_anything():
+    """A test of a uniform draw over a one-element window passes against the pinned
+    version, so the window itself is measured first: at this length and cap there
+    are several fitting boundaries, and the old code used only the earliest one."""
+    tok = _tok()
+    rng = random.Random(7)
+    tail_cap, target = 256, 1024
+    widths = []
+    for _ in range(12):
+        nd = make_needle(tok, target, rng, tail_cap=tail_cap)
+        pos, filler = _split_sentences(nd.state)
+        widths.append(len(filler) + 1 - _earliest_fitting(tok, filler, tail_cap))
+    assert min(widths) >= 3, f"the window collapsed; the spread test proves nothing: {widths}"
+
+
 def test_the_curve_says_when_it_cannot_be_read_as_decay():
     """`baseline_verdict` is the guard between a low curve and a meaningless one:
     accuracy that starts at the uniform floor cannot decay, it was never recall."""

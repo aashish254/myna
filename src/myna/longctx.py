@@ -51,8 +51,11 @@ def make_needle(tok, target_tokens: int, rng: random.Random, tail_cap: int | Non
 
     tail_cap, when set, forces the needle into the last `tail_cap` tokens so a
     truncated-backprop training step (which detaches everything before the split)
-    still gets gradient through the evidence. Ignored at eval, where the needle
-    is placed anywhere to test true long-range recall. `entity`, when set, fixes
+    still gets gradient through the evidence. The position is drawn uniformly over
+    every sentence boundary whose trailing tokens fit the cap, so a training run
+    sees the evidence at many depths — a fixed offset would teach one depth, not
+    retrieval. Ignored at eval, where the needle is placed anywhere to test true
+    long-range recall. `entity`, when set, fixes
     the queried entity so a whole batch can share one question tensor.
     """
     gold = rng.randrange(len(DESKS))
@@ -76,12 +79,15 @@ def make_needle(tok, target_tokens: int, rng: random.Random, tail_cap: int | Non
     if tail_cap is None:
         pos = rng.randrange(len(sentences) + 1)
     else:
-        # last position whose trailing tokens stay within tail_cap (suffix keeps grad)
+        # every boundary whose trailing tokens stay within tail_cap keeps gradient
+        # through the needle; walk back to the earliest one, then draw uniformly
+        # over the whole fitting window instead of pinning to its deepest edge
         suffix = 0
-        pos = len(sentences)
-        while pos > 0 and suffix + encs[pos - 1] <= tail_cap:
-            suffix += encs[pos - 1]
-            pos -= 1
+        earliest = len(sentences)
+        while earliest > 0 and suffix + encs[earliest - 1] <= tail_cap:
+            suffix += encs[earliest - 1]
+            earliest -= 1
+        pos = rng.randrange(earliest, len(sentences) + 1)
     sentences.insert(pos, needle)
     state = " ".join(sentences)
     return Needle(state, instruction, list(DESKS), gold, target_tokens)
