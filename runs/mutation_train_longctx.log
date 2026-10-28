@@ -1,0 +1,53 @@
+baseline copy: green (1 test file)
+
+[ 1/24] caught      the plan prices the whole state instead of the gradient window
+            FAILED tests/test_train_longctx.py::test_the_long_context_plan_is_sized_by_grad_tokens_not_the_whole_state
+[ 2/24] caught      the plan prints the state length as if it were the window
+            FAILED tests/test_train_longctx.py::test_the_plan_prints_both_axes_and_matches_its_own_record
+[ 3/24] caught      the record stores the requested length as the measured tail
+            FAILED tests/test_train_longctx.py::test_the_plan_prints_both_axes_and_matches_its_own_record
+[ 4/24] caught      the tail is sampled from the experiment seed, so a replication changes the batch
+            FAILED tests/test_train_longctx.py::test_the_long_context_p95_is_a_property_of_the_generator_not_the_seed
+[ 5/24] caught      the tail is estimated from one state and the record still says sixty
+            FAILED tests/test_train_longctx.py::test_the_recorded_p95_is_a_tail_and_not_one_lucky_sample
+[ 6/24] caught      a normal finish leaves no model_last.pt at all
+            FAILED tests/test_train_longctx.py::test_the_rolling_snapshot_lands_on_the_cadence_and_says_so
+[ 7/24] caught      the run writes the ladder a different filename than the one it loads
+            FAILED tests/test_train_longctx.py::test_a_long_context_run_leaves_the_ladder_its_inputs_and_its_dose
+[ 8/24] caught      the cadence stops firing, and only prints
+            FAILED tests/test_train_longctx.py::test_the_rolling_snapshot_lands_on_the_cadence_and_says_so
+[ 9/24] caught      the cadence counts from 0, so it fires one update late
+            FAILED tests/test_train_longctx.py::test_the_rolling_snapshot_lands_on_the_cadence_and_says_so
+[10/24] caught      the snapshot line names a step it did not write
+            FAILED tests/test_train_longctx.py::test_the_rolling_snapshot_lands_on_the_cadence_and_says_so
+[11/24] caught      the 50-update ceiling becomes a 5000-update suggestion
+            FAILED tests/test_train_longctx.py::test_a_cadence_above_the_ceiling_is_refused_rather_than_clamped
+[12/24] caught      the ceiling is checked and then ignored
+            FAILED tests/test_train_longctx.py::test_a_cadence_above_the_ceiling_is_refused_rather_than_clamped
+[13/24] caught      resume replays the snapshotted update
+            FAILED tests/test_train_longctx.py::test_resume_continues_the_long_context_loop_with_the_saved_schedule
+[14/24] caught      resume loads the weights but not the optimizer
+            FAILED tests/test_train_longctx.py::test_resume_carries_the_snapshot_optimizer_and_schedule_into_the_loop
+[15/24] caught      the loop never asks the swap probe
+            FAILED tests/test_train_longctx.py::test_the_loop_asks_the_swap_probe_and_stops_on_its_answer
+[16/24] caught      the swap reading is taken and never aborts
+            FAILED tests/test_train_longctx.py::test_swap_under_the_ceiling_is_not_an_abort_and_over_it_is
+[17/24] caught      the swap ceiling is 4 TiB, so a paging box keeps running
+            FAILED tests/test_train_longctx.py::test_swap_under_the_ceiling_is_not_an_abort_and_over_it_is
+[18/24] caught      a sysctl line with no `used` figure is read as zero
+            FAILED tests/test_train_longctx.py::test_swap_under_the_ceiling_is_not_an_abort_and_over_it_is
+[19/24] caught      the swap probe reads a Mac-only budget on every platform
+            FAILED tests/test_train_longctx.py::test_the_swap_probe_stays_quiet_off_macos
+[20/24] caught      a truncated run exits 0
+            FAILED tests/test_train_longctx.py::test_a_drifted_long_context_step_stops_exits_nonzero_and_leaves_the_snapsh
+[21/24] caught      metrics.json is told the run finished
+            FAILED tests/test_train_longctx.py::test_a_drifted_long_context_step_stops_exits_nonzero_and_leaves_the_snapsh
+[22/24] caught      the record says the requested dose ran
+            FAILED tests/test_train_longctx.py::test_resume_continues_the_long_context_loop_with_the_saved_schedule
+[23/24] caught      --warm-start is accepted and silently ignored
+            FAILED tests/test_train_longctx.py::test_warm_start_is_refused_because_this_path_takes_its_weights_from_init
+[24/24] caught      --config scaled names the symbol that was never imported here
+            FAILED tests/test_train_longctx.py::test_long_context_scaled_reaches_the_config_that_exists
+
+24/24 mutations caught
+EXIT=0 (watched to completion 2026-10-29 on the M5 lane; 24 mutations over the --long-context trainer's plan/cadence/resume/stop/metrics discipline, after the first pass reported 22/24 and the two survivors were closed in code)

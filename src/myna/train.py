@@ -9,6 +9,7 @@ import argparse
 import bisect
 import json
 import random
+import re
 import sys
 import time
 from collections import Counter, defaultdict
@@ -328,6 +329,17 @@ MI = 1 << 20
 STATE_MIB_PER_POSITION = 0.8
 QUESTION_MIB_PER_CELL = 1.6
 
+# The `--long-context` path's own ceilings. A 4k-token state is the longest thing
+# this repo trains, so the two rules that a suite run can afford to leave to the
+# operator are hard here: how stale a snapshot may be, and how much paging counts
+# as the run dying rather than running slowly.
+LONG_CTX_SAVE_CEILING = 50
+LONG_CTX_SWAP_ABORT_GIB = 4.0
+# The tail of the *generated* states, measured the same fixed-Random(0) way the
+# suite path measures the corpus tail: a property of the generator, not of the
+# experiment's seed (see the p95 note in `main`).
+LONG_CTX_P95_SAMPLES = 60
+
 
 def state_token_p95(tok, items, limit=4000, rng=None):
     """p95 of the state lengths, in tokens, over a sample of the rows the loop
@@ -395,6 +407,52 @@ def stop_reason(step_times, free, projected_bytes, factor=1.5, window=20, headro
         return (f"free {free / MI:.0f} MiB < {headroom}x projected "
                 f"{projected_bytes / MI:.0f} MiB per step")
     return None
+
+
+_SWAP_UNITS = {"K": 1024, "M": MI, "G": 1024 * MI, "T": 1024 * 1024 * MI,
+               "P": 1024 * 1024 * 1024 * MI}
+
+
+def parse_swapusage(text: str) -> int | None:
+    """Swap bytes in use out of a `sysctl vm.swapusage` line, or None.
+
+    The line reads `total = 7168.00M  used = 1024.00M  free = 6144.00M`. Anything
+    that does not carry a `used =` figure answers None rather than guessing zero —
+    a stop rule that invents a clean reading is worse than one that stays quiet."""
+    m = re.search(r"used\s*=\s*([0-9]+(?:\.[0-9]+)?)\s*([KMGTPE])?", text)
+    if not m:
+        return None
+    return int(float(m.group(1)) * _SWAP_UNITS.get(m.group(2) or "", 1))
+
+
+def swap_used_bytes() -> int | None:
+    """What swap the box is holding right now, or None where it cannot be read.
+
+    Only macOS answers, and only because the long-context run is priced against a
+    *system* ceiling there (SPEC §6): the step-time rule catches paging late, and
+    a run that has started swapping is already the failure the OOM would finish."""
+    if sys.platform != "darwin":
+        return None
+    import subprocess
+
+    try:
+        out = subprocess.run(["sysctl", "-n", "vm.swapusage"], capture_output=True,
+                             text=True, timeout=5)
+    except (OSError, subprocess.SubprocessError):
+        return None
+    if out.returncode != 0:
+        return None
+    return parse_swapusage(out.stdout)
+
+
+def swap_abort_reason(swap_bytes: int | None,
+                      ceiling_bytes: int = LONG_CTX_SWAP_ABORT_GIB * 1024 * MI) -> str | None:
+    """The stop line for a paging box, or None. Names both numbers because the
+    operator has to be able to tell a ceiling breach from a reading that failed."""
+    if swap_bytes is None or swap_bytes <= ceiling_bytes:
+        return None
+    return (f"swap used {swap_bytes / 1024 / MI:.1f} GiB > "
+            f"{ceiling_bytes / 1024 / MI:.1f} GiB ceiling")
 
 
 def save_snapshot(out, model, opt, sched, tok, cfg, step, temperature=1.0):
@@ -579,8 +637,23 @@ def build_needle_batch(exs, tok, device, entity):
 
 def train_long_context(args, rng, device):
     """V1-D: fine-tune (or train) on needle-in-long-context recall, truncated
-    backprop so only the trailing grad window carries gradient."""
+    backprop so only the trailing grad window carries gradient.
+
+    This path runs the same discipline as the suite trainer — a memory plan printed
+    before the first update, a snapshot every `--save-every` updates, the stop rule,
+    `--resume`, and a `metrics.json` that records the dose that actually ran. It
+    existed without them, which is how a 4k-token run on a 32 GB box (SPEC §6) would
+    have been launched on a projected time band and nothing else."""
     from .longctx import DESKS, ENTITIES, FILLER, Needle, make_needle
+
+    if args.save_every and args.save_every > LONG_CTX_SAVE_CEILING:
+        raise SystemExit(f"--save-every {args.save_every} is above the "
+                         f"{LONG_CTX_SAVE_CEILING}-update ceiling this path enforces: at "
+                         f"{args.long_context}-token states a snapshot is the only thing a "
+                         "killed run leaves behind (SPEC §5 P3, '<=50')")
+    if args.warm_start:
+        raise SystemExit("--warm-start is not available with --long-context: this path takes "
+                         "its weights and tokenizer from --init, which reads a checkpoint dir")
 
     if args.init:
         ip = Path(args.init)
@@ -592,27 +665,94 @@ def train_long_context(args, rng, device):
     else:
         vocab = args.vocab
         if args.config == "scaled":
-            if MynaConfigScaled is None:
+            if MynaConfigScaledT4 is None:
                 raise SystemExit("--config scaled requires src/myna/config_scaled.py (not installed)")
-            cfg = MynaConfigScaled()
+            cfg = MynaConfigScaledT4()
             # Override vocab if tokenizer has learned more entries than default
             # (this is rare; most runs keep 4096)
             vocab = max(vocab, cfg.vocab)
-            cfg = MynaConfigScaled(vocab=vocab)
+            cfg = MynaConfigScaledT4(vocab=vocab)
         else:
             cfg = MynaConfig(vocab=vocab)
         model = MynaModel(cfg)
         tok = train_tokenizer([" ".join(FILLER), " ".join(DESKS), " ".join(ENTITIES)],
                               vocab_size=vocab)
     model.to(device)
-    print(f"long-context: state={args.long_context} grad={args.grad_tokens} "
-          f"params={sum(p.numel() for p in model.parameters())}", flush=True)
+    params = sum(p.numel() for p in model.parameters())
+    print(f"long-context: state={args.long_context} grad={args.grad_tokens} params={params}",
+          flush=True)
 
     split = max(0, args.long_context - args.grad_tokens)
+    # --- the memory plan, sized by the gradient window (SPEC §5 P3: 3d) ----------
+    # What one row *retains* is the trailing window: everything before `split` is
+    # scanned under no_grad, so it costs compute and transient buffers but no
+    # backward activations. Both axes print, because the detached prefix is the half
+    # that decides whether the step is slow and the window is the half that decides
+    # whether it fits.
+    probe_rng = random.Random(0)
+    # `p95_sample` records `len(probe)` and not the constant: this generator pads every
+    # state to the same token count (measured — min == max over the 60 probes at a 256-token
+    # target), so the tail figure cannot report how many states it came from. The count is
+    # the only witness that the plan was priced off a sample and not one lucky state.
+    probe = [make_needle(tok, args.long_context, probe_rng, tail_cap=args.grad_tokens)
+             for _ in range(LONG_CTX_P95_SAMPLES)]
+    probe_lens = sorted(len(encode_text(tok, e.state)) for e in probe)
+    p95 = state_token_p95(tok, [((), e) for e in probe])
+    window = min(args.grad_tokens, p95)
+    detached = max(0, p95 - window)
+    free = None if args.free_gib is None else int(args.free_gib * 1024 * MI)
+    if free is None:
+        free = free_device_bytes(device)
+    fit = rows_that_fit(free, window, args.mem_safety)
+    batch_requested = args.batch
+    planned = batch_requested
+    row_gib = window * STATE_MIB_PER_POSITION / 1024
+    if fit is None:
+        print(f"memory plan: no headroom reading for {device} (grad window {window} tokens = "
+              f"~{row_gib:.2f} GiB of retained activations per row; batch {batch_requested} "
+              f"needs ~{batch_requested * row_gib:.1f} GiB); --batch taken as given — state "
+              "--free-gib to plan against", flush=True)
+    elif fit == 0:
+        raise SystemExit(f"memory plan: {args.mem_safety} x {free / 1024 / MI:.1f} GiB free buys "
+                         f"none of the {window} gradient-window tokens per row "
+                         f"({window * STATE_MIB_PER_POSITION:.0f} MiB each); lower --grad-tokens "
+                         "or --batch before asking for a step")
+    elif batch_requested > fit:
+        planned = fit
+        print(f"memory plan: {free / 1024 / MI:.1f} GiB free x {args.mem_safety} -> batch {fit} "
+              f"at {window} grad tokens x {STATE_MIB_PER_POSITION} MiB/position; --batch "
+              f"{batch_requested} exceeds it, using {fit}", flush=True)
+    else:
+        print(f"memory plan: batch {batch_requested} fits {free / 1024 / MI:.1f} GiB free x "
+              f"{args.mem_safety} at {window} grad tokens "
+              f"(needs {planned * row_gib:.1f} GiB retained)", flush=True)
+    args.batch = planned
+    projected = planned * window * STATE_MIB_PER_POSITION * MI
+    print(f"long-context plan: {planned} rows x {p95} p95 state tokens -> {detached} detached "
+          f"scan + {window} gradient-carrying per row (split at {split}); {projected / 1024 / MI:.1f} "
+          f"GiB retained per step, stops at {args.stop_factor}x the median of the last 20, "
+          f"free under 1.25x the projection, or {LONG_CTX_SWAP_ABORT_GIB:.1f} GiB of swap",
+          flush=True)
+
     opt = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=0.01)
     sched = torch.optim.lr_scheduler.CosineAnnealingLR(opt, args.steps)
-    ema, t0 = None, time.time()
-    for step in range(args.steps):
+    start_step = 0
+    if args.resume:
+        ckpt = Path(args.out) / "model_last.pt"
+        if not ckpt.exists():
+            raise SystemExit(f"--resume: no {ckpt} to continue from")
+        start_step = load_snapshot(ckpt, model, opt, sched) + 1
+        print(f"resume: {ckpt} at step {start_step - 1} -> continuing at {start_step} of "
+              f"{args.steps}; data RNG re-seeded from --seed {args.seed}, so this is a "
+              f"continuation, not a bit-identical replay", flush=True)
+    ema = None
+    step_times: list[float] = []
+    stopped = None
+    last_step = start_step - 1
+    log_every = max(1, min(100, args.steps // 12))
+    step_t0 = time.time()
+    for step in range(start_step, args.steps):
+        t_update = time.time()
         model.train()
         entity = ENTITIES[rng.randrange(len(ENTITIES))]
         exs = [make_needle(tok, args.long_context, rng, tail_cap=args.grad_tokens,
@@ -627,14 +767,68 @@ def train_long_context(args, rng, device):
         opt.step(); sched.step()
         acc = (logits.argmax(-1) == b["gold"]).float().mean().item()
         ema = loss.item() if ema is None else 0.95 * ema + 0.05 * loss.item()
-        if step % 100 == 0 or step == args.steps - 1:
+        last_step = step
+        dt = time.time() - t_update
+        step_times.append(dt)
+        if step % log_every == 0 or step == args.steps - 1:
             print(f"step {step:5d}  loss {loss.item():.3f}  ema {ema:.3f}  "
-                  f"batch-acc {acc:.3f}  {time.time()-t0:.0f}s", flush=True)
+                  f"batch-acc {acc:.3f}  {dt:.2f}s/update  {time.time() - step_t0:.0f}s",
+                  flush=True)
+        # cadence, not convenience: this is the path with the largest states in the
+        # repo, and the run that dies at 90% has to leave the 90% behind. The line is
+        # printed because "snapshots are being written" is otherwise invisible until
+        # the job is lost — and because a cadence nobody can see is a cadence nobody
+        # can mutation-check.
+        if args.save_every and (step + 1) % args.save_every == 0:
+            path = save_snapshot(args.out, model, opt, sched, tok, cfg, step)
+            print(f"snapshot: {path} at step {step} (every {args.save_every} updates)",
+                  flush=True)
+        reason = stop_reason(step_times[-21:], free_device_bytes(device), projected,
+                             factor=args.stop_factor)
+        if reason is None:
+            reason = swap_abort_reason(swap_used_bytes())
+        if reason:
+            save_snapshot(args.out, model, opt, sched, tok, cfg, step)
+            stopped = reason
+            print(f"STOP at step {step}: {reason}; snapshot written to "
+                  f"{Path(args.out) / 'model_last.pt'}", flush=True)
+            break
         if args.eval_every and step and step % args.eval_every == 0 and step != args.steps - 1:
-            out = Path(args.out); out.mkdir(parents=True, exist_ok=True)
-            tok.save(str(out / "tokenizer.json"))
-            torch.save({"state_dict": model.state_dict(), "cfg": vars(cfg),
-                        "temperature": 1.0, "step": step}, out / "model_last.pt")
+            # there is no dev split to score here — the needle corpus is generated
+            # per step — so this cadence is a rolling snapshot, and the ladder that
+            # judges the run is `bench/eval_needle.py` run against it outside the loop
+            save_snapshot(args.out, model, opt, sched, tok, cfg, step)
+
+    updates_executed = max(last_step - start_step + 1, 0)
+    out = Path(args.out)
+    out.mkdir(parents=True, exist_ok=True)
+    # guaranteed final save: `model_last.pt` carries the optimizer and the step so a
+    # stop is resumable, and `model.pt` is what `Myna()` and the needle ladder load.
+    # Before this, a normal finish wrote neither.
+    save_snapshot(out, model, opt, sched, tok, cfg, last_step)
+    torch.save({"state_dict": model.state_dict(), "cfg": vars(cfg), "temperature": 1.0},
+               out / "model.pt")
+    with open(out / "metrics.json", "w") as f:
+        json.dump({"long_context": args.long_context, "grad_tokens": args.grad_tokens,
+                   "split": split, "grad_window_tokens": window,
+                   "detached_tokens_p95": detached, "state_tokens_p95": p95,
+                   "p95_sample": len(probe),
+                   "state_tokens_min": probe_lens[0], "state_tokens_max": probe_lens[-1],
+                   "batch": args.batch, "batch_requested": batch_requested,
+                   "lr": args.lr, "seed": args.seed, "device": device, "params": params,
+                   "steps_requested": args.steps, "updates_executed": updates_executed,
+                   "last_step": last_step, "resumed_from_step": start_step, "stopped": stopped,
+                   "save_every": args.save_every, "stop_factor": args.stop_factor,
+                   "mem_plan_free_gib": None if free is None else free / 1024 / MI,
+                   "mem_safety": args.mem_safety,
+                   "projected_step_gib": projected / 1024 / MI,
+                   "median_s_per_update": None if not step_times else median(step_times),
+                   "temperature": 1.0, "temperature_fitted": False}, f, indent=2)
+    print(f"saved checkpoint to {out}", flush=True)
+    if stopped:
+        # a truncated run that exits 0 reads like a finished one, and the whole
+        # point of the stop rule is that the *reason* reaches the operator
+        raise SystemExit(f"run ended at step {last_step} of {args.steps}: {stopped}")
 
 
 def main():

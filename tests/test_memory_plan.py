@@ -16,6 +16,9 @@ print something are additionally run in a subprocess so the line and
 * `--resume` continues from the snapshot's step with the optimizer and scheduler,
   so the cosine decay is not restarted;
 * with no headroom reading (CPU/MPS) the plan says so instead of inventing one.
+
+The `--long-context` trainer is a different loop and carries its own copy of these
+claims: `tests/test_train_longctx.py`.
 """
 
 import json

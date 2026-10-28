@@ -190,6 +190,11 @@ risk/coverage curve, its floor re-run and the G5 verdict) and its gate `mutation
 ran it, and `baseline_verdict`, which refuses to let a curve that starts at the uniform floor be
 read as decay) and its gate `mutation_longctx.py` (24 mutations — the last four over the
 `tail_cap` grad window, which is what 7b's truncated-backprop run trains on),
+`src/myna/train.py`'s `--long-context` loop (the same run's trainer: a memory plan priced off
+the gradient window rather than the state, a `--save-every` cadence capped at 50, a guaranteed
+final save, `--resume`, a swap ceiling as a stop signal, and a `metrics.json` that records the
+dose that executed) with its gate `tests/test_train_longctx.py` (20) and
+`bench/mutation_train_longctx.py` (24 mutations),
 `bench_mlx.py` (the 6c Apple harness: both engines over one checkpoint at real state/question
 widths, artifact bytes read from disk, and the drift table with a name beside every maximum),
 `diag_mlx_int8_gem.py` (the 6c mechanism probe: myna's own linear shapes, 200 matmuls queued per
