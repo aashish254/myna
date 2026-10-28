@@ -1,0 +1,78 @@
+1c smoke probe (TODO 7b precondition c) — five updates on the exact approved 7b flags,
+run cold on the M5 lane on 2026-10-29 before the 1200-update clock was started.
+
+$ uv run python -m myna.train --long-context 4096 --grad-tokens 1024 --batch 3 --steps 5
+    --lr 6e-4 --seed 0 --device auto --save-every 25 --free-gib 9.0 --stop-factor 3.0
+    --out runs/lc0-smoke-s0
+
+
+
+
+long-context: state=4096 grad=1024 params=15353984
+memory plan: batch 3 fits 9.0 GiB free x 0.6 at 1024 grad tokens (needs 2.4 GiB retained)
+long-context plan: 3 rows x 4106 p95 state tokens -> 3082 detached scan + 1024 gradient-carrying per row (split at 3072); 2.4 GiB retained per step, stops at 3.0x the median of the last 20, free under 1.25x the projection, or 4.0 GiB of swap
+step     0  loss 1.861  ema 1.861  batch-acc 0.333  3.42s/update  3s
+step     1  loss 2.316  ema 1.883  batch-acc 0.000  1.94s/update  5s
+step     2  loss 1.853  ema 1.882  batch-acc 0.333  2.10s/update  7s
+step     3  loss 2.751  ema 1.925  batch-acc 0.000  2.02s/update  10s
+step     4  loss 2.097  ema 1.934  batch-acc 0.333  1.94s/update  11s
+saved checkpoint to runs/lc0-smoke-s0
+
+run A resolved device: mps (torch 2.14.0, the documented install; `uv run python` and
+./.venv/bin/python are the same interpreter, printed before this run).
+
+--- box sampled at 2 Hz while run A was live (`ps ax -o pid,rss,command` summed over the
+    trainer, plus `sysctl -n vm.swapusage`), 7 samples over 12 s ---
+0 rss_kib=432 swap=total = 1024.00M  used = 0.25M  free = 1023.75M  (encrypted)
+2 rss_kib=377936 swap=total = 1024.00M  used = 0.25M  free = 1023.75M  (encrypted)
+4 rss_kib=583360 swap=total = 1024.00M  used = 0.25M  free = 1023.75M  (encrypted)
+6 rss_kib=659120 swap=total = 1024.00M  used = 0.25M  free = 1023.75M  (encrypted)
+8 rss_kib=686848 swap=total = 1024.00M  used = 0.25M  free = 1023.75M  (encrypted)
+10 rss_kib=699456 swap=total = 1024.00M  used = 0.25M  free = 1023.75M  (encrypted)
+12 rss_kib=700368 swap=total = 1024.00M  used = 0.25M  free = 1023.75M  (encrypted)
+peak sampled rss: 700368 KiB = 684.0 MiB; swap used never left 0.25M of a 1024.00M total
+
+--- run B: the same command at --steps 2 under `/usr/bin/time -l` on the interpreter itself
+    (`time -l` around `uv run` measures uv, whose own footprint is 14320120 bytes — the
+    number is only the trainer's when the wrapper sits on the python process)
+    out: runs/lc0-smoke-s0b
+---
+        7.04 real         4.24 user         0.68 sys
+           674725888  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               64244  page reclaims
+                   3  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   8  voluntary context switches
+                8109  involuntary context switches
+         36720469787  instructions retired
+         10965626963  cycles elapsed
+          3899131392  peak memory footprint
+
+maximum resident set size = 674725888 B (643.5 MiB); peak memory footprint =
+3899131392 B (3.63 GiB) — the phys_footprint column is the one to read against SPEC §6
+because on Apple Silicon the Metal working set is not fully charged to RSS.
+
+--- run B's stdout: the plan the operator reads before the first allocation ---
+
+
+
+long-context: state=4096 grad=1024 params=15353984
+memory plan: batch 3 fits 9.0 GiB free x 0.6 at 1024 grad tokens (needs 2.4 GiB retained)
+long-context plan: 3 rows x 4106 p95 state tokens -> 3082 detached scan + 1024 gradient-carrying per row (split at 3072); 2.4 GiB retained per step, stops at 3.0x the median of the last 20, free under 1.25x the projection, or 4.0 GiB of swap
+step     0  loss 1.861  ema 1.861  batch-acc 0.333  2.33s/update  2s
+step     1  loss 2.316  ema 1.883  batch-acc 0.000  2.03s/update  4s
+saved checkpoint to runs/lc0-smoke-s0b
+
+reproduction witness: run A (5 updates) and run B (2 updates, separate directory, no
+--resume) printed the same loss and batch-acc sequence for steps 0 and 1 — 1.861/0.333
+then 2.316/0.000 — so --seed 0 pins both the init and the data order on this path.
+metrics for run A: runs/lc0_smoke_s0.metrics.json (median 2.0194742679595947 s/update,
+updates_executed 5, stopped null).
