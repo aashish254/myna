@@ -4227,3 +4227,103 @@ Kept permanently, because the value of this project's claims is that they surviv
     after a prose edit — a mutant whose anchor no longer exists is a silent pass. **The class 62(ix)
     named is still open:** no mutant was added over `readme_block()`'s prose, so this corrected sentence
     can go stale again exactly as the last one did, and the suite will not notice.
+
+64. **Three parameter counts are live in this repo's artifacts and one expression defines all three; the
+    Phase 3 outline put the wrong one on the accuracy arm, and its G4 table had two cells filled from the
+    wrong stage. This entry commits the definitions, the stage-by-stage ladder and the dose denominators
+    exactly as they were verified against the witnesses.** No number appears here that was not read out of
+    a committed artifact or recomputed from a checkpoint on disk in the same step, and **no witness file
+    was edited to agree with an outline** — where the two disagreed, the outline was wrong and is
+    corrected below. The disagreement was in a reply, not in the repo: 63(v) and 62(iv) already printed
+    the right ladders, so the only tracked change this entry makes is the record.
+
+    **(i) The count is one expression, and it counts every parameter the model object has.** All three
+    figures come from `sum(p.numel() for p in self.model.parameters())` at
+    `src/myna/engine.py:158-159` — total parameters, embedding table included, not trainable-only, not
+    non-embedding, and *not* a quantized count. Measured on the lc1 checkpoint: **90** named tensors,
+    every one `requires_grad=True`, and **0** elements in buffers, so there is one set of tensors and no
+    frozen module to argue about. Because each is built from its own checkpoint's `cfg`, the count is a
+    property of the config, not of the harness.
+
+    | count | vocab | checkpoint it belongs to | what claims it in this repo |
+    |---|---|---|---|
+    | **14,449,280** | 1740 | `runs/myna-v0` — the shipped artifact, and the model the browser build is exported from | `runs/train-v0.log:5` (`params: 14449280`), printed by `src/myna/train.py:1020`; `runs/bench_mlx_int8.json`'s `n_params`, read from `myna.n_params` at `bench/bench_mlx.py:211` and written at `:317`; `runs/onnx/meta.json` (`"ckpt": "runs/myna-v0"`, `"vocab": 1740`, `"params_m": 14.45`) |
+    | **15,353,984** | 4096 (the default `MynaConfig`) | `lc1-4k-s0`, the long-context arm — the checkpoint whose `model_last.pt` lives outside the repo | `runs/lc1_4k_s0.train.log:4` (`long-context: state=4096 grad=1024 params=15353984`), `runs/lc1_4k_s0.metrics.json` (`params`), and `params_m: 15.35` in all three `runs/needle_lc1_stage*.json` (`bench/eval_needle.py:115`) |
+    | **16,926,848** | 8192 (the suite's `tokenizer-8192.json`) | `runs/v1b-kaggle-3600b` — the checkpoint **every G1 accuracy figure in §2.2 is scored on**, and the same config as the Tier 0 and anti-prior arms | `runs/antiprior_on_s0c.train.log:10`, `runs/myna_v1_accum.log:5`, `runs/diag_question_ablation.log:2`; asserted as a literal at `tests/test_diag_question_ablation.py:1314`; `bench/reproduce.py:539` calls the G1 arm "step 3599, 16.9M params" |
+
+    The three close arithmetically with one variable. On the lc1 checkpoint the only tensor above 1M is
+    `trunk.tok.weight` = vocab × `d_model` 384, and `d_model` 384 / 6 layers are identical across all
+    three configs (each read back out of its own `cfg`):
+    14,449,280 + (4096 − 1740) × 384 = 14,449,280 + 904,704 = **15,353,984**, and 15,353,984 +
+    (8192 − 4096) × 384 = 15,353,984 + 1,572,864 = **16,926,848**. So the counts differ by the embedding
+    table and by nothing else, and any sentence that treats them as three architectures is wrong.
+
+    **(ii) The int8 label was wrong and is corrected: 14,449,280 is a pre-quantization count.**
+    `runs/bench_mlx_int8.json` reports the *torch* model's `n_params` — `Myna(ckpt_dir)` is constructed at
+    `bench/bench_mlx.py:209-211` and `n_params` is read off it before either MLX engine exists, the fp32
+    and int8 engines being built separately at `:214`. The quantization facts in that file are bytes:
+    int8 `file_bytes` **18,248,977**, fp32 **57,805,835**. The cross-check that the count is a total-param
+    count and not a quantized one: 14,449,280 × 4 = 57,797,120, which is the fp32 file to within its
+    container overhead.
+
+    **(iii) The reproduced numbers, and which of them a clone can reach.** All three were recomputed in
+    this step by constructing `Myna` from each checkpoint directory on this laptop — `runs/myna-v0`,
+    `runs/v1b-kaggle-3600b` and `~/myna-staging/lc1-4k-s0/stageC_final` — and each printed exactly the
+    count in the table above, so none of the three is an estimate. No checkpoint is in the tree: all
+    three live under the `runs/*` line `.gitignore:24` keeps. Two of them have a documented fetch —
+    `src/myna/weights.py` pulls a GitHub Release by tag (`DEFAULT_TAG = "antiprior_off_s0-weights"`,
+    `src/myna/weights.py:38`), and README names `v1b-checkpoint` as "the 0.4893 Kaggle run" among the
+    published arms — while the 4k checkpoint that produced 15,353,984 exists only in `~/myna-staging/`,
+    which is 63(x)'s gap: a clone cannot reproduce that count, or the ladder it measured, until the
+    task #28 Release ships those weights.
+
+    **(iv) The stage ladder, cell by cell against the three `needle_lc1_stage*.{md,json}` witnesses and
+    the three stage logs** — which is also the correction of two cells the outline had wrong, and it had
+    them wrong *backwards*: Stage A **did** measure the 1024 rung (the outline left it blank), and Stage B
+    **never** measured 8192 or 16384 (the outline carried Stage C's values into its row). A rung absent
+    from a JSON's `lengths` list is now written as *not evaluated at this stage* and never inferred.
+
+    | leg | checkpoint evaluated | boundary status | n / seed / device | 128 | 1024 | 4096 | 8192 | 16384 |
+    |---|---|---|---|---|---|---|---|---|
+    | Stage A (leg 1, cold) | step-399 snapshot `model_last.pt` sha256 `f389bde5…`, reconstructed into a `model.pt` ladder-loadable dir; the leg had executed **425** updates and its last save was step 424 | **gated abort point** — Condition 3's "abort and report if the 128-rung is below 0.267" fired at 0.1667, which *is* the floor (`chance + margin = 0.2667`) | 60 / 0 / `cpu`, **throttled** `OMP_NUM_THREADS=2 nice -n 15` (62 vii) | **0.16666666666666666** (10/60) | **0.21666666666666667** (13/60) | not evaluated at this stage | not evaluated | not evaluated |
+    | Stage B (leg 2, resumed) | step-799 snapshot sha256 `a2bbc2eb…`, resumed from step-424 `d3548a88…` | **observation point** — 63(viii): the 0.267 rule cannot govern a run ordered past a floor it is sitting on; abort authority was the machine rules only | 60 / 0 / `cpu`, **throttled** (`runs/lc1_4k_s0.stageB_resume.log:20`) | **0.150** (9/60) | **0.21666666666666667** (13/60) | **0.18333333333333332** (11/60) | not evaluated at this stage | not evaluated |
+    | Stage C (leg 2, final) | step-1199 `model_last.pt` sha256 `25b868e9…`, `model.pt` `fb37a28b…`; `steps_requested` 1200, `last_step` 1199, 425 + 775 = **1200 executed** | **observation point**, no machine abort (STOP lines 0; swap 0.25M of 1024.00M at every reading) | 60 / 0 / `cpu`, **unthrottled** — the trainer had exited (63 v) | **0.150** (9/60) | **0.21666666666666667** (13/60) | **0.18333333333333332** (11/60) | **0.150** (9/60) | **0.150** (9/60) |
+
+    Witnesses, in that row order: `runs/needle_lc1_stageA.{md,json}` + `runs/lc1_4k_s0.stageA.log`;
+    `runs/needle_lc1_stageB_resume.{md,json}` + `runs/lc1_4k_s0.stageB_resume.log`;
+    `runs/needle_lc1_stageC_final.{md,json}` + `runs/lc1_4k_s0.stageC_final.log`. The `lengths` fields are
+    what set the blanks — `[128, 1024]`, `[128, 1024, 4096]`, `[128, 1024, 4096, 8192, 16384]`
+    respectively — and all three print `readable: false`, which is why the 16k *decision* is stated
+    against G4's thresholds on Stage C alone. Two invariants worth pinning: `temperature` is recorded
+    (1.0) and never applied to the score (`bench/eval_needle.py:116`), so it cannot differ a rung between
+    stages; the `ms` columns **do** differ by scheduling, which is 63(vii)'s 1.61× throttle price, so no
+    row of this table may be quoted on the latency axis.
+
+    **(v) The dose arithmetic, with its denominator printed at every step** — 63(vi) wrote the ratios but
+    not the divisor, which is how the count in (i) became load-bearing:
+
+    - state-token basis: 1200 updates × batch 3 = **3,600 states**; the run's own
+      `state_tokens_p95` is **4106** (`runs/lc1_4k_s0.metrics.json`), so 3,600 × 4106 = **14,781,600**
+      state tokens, and 14,781,600 ÷ **15,353,984** = **0.9627 → 0.96 tok/param**.
+    - gradient basis: 1200 × 3 × 1024 `grad_tokens` = **3,686,400** gradient-carrying tokens, and
+      3,686,400 ÷ **15,353,984** = **0.2401 → 0.24 tok/param**.
+    - the §6 pilot yardstick, whose denominator §6 leaves unstated: 4,246,106 ÷ **15,353,984** =
+      **0.2765 → 0.28**. That is the only one of the three counts in (i) that reproduces the published
+      0.28 — against 14,449,280 it is 0.2939 and against 16,926,848 it is 0.2509 — so 63(vi)'s "3.4×"
+      comparison is one denominator used both ways (0.9627 ÷ 0.2765 = 3.48), and §6's sentence is
+      arithmetically right while being silently under-specified.
+
+    **(vi) Two things this entry records and deliberately does not edit.** `SPEC.md:1669`'s risk row says
+    "15.35M cannot learn instruction-following well enough to clear G1"; the 15,353,984 count is the
+    default `MynaConfig` and is witnessed, but the arm that actually scored G1 is the 16,926,848
+    checkpoint, so that forward-looking risk sentence names a config nobody was scored on. §6's
+    "0.28 tokens/param" omits its denominator. Both are drafting-pass candidates on the owner's
+    instruction, not edits in this step, and neither is a disagreement with a witness.
+
+    **(vii) Verification on the tree this entry leaves.** `bench/gates.py --check` → **7/7 verdicts hold —
+    3 of 7 met, 3 not met, 1 open — the release gate is NOT clear**; `bench/reproduce.py --check` →
+    **34/34 rows hold; 101 figures tied to a committed witness, 1 gated with no witness**. No gate, row,
+    proof or verdict moved, and this entry touches `SPEC.md` alone — `git status` after it lists no other
+    file, which is the witness that none of the three `needle_lc1_stage*.{md,json}` pairs or any stage log
+    was edited to agree with a claim. **Nothing was pushed, tagged, released, or submitted; Phase 3
+    drafting was not started; the Stage C Release shipping remains an owner decision.**
