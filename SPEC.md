@@ -1609,7 +1609,10 @@ own commands, named above — while `macro 0.5339` was already bound by `antipri
 
 - **Measured:** 0.26M tokens before the pilot (3,432 rows × mean 300 chars ÷ 4) ⇒ **0.017
   tokens/param**. The P1 pilot corpus is **4,246,106 state tokens over 57,904 states** — tokenized
-  with the suite's own Qwen2.5-0.5B tokenizer, not the ÷4 estimate — ⇒ **0.28 tokens/param**.
+  with the suite's own Qwen2.5-0.5B tokenizer, not the ÷4 estimate — ⇒ **0.28 tokens/param**, whose
+  divisor is now stated (it was not when this line was written): 4,246,106 ÷ **15,353,984** = **0.2765**,
+  the default `MynaConfig` count and the only one of §9.64 (i)'s three counts that reproduces 0.28 —
+  against 14,449,280 the same numerator is 0.2939 and against 16,926,848 it is 0.2509 (§9.64 v).
   Compute-optimal for pretraining (~20 tok/param) would want ~307M tokens.
   This yardstick is a *pretraining* law; supervised fine-tuning is more sample-efficient — but the
   capability we lack, following instructions never seen in training, is exactly the one that
@@ -1666,7 +1669,7 @@ own commands, named above — while `macro 0.5339` was already bound by `antipri
 
 | risk | severity | mitigation |
 |---|---|---|
-| 15.35M cannot learn instruction-following well enough to clear G1 | **high** | both prerequisites are now built — P1 data (4.25M tokens) and P2's per-row contract — so this risk is finally testable rather than arguable; if G1 still fails, the honest product is abstention (G5), not accuracy |
+| The 16,926,848-parameter arm at vocab 8192 (`runs/v1b-kaggle-3600b` — the config G1 was actually scored on; the 15,353,984 default `MynaConfig` never was, §9.64 i) cannot learn instruction-following well enough to clear G1 | **high** | both prerequisites are now built — P1 data (4.25M tokens) and P2's per-row contract — so this risk is finally testable rather than arguable; if G1 still fails, the honest product is abstention (G5), not accuracy |
 | Latency advantage evaporates under equal-footing measurement (P4) | **high** | the size, window, calibration and browser-memory claims stand independently; the pitch must survive without the ratio |
 | Upstream-data comparison reads as unfair | medium | **disclosed, P8 8c**: README prints myna-scratch (0.348 mean over two seeds), myna-trained (**gated on its witness being committed here** — the run has happened, and 3i publishes its number from its own artifact), and laya (0.667) as three rows over the same 16 cells, with the 0.433/0.332 floors and the void-checkpoint disclosure (0.338, below its own control) beside them |
 | Another machine crash mid-run | medium | cloud training, checkpoint every ≤ 50 updates, observed-rate stop rule |
