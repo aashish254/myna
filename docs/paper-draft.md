@@ -5,11 +5,12 @@ Every number in this file is **measured** in this repository — either read out
 recomputed from a checkpoint on disk — and carries its witness beside it. Nothing is projected or
 borrowed. SPEC §9.64 (commit `bffefba`) is the source of truth for the parameter counts, the stage ladder
 and the dose denominators used here; where this draft cites a figure not in §9.64 it cites the artifact
-that prints it. No external literature is cited anywhere in this draft **as a paper**: every place that
-will need one is marked `[REF NEEDED — to be verified]` and listed at the end. The single citation that
-does appear inline — laya in §3 — is **software only** (repository, package index and model artifact, with
-version, pinned revision and access date), explicitly not external literature and not a paper, and no laya
-paper exists.
+that prints it. Every literature citation in this draft was opened and quoted from its live source on
+2026-10-29, and any source that could not be opened for a quotable sentence is **not** cited; the list is at
+the end under "References", beside the reason each entry is there. Two of the citations are deliberately
+**software and documentation rather than papers**: laya in §3 (repository, package index and pinned model
+artifact — no laya paper exists) and the browser runtime in §7 (npm registry and two W3C specifications). No
+`[REF NEEDED]` marker remains anywhere in the text.
 
 ---
 
@@ -83,8 +84,25 @@ We deliberately do not use the mixed-basis laya figure that appears elsewhere in
 is computed over a different denominator, and §9.37 and §9.41 of the spec record the two measurement bugs
 that mixing bases produced: a headline moved by 0.240 depending on roll-up order, and a source looked like
 a collapse when it was an aggregation artifact. Every comparison in this paper is same-cell or says it is
-not comparable. `[REF NEEDED — to be verified: prior work on small typed-decision / constrained-output
-classifiers, and on the decision-suite this corpus derives from; the repository contains no bibliography.]`
+not comparable.
+
+**Prior work.** The family this engine belongs to is named in the recent literature. Li & Wagle,
+*LLM-as-Jev: LLMs Are Already Jev-Style Decision Models — When and How to Fine-Tune Them*, arXiv:2610.02076
+(v1 2026-10-01, v3 current), describes decision models by exactly the property this draft scores: they return
+"categorical probability distributions over predefined options without generating free-form text". Duan et
+al., *General Decision Models: Benchmarking and Insights Beyond Jev*, arXiv:2610.03935 (v1 2026-10-02, v2
+current), benchmarks that family across domains. Instruction-shaped option scoring has an older lineage in
+cloze-based classification: Schick & Schütze, *Exploiting Cloze-Questions for Few-Shot Text Classification
+and Natural Language Inference*, EACL 2021, pp. 255–269, DOI 10.18653/v1/2021.eacl-main.20 — Pattern-Exploiting
+Training, which "reformulates input examples as cloze-style phrases to help language models understand a
+given task". Constrained output is Willard & Louf, *Efficient Guided Generation for Large Language Models*,
+arXiv:2307.09702 (v1 2023-07-19, v4 current), which reformulates generation "in terms of transitions between
+the states of a finite-state machine"; that is constrained *generation*, adjacent to this engine's per-option
+scoring rather than the same mechanism, and no more than the adjacency is claimed here. **The corpus needs no
+external reference:** its provenance is witnessed inside this repository by
+`data/decision-v2-pilot/upstream_manifest.json` (`derived_from`, `converters`, ten pinned
+`dataset_revisions`, `base_revisions`, `records`, `state_tokens_under_first_base.sum`), whose upstream is the
+public `jaredpalmer/kev` suite.
 
 ## 4. Method
 
@@ -113,8 +131,24 @@ so `split = long_context − grad_tokens = 3072`: the first 3,072 tokens of each
 `no_grad` and only the final 1,024-token window carries gradient. The memory cost is therefore priced by
 the **gradient window**, `min(grad_tokens, p95)`, not by the state length — the run's own record is
 `detached_tokens_p95` 3082, `grad_window_tokens` 1024, `batch` 3, **2.4 GiB retained per step**
-(`runs/lc1_4k_s0.metrics.json`). `[REF NEEDED — to be verified: truncated / periodic backpropagation
-through time.]`
+(`runs/lc1_4k_s0.metrics.json`). This is truncated backpropagation through time, and the cost that motivates
+truncating is stated in the origin paper: Williams & Zipser, *A Learning Algorithm for Continually Running
+Fully Recurrent Neural Networks*, Neural Computation 1(2):270–280, 1989, DOI 10.1162/neco.1989.1.2.270, whose
+publisher-deposited abstract lists as the disadvantage of the untruncated recurrent rule that such algorithms
+"require nonlocal communication in the network being trained and are computationally expensive". That the
+truncation horizon bounds what can be learned is the published position, not our inference: Ke et al., *Sparse
+Attentive Backtracking*, arXiv:1711.02326, record that "full backpropagation through time is rarely used on
+long sequences, and truncated backpropagation through time is used as a heuristic", and Benzing et al.,
+*Optimal Kronecker-Sum Approximation of Real Time Recurrent Learning*, arXiv:1902.03993, that "the most
+popular training method, Truncated Backpropagation through Time (TBPTT), categorically forbids learning
+dependencies beyond the truncation horizon". Truncation is not an RNN-only device — Al-Rfou et al.,
+*Character-Level Language Modeling with Deeper Self-Attention*, arXiv:1808.04444, state that such attention
+models "are typically trained using truncated backpropagation through time". The memory motive for detaching
+rather than storing activations is Chen et al., *Training Deep Nets with Sublinear Memory Cost*,
+arXiv:1604.06174, which gives "an algorithm that costs O(sqrt(n)) memory to train a n layer network, with only
+the computational cost of an extra forward pass per mini-batch". These are lineage and motive only: none of
+them analyses detaching a fixed prefix of a transformer state scan, which is what `split = long_context −
+grad_tokens` does here.
 
 **Evaluation harness.** Needle recall at state lengths 128–16,384 tokens, decisive sentence at a random
 position, `n = 60` per rung, `--seed 0`, `--device cpu` (`bench/eval_needle.py`). The harness computes a
@@ -163,11 +197,21 @@ for long context. The arm is `lc1-4k-s0` — **15,353,984 parameters at vocab 40
 is SPEC §9.64 (iv), cell by cell against `runs/needle_lc1_stage{A,B_resume,C_final}.{md,json}` and the
 three stage logs; a rung absent from a witness's `lengths` list is marked not evaluated and never
 inferred. The ladder itself — a state length increased rung by rung, a needle planted at a random position,
-accuracy reported per rung — is a long-context retrieval evaluation of a known class; any reference
-attached to it will be for that lineage, not as corroboration of the shape measured below, which is flat at
-the floor rather than a decay. `[REF NEEDED — to be verified: needle-in-a-haystack
-long-context evaluation methodology — the positional-decay literature and the open-source harness whose
-shape this ladder follows.]`
+accuracy reported per rung — is a long-context retrieval evaluation of a published class. Liu et al., *Lost in
+the Middle: How Language Models Use Long Contexts*, TACL 12:157–173, 2024, DOI 10.1162/tacl_a_00638
+(arXiv:2307.03172v3) is the positional result this harness type was built to probe: "performance can degrade
+significantly when changing the position of relevant information", and "performance is often highest when
+relevant information occurs at the beginning or end of the input context, and significantly degrades when
+models must access relevant information in the middle of long contexts". The grid shape — one accuracy per
+context-length and needle-depth cell — follows the open-source Needle In A Haystack of Kamradt,
+`gkamradt/needle-in-a-haystack` at HEAD `021385d68d3202e37893e9d3cd29011c569abe30` (2026-06-08), cited **as
+software**: its README describes a sweep of `(context length × needle depth)` cells that "scores each
+response, and writes one result row per cell to a JSONL file" (the repository's former name,
+`gkamradt/LLMTest_NeedleInAHaystack`, now answers HTTP 301). A peer-reviewed benchmark that names the
+paradigm is Yu et al., *Sequential-NIAH: A Needle-In-A-Haystack Benchmark for Extracting Sequential Needles
+from Long Contexts*, arXiv:2504.04713 (v1 2025-04-07, v3 current). All three are lineage, never
+corroboration: that literature reports positional decay in models that make use of long contexts, and the
+curve below is flat at the floor rather than a decay.
 
 | leg | checkpoint evaluated | boundary status | n / seed / device | 128 | 1024 | 4096 | 8192 | 16384 |
 |---|---|---|---|---|---|---|---|---|
@@ -212,12 +256,20 @@ All figures in this section are the **shipped artifact**: v0, 14,449,280 paramet
 checkpoint — `runs/onnx/meta.json` records `"ckpt": "runs/myna-v0"`, `"vocab": 1740`, `"params_m": 14.45`.
 
 Measured in Chrome 153.0.8010.53 with ONNX Runtime Web 1.30.0 on a 10-core, 32 GB laptop
-(`runs/browser_g3.json`, 6 checks passed / 0 failed in all four runs). The version measured here is
-witnessed by that artifact, not by the literature; the execution environment itself needs a citable
-source, and it will be cited as software and documentation rather than as a paper.
-`[REF NEEDED — to be verified: ONNX Runtime Web and its WebGPU/wasm execution environment, plus the
-WebAssembly substrate the wasm path runs on — software and documentation entries, with version and access
-date.]`
+(`runs/browser_g3.json`, 6 checks passed / 0 failed in all four runs). The version measured here is witnessed
+by that artifact, and the environment itself is cited **as software and documentation, not as a paper**:
+`onnxruntime-web` 1.30.0 on the npm registry (MIT; published 2026-09-14T20:20:13.234Z; described there as "A
+Javascript library for running ONNX models on browsers"; the registry's `latest` is 1.31.1, published
+2026-10-26T20:01:38Z, so the build measured here is one minor behind), the project's own web tutorial
+(https://onnxruntime.ai/docs/tutorials/web/), which states the backends plainly — "With onnxruntime-web, you
+have the option to use `webgl`, `webgpu` or `webnn` (with `deviceType` set to `gpu`) for GPU processing, and
+WebAssembly (`wasm`, alias to `cpu`) or `webnn` (with `deviceType` set to `cpu`) for CPU processing" — the
+*WebGPU* API specification, a W3C Candidate Recommendation Draft dated 2026-09-15
+(https://www.w3.org/TR/webgpu/): "WebGPU exposes an API for performing operations, such as rendering and
+computation, on a Graphics Processing Unit"; and the *WebAssembly Core Specification*, a W3C Candidate
+Recommendation Draft dated 2026-10-28 (https://www.w3.org/TR/wasm-core-2/), "a safe, portable, low-level code
+format designed for efficient execution and compact representation". All four were opened on 2026-10-29. No
+peer-reviewed venue exists for the runtime and none is claimed for it.
 
 The measured quantities:
 
@@ -297,9 +349,17 @@ split, and this section's run records the same value (`runs/risk_coverage.json`,
 scalar divides the logits at inference (`src/myna/engine.py:208`) and is applied the same way in the
 browser export (`src/myna/onnx_export.py:328`). The machinery is what works —
 thresholds fitted on `calibration.jsonl`, coverage falling monotonically,
-accuracy rising with it — and the level is what does not.
-`[REF NEEDED — to be verified: selective classification / reject-option work behind this framing, and the
-confidence-calibration work behind the fitted scalar used to rank questions.]`
+accuracy rising with it — and the level is what does not. The framing has a published name: Geifman &
+El-Yaniv, *Selective Classification for Deep Neural Networks*, Advances in Neural Information Processing
+Systems 30 (2017) (arXiv:1705.08500, v1 2017-05-23, v2 current), the line this curve sits on — "Selective
+classification techniques (also known as reject option)", in which "the classifier rejects instances as
+needed, to grant the desired risk (with high probability)". The scalar that ranks the questions is temperature
+scaling as published in Guo, Pleiss, Sun & Weinberger, *On Calibration of Modern Neural Networks*, Proceedings
+of the 34th International Conference on Machine Learning, PMLR 70:1321–1330 (arXiv:1706.04599, v1 2017-06-14,
+v2 current): "on most datasets, temperature scaling — a single-parameter variant of Platt Scaling — is
+surprisingly effective at calibrating predictions". That is the same single parameter our 8-point NLL grid
+fits. Neither citation upgrades this section: no rejection-set construction is claimed, no coverage guarantee
+is reported, and "risk-coverage" above stays the plain description of the trade rather than a named method.
 The three sources G5 names are the reason, and
 their denominator must be stated: at **full coverage (rung 1.0, n = 40 each)** they are banking77 **0.000**,
 dbpedia14 **0.025**, trec **0.150**; dbpedia14's best value over *any* rung is 0.0278 (rung 0.9), so even
@@ -373,46 +433,70 @@ refused to print a decay curve for a flat one is the instrument we would hand to
 
 ---
 
-## `[REF NEEDED — to be verified]` list (no reference in this draft is unverified)
+## References — every citation the body uses, each opened on 2026-10-29
 
-Five places in the text carry an inline marker, and they are the five items below. Each was checked against
-its live source on 2026-10-29; the verdict is recorded beside each item, and none of them is cited inline
-until the owner approves the wording.
+No `[REF NEEDED]` marker remains in the text: each of the five places that carried one now cites a source
+that could be opened and quoted, or is answered by an internal witness. Every entry below appears in the body
+above, and nothing is listed here that the body does not use. Three sources that could **not** be opened for a
+quotable sentence are named as deliberately uncited rather than carried on their reputations.
 
-1. **§3, marked in the text** — prior work on small typed-decision / constrained-output classifiers. The
-   repository still contains no bibliography. Verified as existing and named but not yet cited: Li & Wagle,
-   arXiv:2610.02076 (v1 2026-10-01); Duan et al., arXiv:2610.03935 (v1 2026-10-02); Schick & Schütze, PET,
-   EACL 2021, DOI 10.18653/v1/2021.eacl-main.20; Willard & Louf, arXiv:2307.09702 — the last of these is
-   constrained *generation*, so it is adjacent rather than the same mechanism, and §3 must say so if it is
-   cited. **The provenance half of this item is answered internally, not by literature:** the corpus
-   witness is `data/decision-v2-pilot/upstream_manifest.json` (`derived_from`, `converters`, ten pinned
-   `dataset_revisions`, `base_revisions`, `records`, `state_tokens_under_first_base.sum`), whose own
-   upstream is the public `jaredpalmer/kev` suite.
-2. **§4, marked in the text** — truncated / periodic backpropagation through time, the method lineage for
-   the 3,072-token `no_grad` prefix. Verified: Werbos, *Backpropagation through time*, Proceedings of the
-   IEEE 78(10):1550–1560, 1990, DOI 10.1109/5.58337; Williams & Zipser, Neural Computation 1(2):270–280,
-   1989, DOI 10.1162/neco.1989.1.2.270; Chen et al., arXiv:1604.06174 for the memory motive. **Lineage
-   only** — no paper analyses detaching a prefix of a transformer state scan.
-3. **§6, marked in the text** — needle-in-a-haystack long-context evaluation methodology. Verified: Liu et
-   al., *Lost in the Middle*, TACL 12:157–173, 2024, DOI 10.1162/tacl_a_00638; Kamradt's
-   `gkamradt/needle-in-a-haystack` as the harness's origin, citable as software (HEAD
-   `021385d68d3202e37893e9d3cd29011c569abe30`, 2026-06-08); and, if a peer-reviewed NIAH-named paper is
-   wanted, Yu et al., *Sequential-NIAH: A Needle-In-A-Haystack Benchmark for Extracting Sequential Needles
-   from Long Contexts*, arXiv:2504.04713. Lineage, never corroboration: that work measures positional
-   decay in models that can retrieve, and §6 reports a flat floor.
-4. **§7, marked in the text** — ONNX Runtime Web and its WebGPU/wasm environment, as software and
-   documentation: `onnxruntime-web` 1.30.0 (npm registry, published 2026-09-14T20:20:13Z; `latest` is
-   1.31.1, so this build is one minor behind — that is what was measured), the official web docs, the
-   2024-02-29 Microsoft Open Source Blog post on the WebGPU path, and the W3C WebGPU specification;
-   Haas, Rossberg et al., PLDI 2017, DOI 10.1145/3062341.3062363 for wasm itself. No peer-reviewed venue
-   exists for the runtime, and the blog must not be dressed up as one.
-5. **§10, marked in the text** — selective classification / reject-option work behind §10's framing, and
-   the calibration work behind the fitted confidence scalar. Verified: Geifman & El-Yaniv, *Selective
-   Classification for Deep Neural Networks*, Advances in Neural Information Processing Systems 30 (2017),
-   arXiv:1705.08500; Guo, Pleiss, Sun & Weinberger, *On Calibration of Modern Neural Networks*, ICML 2017,
-   PMLR 70. Both apply to us directly — the fitted single-scalar temperature is applied at inference (see
-   §10) — and Angelopoulos & Bates, arXiv:2107.07511 stays optional background because no coverage
-   guarantee is reported here.
+1. **§3** — Yinheng Li and Justin Wagle, *LLM-as-Jev: LLMs Are Already Jev-Style Decision Models — When and How
+   to Fine-Tune Them*, arXiv:2610.02076 (v1 2026-10-01, v3 current). Feiyu Duan, Jiayu Lin, Jia Wang, Jun
+   Xiang, Jialiang Wu, Xinnong Zhang, Hanqi Yan, Siyuan Wang and Zhongyu Wei, *General Decision Models:
+   Benchmarking and Insights Beyond Jev*, arXiv:2610.03935 (v1 2026-10-02, v2 current). Timo Schick and
+   Hinrich Schütze, *Exploiting Cloze-Questions for Few-Shot Text Classification and Natural Language
+   Inference*, EACL 2021 main volume, pp. 255–269, DOI 10.18653/v1/2021.eacl-main.20 (abstract read from the
+   ACL Anthology record). Brandon T. Willard and Rémi Louf, *Efficient Guided Generation for Large Language
+   Models*, arXiv:2307.09702 (v1 2023-07-19, v4 current). Corpus provenance is **not** a literature item: it
+   is the internal witness `data/decision-v2-pilot/upstream_manifest.json`, whose upstream is the public
+   `jaredpalmer/kev` suite.
+2. **§4** — Ronald J. Williams and David Zipser, *A Learning Algorithm for Continually Running Fully Recurrent
+   Neural Networks*, Neural Computation 1(2):270–280, 1989, DOI 10.1162/neco.1989.1.2.270 (abstract deposited
+   with the DOI record). Nan Rosemary Ke, Anirudh Goyal, Olexa Bilaniuk, Jonathan Binas, Laurent Charlin,
+   Chris Pal and Yoshua Bengio, *Sparse Attentive Backtracking: Long-Range Credit Assignment in Recurrent
+   Networks*, arXiv:1711.02326. Frederik Benzing, Marcelo Matheus Gauy, Asier Mujika, Anders Martinsson and
+   Angelika Steger, *Optimal Kronecker-Sum Approximation of Real Time Recurrent Learning*, arXiv:1902.03993.
+   Rami Al-Rfou, Dokook Choe, Noah Constant, Mandy Guo and Llion Jones, *Character-Level Language Modeling
+   with Deeper Self-Attention*, arXiv:1808.04444. Tianqi Chen, Bing Xu, Chiyuan Zhang and Carlos Guestrin,
+   *Training Deep Nets with Sublinear Memory Cost*, arXiv:1604.06174. **Not cited in the body:** P.J. Werbos,
+   *Backpropagation Through Time: What It Does and How to Do It*, Proceedings of the IEEE 78(10):1550–1560,
+   1990, DOI 10.1109/5.58337 — the canonical origin, whose bibliographic record was confirmed twice here
+   (Crossref and Semantic Scholar, both HTTP 200) but neither deposits an abstract and the IEEE full text was
+   not opened, so no sentence of it is quoted and none is relied on.
+3. **§6** — Nelson F. Liu, Kevin Lin, John Hewitt, Ashwin Paranjape, Michele Bevilacqua, Fabio Petroni and
+   Percy Liang, *Lost in the Middle: How Language Models Use Long Contexts*, TACL 12:157–173, 2024,
+   DOI 10.1162/tacl_a_00638 (abstract read from the DOI record; arXiv:2307.03172v3). Graham Kamradt,
+   *needle-in-a-haystack*, https://github.com/gkamradt/needle-in-a-haystack, HEAD
+   `021385d68d3202e37893e9d3cd29011c569abe30` dated 2026-06-08T18:01:11Z — cited **as software**; the
+   repository's license field reads `NOASSERTION`, so no licence is claimed for it, and its former name
+   `gkamradt/LLMTest_NeedleInAHaystack` now answers HTTP 301. Yifei Yu, Qian-Wen Zhang, Lingfeng Qiao, Di
+   Yin, Fang Li, Jie Wang, Zengxi Chen, Suncong Zheng, Xiaolong Liang and Xing Sun, *Sequential-NIAH: A
+   Needle-In-A-Haystack Benchmark for Extracting Sequential Needles from Long Contexts*, arXiv:2504.04713
+   (v1 2025-04-07, v3 current).
+4. **§7** — `onnxruntime-web` 1.30.0, npm registry record (MIT; published 2026-09-14T20:20:13.234Z; `latest`
+   is 1.31.1, published 2026-10-26T20:01:38Z). ONNX Runtime web tutorial,
+   https://onnxruntime.ai/docs/tutorials/web/ (page title "Web | onnxruntime"). *WebGPU*, W3C Candidate
+   Recommendation Draft dated 2026-09-15, https://www.w3.org/TR/webgpu/. *WebAssembly Core Specification*, W3C
+   Candidate Recommendation Draft dated 2026-10-28, https://www.w3.org/TR/wasm-core-2/. **Two entries
+   previously listed here are removed rather than carried:** a Microsoft Open Source Blog post on the WebGPU
+   path, and the deeper docs page `https://onnxruntime.ai/docs/tutorials/web/eps.html` — both returned HTTP
+   404 when opened on 2026-10-29, so neither is cited. Also **not cited in the body:** Andreas Haas, Andreas
+   Rossberg, Derek L. Schuff, Ben L. Titzer, Michael Holman, Dan Gohman, Luke Wagner, Alon Zakai and JF
+   Bastien, *Bringing the web up to speed with WebAssembly*, PLDI 2017, pp. 185–200,
+   DOI 10.1145/3062341.3062363 — the DOI record is confirmed (Crossref, HTTP 200), but no abstract is
+   deposited and the ACM full text was not opened, so the WebAssembly substrate is cited to the W3C
+   specification above instead.
+5. **§10** — Yonatan Geifman and Ran El-Yaniv, *Selective Classification for Deep Neural Networks*, Advances
+   in Neural Information Processing Systems 30 (2017), entry confirmed in the venue's own 2017 index at
+   `papers.nips.cc` (hash `4a8423d5e91fda00bb7e46540e2b0cf1`), arXiv:1705.08500 (v1 2017-05-23, v2 current).
+   Chuan Guo, Geoff Pleiss, Yu Sun and Kilian Q. Weinberger, *On Calibration of Modern Neural Networks*,
+   Proceedings of the 34th International Conference on Machine Learning, PMLR 70:1321–1330,
+   https://proceedings.mlr.press/v70/guo17a.html, arXiv:1706.04599 (v1 2017-06-14, v2 current).
+   **Identifier correction recorded here:** the calibration paper is arXiv:1706.04599; the id 1503.03832,
+   which an earlier note in this project carried for it, resolves to *FaceNet* (Schroff, Kalenichenko &
+   Philbin) — caught by opening the arXiv record instead of repeating the note. **Dropped rather than
+   carried:** Angelopoulos & Bates, arXiv:2107.07511, listed previously as optional background, was not opened
+   in this pass and §10 reports no coverage guarantee, so it appears nowhere in the body.
 
 **Resolved — no marker remains.** The laya parameter count is cited in §3 as **software** with its version
 and pinned revision (PyPI `laya` 0.3.20; `convaiinnovations/laya` at
