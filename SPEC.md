@@ -1625,9 +1625,15 @@ own commands, named above — while `macro 0.5339` was already bound by `antipri
   Supervised fine-tuning is more sample-efficient — but the
   capability we lack, following instructions never seen in training, is exactly the one that
   scales with tokens-per-parameter. That is the honest boundary.
-- **Therefore: parameters are not the lever.** 32M would still be 1,189× under the pretraining
-  yardstick, 93M 3,655× under. Scaling params without data doubles the data debt. Growth is
-  affordable on latency and gets tested in P3 — after the data.
+- **Therefore: parameters are not the lever.** The "32M would still be 1,189× / 93M 3,655×" data-debt
+  multipliers this bullet carried were measured against the ≈20 tokens/parameter yardstick withdrawn
+  immediately above, so they are **deleted, not recomputed** — no replacement target is quoted here, because
+  none is witnessed in this repository. What the pilot ratio does support is directional and uses only the
+  three counts §9.64 (v) already prints: the same 4,246,106 tokens are **0.2765** tok/param at the default
+  15,353,984, **0.2509** at the 16,926,848 arm G1 was scored on, and **0.2939** at the shipped 14,449,280.
+  Adding parameters to this corpus lowers the dose each parameter receives; that is the whole of the claim.
+  Scaling params without data worsens that ratio. Growth is affordable on latency and gets tested in P3 —
+  after the data.
 - **M5 (32 GB, unified):** `--batch 32 --vocab 8192` thrashes swap; a pool+accum run projected
   2.81 s/update but **measured 4.93 s/update** before raising Metal
   `kIOGPUCommandBufferCallbackErrorOutOfMemory` and rebooting the machine. Budget by the *token*
@@ -4306,8 +4312,13 @@ Kept permanently, because the value of this project's claims is that they surviv
     what set the blanks — `[128, 1024]`, `[128, 1024, 4096]`, `[128, 1024, 4096, 8192, 16384]`
     respectively — and all three print `readable: false`, which is why the 16k *decision* is stated
     against G4's thresholds on Stage C alone. Two invariants worth pinning: `temperature` is recorded
-    (1.0) and never applied to the score (`bench/eval_needle.py:116`), so it cannot differ a rung between
-    stages; the `ms` columns **do** differ by scheduling, which is 63(vii)'s 1.61× throttle price, so no
+    (1.0) and never applied to the score **in this harness** (`bench/eval_needle.py:116`), so it cannot
+    differ a rung between stages — the scope of that sentence is the needle ladder's own scoring path, and
+    nothing more. It is not a claim about the engine's inference temperature, which is a separate, fitted
+    scalar that does divide the logits at inference (`src/myna/engine.py:208`, fitted by the 8-point NLL
+    grid at `src/myna/train.py:532-537`; the paper draft's §10 documents that path). Different code path,
+    different checkpoint: the two statements are not in contradiction and neither one restates the other;
+    the `ms` columns **do** differ by scheduling, which is 63(vii)'s 1.61× throttle price, so no
     row of this table may be quoted on the latency axis.
 
     **(v) The dose arithmetic, with its denominator printed at every step** — 63(vi) wrote the ratios but

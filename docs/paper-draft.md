@@ -5,8 +5,11 @@ Every number in this file is **measured** in this repository — either read out
 recomputed from a checkpoint on disk — and carries its witness beside it. Nothing is projected or
 borrowed. SPEC §9.64 (commit `bffefba`) is the source of truth for the parameter counts, the stage ladder
 and the dose denominators used here; where this draft cites a figure not in §9.64 it cites the artifact
-that prints it. External literature is not cited anywhere in this draft: every place that will need a
-reference is marked `[REF NEEDED — to be verified]` and listed at the end.
+that prints it. No external literature is cited anywhere in this draft **as a paper**: every place that
+will need one is marked `[REF NEEDED — to be verified]` and listed at the end. The single citation that
+does appear inline — laya in §3 — is **software only** (repository, package index and model artifact, with
+version, pinned revision and access date), explicitly not external literature and not a paper, and no laya
+paper exists.
 
 ---
 
@@ -23,7 +26,8 @@ floor where +0.15 is required), G4 is not met (0.1833 at 4,096 state tokens agai
 against a required 0.95 at ≥60% coverage) — while G6 remains open** (v0's own test macro is 0.9523, above
 the 0.94 level, but no v1 checkpoint has been run against it). What does hold is measured and reproducible:
 a 59.32 MiB artifact that loads in 253.9–394.4 ms and answers in a fixed 589,824-byte (576 KiB) decision
-state; a matched-condition throughput advantage over a 421.29M-parameter competitor on the same inputs
+state; a matched-condition throughput advantage over a competitor **we measure at 421,293,827
+parameters** (our count at their pinned snapshot, not a figure they publish) on the same inputs
 (33.083 ms against 100.691 ms at one question); and a release-gate registry in which 7/7 verdicts and
 34/34 rows re-derive from committed witnesses. We report the failures as the primary result, because the
 instrument that detected them — a needle-recall harness that refuses to let a flat-at-chance curve be read
@@ -139,7 +143,7 @@ last logged step 3599).
 | **G1 primary** | v1b-kaggle-3600b, 16,926,848 / 8192 | 16 in-scope cells | **0.4893** | **0.4331** | **+0.0563** | **not met** — +0.15 required, and 0.211 short of the 0.70 level |
 | sensitivity | same checkpoint | 14 cells (out-of-scope sources cut) | 0.5334 | 0.4666 | +0.0668 | not met — sensitivity only, never the headline |
 | excluded | same checkpoint | 11 cells (every cell below its own floor dropped) | 0.5526 | — | +0.0949 | **not a result**: 0.147 short of 0.70, and dropping failing cells after seeing the scores is cherry-picking |
-| competitor | laya 0.3.20, 421.29M (*their published count*) | the same 16 cells | 0.6668 | — | myna is 0.177 below | no parity claim |
+| competitor | laya 0.3.20, **421,293,827 parameters measured by us** at the pinned snapshot `55cf4c4e…` (their card's rounded ≈421M is attribution to the source, never the measurement) | the same 16 cells | 0.6668 | — | myna is 0.177 below | no parity claim |
 | control | untrained scratch, 16,926,848 / 8192, 2 seeds | same 16 cells | 0.346 / 0.351 (mean 0.348) | 0.433 | below floor | the trained arm clears the floor; the control does not |
 | contrast | void pre-`385e06c` checkpoint | — | 0.338 | — | — | disclosure only, never a result |
 
@@ -347,14 +351,17 @@ and none reaches that prose, so we present the block as a drift guard with a nam
 
 **Scope limits we accept.** One seed for the needle ladder and two for the scratch control; a
 single-box, single-browser measurement set; a frozen 16-cell suite and a needle ladder at `n = 60` per rung,
-where 60 samples give a 0.0481 standard error; and a corpus whose pilot is 4.25M state tokens, under the
-pretraining yardstick the model is far from data-saturated rather than capacity-limited.
+where 60 samples give a 0.0481 standard error; and a corpus whose pilot is 4.25M state tokens —
+4,246,106 ÷ 15,353,984 = **0.2765 tokens per parameter**, this repository's own pilot ratio, and against
+that ratio alone the model is far from data-saturated rather than capacity-limited. No external
+tokens-per-parameter law is claimed for this or any other section of the draft (§6).
 
 ## 12. Conclusion
 
 We described Myna, a 16,926,848-parameter typed-decision engine whose shipped artifact is 59.32 MiB, loads
 in a browser tab in 253.9–394.4 ms, holds state in a fixed 576 KiB, and answers 10 questions in
-120.753 ms against a 421.29M-parameter competitor's 506.277 ms on the same inputs and the same box. We also
+120.753 ms against 506.277 ms from a competitor **we measure at 421,293,827 parameters** — our count at
+their pinned snapshot, not a figure they publish — on the same inputs and the same box. We also
 report that it does not pass its own release gates: **G1 is not met** at 0.4893 macro against a 0.70 level
 and a +0.15 margin over a 0.4331 floor, with no scope choice rescuing it; **G4 is not met** at 0.1833 at
 4,096 and 0.150 at 16,384 state tokens against 0.90 and 0.85, on a checkpoint that completed its approved
@@ -423,7 +430,7 @@ against the pilot corpus's own ratio. No "≈20" appears anywhere in §6.
 **Absent by design.** No paper titled *CALM: Consistency-Aware Language Modelling for Text Classification*
 was found, so it is not cited here, is not cited in the SPEC, and must not be added to this draft.
 
-## Proposed SPEC edits — recorded, **not applied** in this step
+## Proposed SPEC edits — both **applied**: these two sentences in `fd5f138`, the reference sweep and §9.64 (vi) in `800da60`
 
 1. **`SPEC.md:1669`** (risk table) — "15.35M cannot learn instruction-following well enough to clear G1"
    names the default `MynaConfig` count, but the arm that actually scored G1 is the 16,926,848-parameter
