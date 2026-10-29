@@ -4030,7 +4030,10 @@ Kept permanently, because the value of this project's claims is that they surviv
     cannot be closed on this box". Both are falsified by a run that closed the compute half on this box.
     They stay as written: editing the gate table's prose is outside this run's authorised scope, and
     README cannot carry the correction without it, so README's block and SPEC §2.2 now disagree in
-    words while agreeing in verdict. **The structural finding is the one to keep:** all 21 mutants in
+    words while agreeing in verdict. **(Superseded 2026-10-29: the owner then approved exactly this
+    two-field generator edit — both fields' before/after wording and the four checks are §9.63(xii).
+    The structural finding below is *not* closed by it: no mutant was added over the prose.)**
+    **The structural finding is the one to keep:** all 21 mutants in
     `bench/mutation_gates.py` target `bench/gates.py`'s checking logic — the row parser, the drift
     comparison, the verdict read — and none reaches `readme_block()`'s strings, so the generated block
     is drift-checked and not truth-checked. A sentence in it can go stale exactly the way §9.44's
@@ -4181,12 +4184,14 @@ Kept permanently, because the value of this project's claims is that they surviv
 
     **(xi) Verification on the tree this entry leaves.** `bench/gates.py --check` → **7/7 verdicts hold —
     3 of 7 met, 3 not met, 1 open — the release gate is NOT clear**, with G4 still `not met` read from a
-    witness that prints `readable: false` (now three of them: stageA, stageB_resume, stageC_final, beside
-    v0's own). §2.2's G4 row and §5's 7b and P8-release-gate lines are updated to the completed dose;
-    `bench/gates.py:188` and `:450` still say the 16k decision "needs … `KAGGLE`" and that G1/G4 "cannot
-    be closed on this box", which 62 and this entry both falsify — they stay as written because that
-    prose is inside the generated block and outside this run's authorised scope, exactly as 62(ix)
-    records, and README's block and SPEC therefore disagree in words while agreeing in verdict. Writing
+    witness that prints `readable: false` — the check reads that field out of `runs/needle_myna-v0.json`,
+    which is still the gate's bound proof; three further artifacts with the same `readable: false` now sit
+    beside it in the repo (stageA, stageB_resume, stageC_final), and none of them is a proof or a registry
+    row yet (see (x)). §2.2's G4 row and §5's 7b and P8-release-gate lines are updated to the completed
+    dose;
+    `bench/gates.py:188` and `:450` still said the 16k decision "needs … `KAGGLE`" and that G1/G4 "cannot
+    be closed on this box" as this entry was written — 62(ix) records why they stayed for that one step.
+    They were corrected on the owner's order the next day; that edit is (xii). Writing
     (v) found a smaller class of the same defect in README's *prose*: it quoted
     "`G4: NOT MEASURED here`" and "its `G4: NOT MEASURED` line" as what `runs/needle_myna-v0.md` prints,
     but the harness prints **two different strings** — `bench/eval_needle.py:87` puts the stdout form on
@@ -4194,3 +4199,31 @@ Kept permanently, because the value of this project's claims is that they surviv
     the terminal's words to the artifact. Both places now quote the file's own text, which is the only
     version a reader who opens the witness can verify. **Nothing
     was pushed, tagged, released, or submitted, and Phase 3 was not started.**
+
+    **(xii) The two-field generator edit the owner then approved — code and regeneration only.** The
+    instruction was to edit nothing else in the generator, so the gate table's *structure*, its `rows`,
+    its `proofs` and every other gate's prose are untouched: `GATES` is still seven entries and the G4
+    proof is still `runs/needle_myna-v0.json`'s `baseline/readable == False`.
+
+    | field | before | after |
+    |---|---|---|
+    | `gate("G4", …)`'s not-claim cell, `bench/gates.py:198-201` | "not met, and not met by a run that cannot answer the question. The 16k *state* is measured, fixed at 576 KiB and cheap (§9.22); the 16k **decision** needs the 4k truncated-backprop checkpoint, which is 7b / `KAGGLE`. Those are two different claims and only the first one is settled." | "not met, and no longer a run that has not happened. … the 16k *decision* has now been measured on this box too — the 4k truncated-backprop checkpoint ran its approved 1200-update dose on the M5 and prints **0.183 at 4096 and 0.150 at 16384** against these two thresholds (§9.63, `runs/needle_lc1_stageC_final.json`; not a registry row yet, because those weights live outside the repo). So the `KAGGLE` label on 7b was stale and neither half of this gate is a compute question. What is not settled is the mechanism: the ladder at 799 and at 1199 updates is identical on every shared rung, so another dose at this regime is not the next experiment." |
+    | `readme_block()`'s intro, `bench/gates.py:448-450` | "… The gate that decides whether this is a product (G1) and the gate that decides what it can read (G4) are the two that cannot be closed on this box." | "… Both of the gates a reader might have expected to be waiting on hardware are measured here: G4's 4k run executed on this laptop (§9.63), and G1's checkpoint has its own report committed in `runs/`. Neither is `open` — G1 stays short of 0.70, and its remaining lever carries a GPU price §9.38 writes down, while G4's shortfall is a mechanism question and not a compute one." |
+
+    **README's block was regenerated, not edited**: `/tmp/regen_readme_block.py` split README on the two
+    marker comments, spliced in `bench/gates.py --readme-block`'s own stdout, and asserted before writing
+    that the block appears verbatim, that exactly one marker pair survives, and that the prose on both
+    sides of the span is byte-identical (3,860 B before, 45,705 B after). The block's inner text grew 5,999
+    → 6,653 chars, and `git diff` shows the only README changes are those two passages.
+
+    **Four checks, all green on the final tree:** `bench/gates.py --check` → 7/7 verdicts hold, 3 met /
+    3 not met / 1 open, release gate NOT clear; `bench/reproduce.py --check` → 34/34 rows, 101 figures tied
+    to a committed witness, 1 gated; `tests/test_gates.py` + `tests/test_reproduce.py` → **67 passed**
+    (48.73 s on that run). Only the count is pinned, not the wall time: SPEC is one of the four docs both
+    checks read, so this subentry is itself a doc edit that supersedes the run quoted above it — the final
+    re-run after it is what the commit rests on. `bench/mutation_gates.py` was **not** re-run (it is a 344 s battery and the owner's four
+    checks did not include it), so instead its anchors were checked directly: all **21 of 21** mutant
+    `old` strings are still present in the edited `bench/gates.py`, which is the assertion that matters
+    after a prose edit — a mutant whose anchor no longer exists is a silent pass. **The class 62(ix)
+    named is still open:** no mutant was added over `readme_block()`'s prose, so this corrected sentence
+    can go stale again exactly as the last one did, and the suite will not notice.

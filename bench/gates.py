@@ -195,10 +195,15 @@ GATES = [
          "chance on the *shortest* rung — so the longer rows are the decay of nothing, and "
          "`runs/needle_myna-v0.md` prints `G4: not measured by this run` in place of a table "
          "a reader could quote.",
-         "not met, and not met by a run that cannot answer the question. The 16k *state* is "
-         "measured, fixed at 576 KiB and cheap (§9.22); the 16k *decision* needs the 4k "
-         "truncated-backprop checkpoint, which is 7b / `KAGGLE`. Those are two different "
-         "claims and only the first one is settled."),
+         "not met, and no longer a run that has not happened. The 16k *state* is measured, "
+         "fixed at 576 KiB and cheap (§9.22); the 16k *decision* has now been measured on this "
+         "box too — the 4k truncated-backprop checkpoint ran its approved 1200-update dose on "
+         "the M5 and prints **0.183 at 4096 and 0.150 at 16384** against these two thresholds "
+         "(§9.63, `runs/needle_lc1_stageC_final.json`; not a registry row yet, because those "
+         "weights live outside the repo). So the `KAGGLE` label on 7b was stale and neither half "
+         "of this gate is a compute question. What is not settled is the mechanism: the ladder "
+         "at 799 and at 1199 updates is identical on every shared rung, so another dose at this "
+         "regime is not the next experiment."),
 
     gate("G5", "Useful confidence, with abstention",
          "risk/coverage curve on `calibration.jsonl`; ≥ 0.95 accuracy at ≥ 60% coverage on "
@@ -445,9 +450,12 @@ def readme_block() -> str:
                       "Every verdict below is checked against a committed artifact — the registry",
                       "row beside it and the field read out of that artifact by",
                       "`uv run python bench/gates.py --check` — and the same words head the",
-                      "status column of [SPEC.md](SPEC.md) §2.2. The gate that decides whether",
-                      "this is a product (G1) and the gate that decides what it can read (G4)",
-                      "are the two that cannot be closed on this box.",
+                      "status column of [SPEC.md](SPEC.md) §2.2. Both of the gates a reader might",
+                      "have expected to be waiting on hardware are measured here: G4's 4k run",
+                      "executed on this laptop (§9.63), and G1's checkpoint has its own report",
+                      "committed in `runs/`. Neither is `open` — G1 stays short of 0.70, and its",
+                      "remaining lever carries a GPU price §9.38 writes down, while G4's shortfall",
+                      "is a mechanism question and not a compute one.",
                       "",
                       table(),
                       "",
