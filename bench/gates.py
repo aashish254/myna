@@ -199,8 +199,11 @@ GATES = [
          "fixed at 576 KiB and cheap (§9.22); the 16k *decision* has now been measured on this "
          "box too — the 4k truncated-backprop checkpoint ran its approved 1200-update dose on "
          "the M5 and prints **0.183 at 4096 and 0.150 at 16384** against these two thresholds "
-         "(§9.63, `runs/needle_lc1_stageC_final.json`; not a registry row yet, because those "
-         "weights live outside the repo). So the `KAGGLE` label on 7b was stale and neither half "
+         "(§9.63, `runs/needle_lc1_stageC_final.json`; the ladder is a registry row now — "
+         "`needle-lc1-stageC`, witnessed by the committed replay pair "
+         "`runs/needle_lc1_stageC_replay.{md,json}` — because the Stage C weights are in Release "
+         "`lc1-4k-s0-stageC-weights` (id 428002663) and that row's command fetches them). So the "
+         "`KAGGLE` label on 7b was stale and neither half "
          "of this gate is a compute question. What is not settled is the mechanism: the ladder "
          "at 799 and at 1199 updates is identical on every shared rung, so another dose at this "
          "regime is not the next experiment."),
