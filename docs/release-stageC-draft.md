@@ -48,7 +48,7 @@ both files carry the identical `state_dict`.
 
 ## 3. Why one file is 61,442,325 B and the other 184,355,257 B
 
-Measured by loading both, not inferred. `src/myna/train.py:805-809` writes them:
+Measured by loading both, not inferred. `src/myna/train.py:808-810` writes them:
 
 - `model.pt` = `{"state_dict", "cfg", "temperature"}`. Its tensor bodies sum to **61,415,936 B**
   (15,353,984 fp32 parameters × 4 B); the remaining **26,389 B** is serialization header and the `cfg`
