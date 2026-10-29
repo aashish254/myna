@@ -320,16 +320,34 @@ gated with no witness**; the two suites that read these documents (`tests/test_g
 gate logic, and the anchor-presence check (21/21) is what tells us a prose edit has not silently turned one
 into a no-op.
 
-The gap is as important and is stated in full. **The 4k ladder of §6 is witnessed by committed JSON but is
-not reproducible from a clone.** `runs/needle_lc1_stageC_final.{md,json}` is in the tree, and it is
-byte-identical to the staged original, but the checkpoint that produced it — `model_last.pt` 184,355,257 B
-and the ladder-loadable `model.pt` reconstructed from it, 61,442,325 B, at
-`~/myna-staging/lc1-4k-s0/stageC_final` — is not:
-`.gitignore` keeps `runs/*` directories out, and unlike v0 and v1b (`src/myna/weights.py` fetches a
-Release by tag, README:40-42 naming `v1b-checkpoint` as "the 0.4893 Kaggle run"), the 4k weights have no
-published arm. Until a Release ships them, the ladder cannot become a registry row, and the honest form of
-§6's result is *witnessed, not reproducible*. We do not paper over it by citing a fetch command that does
-not resolve.
+**That gap is now closed, and the closure is replayed rather than asserted.** The Stage C weights are
+published as Release `lc1-4k-s0-stageC-weights` — id **428002663**,
+https://github.com/aashish254/myna/releases/tag/lc1-4k-s0-stageC-weights, published 2026-10-29T14:53:44Z,
+on commit `1fb0ceb` — carrying exactly three assets: `model.pt` 61,442,325 B
+(`fb37a28b88bea29a…`), `tokenizer.json` 22,096 B (`5455c56a7e1ece5e…`) and the `SHA256SUMS` manifest.
+`model_last.pt` was deliberately not uploaded. On 2026-10-29 the stranger's path was executed outside this
+working tree: a fresh clone of the repo at branch `lc1-4k`, commit `1fb0ceb`, then
+`fetch_weights(tag="lc1-4k-s0-stageC-weights")` (`src/myna/weights.py`), which returned a cache directory
+holding those three files. **Both assets were hashed before any model ran** and matched the live manifest
+and the staged-side witnesses exactly. The ladder was then re-run from that downloaded checkpoint —
+`bench/eval_needle.py --ckpt <that directory> --device cpu --n 60 --seed 0 --lengths 128 1024 4096 8192
+16384` — and **all five accuracy cells came back bit-identical to `runs/needle_lc1_stageC_final.json`**:
+0.150 / 0.2167 / 0.1833 / 0.150 / 0.150 as §6 prints them, i.e. 0.15 / 0.21666666666666667 /
+0.18333333333333332 / 0.15 / 0.15 at full precision, with `baseline.readable` `false` in both the witness
+and the replay. So §6's result is now *witnessed **and** reproducible from a clone*. It changes no verdict:
+`bench/gates.py --check` still reads **3 met, 3 not met, 1 open**, the release gate is still NOT clear, and
+G4 is still **not met**.
+
+Three boundaries on that claim, stated because a reader cannot assume them. **Only the accuracy column is
+claimed reproducible, not `ms`** — the replay returned 99.4 / 838.8 / 2912.6 / 5222.4 / 10325.8 ms against
+the witness's 77.0 / 745.1 / 2857.5 / 5554.9 / 10989.2, and that column was not compared. **The replay ran
+on the same laptop as the original**, so it proves the clone-and-Release path yields the witnessed cells; it
+is not a cross-machine determinism test. **And the interpreter was this project's existing virtualenv**
+(torch 2.14.0, python 3.13.14) rather than a fresh dependency install — the clone's own `src/myna` was
+proven to be the copy answering (`myna.__file__` points inside the clone), but a clean-environment install
+is still open. What remains open is separate from reproducibility: `bench/reproduce.py` has no registry row
+for this ladder, so these five cells are guarded by the committed JSON and this replay, not by the audit
+that guards the other 34 rows.
 
 ## 10. Diagnostic failures
 
