@@ -67,7 +67,7 @@ Quote the ratio, never the millisecond figure.
 | **G1** | Accuracy beats the witness | macro decision-v2 test ≥ 0.70 on the frozen split, per-source table published, ≥ 0.4331 majority floor by ≥ +0.15 | **not met, measured** — it was open on a missing *artifact*, not a missing *run*: `v1b-kaggle-3600b` trained 3,600 updates on Kaggle and its `metrics.json`, report roll-up and `train.log` are now committed (`runs/v1b_kaggle_3600b.*`), so the verdict comes from the artifact rather than from a transcript. Over the 16 cells both harnesses score, per-cell unweighted: **myna 0.4893 · laya 0.6668 · floor 0.4331**, which is +0.056 over the floor against the +0.15 required and 0.211 short of 0.70 — the report's own line reads `target 0.7 → not met`. `bench/reproduce.py`'s `v1b-kaggle-macro` row re-derives it. Still in the row for contrast: the untrained control (**0.346 / 0.351**, `runs/scratch_decision_v2_test.md`) and the void pre-`385e06c` checkpoint (**0.338**). The tail slope of that run's own dev curve is why *dose* is not the answer (§9.38) |
 | **G2** | Latency claim survives equal-footing re-measurement | same box, same window, same question count, direct `Agent` call not `Router`; published ratio recomputed from that or withdrawn | **met** (4a/4c): one M5 process, both fp32, `Agent.system_one`, ladder capped inside laya's 1024 window — **3.04×/3.21×/4.12×/3.60×** at 1/5/10/50 questions end-to-end and **6.78×/4.67×/4.75×/3.65×** on the ask-only path, each the minimum of two committed runs, `runs/latency_matched*.md`. G1 is *not* implied: v0's accuracy still fails (§4.2) |
 | **G3** | Deployment works for real | ONNX browser build answers a live page's decisions; bytes + p50 + cold-load measured in Chrome | **met, as a mechanics gate only.** `browser/index.html` runs the exported artifact in real Chrome 153 and answers three typed decisions with the same probabilities the torch engine prints (6/6 parity checks, both isolation modes, desktop and mobile widths, `runs/browser_g3.json`); bytes, cold-load and p50 are measured there with the box's load average recorded beside them. What this does **not** say: the artifact it deploys is v0, which still fails G1 and G5, the ≤ 20 MB int8 route is open at the byte level and closed at the agreement level (§9.28), and the Apple-silicon int8 route closes for the opposite reason — 17.40 MiB at 9.24e-03 and **no** latency win at all, so fp32 is the artifact on both paths (§9.29) |
-| **G4** | Long-context is *correct*, not just cheap | needle-style typed decision ≥ 0.90 at 4k and ≥ 0.85 at 16k state | **not met — measured, and no longer gated on hardware.** v0's needle curve (`runs/needle_myna-v0.md`) reads 0.188 at 128 tokens against a 0.167 floor — at chance on the shortest rung — so the longer rows are decay of nothing, and the harness says so itself rather than printing a table (§9.25). The 4k needle run then executed *on this box* (§6 prices it at 2.4 GiB retained, 1c measured 2.0194742679595947 s/update) and was aborted at 425 of 1200 updates by 7b's own Stage A rule with the 128-rung at 0.1667 = the floor (§9.62). The 4k and 16k **decisions were never measured on that checkpoint** — a stopped run does not judge G4 — and the 16k *state* remains measured and cheap (§9.22) |
+| **G4** | Long-context is *correct*, not just cheap | needle-style typed decision ≥ 0.90 at 4k and ≥ 0.85 at 16k state | **not met — measured on a completed dose, and no longer gated on hardware.** v0's needle curve (`runs/needle_myna-v0.md`) reads 0.188 at 128 tokens against a 0.167 floor — at chance on the shortest rung — so the longer rows are decay of nothing, and the harness says so itself rather than printing a table (§9.25). The 4k needle run then executed *on this box* (§6 prices it at 2.4 GiB retained, 1c measured 2.0194742679595947 s/update), was aborted at 425 of 1200 updates by 7b's own Stage A rule with the 128-rung at 0.1667 = the floor (§9.62), and was then resumed on the owner's order to the **full approved 1200-update dose**. Its n=60 ladder (`runs/needle_lc1_stageC_final.json`) reads **0.1833 at 4096 against G4's ≥ 0.90 — short by 0.7167 — and 0.150 at 16384 against ≥ 0.85, short by 0.700**, the first time either threshold has been measured on a 4k-trained checkpoint; the 128-rung is 0.150, so the harness still prints `readable: false` — not a decay curve, a flat line at chance (§9.63). Step 799 and step 1199 agree exactly on all three shared rungs (9, 13, 11 of 60), so the limiter is the mechanism, not the dose. The 16k *state* remains measured and cheap (§9.22) |
 | **G5** | Useful confidence, with abstention | risk/coverage curve on `calibration.jsonl`; ≥ 0.95 accuracy at ≥ 60% coverage on banking77 + dbpedia14 + trec | **not met on the level, met on the machinery.** Abstention ships: `Myna(ckpt, abstain_below=t)` withholds the commitment and prints the measured reason, the fallback seam labels every answer with the engine that committed, and the curve is a committed artifact (`runs/risk_coverage.md`, 448 rows / 568 questions). Accuracy on v0 climbs **0.349 → 0.535** as coverage falls 1.00 → 0.20 — the confidence ranks the answers, on a checkpoint that cannot do the task — and setting the 0.693 floor on the engine abstains on **227** questions where the curve withheld **227**. But **no rung reaches 0.95** (max 0.596, at 10% coverage) and G5's own three sources sit at 0.000 / 0.025 / 0.150, so the pass needs the `KAGGLE` checkpoint (§9.24) |
 | **G6** | No regression on what already worked | synthetic v0 test ≥ 0.94 | open — v0's measured test macro is **0.9523** (`runs/train-v0.log`, macro of its nine `=== test ===` rows), so the level clears today; the gate stays open until a v1 checkpoint is run against it, and a draft of this row cited "0.951", which no artifact prints (§9.30) |
 | **G7** | Reproducibility | one command per result, seeds pinned, witness JSONs committed, `pytest` green | **met, as a binding rather than a rebuild.** `bench/reproduce.py` holds 34 registry rows, each binding one published table cell to one command and one committed witness, and `make repro` re-reads the 101 quoted figures out of those artifacts rather than out of the prose; the python commands among those rows are checked against the tool behind them — its `--help` must still print every flag the row publishes (§9.43); the seeds live inside the printed commands (`--seed 0`, `--seeds 0 1`), not in sentences about them. What this does **not** say: no target *executes* the registry end to end — 22 rows re-run on this box, 6 retrain a checkpoint, 2 need a laya checkout on `PYTHONPATH`, 3 need Google Chrome and 1 is `KAGGLE` — which is why TODO 8b stays unticked and why G7 is discipline rather than a one-command rebuild. Every count in this cell is now read back against `ROWS` by `bench/gates.py`, so this row — the table's one hand-copied cell — goes red rather than quietly stale (§9.44) |
@@ -996,21 +996,28 @@ are counted, and if nothing is left the run refuses. See §9.14.
       float-equality annoyance, which made "exclusive versus inclusive" untestable by construction.
       The tolerance is gone and the boundary is now checked on exactly representable values
       (0.25 + 0.125 = 0.375), which is the only honest way to claim a boundary is inclusive.
-- [ ] **7b** Train the 4k truncated-backprop checkpoint. **Preconditions met as code first** (§9.61:
+- [x] **7b** Train the 4k truncated-backprop checkpoint. **Preconditions met as code first** (§9.61:
       1a the generator's uniform draw over fitting positions, 15 tests + 24/24 mutants; 1b the
       suite's five claims on this loop, `tests/test_train_longctx.py` 20 + `bench/mutation_train_longctx.py`
       24/24; 1c the smoke probe, **measured** 2.0194742679595947 s/update and 3899131392 B peak
       footprint, not a projected band). The approved 1200-update run then executed **here**, not on
-      `KAGGLE` — and aborted at its own Stage A boundary at 425 updates, 128-rung 0.1667 = the floor,
-      1024-rung 0.2167, both inside 1 s.e. (0.0481) of chance (§9.62; witnesses
-      `runs/lc1_4k_s0.train.log`, `runs/lc1_4k_s0.stageA.log`, `runs/needle_lc1_stageA.{md,json}`).
-      The `KAGGLE` label on this line was stale: the M5 carries a 4k needle run at 2.4 GiB retained
-      with swap unmoved. **Open, and it is an owner decision, not a code task:** 425 of 1200 updates
-      is 35 % of the dose, so this is a *stopped* run and judges nothing about G4 — the question the
-      next run answers is whether a longer dose at this size reaches the floor + margin at all, or
-      whether a 15.35M cold-started trunk at §6's 0.28 tok/param-class dose cannot learn needle
-      retrieval at any dose. `--init` (warm from the suite checkpoint) was ruled out for this arm by
-      the owner and stays untested on this path.
+      `KAGGLE` — cold for 425 updates, aborted at its own Stage A boundary with the 128-rung at 0.1667 =
+      the floor and the 1024-rung at 0.2167, both inside 1 s.e. (0.0481) of chance (§9.62), then resumed
+      on the owner's order to **the full 1200-update dose** (§9.63). The `KAGGLE` label on this line was
+      stale: the M5 carries a 4k needle run at 2.4 GiB retained with swap unmoved, `metrics.json`
+      `"stopped": null`, zero STOP lines on either leg. **The dose question this line left open is
+      answered, and the answer is no:** G4's thresholds are measured on the completed dose — 4096 →
+      **0.1833** against ≥ 0.90, 16384 → **0.150** against ≥ 0.85 — and step 799 and step 1199 agree
+      **exactly** on all three shared rungs (9, 13, 11 of 60) after 400 more updates, with the final ema
+      1.791 equal to `ln(6)` at the printed precision. So a longer dose at this size does not reach floor
+      + margin; what limits needle retrieval here is the mechanism, not the update count. The open item is
+      therefore **not** another dose at this regime — it is whether a readout that collapses to the
+      uniform answer at 15.35M cold-started can be moved at all by `--init` (warm from the suite
+      checkpoint), which the owner ruled out for this arm and which stays untested on this path.
+      Witnesses: `runs/lc1_4k_s0.train.log`, `runs/lc1_4k_s0_resume.train.log`,
+      `runs/lc1_4k_s0.metrics.json`, `runs/lc1_4k_s0.stage{A,B_resume}.log`,
+      `runs/lc1_4k_s0.stageC_final.log`,
+      `runs/needle_lc1_stage{A,B_resume,C_final}.{md,json}`.
 
 ### P8 — Write it up
 - [x] README + PLAN headline tables from committed artifacts only, each cell labelled
@@ -1055,8 +1062,9 @@ are counted, and if nothing is left the run refuses. See §9.14.
       that run exists). `make gates` is the
       check and SPEC §2.2 is the prose it reads. What keeps this line unticked is the release
       itself: G1 is measured and short by 0.211, raising it is a GPU decision whose price §9.38
-      writes down, G4's dose question is now a *local* one — the 4k needle run executes on the M5 and
-      the first attempt aborted at Stage A at chance (§9.62) — and P0's push is user-gated.
+      writes down, G4 is measured and short — the 4k needle run executes on the M5, ran the full
+      1200-update dose, and prints 0.1833 at 4k against the 0.90 the gate asks for (§9.62, §9.63) — and
+      P0's push is user-gated.
 
 ### P9 — The three defects the first valid checkpoint named *(9a shipped; 9b's fix measured dead; 9c local; 9d the user's call, now priced (§9.45); 9e measured dead too; 9f–9j are TODO's ticks: G1 is now `not met` on a committed witness, one mutation battery had never finished, the last unexplained V1-B number resolved into an aggregation, the §9.40 sweep across all 14 batteries found no second unaffordable probe, and the 15th battery — 9j's, for 9d's own scope table — found its tests could not see `main()` (§9.46)*
 
@@ -4032,3 +4040,157 @@ Kept permanently, because the value of this project's claims is that they surviv
     **609 passed, 1 skipped in 603.33 s** (`test_upstream.py`'s `KEV_ROOT` skip, unchanged from 61(v)),
     and `bench/gates.py --check` still prints **7/7 verdicts hold — 3 of 7 met, 3 not met, 1 open — the
     release gate is NOT clear**.
+
+63. **The other 65 % of the dose was paid for, on the owner's order, and it bought exactly nothing —
+    which converts 7b's open question from "is 1200 enough?" into a measured answer about the
+    mechanism.** PHASE 2's approved run, resumed to completion, 2026-10-28/29. G4's verdict is
+    **not met, measured**; no section here claims it met.
+
+    **(i) What was run.** The owner's answer to the decision 62 opened was the command `start
+    --resume --steps 1200`, executed verbatim as
+    `uv run python -m myna.train --long-context 4096 --grad-tokens 1024 --batch 3 --steps 1200 --lr 6e-4
+    --seed 0 --device auto --save-every 25 --free-gib 9.0 --stop-factor 3.0 --out runs/lc1-4k-s0 --resume`
+    — same approved flags, `--resume` added, nothing else changed. Leg 1 had executed steps 0–424; this
+    leg executed 425–1199, so the **executed dose is 1200 updates = the approved dose**, across two
+    processes joined by 1b's snapshot. Base snapshot (step 424) sha256
+    `d3548a881b9280e04a229ac60b57854d5604572a072cf677d4b5365bd23656dd`; final `model_last.pt`
+    `25b868e9f53660237d584da12066afc8d2b462f9392b8f2afa8d7ae9076674dd`; final `model.pt`
+    `fb37a28b88bea29a0bb871dceb8f7b835b216e8c11a987830a420fb15d39b7e8` — each hashed on the `runs/`
+    side and again on the staged side at copy time, per 7b's staging rule.
+
+    **(ii) `metrics.json` — the first one this path ever wrote.** `"stopped": null` is the field that
+    carries 62(ii)'s claim forward: the loop's own abort record is empty for the whole resumed leg.
+    Also in it, verbatim: `updates_executed` 775, `last_step` 1199, `resumed_from_step` 425,
+    `steps_requested` 1200, `median_s_per_update` 2.0036542415618896, `params` 15353984, `batch` 3 with
+    `batch_requested` 3 (no clamp), `projected_step_gib` 2.4000000000000004 against `mem_plan_free_gib`
+    9.0 at `mem_safety` 0.6, `split` 3072, `grad_window_tokens` 1024, `detached_tokens_p95` 3082,
+    `state_tokens_p95` 4106 with `state_tokens_min` 4096 and `state_tokens_max` 4108 over
+    `p95_sample` 60, `device` mps, `save_every` 25, `stop_factor` 3.0, `temperature` 1.0 and
+    `temperature_fitted` false. The loop printed zero `STOP at step` lines; swap read `used = 0.25M` of
+    `total = 1024.00M` at every check on both legs; no Metal OOM. The leg's own counter: 775 updates in
+    1662 s = 2.144 s/update wall against that 2.0037 median — i.e. the box never slowed enough for the
+    3.0× rule to be near. **Provenance:** the trainer writes `runs/lc1-4k-s0/metrics.json`, which
+    `.gitignore:24`'s `runs/*` does not track — only top-level `runs/*.json` is committed — so the values
+    above are read from the committed copy `runs/lc1_4k_s0.metrics.json` (byte-copied, no absolute paths in
+    it), and the weights behind them (`model.pt` 61,442,325 B, `model_last.pt` 184,355,257 B) are not in
+    the repo at all until an owner-side Release.
+
+    **(iii) Two things the resume is, and one it is not.** It **is** schedule-correct by construction:
+    61(iv)'s `--resume` restores the `CosineAnnealingLR` state, and 62(iv) read `T_max = 1200` off the
+    step-424 snapshot — the LR therefore continued the curve planned for the whole dose instead of
+    restarting a 775-step cosine. Nothing in this leg's log prints the LR itself, so that is what the
+    snapshot witnesses, not what the run measured. It **is not** a replay: the loop
+    re-seeds `random.Random(args.seed)` from `--seed 0`, prints "continuation, not a bit-identical
+    replay", and so the resumed leg draws the **same data order over again**. This caps what "the dose
+    doubled" can mean — see (vi). And the outside kill that ended leg 1 was still not the loop's own
+    `stopped`, so `metrics.json` here describes leg 2's 775 updates and the 1200 figure is the sum of two
+    logs, stated as such in `runs/lc1_4k_s0.stageC_final.log`.
+
+    **(iv) The loss got to chance and sat there.** Logged steps 500 → 1199: loss 1.695, 1.774, 1.756,
+    1.782, 1.776, 1.787, 1.790, 1.796; ema 1.912, 1.806, 1.800, 1.795, 1.794, 1.790, 1.791, **1.791**.
+    A uniform 6-way readout scores `ln(6) = 1.791759469228055`. The step-1199 loss (1.796) is **0.0042
+    nats above** it and the final ema (1.791) is **0.0008 below** it — which is to say that at the third
+    decimal the log prints, the endpoint **is** chance: 62(iii)'s 0.031-nat gap at step 400 had closed to
+    the rounding of the log rather than to a signal, and batch-acc still alternates 0.000 and 0.333 on a
+    batch of 3 rows that share one entity, which is one row right or none. A signed 0.0008-nat deficit
+    against uniform is not something this dose can resolve — 1 s.e. on the accuracy axis is 0.048, and the
+    ladder below is flat at the floor. That is the constant-emitter signature §9.43 already knows, now at
+    the end of a full dose instead of 35 % of one.
+
+    **(v) The ladder, and G4's two named thresholds measured for the first time.** The trainer had
+    exited before this eval, so it ran **unthrottled** — 62(vii)'s throttle was there to protect a live
+    step-time measurement and there was none left to protect. `n=60`, seed 0, `--device cpu`, rungs 128 /
+    1024 / 4096 / 8192 / 16384:
+
+    | tokens | acc | correct/60 | ms/sample |
+    |---|---|---|---|
+    | 128 | 0.150 | 9 | 77.0056068674118 |
+    | 1024 | 0.21666666666666667 | 13 | 745.0751513833287 |
+    | 4096 | 0.18333333333333332 | 11 | 2857.482810466172 |
+    | 8192 | 0.150 | 9 | 5554.869864500142 |
+    | 16384 | 0.150 | 9 | 10989.17304858296 |
+
+    G4 requires **≥ 0.90 at 4k** and **≥ 0.85 at 16k state**. Measured: 4096 → 0.1833 (short by 0.7167),
+    16384 → 0.150 (short by 0.700). **G4: NOT MET, measured** — the first time those two numbers have
+    existed on a 4k-trained checkpoint at all. The harness separately prints `readable: false` because the
+    128-rung (0.150) is not above the 0.167 floor, so this is not a decay curve either; it is a flat line
+    at chance with a slight negative bias. 1 s.e. at n=60 is 0.0481: the largest departure from the floor
+    anywhere on the ladder is the 1024-rung at **1.04 s.e. above it**, so no rung is separable from
+    chance, while the two shortfalls against G4 are **14.9 and 14.55 s.e.** — not noise.
+
+    **(vi) The dose answer, which is the actual content of this entry.** Stage B and Stage C share three
+    rungs. step 799 (throttled): 0.150 (9/60), 0.2167 (13/60), 0.1833 (11/60). step 1199 (unthrottled):
+    0.150 (9/60), 0.2167 (13/60), 0.1833 (11/60). **Identical correct-counts on all three rungs after 400
+    more updates.** Two different checkpoints agreeing exactly on three 60-sample counts is not what a
+    learner still moving looks like — under any real weight change those counts would scatter — and the
+    loss agrees with the ladder rather than arguing with it. So 7b's open question, as 62 wrote it ("does
+    a longer dose reach floor + margin at all?"), is answered **no at this size and this regime**, and the
+    limiter is the mechanism, not the dose. What this does *not* buy is the capacity claim in general:
+    the token yardstick here is genuinely mixed. 1200 updates × batch 3 = **3,600 states**, at ~4106
+    tokens each ≈ 14.78M state tokens, which over 15,353,984 params is **0.96 tokens/param** — 3.4× §6's
+    0.28 pilot ratio. But the pilot's 0.28 came from **57,904 distinct states**; this run has 3,600, and
+    because `--seed 0` re-seeded the sampler it re-saw its own order. Measured on the gradient axis
+    instead, the dose is 1200 × 3 × 1024 = 3,686,400 gradient-carrying tokens = **0.24 tok/param**, just
+    under the pilot. All four of those ratios are **DERIVED** by dividing one measured column by another
+    (counts and `params` from `metrics.json`, the per-row length from `state_tokens_p95`), not measured by
+    any harness. The defensible reading is narrow: at 15.35M cold-started, 4k truncated-backprop
+    needle retrieval collapses to the uniform readout, the collapse is already complete by update 799,
+    and more updates at the same regime do not move it.
+
+    **(vii) The throttle's own price, now that both halves exist.** 62(vii) could only say the latency
+    axis was unmeasurable because the eval was throttled. With the unthrottled ladder in hand, the two
+    schedulings of the same harness on the same box can be compared: 1024-rung 1201.18 ms throttled
+    (step 799) against 745.08 ms unthrottled (step 1199) = **1.61×**, and at 128 the 116.68 ms of the same
+    pair against 77.01 ms = **1.52×**. The checkpoints differ by 400 updates that moved no prediction, so
+    the ratio is schedulings, not models — and it is still a derived quotient, not a measurement of a
+    latency. Against v0's published n=16 cpu column (59.53 / 448.76 / 1760.88 / 3436.48 / 7425.21 ms)
+    the unthrottled rungs give ratios 1.294 / 1.660 / 1.623 / 1.616 / 1.480, while the parameter count
+    ratio is only 1.0626 (15,353,984 vs 14,449,280, `runs/bench_mlx_int8.json`). Sizes do not account for
+    it, so **no latency claim is built on either column pair**; the ms columns are published as the
+    harness's own timings and nothing more.
+
+    **(viii) What was deviated, stated as a deviation.** Three stage boundaries were approved with the
+    rule "abort and report if the 128-rung is below 0.267". That rule fired at Stage A and the run was
+    stopped. Once the owner ordered the run past 425, the same threshold could not govern a run whose
+    accuracy is *on* the floor it is measured against — a rule that aborts a run for sitting at chance
+    would abort it again at every later boundary and the dose question would never be answered. So
+    Stage B (step 799) and Stage C (step 1199) were executed as **observation points**, keeping full
+    machine-abort authority (step-time 3.0× median, free-below-projected, swap > 4 GiB, Metal OOM) and
+    dropping only the accuracy abort. The snapshot-copy-and-rehash obligation was met at both. Also
+    unchanged: 7b's rule "do NOT judge G4 from a stopped run" is why 62 wrote no G4 number at all, and
+    why this entry — describing a **completed** 1200-update dose — is where G4 is finally judged.
+
+    **(ix) Defects in the record itself, left visible.** The stage driver `/tmp/lc1_stage.zsh` calls
+    `/usr/bin/sysctl`, which is not this box's path, so its own swap line prints empty; each witness log
+    therefore re-reads `sysctl -n vm.swapusage` separately and says so. The same script hardcodes the
+    **leg-1** log into its tail step, so the Stage B witness initially reported the cold leg's steps under
+    a resumed heading — corrected in that log's text rather than by rewriting it. And one prose line of
+    the Stage C log was silently swallowed: zsh treated a double-quoted English sentence inside a `{ …; }
+    > file` group as a command, printed `command not found`, and dropped the line — repaired, and the
+    lesson recorded for next time (prose with quotes goes through a heredoc or a Python writer, never
+    through a shell group).
+
+    **(x) The reproducibility gap this entry opens, priced and not silently closed.** The full ladder is
+    now a published figure quoted in SPEC, which is exactly what a `bench/reproduce.py` row exists for —
+    but its command reads `--ckpt ~/myna-staging/lc1-4k-s0/stageC_final`, outside the repo, and the
+    checkpoint itself is 2 files that no Release carries. So a clean clone cannot re-run it, and adding
+    the row would make `make repro` either red or fake. The honest sequence is: ship the Stage C
+    checkpoint to a Release (task #28, owner-side), then add the row with the fetch command in it. Until
+    then the ladder is witnessed by committed JSON (`runs/needle_lc1_stageC_final.{md,json}`) and **not**
+    reproducible from a clone, and that distinction is the row's whole purpose.
+
+    **(xi) Verification on the tree this entry leaves.** `bench/gates.py --check` → **7/7 verdicts hold —
+    3 of 7 met, 3 not met, 1 open — the release gate is NOT clear**, with G4 still `not met` read from a
+    witness that prints `readable: false` (now three of them: stageA, stageB_resume, stageC_final, beside
+    v0's own). §2.2's G4 row and §5's 7b and P8-release-gate lines are updated to the completed dose;
+    `bench/gates.py:188` and `:450` still say the 16k decision "needs … `KAGGLE`" and that G1/G4 "cannot
+    be closed on this box", which 62 and this entry both falsify — they stay as written because that
+    prose is inside the generated block and outside this run's authorised scope, exactly as 62(ix)
+    records, and README's block and SPEC therefore disagree in words while agreeing in verdict. Writing
+    (v) found a smaller class of the same defect in README's *prose*: it quoted
+    "`G4: NOT MEASURED here`" and "its `G4: NOT MEASURED` line" as what `runs/needle_myna-v0.md` prints,
+    but the harness prints **two different strings** — `bench/eval_needle.py:87` puts the stdout form on
+    the terminal and `:107` writes `G4: **not measured by this run**` into the file — so the doc credited
+    the terminal's words to the artifact. Both places now quote the file's own text, which is the only
+    version a reader who opens the witness can verify. **Nothing
+    was pushed, tagged, released, or submitted, and Phase 3 was not started.**

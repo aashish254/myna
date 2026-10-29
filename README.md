@@ -136,12 +136,16 @@ parameter count against a model we did not open, which is why it is not a
 comparison cell. The decision *accuracy* at long context is a third thing again
 and it is **gated**: the needle test puts v0 at 0.188 on a 128-token state against
 a 0.167 floor, i.e. at chance before length even enters, and
-`runs/needle_myna-v0.md` prints `G4: NOT MEASURED here` rather than a decay curve.
+`runs/needle_myna-v0.md` prints `G4: not measured by this run` rather than a decay curve.
 The context column is a **cost** statement, and the only 16k number this repo has
-measured. Long-context *correctness* waits on the checkpoint trained for it, and the
-first attempt at that checkpoint — 425 updates at 4k states, run on this box rather
-than on a GPU — stopped at its own Stage A boundary with the 128-token rung at the
-floor (§9.62, `runs/needle_lc1_stageA.json`).
+measured. Long-context *correctness* has now been measured on the checkpoint trained
+for it: 1,200 updates at 4k states, run on this box rather than on a GPU, and it
+reads **0.183 at 4096 tokens and 0.150 at 16384** against the 0.90 and 0.85 G4 asks
+for. The 128-token rung is still on the 0.167 floor, so `runs/needle_lc1_stageC_final.md`
+prints `G4: not measured by this run` for the curve and the shortfall stands as a flat
+line at chance, not a decay. Going from 799 to 1,199 updates changed **none** of the
+three shared 60-sample counts, which is why this is written as a mechanism finding rather
+than a compute or budget one (§9.62, §9.63, `runs/needle_lc1_stageC_final.json`).
 ([SPEC.md](SPEC.md) §2.2 G4, §9.25).
 
 </div>
@@ -155,7 +159,7 @@ uv run python -m bench.bench_mlx --ckpt runs/myna-v0 --reps 20 --drift-rows 12 -
 ```
 
 and the context column with the needle run that the 0.188-against-0.167 pair came from
-(`runs/needle_myna-v0.md`, and its `G4: NOT MEASURED` line):
+(`runs/needle_myna-v0.md`, and its `G4: not measured by this run` line):
 
 ```bash
 uv run python bench/eval_needle.py --ckpt runs/myna-v0 --device cpu --n 16 --seed 0 --lengths 128 1024 4096 8192 16384

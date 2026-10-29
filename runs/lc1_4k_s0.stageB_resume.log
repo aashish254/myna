@@ -1,0 +1,46 @@
+# lc1-4k-s0 resumed leg, Stage B boundary observation (step 799)
+
+owner ordered `--resume --steps 1200` after Stage A's abort, so this boundary is an
+OBSERVATION, not a gate: the 0.267 rule cannot govern a run ordered past a floor it is already
+sitting on. Abort authority here is the machine rules only.
+
+resume base: runs/lc1-4k-s0/model_last.pt at step 424, sha256 d3548a881b9280e04a229ac60b57854d5604572a072cf677d4b5365bd23656dd
+           (scheduler T_max 1200, last_epoch 425, Adam per-param step 425)
+this snapshot: step 799, sha256 a2bbc2eb0c6ee56036c07de50db22bd94f104baa28f008eb2d49dd752f19587a (hashed on both sides at copy)
+
+## the resumed leg's own trajectory (log: runs/lc1_4k_s0_resume.train.log)
+long-context plan: 3 rows x 4106 p95 state tokens -> 3082 detached scan + 1024 gradient-carrying per row (split at 3072); 2.4 GiB retained per step, stops at 3.0x the median of the last 20, free under 1.25x the projection, or 4.0 GiB of swap
+resume: runs/lc1-4k-s0/model_last.pt at step 424 -> continuing at 425 of 1200; data RNG re-seeded from --seed 0, so this is a continuation, not a bit-identical replay
+step   500  loss 1.695  ema 1.912  batch-acc 0.333  2.03s/update  159s
+step   600  loss 1.774  ema 1.806  batch-acc 0.667  2.07s/update  362s
+step   700  loss 1.756  ema 1.800  batch-acc 0.000  2.01s/update  577s
+step   800  loss 1.782  ema 1.795  batch-acc 0.333  2.05s/update  779s
+step   900  loss 1.776  ema 1.794  batch-acc 0.000  2.46s/update  1029s
+
+## eval (throttled: OMP_NUM_THREADS=2 nice -n 15 --device cpu, n=60, seed 0)
+needle recall vs context length — stageB_resume (cpu)
+
+  tokens |    acc |       ms
+     128 |  0.150 |   116.68
+    1024 |  0.217 |  1201.18
+    4096 |  0.183 |  4890.75
+
+uniform floor 0.167 (6 desks), 1 s.e. at n=60 is 0.048
+G4: NOT MEASURED here — the 128-token rung is at the 0.167 uniform floor, so this curve cannot be read as decay — the checkpoint does not answer this task at any length
+
+wrote /Users/aashish/myna-staging/lc1-4k-s0/stageB_resume/needle_stageB_resume.md and /Users/aashish/myna-staging/lc1-4k-s0/stageB_resume/needle_stageB_resume.json
+STAGE stageB_resume DONE
+
+## state at the boundary
+swap: total = 1024.00M  used = 0.25M  free = 1023.75M  (encrypted)
+STOP lines so far: 0
+trainer pids: 84379 84381 
+375 resumed updates in 779 s = 2.077 s/update, against leg 1's 830 s / 400 = 2.075 s/update.
+
+## reading of the three rungs
+128 9/60=0.150, 1024 13/60=0.217, 4096 11/60=0.183 against a 0.167 floor with 1 s.e. 0.0481:
+every rung is inside one s.e. of chance and the 128 rung is now BELOW it (a bias away from gold,
+not a recall). The loss trajectory agrees: ema 1.795 at step 800 versus ln(6)=1.7918 -- the model
+is sitting on the uniform-plateau value, which is why eval_needle prints readable: false.
+NOTE the stage script tails the FIRST leg's log (hardcoded path), so the 'train.log tail' block
+above shows step 400/424 from runs/lc1_4k_s0.train.log, not this leg. Corrected here.

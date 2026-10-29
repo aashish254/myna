@@ -1,0 +1,47 @@
+
+
+
+long-context: state=4096 grad=1024 params=15353984
+memory plan: batch 3 fits 9.0 GiB free x 0.6 at 1024 grad tokens (needs 2.4 GiB retained)
+long-context plan: 3 rows x 4106 p95 state tokens -> 3082 detached scan + 1024 gradient-carrying per row (split at 3072); 2.4 GiB retained per step, stops at 3.0x the median of the last 20, free under 1.25x the projection, or 4.0 GiB of swap
+resume: runs/lc1-4k-s0/model_last.pt at step 424 -> continuing at 425 of 1200; data RNG re-seeded from --seed 0, so this is a continuation, not a bit-identical replay
+snapshot: runs/lc1-4k-s0/model_last.pt at step 449 (every 25 updates)
+snapshot: runs/lc1-4k-s0/model_last.pt at step 474 (every 25 updates)
+snapshot: runs/lc1-4k-s0/model_last.pt at step 499 (every 25 updates)
+step   500  loss 1.695  ema 1.912  batch-acc 0.333  2.03s/update  159s
+snapshot: runs/lc1-4k-s0/model_last.pt at step 524 (every 25 updates)
+snapshot: runs/lc1-4k-s0/model_last.pt at step 549 (every 25 updates)
+snapshot: runs/lc1-4k-s0/model_last.pt at step 574 (every 25 updates)
+snapshot: runs/lc1-4k-s0/model_last.pt at step 599 (every 25 updates)
+step   600  loss 1.774  ema 1.806  batch-acc 0.667  2.07s/update  362s
+snapshot: runs/lc1-4k-s0/model_last.pt at step 624 (every 25 updates)
+snapshot: runs/lc1-4k-s0/model_last.pt at step 649 (every 25 updates)
+snapshot: runs/lc1-4k-s0/model_last.pt at step 674 (every 25 updates)
+snapshot: runs/lc1-4k-s0/model_last.pt at step 699 (every 25 updates)
+step   700  loss 1.756  ema 1.800  batch-acc 0.000  2.01s/update  577s
+snapshot: runs/lc1-4k-s0/model_last.pt at step 724 (every 25 updates)
+snapshot: runs/lc1-4k-s0/model_last.pt at step 749 (every 25 updates)
+snapshot: runs/lc1-4k-s0/model_last.pt at step 774 (every 25 updates)
+snapshot: runs/lc1-4k-s0/model_last.pt at step 799 (every 25 updates)
+step   800  loss 1.782  ema 1.795  batch-acc 0.333  2.05s/update  779s
+snapshot: runs/lc1-4k-s0/model_last.pt at step 824 (every 25 updates)
+snapshot: runs/lc1-4k-s0/model_last.pt at step 849 (every 25 updates)
+snapshot: runs/lc1-4k-s0/model_last.pt at step 874 (every 25 updates)
+snapshot: runs/lc1-4k-s0/model_last.pt at step 899 (every 25 updates)
+step   900  loss 1.776  ema 1.794  batch-acc 0.000  2.46s/update  1029s
+snapshot: runs/lc1-4k-s0/model_last.pt at step 924 (every 25 updates)
+snapshot: runs/lc1-4k-s0/model_last.pt at step 949 (every 25 updates)
+snapshot: runs/lc1-4k-s0/model_last.pt at step 974 (every 25 updates)
+snapshot: runs/lc1-4k-s0/model_last.pt at step 999 (every 25 updates)
+step  1000  loss 1.787  ema 1.790  batch-acc 0.000  1.98s/update  1258s
+snapshot: runs/lc1-4k-s0/model_last.pt at step 1024 (every 25 updates)
+snapshot: runs/lc1-4k-s0/model_last.pt at step 1049 (every 25 updates)
+snapshot: runs/lc1-4k-s0/model_last.pt at step 1074 (every 25 updates)
+snapshot: runs/lc1-4k-s0/model_last.pt at step 1099 (every 25 updates)
+step  1100  loss 1.790  ema 1.791  batch-acc 0.333  2.00s/update  1462s
+snapshot: runs/lc1-4k-s0/model_last.pt at step 1124 (every 25 updates)
+snapshot: runs/lc1-4k-s0/model_last.pt at step 1149 (every 25 updates)
+snapshot: runs/lc1-4k-s0/model_last.pt at step 1174 (every 25 updates)
+step  1199  loss 1.796  ema 1.791  batch-acc 0.333  1.90s/update  1662s
+snapshot: runs/lc1-4k-s0/model_last.pt at step 1199 (every 25 updates)
+saved checkpoint to runs/lc1-4k-s0

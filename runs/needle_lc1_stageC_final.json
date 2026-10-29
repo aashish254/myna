@@ -1,0 +1,54 @@
+{
+  "cmd": "python bench/eval_needle.py --ckpt /Users/aashish/myna-staging/lc1-4k-s0/stageC_final --device cpu --n 60 --seed 0 --lengths 128 1024 4096 8192 16384 --out /Users/aashish/myna-staging/lc1-4k-s0/stageC_final/needle_stageC_final.md",
+  "ckpt": "/Users/aashish/myna-staging/lc1-4k-s0/stageC_final",
+  "device": "cpu",
+  "seed": 0,
+  "n_per_length": 60,
+  "lengths": [
+    128,
+    1024,
+    4096,
+    8192,
+    16384
+  ],
+  "params_m": 15.35,
+  "temperature": 1.0,
+  "n_options": 6,
+  "baseline": {
+    "shortest_rung": 128,
+    "acc": 0.15,
+    "chance": 0.16666666666666666,
+    "n": 60,
+    "one_se": 0.0481,
+    "margin": 0.1,
+    "readable": false,
+    "note": "the 128-token rung is at the 0.167 uniform floor, so this curve cannot be read as decay \u2014 the checkpoint does not answer this task at any length"
+  },
+  "rows": [
+    {
+      "tokens": 128,
+      "acc": 0.15,
+      "ms": 77.0056068674118
+    },
+    {
+      "tokens": 1024,
+      "acc": 0.21666666666666667,
+      "ms": 745.0751513833287
+    },
+    {
+      "tokens": 4096,
+      "acc": 0.18333333333333332,
+      "ms": 2857.482810466172
+    },
+    {
+      "tokens": 8192,
+      "acc": 0.15,
+      "ms": 5554.869864500142
+    },
+    {
+      "tokens": 16384,
+      "acc": 0.15,
+      "ms": 10989.17304858296
+    }
+  ]
+}

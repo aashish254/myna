@@ -1,0 +1,103 @@
+# lc1-4k-s0 Stage C: the completed 1200-update dose and its full needle ladder
+
+## the run
+leg 1 (cold): steps 0-424, 425 updates, aborted by Condition 3's Stage A rule -- its log's last
+  write is the step-424 save at 19:47:52Z and the Stage A eval witness landed 19:49:26Z, and the
+  kill by exact PID followed.
+leg 2 (owner-ordered `--resume --steps 1200`): steps 425-1199, 775 updates, launched 20:38:29Z
+  (21:06:11Z finish minus the loop's own 1662 s counter), finished 21:06:11Z as uv 84379 /
+  python 84381. Total executed dose 1200 updates = the approved dose, across two processes joined
+  by the 1b snapshot.
+resume base snapshot sha256 d3548a881b9280e04a229ac60b57854d5604572a072cf677d4b5365bd23656dd (step 424)
+final model_last.pt  sha256 25b868e9f53660237d584da12066afc8d2b462f9392b8f2afa8d7ae9076674dd (step 1199)
+final model.pt       sha256 fb37a28b88bea29a0bb871dceb8f7b835b216e8c11a987830a420fb15d39b7e8
+both hashed on the src side and the staged side at copy (~/myna-staging/lc1-4k-s0/stageC_final/).
+
+## metrics.json, the first this path ever wrote
+{
+  "long_context": 4096,
+  "grad_tokens": 1024,
+  "split": 3072,
+  "grad_window_tokens": 1024,
+  "detached_tokens_p95": 3082,
+  "state_tokens_p95": 4106,
+  "p95_sample": 60,
+  "state_tokens_min": 4096,
+  "state_tokens_max": 4108,
+  "batch": 3,
+  "batch_requested": 3,
+  "lr": 0.0006,
+  "seed": 0,
+  "device": "mps",
+  "params": 15353984,
+  "steps_requested": 1200,
+  "updates_executed": 775,
+  "last_step": 1199,
+  "resumed_from_step": 425,
+  "stopped": null,
+  "save_every": 25,
+  "stop_factor": 3.0,
+  "mem_plan_free_gib": 9.0,
+  "mem_safety": 0.6,
+  "projected_step_gib": 2.4000000000000004,
+  "median_s_per_update": 2.0036542415618896,
+  "temperature": 1.0,
+  "temperature_fitted": false
+}
+## the resumed leg's logged steps (runs/lc1_4k_s0_resume.train.log)
+resume: runs/lc1-4k-s0/model_last.pt at step 424 -> continuing at 425 of 1200; data RNG re-seeded from --seed 0, so this is a continuation, not a bit-identical replay
+step   500  loss 1.695  ema 1.912  batch-acc 0.333  2.03s/update  159s
+step   600  loss 1.774  ema 1.806  batch-acc 0.667  2.07s/update  362s
+step   700  loss 1.756  ema 1.800  batch-acc 0.000  2.01s/update  577s
+step   800  loss 1.782  ema 1.795  batch-acc 0.333  2.05s/update  779s
+step   900  loss 1.776  ema 1.794  batch-acc 0.000  2.46s/update  1029s
+step  1000  loss 1.787  ema 1.790  batch-acc 0.000  1.98s/update  1258s
+step  1100  loss 1.790  ema 1.791  batch-acc 0.333  2.00s/update  1462s
+step  1199  loss 1.796  ema 1.791  batch-acc 0.333  1.90s/update  1662s
+
+## machine state through the whole leg
+STOP lines: 0 (none). Swap at every reading: used = 0.25M of total = 1024.00M.
+median_s_per_update 2.0036542415618896 measured by the loop itself; 775 updates in 1662 s = 2.144 s/update wall.
+
+## Stage C ladder -- UNTHROTTLED, because the trainer had exited
+command: ./.venv/bin/python bench/eval_needle.py --ckpt ~/myna-staging/lc1-4k-s0/stageC_final --device cpu --n 60 --seed 0 --lengths 128 1024 4096 8192 16384
+needle recall vs context length — stageC_final (cpu)
+
+  tokens |    acc |       ms
+     128 |  0.150 |    77.01
+    1024 |  0.217 |   745.08
+    4096 |  0.183 |  2857.48
+    8192 |  0.150 |  5554.87
+   16384 |  0.150 | 10989.17
+
+uniform floor 0.167 (6 desks), 1 s.e. at n=60 is 0.048
+G4: NOT MEASURED here — the 128-token rung is at the 0.167 uniform floor, so this curve cannot be read as decay — the checkpoint does not answer this task at any length
+
+wrote /Users/aashish/myna-staging/lc1-4k-s0/stageC_final/needle_stageC_final.md and /Users/aashish/myna-staging/lc1-4k-s0/stageC_final/needle_stageC_final.json
+
+## the dose answer, stated as a comparison, not an interpretation
+rungs shared with the step-799 boundary: 128/1024/4096.
+step 799 (throttled):  0.150 (9/60)  0.217 (13/60)  0.183 (11/60)
+step 1199 (unthrottled): 0.150 (9/60) 0.217 (13/60) 0.183 (11/60)
+Identical correct-counts on all three shared rungs after 400 more updates. Two different
+checkpoints agreeing exactly on three 60-sample counts is not what a learner still moving looks
+like; it is what a collapsed readout looks like, and the training loss agrees -- ema 1.791 at
+step 1199 against ln(6) = 1.791759469228055.
+
+## G4's two named thresholds, measured here for the first time
+G4 requires >= 0.90 at 4k and >= 0.85 at 16k state. Measured on the completed dose:
+  4096  -> 0.183   (short by 0.717)
+  16384 -> 0.150   (short by 0.700)
+G4: NOT MET, measured. The harness separately prints readable: false because the 128-token rung
+(0.150) is not above the 0.167 uniform floor, so this is not a decay curve either -- it is a
+flat line at chance with a slight negative bias.
+
+## ms comparability
+v0's n=16 ladder (runs/needle_myna-v0.json, cpu, seed 0, 14.45M params, untuned):
+  59.5 / 448.8 / 1760.9 / 3436.5 / 7425.2 ms/sample at 128/1024/4096/8192/16384
+this ladder (cpu, seed 0, 15.35M params, unthrottled, idle box):
+  77.01 / 745.08 / 2857.48 / 5554.87 / 10989.17
+per-rung ratios 1.294 / 1.660 / 1.623 / 1.616 / 1.480 -- DERIVED by dividing one measured column by
+another, not measured by any harness. The checkpoint is 1.0626x the parameters (15,353,984 against
+v0's 14,449,280), which does not account for a 1.3-1.7x per-sample cost, so no latency claim is
+built on these two columns. The rungs are the accuracy axis, and G4 is stated on accuracy.

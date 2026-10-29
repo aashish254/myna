@@ -319,9 +319,19 @@ So every "train" item below is split into *prepare/verify the path locally* (thi
       README's context column are restated as state/cost measurements only, with §9.25 recording how
       the one number covered two claims. Witness: `runs/needle_myna-v0.{md,json,log}`,
       `tests/test_longctx.py` (13), `bench/mutation_longctx.py` (**20/20**)
-- [ ] **7b** 4k truncated-backprop checkpoint — `KAGGLE` (code already built and tested). Re-run 7a
-      against it; G4's numbers are only meaningful once the 128-token rung clears the floor by the
-      guard's margin
+- [x] **7b** 4k truncated-backprop checkpoint — **executed on this box, not `KAGGLE`**, at the full
+      approved 1200-update dose (425 cold + 775 resumed, joined by the snapshot; `metrics.json`
+      `"stopped": null`, zero STOP lines, swap unmoved). Cold-started, seed 0, `--save-every 25`,
+      `--free-gib 9.0`, `--stop-factor 3.0`, out `runs/lc1-4k-s0`. **G4 is NOT MET, measured:** the n=60
+      ladder gives **0.1833 at 4096** (G4 asks ≥ 0.90) and **0.150 at 16384** (asks ≥ 0.85), with the
+      128-rung at 0.150 so `readable: false` stands — a flat line at chance, not decay. The dose answer is
+      the finding: step 799 and step 1199 agree exactly on all three shared rungs (9/13/11 of 60) after
+      400 more updates, and the final ema **1.791** is `ln(6)` to the digit the log prints. So this is not
+      "1200 wasn't enough" — the mechanism, not the dose, is what limits needle retrieval here (§9.63).
+      `--init` (warm from the suite checkpoint) was ruled out for this arm and stays untested on this
+      path. Witnesses: `runs/lc1_4k_s0.train.log`, `runs/lc1_4k_s0_resume.train.log`,
+      `runs/lc1_4k_s0.stageA.log`, `runs/lc1_4k_s0.stageB_resume.log`,
+      `runs/lc1_4k_s0.stageC_final.log`, `runs/needle_lc1_stage{A,B_resume,C_final}.{md,json}`
 
 ## P8 — Write it up
 - [x] **8a** README headline table built only from committed artifacts, every cell labelled
