@@ -20,19 +20,22 @@ We report Myna, a 16,926,848-parameter typed-decision engine (total parameters, 
 counted as `sum(p.numel() for p in model.parameters())`) that reads an observation, emits a typed decision
 over a fixed option set, and ships as a file small enough to run inside a browser tab. Our contribution is
 diagnostic, not a state-of-the-art claim: we pre-registered seven release gates against a frozen
-decision suite and ran them, and **the accuracy, long-context and abstention gates all fail on the
-measured artifacts — G1 is not met (macro 0.4893 against a 0.70 target, +0.0563 over a 0.4331 majority
+decision suite and ran them, and **four of the seven fail on the measured artifacts — G1 is not met (macro
+0.4893 against a 0.70 target, +0.0563 over a 0.4331 majority
 floor where +0.15 is required), G4 is not met (0.1833 at 4,096 state tokens against a required 0.90,
 0.150 at 16,384 against a required 0.85), G5 is not met (best accuracy 0.596 only at 10.04% coverage
-against a required 0.95 at ≥60% coverage) — while G6 remains open** (v0's own test macro is 0.9523, above
-the 0.94 level, but no v1 checkpoint has been run against it). What does hold is measured and reproducible:
+against a required 0.95 at ≥60% coverage), and G6 is not met (the v1 checkpoint `v1b-kaggle-3600b` measures
+0.3423 and 0.3489 on the synthetic test split at two seeds against the required 0.94, while the v0
+checkpoint that set that level measures 0.9525 and 0.9496 on the identical split — 0.5977 short on the
+deciding arm)**. What does hold is measured and reproducible:
 a 59.32 MiB artifact that loads in 253.9–394.4 ms and answers in a fixed 589,824-byte (576 KiB) decision
 state; a matched-condition throughput advantage over a competitor **we measure at 421,293,827
 parameters** (our count at their pinned snapshot, not a figure they publish) on the same inputs
 (33.083 ms against 100.691 ms at one question); and a release-gate registry in which 7/7 verdicts and
-35/35 rows re-derive from committed witnesses. We report the failures as the primary result, because the
+36/36 rows re-derive from committed witnesses. We report the failures as the primary result, because the
 instrument that detected them — a needle-recall harness that refuses to let a flat-at-chance curve be read
-as decay — is the part we can defend.
+as decay, and a synthetic-split harness that prints the chance floor beside every accuracy it reports — is
+the part we can defend.
 
 ## 2. Claim and introduction
 
@@ -44,8 +47,8 @@ it.
 
 Five things are on the table, and only four are strengths: size, latency, deployment and reproducibility.
 The fifth is the accuracy of the decisions themselves, and it is the one that fails, at every gate that
-governs it. No section of this draft states or implies that G1, G4 or G5 is met; §2 of the spec, the
-gate table and this paper agree that three gates are not met, one is open, and the release is therefore
+governs it. No section of this draft states or implies that G1, G4, G5 or G6 is met; §2 of the spec, the
+gate table and this paper agree that four gates are not met, none is left open, and the release is therefore
 not clear. A reader who wants a benchmark-topping model should stop here; a reader who wants to know what
 16.9M parameters do on a frozen suite, and how a project catches itself, should continue.
 
@@ -313,8 +316,8 @@ recorded under a deliberate CPU throttle in two of its three stages, appears now
 ## 9. Reproducibility
 
 The mechanical claim is that every published figure re-derives from a committed artifact, and the audit
-passes: `bench/gates.py --check` → **7/7 verdicts hold** (3 met, 3 not met, 1 open; the release gate is
-NOT clear); `bench/reproduce.py --check` → **35/35 rows hold, 108 figures tied to a committed witness, 1
+passes: `bench/gates.py --check` → **7/7 verdicts hold** (3 met, 4 not met, 0 open; the release gate is
+NOT clear); `bench/reproduce.py --check` → **36/36 rows hold, 122 figures tied to a committed witness, 1
 gated with no witness**; the two suites that read these documents (`tests/test_gates.py`,
 `tests/test_reproduce.py`) → **67 passed**. A mutation battery of 21 string-anchored mutants backs the
 gate logic, and the anchor-presence check (21/21) is what tells us a prose edit has not silently turned one
@@ -335,8 +338,9 @@ and the staged-side witnesses exactly. The ladder was then re-run from that down
 0.150 / 0.2167 / 0.1833 / 0.150 / 0.150 as §6 prints them, i.e. 0.15 / 0.21666666666666667 /
 0.18333333333333332 / 0.15 / 0.15 at full precision, with `baseline.readable` `false` in both the witness
 and the replay. So §6's result is now *witnessed **and** reproducible from a clone*. It changes no verdict:
-`bench/gates.py --check` still reads **3 met, 3 not met, 1 open**, the release gate is still NOT clear, and
-G4 is still **not met**.
+the release gate is still NOT clear and G4 is still **not met**. At that commit `bench/gates.py --check`
+read **3 met, 3 not met, 1 open**; the last `open` has since been scored (§10), so the check now
+reads **3 met, 4 not met, 0 open** — a move caused by that measurement, not by this replay.
 
 Three boundaries on that claim, stated because a reader cannot assume them. **Only the accuracy column is
 claimed reproducible, not `ms`** — the replay returned 99.4 / 838.8 / 2912.6 / 5222.4 / 10325.8 ms against
@@ -348,7 +352,7 @@ proven to be the copy answering (`myna.__file__` points inside the clone), but a
 is still open. **The registry binds the ladder now as well.** `bench/reproduce.py`'s row `needle-lc1-stageC`
 publishes the fetch and the five-rung command in one line, points at the replay's committed witnesses
 (`runs/needle_lc1_stageC_replay.{md,json}`), and quotes seven figures out of them, so `make repro` can now
-contradict these five cells the same way it contradicts the other 34 rows — which is the half of §9.64(x)'s
+contradict these five cells the same way it contradicts the other 35 rows — which is the half of §9.64(x)'s
 gap that a Release alone could not close.
 
 ## 10. Diagnostic failures
@@ -388,10 +392,30 @@ reading each source at its maximum the gate fails. A constant emitter cannot be 
 **G4 — a missing mechanism, not a missing dose** (§6): 9/13/11 correct of 60 reproduced exactly 400
 updates apart, with training loss on `ln(6)`.
 
-**G6 — open.** v0's own measured test macro is **0.9523** (the macro of the nine `=== test ===` rows in
-`runs/train-v0.log`), above the 0.94 level, so the level clears today. The gate nevertheless stays open
-until a v1 checkpoint is run against it, and we do not close a regression gate with the pre-regression
-number.
+**G6 — not met, and the number is unreadable without its floors.** The gate asks that what already worked
+keep working: **synthetic v0 test macro ≥ 0.94**. The deciding arm is the v1 checkpoint
+`runs/v1b-kaggle-3600b`, whose two files were hashed before anything loaded them and matched the live
+manifest of Release `v1b-checkpoint` (id 400663670): `model.pt` 67,734,997 B sha256 `0e73a8f0…`,
+`tokenizer.json` 526,662 B sha256 `0252c246…`. `bench/eval_synthetic.py` rebuilds the synthetic split from
+the trainer's own recipe (`--n-train 4000 --n-eval 1200`, the ordering `src/myna/train.py:995-1006`
+depends on) and scores it with `myna.train.evaluate()`. It measures **0.3423** at `--seed 0` and **0.3489**
+at `--seed 1` — **0.5977 short** on the deciding arm. The paired control is the same harness on
+`runs/myna-v0`: **0.9525** and **0.9496**, and the pairing is asserted no further than the artifacts allow —
+each seed's two arms print the *same* digest of their test split (`998d7375…` at seed 0, `fc9cbe3b…` at
+seed 1), so the gaps **0.6102** and **0.6007** are a difference in weights and nothing else.
+
+The reading this section refuses is the flattering one. `v1b-kaggle-3600b` trained on the real
+`decision-v2` suite and never saw one synthetic row, so what the arms above measure is **zero-shot retention
+of the task family, not decay of a capability v0 had and v1 lost**. Both readings fail the same level, so
+the verdict does not depend on choosing; the mechanism claim does, and the weaker one is what is written
+into the gate. The floors say how complete the failure is: chance on these nine cells is **0.3370** and the
+modal-label floor is **0.3546** at seed 0 / **0.3463** at seed 1. The v1b macro at seed 0 sits *below* the
+modal-label floor and only +0.0053 over chance; 4 of its 9 cells score under chance outright
+(`incident/page_oncall`, `moderation/category`, `support/churn_risk`, `support/department`), and 3 of 9 at
+seed 1. v0 clears the modal-label floor on all 9 cells at both seeds. And v0's logged **0.9523**
+(`runs/train-v0.log`) is *not* the 0.9525 printed above and binds nothing here: that log records no command,
+seed or row counts and its init was unseeded before `0b66ab9` (§9.30), which is exactly why this gate is
+now scored by a harness that prints a split digest instead of by the training log that set its level.
 
 **The data-side experiment that did not help.** The anti-prior pair changes how batches are composed, so
 the label prior stops being a shortcut the model can answer with, and both arms were run at the same dose
@@ -446,9 +470,10 @@ report that it does not pass its own release gates: **G1 is not met** at 0.4893 
 and a +0.15 margin over a 0.4331 floor, with no scope choice rescuing it; **G4 is not met** at 0.1833 at
 4,096 and 0.150 at 16,384 state tokens against 0.90 and 0.85, on a checkpoint that completed its approved
 1,200-update dose and whose loss sits on `ln(6)`; **G5 is not met**, peaking at 0.5965 only at 10.04%
-coverage against a required 0.95 at ≥ 60%; and **G6 is open**, its level already cleared at 0.9523 but no
-v1 checkpoint run against it. The size, latency and reproducibility numbers are the measured strengths;
-the three failures and the one open gate are the measured contribution, and the needle harness that
+coverage against a required 0.95 at ≥ 60%; and **G6 is not met**, the v1 checkpoint measuring 0.3423 and
+0.3489 on the synthetic test split against a 0.94 level that the paired v0 arm clears at 0.9525 and 0.9496
+on the identical split. The size, latency and reproducibility numbers are the measured strengths;
+the four failures are the measured contribution, and the needle harness that
 refused to print a decay curve for a flat one is the instrument we would hand to the next person.
 
 ---

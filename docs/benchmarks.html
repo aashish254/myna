@@ -59,11 +59,15 @@
                 <tr><td>G3 Deployment</td><td class="met">MET</td></tr>
                 <tr><td>G4 Long-context</td><td class="not-met">NOT MET</td></tr>
                 <tr><td>G5 Useful confidence</td><td class="not-met">NOT MET</td></tr>
-                <tr><td>G6 No regression</td><td class="open">OPEN</td></tr>
+                <tr><td>G6 No regression</td><td class="not-met">NOT MET</td></tr>
                 <tr><td>G7 Reproducibility</td><td class="met">MET</td></tr>
             </tbody>
         </table>
-        <div class="data-note">Source: SPEC.md §2.2 (lines 65-73); tally: 3 met, 3 not met, 1 open (line 82).</div>
+        <div class="data-note">Source: SPEC.md §2.2 (lines 65-73); tally: 3 met, 4 not met, 0 open (line 82).
+        G6 is measured, not decided: on the synthetic test split <code>v1b-kaggle-3600b</code> scores
+        <strong>0.3423 / 0.3489</strong> (two seeds) against the required 0.94, while the v0 checkpoint that
+        set the level scores <strong>0.9525 / 0.9496</strong> on the same hashed rows — measured, witnessed
+        in <code>runs/g6_*</code>, and read as zero-shot retention rather than decay (§9.65).</div>
     </section>
 
     <section id="latency">

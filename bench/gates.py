@@ -226,16 +226,35 @@ GATES = [
 
     gate("G6", "No regression on what already worked",
          "synthetic v0 test ≥ 0.94",
-         OPEN,
-         ["v0-accuracy"],
-         [],
-         "v0's measured test macro is **0.9523** — the macro of the nine `=== test ===` rows "
-         "in `runs/train-v0.log`, recomputed from its rows because the log prints no overall "
-         "line — so the level clears today.",
-         "open rather than met, because the gate is written against the *next* checkpoint: it "
-         "says \"no regression\", and there is no trained v1 artifact in this repo to "
-         "regress. A draft of this row cited 0.951, a figure no artifact prints (§9.30), "
-         "which is why the value here is computed from the log's own rows."),
+         NOT_MET,
+         ["v0-accuracy", "g6-synthetic-v1b"],
+         [proof("runs/g6_v1b_synthetic_s0.json", "g6/met", False,
+                "the deciding arm's own witness writes the verdict as false, from the "
+                "macro it printed"),
+          proof("runs/g6_v1b_synthetic_s1.json", "g6/met", False,
+                "and the second draw of the same recipe says the same thing")],
+         "v0 — the checkpoint the level was set on — measures **0.9525 / 0.9496** on the "
+         "synthetic test split, and `v1b-kaggle-3600b`, the checkpoint every G1 figure here "
+         "is scored on, measures **0.3423 / 0.3489** on those same rows: the harness hashes "
+         "the split it scores and both arms print the same digest per seed "
+         "(`998d7375…`, `fc9cbe3b…`), so the pairing is an artifact rather than a claim. "
+         "**0.3423 against the ≥ 0.94 the gate asks for** is 0.5977 short, and the floors "
+         "printed beside it in the same witness — uniform **0.3370**, majority **0.3546 / "
+         "0.3463** — put it +0.0053 over chance and *below* the modal-label floor on seed 0.",
+         "not met, and the honest name for what was measured matters: `v1b-kaggle-3600b` "
+         "trained on the real `decision-v2` suite and never saw a synthetic row, so this is "
+         "**zero-shot retention of the task family, not a capability v0 had and v1 lost**. "
+         "The gate fails either way — it is a level test on the next checkpoint, and the "
+         "level is 0.94 — but the finding is a transfer failure and §9.65 keeps the two "
+         "readings apart rather than picking the flattering word. What this does not settle: "
+         "the mechanism (4 of 9 cells sit *below* chance on seed 0, so this is not merely an "
+         "uninformative head), and the next v1 artifact — `runs/lc1-4k-s0` cannot be scored "
+         "here at all, because its `model.pt` declares 4096 embeddings while its "
+         "`tokenizer.json` holds 522 entries and `bench/eval_synthetic.py` refuses the "
+         "mismatch instead of silently re-tokenizing. And v0's logged **0.9523** in "
+         "`runs/train-v0.log` is *not* this run's 0.9525: §9.30 disqualifies those nine rows "
+         "as a set this box can regenerate, so the paired measurement above — not the log — "
+         "is what the verdict rests on."),
 
     gate("G7", "Reproducibility",
          "one command per result, seeds pinned, witness JSONs committed, `pytest` green",

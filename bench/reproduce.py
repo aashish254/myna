@@ -157,6 +157,44 @@ ROWS = [
         "curve may be read as decay. Not comparable to the `needle` row above: n=60 against n=16, and "
         "a 15.35M cold-trained checkpoint against v0's 14.45M."),
 
+    row("g6-synthetic-v1b", "SPEC §2.2 G6 · §9.65 (the v1b arm on the synthetic test split)",
+        "uv run python bench/eval_synthetic.py --ckpt runs/v1b-kaggle-3600b --device cpu "
+        "--seed 0 --n-train 4000 --n-eval 1200 --out runs/g6_v1b_synthetic_s0.md",
+        HERE,
+        ["runs/g6_v1b_synthetic_s0.md", "runs/g6_v1b_synthetic_s0.json",
+         "runs/g6_v1b_synthetic_s1.md", "runs/g6_v1b_synthetic_s1.json",
+         "runs/g6_v0_synthetic_s0.md", "runs/g6_v0_synthetic_s0.json",
+         "runs/g6_v0_synthetic_s1.md", "runs/g6_v0_synthetic_s1.json"],
+        [("runs/g6_v1b_synthetic_s0.json", '"macro_test": 0.34231481481481485'),
+         ("runs/g6_v1b_synthetic_s1.json", '"macro_test": 0.3488888888888889'),
+         ("runs/g6_v0_synthetic_s0.json", '"macro_test": 0.9525'),
+         ("runs/g6_v0_synthetic_s1.json", '"macro_test": 0.9496296296296296'),
+         ("runs/g6_v1b_synthetic_s0.json", '"met": false'),
+         ("runs/g6_v1b_synthetic_s1.json", '"met": false'),
+         ("runs/g6_v0_synthetic_s0.json", '"met": true'),
+         ("runs/g6_v1b_synthetic_s0.json", '"uniform": 0.337037037037037'),
+         ("runs/g6_v1b_synthetic_s0.json", '"majority": 0.35462962962962963'),
+         ("runs/g6_v1b_synthetic_s1.json", '"majority": 0.3462962962962963'),
+         ("runs/g6_v1b_synthetic_s0.json",
+          '998d73757872d426564b4cb25356e621e5d2a6eca2e45bf140d066bd1de5abee'),
+         ("runs/g6_v0_synthetic_s0.json",
+          '998d73757872d426564b4cb25356e621e5d2a6eca2e45bf140d066bd1de5abee'),
+         ("runs/g6_v1b_synthetic_s1.json",
+          'fc9cbe3b0aec5c94fbe3fa5e6c3126c4fb67d823f138b5cd67b3a8b484182235'),
+         ("runs/g6_v0_synthetic_s1.json",
+          'fc9cbe3b0aec5c94fbe3fa5e6c3126c4fb67d823f138b5cd67b3a8b484182235')],
+        "G6's deciding arm is the command above; the other three pairs are the baseline arm "
+        "and the seed-1 replication of both, each written by this same harness with only "
+        "`--ckpt` and `--out` changed, and each JSON carries its own `cmd` so a reader can "
+        "see which line produced it. The split is not stored anywhere: it is a function of "
+        "`--seed/--n-train/--n-eval`, which is why every witness prints `test_split_sha256` "
+        "— the two arms on one seed print the same digest, so the 0.61 gap between them is a "
+        "difference in weights and nothing else. What the v1b figure is *not* is a decayed "
+        "v0: `v1b-kaggle-3600b` trained on the real `decision-v2` suite and never saw a "
+        "synthetic row, so this measures zero-shot retention of the task family, and the "
+        "floors the same witness prints (uniform 0.3370, majority 0.3546 / 0.3463) say where "
+        "0.3423 actually sits."),
+
     row("laya-real-suite", "SPEC §2.1 G1 competitor row · README real-corpus table",
         "uv run python bench/eval_laya_real.py --split test --n-per-source 40 --seed 0 "
         "--out runs/laya_decision_v2_test.json",

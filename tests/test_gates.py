@@ -95,9 +95,9 @@ def test_an_unmutated_verdict_holds():
 def test_the_release_state_counts_the_verdicts_that_are_there():
     t = G.tally()
     assert sum(t.values()) == len(G.GATES) == 7
-    assert t == {G.MET: 3, G.NOT_MET: 3, G.OPEN: 1}
+    assert t == {G.MET: 3, G.NOT_MET: 4, G.OPEN: 0}
     # README's headline is this string, so changing a verdict is a two-place edit
-    assert G.release_state().startswith("**3 of 7 met, 3 not met, 1 open")
+    assert G.release_state().startswith("**3 of 7 met, 4 not met, 0 open")
 
 
 def test_g1_is_not_met_on_the_trained_run_and_stays_off_the_void_one():
@@ -265,9 +265,20 @@ def test_a_met_verdict_cannot_rest_on_a_void_artifact():
 
 
 def test_open_must_name_the_run_this_box_cannot_do():
+    """No gate is `open` on this tree, so the branch is exercised on a copy. G6 was the
+    last one and moved to `not met` the moment a v1 checkpoint got scored on the split
+    (§9.65), and a rule nothing in the table can reach is a rule the mutation battery
+    would stop catching. Both halves are asserted, because the rule is "open has to name
+    a missing artifact", not "open is forbidden"."""
     g = gate_of("G6")
+    g["verdict"] = G.OPEN
     g["rows"] = ["needle"]                     # reproducible here: so "open" is an excuse
-    assert "gated-kaggle or retrain" in messages(g)
+    assert "gated-kaggle or retrain" in messages(g, dict(PROSE, G6="open"))
+    g2 = gate_of("G6")
+    g2["verdict"] = G.OPEN
+    g2["rows"] = ["v0-accuracy"]               # the exact shape G6 held until §9.65
+    g2["proofs"] = []
+    assert problems(g2, dict(PROSE, G6="open")) == []
 
 
 def test_prose_and_code_must_lead_with_the_same_word():

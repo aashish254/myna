@@ -118,11 +118,11 @@ def test_a_gated_row_is_not_asked_to_parse_as_a_shell_line():
 
 def test_the_flag_question_reaches_every_python_command_and_only_those():
     """A coverage assertion, not a behaviour one: the prefix-stripping above and the
-    `uv run` skip are what make 28 of the 35 rows checkable, and a checker that quietly
-    recognised fewer targets would still print 35/35."""
+    `uv run` skip are what make 29 of the 36 rows checkable, and a checker that quietly
+    recognised fewer targets would still print 36/36."""
     asked = [r["id"] for r in R.ROWS
              if r["status"] != R.KAGGLE and R.python_target(r["cmd"])]
-    assert len(asked) == 28, asked
+    assert len(asked) == 29, asked
     assert "latency-matched" in asked and "v0-accuracy" in asked
     assert "scope-pricing" in asked, "a `-m bench.*` row must be asked its flags"
     assert "anti-prior-audit" in asked, "the row P10 added owes the flag question too"
@@ -135,6 +135,9 @@ def test_the_flag_question_reaches_every_python_command_and_only_those():
         "by a command substitution — and `python_target` reads only the six flags of "
         "`bench/eval_needle.py` from it, so the fetch inside the substitution cannot be "
         "mistaken for the harness's interface")
+    assert "g6-synthetic-v1b" in asked, (
+        "the row §9.65 added is a plain python command, and its `--n-train/--n-eval` are "
+        "flags `bench/eval_synthetic.py` has to keep answering for the row to hold")
     for skipped in ("browser-g3-fp32", "report-floors",
                     "kaggle-wall-clock", "kaggle-dev-tail"):
         assert skipped not in asked, skipped

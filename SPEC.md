@@ -69,8 +69,8 @@ Quote the ratio, never the millisecond figure.
 | **G3** | Deployment works for real | ONNX browser build answers a live page's decisions; bytes + p50 + cold-load measured in Chrome | **met, as a mechanics gate only.** `browser/index.html` runs the exported artifact in real Chrome 153 and answers three typed decisions with the same probabilities the torch engine prints (6/6 parity checks, both isolation modes, desktop and mobile widths, `runs/browser_g3.json`); bytes, cold-load and p50 are measured there with the box's load average recorded beside them. What this does **not** say: the artifact it deploys is v0, which still fails G1 and G5, the ≤ 20 MB int8 route is open at the byte level and closed at the agreement level (§9.28), and the Apple-silicon int8 route closes for the opposite reason — 17.40 MiB at 9.24e-03 and **no** latency win at all, so fp32 is the artifact on both paths (§9.29) |
 | **G4** | Long-context is *correct*, not just cheap | needle-style typed decision ≥ 0.90 at 4k and ≥ 0.85 at 16k state | **not met — measured on a completed dose, and no longer gated on hardware.** v0's needle curve (`runs/needle_myna-v0.md`) reads 0.188 at 128 tokens against a 0.167 floor — at chance on the shortest rung — so the longer rows are decay of nothing, and the harness says so itself rather than printing a table (§9.25). The 4k needle run then executed *on this box* (§6 prices it at 2.4 GiB retained, 1c measured 2.0194742679595947 s/update), was aborted at 425 of 1200 updates by 7b's own Stage A rule with the 128-rung at 0.1667 = the floor (§9.62), and was then resumed on the owner's order to the **full approved 1200-update dose**. Its n=60 ladder (`runs/needle_lc1_stageC_final.json`) reads **0.1833 at 4096 against G4's ≥ 0.90 — short by 0.7167 — and 0.150 at 16384 against ≥ 0.85, short by 0.700**, the first time either threshold has been measured on a 4k-trained checkpoint; the 128-rung is 0.150, so the harness still prints `readable: false` — not a decay curve, a flat line at chance (§9.63). Step 799 and step 1199 agree exactly on all three shared rungs (9, 13, 11 of 60), so the limiter is the mechanism, not the dose. The 16k *state* remains measured and cheap (§9.22) |
 | **G5** | Useful confidence, with abstention | risk/coverage curve on `calibration.jsonl`; ≥ 0.95 accuracy at ≥ 60% coverage on banking77 + dbpedia14 + trec | **not met on the level, met on the machinery.** Abstention ships: `Myna(ckpt, abstain_below=t)` withholds the commitment and prints the measured reason, the fallback seam labels every answer with the engine that committed, and the curve is a committed artifact (`runs/risk_coverage.md`, 448 rows / 568 questions). Accuracy on v0 climbs **0.349 → 0.535** as coverage falls 1.00 → 0.20 — the confidence ranks the answers, on a checkpoint that cannot do the task — and setting the 0.693 floor on the engine abstains on **227** questions where the curve withheld **227**. But **no rung reaches 0.95** (max 0.596, at 10% coverage) and G5's own three sources sit at 0.000 / 0.025 / 0.150, so the pass needs the `KAGGLE` checkpoint (§9.24) |
-| **G6** | No regression on what already worked | synthetic v0 test ≥ 0.94 | open — v0's measured test macro is **0.9523** (`runs/train-v0.log`, macro of its nine `=== test ===` rows), so the level clears today; the gate stays open until a v1 checkpoint is run against it, and a draft of this row cited "0.951", which no artifact prints (§9.30) |
-| **G7** | Reproducibility | one command per result, seeds pinned, witness JSONs committed, `pytest` green | **met, as a binding rather than a rebuild.** `bench/reproduce.py` holds 35 registry rows, each binding one published table cell to one command and one committed witness, and `make repro` re-reads the 108 quoted figures out of those artifacts rather than out of the prose; the python commands among those rows are checked against the tool behind them — its `--help` must still print every flag the row publishes (§9.43); the seeds live inside the printed commands (`--seed 0`, `--seeds 0 1`), not in sentences about them. What this does **not** say: no target *executes* the registry end to end — 23 rows re-run on this box, 6 retrain a checkpoint, 2 need a laya checkout on `PYTHONPATH`, 3 need Google Chrome and 1 is `KAGGLE` — which is why TODO 8b stays unticked and why G7 is discipline rather than a one-command rebuild. Every count in this cell is now read back against `ROWS` by `bench/gates.py`, so this row — the table's one hand-copied cell — goes red rather than quietly stale (§9.44) |
+| **G6** | No regression on what already worked | synthetic v0 test ≥ 0.94 | **not met — measured on the checkpoint the gate was written against, and the pairing is the artifact.** v0 scores **0.9525 / 0.9496** on the synthetic test split and `v1b-kaggle-3600b` — the checkpoint every G1 figure here is scored on — scores **0.3423 / 0.3489** on rows hashed to the same digest per seed (`998d7375…`, `fc9cbe3b…`), so the two arms differ by weights alone (§9.65). 0.3423 is **0.5977 short of 0.94**, and the floors the same witness prints (uniform **0.3370**, majority **0.3546 / 0.3463**) place it +0.0053 above chance and *below* the modal-label floor: 4 of 9 cells under chance on seed 0, so this is not an uninformative head either. What the verdict does **not** say is that v1 lost something v0 had: `v1b-kaggle-3600b` trained on the real `decision-v2` suite and never saw a synthetic row, so the number is zero-shot retention of the task family, and the transfer failure is the finding (§9.65). The logged **0.9523** of `runs/train-v0.log` stays out of the binding — §9.30 disqualifies its nine rows as a set this box can regenerate — and a draft of this row once cited "0.951", which no artifact printed |
+| **G7** | Reproducibility | one command per result, seeds pinned, witness JSONs committed, `pytest` green | **met, as a binding rather than a rebuild.** `bench/reproduce.py` holds 36 registry rows, each binding one published table cell to one command and one committed witness, and `make repro` re-reads the 122 quoted figures out of those artifacts rather than out of the prose; the python commands among those rows are checked against the tool behind them — its `--help` must still print every flag the row publishes (§9.43); the seeds live inside the printed commands (`--seed 0`, `--seeds 0 1`), not in sentences about them. What this does **not** say: no target *executes* the registry end to end — 24 rows re-run on this box, 6 retrain a checkpoint, 2 need a laya checkout on `PYTHONPATH`, 3 need Google Chrome and 1 is `KAGGLE` — which is why TODO 8b stays unticked and why G7 is discipline rather than a one-command rebuild. Every count in this cell is now read back against `ROWS` by `bench/gates.py`, so this row — the table's one hand-copied cell — goes red rather than quietly stale (§9.44) |
 
 **This column is not a claim.** `make gates` (`bench/gates.py --check`) re-reads each cell's
 leading verdict word, the registry row that gate cites, and the named field inside a committed
@@ -79,8 +79,10 @@ artifact — and a `met` verdict is refused if the field it rests on prints `fal
 counts back out of this table and compares them with `ROWS`, because §2.2 is the one place a
 gate row is typed by hand rather than generated — a stale number here now goes red instead of
 riding along (§9.44). As of P8 8d the tally
-is **3 met, 3 not met, 1 open**, so the release gate is not clear; README's copy of that table is
-generated from the same file and is therefore *not* evidence (§9.31).
+is **3 met, 4 not met, 0 open** — the last `open` verdict closed under a measurement rather than a
+decision: G6 is now scored against `v1b-kaggle-3600b` on the synthetic split and fails its level
+(§9.65) — so the release gate is not clear; README's copy of that table is generated from the same
+file and is therefore *not* evidence (§9.31).
 
 ### 2.3 Non-goals (deliberate exclusions)
 - **No text generation, no vocabulary readout.** The contract is decisions in constant time.
@@ -1058,12 +1060,13 @@ are counted, and if nothing is left the run refuses. See §9.14.
       The verdict half is done — P8 8d — and it says **no**. `bench/gates.py` binds each of
       G1–G7 to a registry row *and* to a named field read out of a committed artifact, so no
       verdict can be greener than the witness behind it: **3 met** (G2 on the matched ratios,
-      G3 on the in-Chrome parity, G7 on the checker itself), **3 not met** (G1, on the trained
+      G3 on the in-Chrome parity, G7 on the checker itself), **4 not met** (G1, on the trained
       run's own committed report rather than on the untrained control that used to be the only
       architecture number here; G4, whose own harness prints `readable: false`; G5, whose curve
-      prints `g5.pass: false`), **1 open** (G6 — the level clears at 0.9523, but the gate is
-      written against a trained v1 checkpoint and there is nothing to regress against until
-      that run exists). `make gates` is the
+      prints `g5.pass: false`; and G6, which sat at `open` until §9.65 scored `v1b-kaggle-3600b`
+      on the synthetic split it was written against — **0.3423 / 0.3489 against the 0.94 the gate
+      asks for, on rows whose sha256 the same harness prints for the 0.9525 / 0.9496 baseline**).
+      `make gates` is the
       check and SPEC §2.2 is the prose it reads. What keeps this line unticked is the release
       itself: G1 is measured and short by 0.211, raising it is a GPU decision whose price §9.38
       writes down, G4 is measured and short — the 4k needle run executes on the M5, ran the full
@@ -4391,3 +4394,117 @@ Kept permanently, because the value of this project's claims is that they surviv
     file, which is the witness that none of the three `needle_lc1_stage*.{md,json}` pairs or any stage log
     was edited to agree with a claim. **Nothing was pushed, tagged, released, or submitted; Phase 3
     drafting was not started; the Stage C Release shipping remains an owner decision.**
+
+65. **G6 was the last `open` verdict in the table, and it closed under a measurement rather than a
+    decision: the synthetic split now has a harness that scores any checkpoint, `v1b-kaggle-3600b`
+    fails the 0.94 level the gate was written at, and the thing that makes the number mean something
+    is a hash the harness prints rather than a sentence in the prose.** Every figure below is read
+    out of one of the four committed witness pairs
+    (`runs/g6_v0_synthetic_s{0,1}.{md,json}`, `runs/g6_v1b_synthetic_s{0,1}.{md,json}`), and no
+    witness was edited after it was written.
+
+    **(i) Why the gate could not be run at all until this tick.** G6's level came from
+    `runs/train-v0.log`, whose nine `=== test ===` rows recompute to **0.9523** — a figure that
+    §9.30 already disqualifies as a *reproducible* set, because the log prints no command, no seed
+    and no row count (the `cmd:` print landed later, in `240cad5`), the weight initialiser was
+    unseeded before `0b66ab9`, and `src/myna/data.py` changed on 2026-09-26 (`3e87a8b`, `7f66243`).
+    Worse, no harness in `bench/` could score a checkpoint on the synthetic split at all:
+    `bench/eval_scratch.py` and `myna.report` read the real `decision-v2` suite and
+    `bench/eval_needle.py` reads the needle task. So the gate sat with a level and no instrument,
+    which is the one shape `open` is allowed to have — and the one shape a reader cannot audit.
+
+    **(ii) The instrument, and the identity of the split it scores.** `bench/eval_synthetic.py`
+    loads a checkpoint's `model.pt` *and the `tokenizer.json` beside it*, rebuilds the trainer's own
+    split recipe (`torch.manual_seed`, then one `random.Random` walking `WORKFLOWS` in literal order
+    for train, dev and test — `src/myna/train.py:995-1006`), scores the test split through
+    `myna.train.evaluate()` — the function that printed v0's nine rows, so the basis matches the
+    artifact — and prints the two floors of those rows from `myna.report.cell_stats`, the same
+    definition the G1 cells use. Four details are load-bearing rather than incidental:
+    all four arms score at `temperature` 1.0, the value every one of these witnesses prints, because
+    a positive logit scale cannot move an argmax — so this level test is not a temperature choice and
+    no checkpoint's fitted scalar enters it;
+    `--n-train` is part of the measurement's identity because it sets where in the RNG stream `test`
+    begins; the split is *not* stored on disk anywhere, which is why the harness hashes the rows it
+    is about to score and writes the digest into both witnesses; and the vocab guard
+    (`bench/eval_synthetic.py:137-140`, the rule `bench/eval_scratch.py:82-85` already applies)
+    refuses a checkpoint whose `cfg.vocab` disagrees with its tokenizer instead of re-tokenizing the
+    corpus with something else. The deciding command is the row `g6-synthetic-v1b` publishes:
+
+    ```bash
+    uv run python bench/eval_synthetic.py --ckpt runs/v1b-kaggle-3600b --device cpu --seed 0 --n-train 4000 --n-eval 1200 --out runs/g6_v1b_synthetic_s0.md
+    ```
+
+    The baseline arm is the same line with `--ckpt runs/myna-v0`, and both are repeated at
+    `--seed 1`, because one random draw is a sample and not a property — the rule `bench/eval_scratch.py`
+    already holds itself to. Four pairs, each carrying its own `cmd`.
+
+    **(iii) The checkpoint, verified before it was scored.** `v1b-kaggle-3600b` is the artifact every
+    §2.2 G1 figure is scored on, and it is hash-verified rather than assumed: `model.pt` is
+    67,734,997 B with sha256
+    `0e73a8f07edc87d88a2e8e6f740dc9c5ac248e16459c152e5e5ccff312bb7000` and `tokenizer.json` is
+    526,662 B with sha256
+    `0252c24627eeebc2df5a577576c1c8b24e402da015c1d45519e7e1d8541ffdc3` — both re-hashed in this step
+    against the digests GitHub computed for the assets of Release `v1b-checkpoint` (id **400663670**,
+    published 2026-10-01T05:03:03Z), where they match byte-for-byte. No download was needed, which
+    matters on a 50 GB/day link. The baseline `runs/myna-v0` is vocab 1740 / 14,449,280 params,
+    `model.pt` sha256 `88c14ef2851e028a6d9c41a2a273fcfcd52e2f1d28f2180e3662d567197c880e`.
+
+    **(iv) The four measured arms, with their floors.** All four ran on `cpu`, one at a time, and the
+    load average each one saw is in its own witness:
+
+    | arm | seed | `test_split_sha256` | MACRO | dev | uniform floor | majority floor | G6 at 0.94 |
+    |---|---|---|---|---|---|---|---|
+    | `runs/myna-v0` | 0 | `998d7375…` | **0.9525** | 0.9591 | 0.3370 | 0.3546 | met |
+    | `runs/myna-v0` | 1 | `fc9cbe3b…` | **0.9496** | 0.9588 | 0.3370 | 0.3463 | met |
+    | `runs/v1b-kaggle-3600b` | 0 | `998d7375…` | **0.3423** | 0.3446 | 0.3370 | 0.3546 | NOT met |
+    | `runs/v1b-kaggle-3600b` | 1 | `fc9cbe3b…` | **0.3489** | 0.3501 | 0.3370 | 0.3463 | NOT met |
+
+    The pairing is the row that matters: each seed's two arms print the *same* digest, so the gap
+    0.9525 − 0.3423 = **0.6102** (and 0.9496 − 0.3489 = **0.6007**) is a difference in weights and
+    nothing else. Means over the two seeds: v0 **0.9511** (spread 0.0029), v1b **0.3456** (spread
+    0.0066); v1b is +0.0053 and +0.0119 over the chance floor of its two seeds, and −0.0123 / +0.0026
+    against their modal-label floors. Cell-level, from the same witnesses: v0 clears the majority
+    floor on all 9 cells at both seeds; v1b clears it on 3 of 9 at seed 0 and 5 of 9 at seed 1, and
+    drops *below chance* on 4 cells at seed 0 (`incident/page_oncall`, `moderation/category`,
+    `support/churn_risk`, `support/department`) and 3 at seed 1. The floor macro is identical across
+    seeds for the uniform column (0.3370 = the mean of 1/|options| over the nine cells, whose option
+    counts in the sorted order the report prints are 2/4/4/3/4/2/2/5/4) and moves in the majority
+    column, which is the label prior of the draw, not a
+    property of the model. **G6 is not met at 0.3423 on the deciding arm.**
+
+    **(v) Which reading the artifacts support, and the flattering word this entry refuses.** The
+    gate says "no regression", and a regression is something lost. `v1b-kaggle-3600b` trained on the
+    real `decision-v2` suite and never saw one synthetic row — the same is true of the anti-prior
+    pair — so what is measured here is **zero-shot retention of the task family**, not decay of a
+    trained capability. Both readings fail the same level, so the verdict is unaffected; the
+    *mechanism* claim is not, and this entry makes the weaker one: the checkpoint cannot do the
+    synthetic task without having been trained on it, and 4 of 9 cells below chance says the failure
+    is not merely an uninformative head. Not settled, and not claimed: whether the cause is the
+    instruction/cue vocabulary (`myna.data`'s cue templates are nothing like kev's noul criteria),
+    the 8192-entry tokenizer, or the head. Nor run: `runs/lc1-4k-s0`, which the vocab guard refuses —
+    its `model.pt` declares 4096 embeddings while its `tokenizer.json` holds 522 entries — so the
+    4k checkpoint is *not* a second v1 data point on this gate yet, and the guard is why nobody
+    quietly scored it with the wrong vocab. (A draft of this sentence had "525"; the refusal the
+    harness actually prints names 522, and the artifact's number is the one kept.) One coincidence
+    to name rather than lean on: v0's fresh
+    two-seed mean **0.9511** is digits away from the "0.951" §9.30 buried. It is not that figure
+    resurrected — it is a different split, scored by a committed harness on committed rows, and the
+    log's 0.9523 stays out of every binding in this table.
+
+    **(vi) What moved, and the four checks on the tree this entry leaves.** One gate verdict
+    (`open` → `not met`, with two proofs now reading `g6/met == false` out of the two v1b witnesses),
+    one registry row (`g6-synthetic-v1b`, `HERE`, 8 witness files, 14 quoted figures) → **36 registry
+    rows, 122 quoted figures, 24 rows re-run on this box**, and SPEC §2.2's hand-copied G7 cell and
+    the two live tally sentences re-synced to **3 met / 4 not met / 0 open**. README's two generated
+    blocks were regenerated from `bench/gates.py --readme-block` and `reproduce.readme_block()`, not
+    edited. `docs/paper-draft.md` moved with the verdict, not ahead of it: its abstract, its §2 scope
+    sentence, its §9 check prints and its §10 G6 paragraph now carry the measured pair — 0.9525 / 0.9496
+    against 0.3423 / 0.3489 on the same split digests — while the §9 replay paragraph keeps **3 met /
+    3 not met / 1 open** as what the check printed on 2026-10-29 rather than deleting it.
+    `tests/test_gates.py`'s tally assertion moved with it, and its `open`-branch test now
+    exercises the rule on a copy of G6 — with no `open` gate left in the table, an unexercised branch
+    would silently stop being caught by `bench/mutation_gates.py`'s 21st mutant. The coverage
+    assertion in `tests/test_reproduce.py` moves 28 → 29. Historical records that name the old tally
+    (§9.x ticks, TODO 8d's tick, `docs/release-stageC-draft.md`, `docs/RELEASE-v0.1.0-notes.md`) are
+    left as dated records and listed in the commit report rather than rewritten. **Nothing was pushed,
+    merged, tagged, released, or submitted.**

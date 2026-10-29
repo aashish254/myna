@@ -1,0 +1,115 @@
+{
+  "cmd": "python bench/eval_synthetic.py --ckpt runs/v1b-kaggle-3600b --device cpu --seed 1 --n-train 4000 --n-eval 1200 --out runs/g6_v1b_synthetic_s1.md",
+  "load_avg": [
+    3.755859375,
+    4.31005859375,
+    5.00341796875
+  ],
+  "device": "cpu",
+  "ckpt": "runs/v1b-kaggle-3600b",
+  "vocab": 8192,
+  "cfg": {
+    "vocab": 8192,
+    "d_model": 384,
+    "n_layers": 6,
+    "n_heads": 6,
+    "d_k": 64,
+    "d_v": 64,
+    "d_ff": 1024,
+    "d_ptr": 256
+  },
+  "params": 16926848,
+  "seed": 1,
+  "n_train": 4000,
+  "n_eval": 1200,
+  "workflows": [
+    "support",
+    "incident",
+    "moderation"
+  ],
+  "temperature": 1.0,
+  "test_split_sha256": "fc9cbe3b0aec5c94fbe3fa5e6c3126c4fb67d823f138b5cd67b3a8b484182235",
+  "floors": {
+    "cells": {
+      "support/department": {
+        "n": 1200,
+        "majority": 0.21166666666666667,
+        "uniform": 0.2
+      },
+      "support/urgency": {
+        "n": 1200,
+        "majority": 0.2625,
+        "uniform": 0.25
+      },
+      "support/churn_risk": {
+        "n": 1200,
+        "majority": 0.5141666666666667,
+        "uniform": 0.5
+      },
+      "incident/severity": {
+        "n": 1200,
+        "majority": 0.2575,
+        "uniform": 0.25
+      },
+      "incident/team": {
+        "n": 1200,
+        "majority": 0.26416666666666666,
+        "uniform": 0.25
+      },
+      "incident/page_oncall": {
+        "n": 1200,
+        "majority": 0.5008333333333334,
+        "uniform": 0.5
+      },
+      "moderation/category": {
+        "n": 1200,
+        "majority": 0.26416666666666666,
+        "uniform": 0.25
+      },
+      "moderation/action": {
+        "n": 1200,
+        "majority": 0.3358333333333333,
+        "uniform": 0.3333333333333333
+      },
+      "moderation/repeat_appeal": {
+        "n": 1200,
+        "majority": 0.5058333333333334,
+        "uniform": 0.5
+      }
+    },
+    "macro": {
+      "majority": 0.3462962962962963,
+      "uniform": 0.337037037037037
+    },
+    "n_cells": 9
+  },
+  "cells": {
+    "incident/page_oncall": 0.505,
+    "incident/severity": 0.2825,
+    "incident/team": 0.2916666666666667,
+    "moderation/action": 0.3725,
+    "moderation/category": 0.2475,
+    "moderation/repeat_appeal": 0.5558333333333333,
+    "support/churn_risk": 0.4675,
+    "support/department": 0.1625,
+    "support/urgency": 0.255
+  },
+  "dev_cells": {
+    "incident/page_oncall": 0.51,
+    "incident/severity": 0.2825,
+    "incident/team": 0.31083333333333335,
+    "moderation/action": 0.36916666666666664,
+    "moderation/category": 0.265,
+    "moderation/repeat_appeal": 0.5283333333333333,
+    "support/churn_risk": 0.4575,
+    "support/department": 0.1625,
+    "support/urgency": 0.265
+  },
+  "macro_test": 0.3488888888888889,
+  "macro_dev": 0.3500925925925926,
+  "g6": {
+    "threshold": 0.94,
+    "measured": 0.3488888888888889,
+    "met": false
+  }
+}

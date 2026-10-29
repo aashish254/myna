@@ -1,0 +1,115 @@
+{
+  "cmd": "python bench/eval_synthetic.py --ckpt runs/myna-v0 --device cpu --seed 0 --n-train 4000 --n-eval 1200 --out runs/g6_v0_synthetic_s0.md",
+  "load_avg": [
+    8.70458984375,
+    7.07470703125,
+    5.974609375
+  ],
+  "device": "cpu",
+  "ckpt": "runs/myna-v0",
+  "vocab": 1740,
+  "cfg": {
+    "vocab": 1740,
+    "d_model": 384,
+    "n_layers": 6,
+    "n_heads": 6,
+    "d_k": 64,
+    "d_v": 64,
+    "d_ff": 1024,
+    "d_ptr": 256
+  },
+  "params": 14449280,
+  "seed": 0,
+  "n_train": 4000,
+  "n_eval": 1200,
+  "workflows": [
+    "support",
+    "incident",
+    "moderation"
+  ],
+  "temperature": 1.0,
+  "test_split_sha256": "998d73757872d426564b4cb25356e621e5d2a6eca2e45bf140d066bd1de5abee",
+  "floors": {
+    "cells": {
+      "support/department": {
+        "n": 1200,
+        "majority": 0.22083333333333333,
+        "uniform": 0.2
+      },
+      "support/urgency": {
+        "n": 1200,
+        "majority": 0.2625,
+        "uniform": 0.25
+      },
+      "support/churn_risk": {
+        "n": 1200,
+        "majority": 0.5158333333333334,
+        "uniform": 0.5
+      },
+      "incident/severity": {
+        "n": 1200,
+        "majority": 0.26666666666666666,
+        "uniform": 0.25
+      },
+      "incident/team": {
+        "n": 1200,
+        "majority": 0.2708333333333333,
+        "uniform": 0.25
+      },
+      "incident/page_oncall": {
+        "n": 1200,
+        "majority": 0.5091666666666667,
+        "uniform": 0.5
+      },
+      "moderation/category": {
+        "n": 1200,
+        "majority": 0.2633333333333333,
+        "uniform": 0.25
+      },
+      "moderation/action": {
+        "n": 1200,
+        "majority": 0.36583333333333334,
+        "uniform": 0.3333333333333333
+      },
+      "moderation/repeat_appeal": {
+        "n": 1200,
+        "majority": 0.5166666666666667,
+        "uniform": 0.5
+      }
+    },
+    "macro": {
+      "majority": 0.35462962962962963,
+      "uniform": 0.337037037037037
+    },
+    "n_cells": 9
+  },
+  "cells": {
+    "incident/page_oncall": 0.935,
+    "incident/severity": 0.9691666666666666,
+    "incident/team": 0.9433333333333334,
+    "moderation/action": 0.9725,
+    "moderation/category": 0.96,
+    "moderation/repeat_appeal": 0.9458333333333333,
+    "support/churn_risk": 0.9583333333333334,
+    "support/department": 0.955,
+    "support/urgency": 0.9333333333333333
+  },
+  "dev_cells": {
+    "incident/page_oncall": 0.9633333333333334,
+    "incident/severity": 0.9725,
+    "incident/team": 0.965,
+    "moderation/action": 0.9783333333333334,
+    "moderation/category": 0.9391666666666667,
+    "moderation/repeat_appeal": 0.9666666666666667,
+    "support/churn_risk": 0.9733333333333334,
+    "support/department": 0.935,
+    "support/urgency": 0.9383333333333334
+  },
+  "macro_test": 0.9525,
+  "macro_dev": 0.9590740740740742,
+  "g6": {
+    "threshold": 0.94,
+    "measured": 0.9525,
+    "met": true
+  }
+}
