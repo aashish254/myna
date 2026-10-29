@@ -53,10 +53,27 @@ than a table is what distinguishes the two.
 ## 3. Related work and positioning
 
 The only competitor scored in this repository is **laya 0.3.20** (`convaiinnovations/laya`, checkpoint
-snapshot `55cf4c4e…`, `Agent.system_one`), reported by its authors at **421.29M parameters** (encoder
-394.78M + head 26.51M) — *their published figure, not measured here* — and evaluated by us on the same 16
-(source, question) cells as our own model, at **0.6668** macro accuracy (§5). That number is measured on
-this box with this harness, and it is the only external comparison this draft makes.
+snapshot `55cf4c4e…`, `Agent.system_one`). Its authors publish **≈421M parameters** — the card at the very
+revision we measured says "*Backbone:* ModernBERT-large (395M, bidirectional, fully fine-tuned) + a
+decision head trained from scratch: 2 transformer layers, an option-marker scorer, and an act/escalate
+head. 421M total" — and **we** measure **421,293,827** in that artifact (`runs/latency_matched.json`
+`laya_params`, produced by the same `sum(p.numel() for p in model.parameters())` expression Myna's own
+count uses, `bench/bench_latency_matched.py:350`). The two reconcile exactly: that checkpoint's tensor
+header sums to **421,293,830** across 206 tensors, and the 3-element `temperature` entry never reaches
+`parameters()` because their code registers it as a buffer (`laya/common.py:600`). The encoder-prefixed
+tensors are
+394,781,696 (394.78M) and everything but `temperature` is 26,512,131 (26.51M) — our arithmetic over their
+public tensor header, not a figure they publish, and no witness in this repository prints that split.
+Evaluated by us on the same 16 (source, question) cells as our own model, at **0.6668** macro accuracy (§5);
+that number is measured on this box with this harness, and it is the only external comparison this draft
+makes. Cited **as software, explicitly not as a paper and not as external literature**: Nandhakishor M. /
+Convai Innovations, *laya*, version 0.3.20 — GitHub https://github.com/NandhaKishorM/laya (Apache-2.0),
+PyPI https://pypi.org/project/laya/0.3.20/ (uploaded 2026-09-24T05:41:06Z), model artifact
+https://huggingface.co/convaiinnovations/laya at pinned revision
+`55cf4c4ebb4ebe31b2550e8bdf3bd21b99753851`, `typed-decisions/` subfolder; accessed 2026-10-29. **No laya
+paper exists**: the card at that revision carries no BibTeX and no DOI, and the repository README's only
+arXiv link is to somebody else's work. Their rounded "421M" is quoted above purely as attribution to the
+source; no measurement in this paper uses it, and every laya figure in §5 and §8 is ours.
 
 We deliberately do not use the mixed-basis laya figure that appears elsewhere in the project's history. It
 is computed over a different denominator, and §9.37 and §9.41 of the spec record the two measurement bugs
@@ -141,7 +158,12 @@ for long context. The arm is `lc1-4k-s0` — **15,353,984 parameters at vocab 40
 `--init`), trained at 4k states with a 1,024-token gradient window on this laptop's MPS device. The table
 is SPEC §9.64 (iv), cell by cell against `runs/needle_lc1_stage{A,B_resume,C_final}.{md,json}` and the
 three stage logs; a rung absent from a witness's `lengths` list is marked not evaluated and never
-inferred.
+inferred. The ladder itself — a state length increased rung by rung, a needle planted at a random position,
+accuracy reported per rung — is a long-context retrieval evaluation of a known class; any reference
+attached to it will be for that lineage, not as corroboration of the shape measured below, which is flat at
+the floor rather than a decay. `[REF NEEDED — to be verified: needle-in-a-haystack
+long-context evaluation methodology — the positional-decay literature and the open-source harness whose
+shape this ladder follows.]`
 
 | leg | checkpoint evaluated | boundary status | n / seed / device | 128 | 1024 | 4096 | 8192 | 16384 |
 |---|---|---|---|---|---|---|---|---|
@@ -168,10 +190,12 @@ order **replayed**: leg 2 is a schedule-correct continuation, not a bit-identica
 depends on which token axis you divide, and both denominators are printed here (SPEC §9.64 v):
 1200 × 3 = **3,600 states** × `state_tokens_p95` **4106** = **14,781,600** state tokens ÷ **15,353,984**
 params = **0.96 tok/param**; on the gradient-carrying axis, 1200 × 3 × 1024 = **3,686,400** tokens ÷
-**15,353,984** = **0.24 tok/param**. The pretraining yardstick this is compared against — 0.28
-tok/param — divides the pilot corpus's 4,246,106 state tokens by the *same* 15,353,984 (0.2765), which is
-the only one of the three counts in §4 that reproduces it; `[REF NEEDED — to be verified: the
-compute-optimal ≈20 tokens/parameter pretraining law that this yardstick leans on.]`
+**15,353,984** = **0.24 tok/param**. Beside them sits the pilot corpus's own ratio: 4,246,106 state tokens
+(`data/decision-v2-pilot/upstream_manifest.json`, `state_tokens_under_first_base.sum`) ÷ the *same*
+**15,353,984** = **0.2765 tok/param** (SPEC §9.64 v), which is the only one of the three counts in §4 that
+reproduces the 0.28 quoted elsewhere in this project. That comparison is this repository's own arithmetic
+against its own pilot corpus: no external tokens-per-parameter constant is claimed here, and none appears
+in this section.
 
 **What this section is not.** A failed G4 is not a latency or a size win in disguise. The 4k state is cheap
 — 589,824 bytes fixed — and the ladder is slow per rung, and neither fact bears on a needle the model does
@@ -184,7 +208,14 @@ All figures in this section are the **shipped artifact**: v0, 14,449,280 paramet
 checkpoint — `runs/onnx/meta.json` records `"ckpt": "runs/myna-v0"`, `"vocab": 1740`, `"params_m": 14.45`.
 
 Measured in Chrome 153.0.8010.53 with ONNX Runtime Web 1.30.0 on a 10-core, 32 GB laptop
-(`runs/browser_g3.json`, 6 checks passed / 0 failed in all four runs):
+(`runs/browser_g3.json`, 6 checks passed / 0 failed in all four runs). The version measured here is
+witnessed by that artifact, not by the literature; the execution environment itself needs a citable
+source, and it will be cited as software and documentation rather than as a paper.
+`[REF NEEDED — to be verified: ONNX Runtime Web and its WebGPU/wasm execution environment, plus the
+WebAssembly substrate the wasm path runs on — software and documentation entries, with version and access
+date.]`
+
+The measured quantities:
 
 | quantity | measured |
 |---|---|
@@ -247,14 +278,25 @@ not resolve.
 ## 10. Diagnostic failures
 
 **G5 — the machinery works, the level does not.** On `calibration.jsonl` (448 rows, 568 questions, the v0
-checkpoint at vocab 1740), abstention ranks questions by confidence and the risk/coverage curve rises
-monotonically as coverage falls: 0.3486 at full coverage, 0.4135 at 60.04%, 0.5351 at 20.07%, and a
-**0.5965 at 10.04% coverage** (`runs/risk_coverage.json`, `g5.pass: false`). G5 requires ≥ 0.95 at ≥ 60%
+checkpoint at vocab 1740), abstention ranks questions by confidence and **accuracy** rises monotonically as
+coverage falls — 0.3486 at full coverage, 0.4135 at 60.04%, 0.5351 at 20.07%, and a
+**0.5965 at 10.04% coverage** (`runs/risk_coverage.json`, whose rungs print `accuracy` and its complement
+`risk` side by side; `g5.pass: false`). "Risk-coverage" is used here as the plain description of that
+trade, not as a named published method. G5 requires ≥ 0.95 at ≥ 60%
 coverage, so at its own operating point the curve is **0.5365 short** (0.4135 at 60.04%), and even the best
 point the curve ever reaches is 0.3535 short, at a coverage nearly six times narrower than the gate asks
-for. The
-machinery is what works — thresholds fitted on `calibration.jsonl`, coverage falling monotonically,
-accuracy rising with it — and the level is what does not. The three sources G5 names are the reason, and
+for. The confidence that does the ranking is the engine's own temperature-scaled softmax: one scalar per
+checkpoint, fitted by an 8-point NLL grid (`src/myna/train.py:532-537`) on the split that
+`temperature_source` selects — the suite's own `calibration` group, with `dev` as the fallback
+(`src/myna/train.py:564-572`); `runs/train-v0.log:69` prints the resulting **3.0** without naming its
+split, and this section's run records the same value (`runs/risk_coverage.json`, `temperature`). That
+scalar divides the logits at inference (`src/myna/engine.py:208`) and is applied the same way in the
+browser export (`src/myna/onnx_export.py:328`). The machinery is what works —
+thresholds fitted on `calibration.jsonl`, coverage falling monotonically,
+accuracy rising with it — and the level is what does not.
+`[REF NEEDED — to be verified: selective classification / reject-option work behind this framing, and the
+confidence-calibration work behind the fitted scalar used to rank questions.]`
+The three sources G5 names are the reason, and
 their denominator must be stated: at **full coverage (rung 1.0, n = 40 each)** they are banking77 **0.000**,
 dbpedia14 **0.025**, trec **0.150**; dbpedia14's best value over *any* rung is 0.0278 (rung 0.9), so even
 reading each source at its maximum the gate fails. A constant emitter cannot be rescued by a threshold.
@@ -326,19 +368,60 @@ refused to print a decay curve for a flat one is the instrument we would hand to
 
 ## `[REF NEEDED — to be verified]` list (no reference in this draft is unverified)
 
-1. **§3** — prior work on small typed-decision / constrained-output classifiers, and on the provenance of
-   the decision-v2 corpus. The repository contains no bibliography.
-2. **§3** — laya's own paper or model card for the 421.29M parameter count (encoder 394.78M + head 26.51M),
-   which this draft attributes to its authors as *their published figure*.
-3. **§4** — truncated / periodic backpropagation through time, the method lineage for the 3,072-token
-   `no_grad` prefix.
-4. **§6** — the compute-optimal ≈20 tokens/parameter pretraining scaling law that the 0.28 tok/param
-   yardstick is measured against.
-5. **§6** — needle-in-a-haystack long-context evaluation methodology.
-6. **§10** — selective classification / reject-option literature for the risk-coverage curve, and the
-   calibration work behind confidence thresholds.
-7. **§7** — a citable reference for ONNX Runtime Web and the WebGPU/wasm execution environment (the version
-   1.30.0 used here is witnessed in `runs/browser_g3.json`; the upstream citation is not in the repo).
+Five places in the text carry an inline marker, and they are the five items below. Each was checked against
+its live source on 2026-10-29; the verdict is recorded beside each item, and none of them is cited inline
+until the owner approves the wording.
+
+1. **§3, marked in the text** — prior work on small typed-decision / constrained-output classifiers. The
+   repository still contains no bibliography. Verified as existing and named but not yet cited: Li & Wagle,
+   arXiv:2610.02076 (v1 2026-10-01); Duan et al., arXiv:2610.03935 (v1 2026-10-02); Schick & Schütze, PET,
+   EACL 2021, DOI 10.18653/v1/2021.eacl-main.20; Willard & Louf, arXiv:2307.09702 — the last of these is
+   constrained *generation*, so it is adjacent rather than the same mechanism, and §3 must say so if it is
+   cited. **The provenance half of this item is answered internally, not by literature:** the corpus
+   witness is `data/decision-v2-pilot/upstream_manifest.json` (`derived_from`, `converters`, ten pinned
+   `dataset_revisions`, `base_revisions`, `records`, `state_tokens_under_first_base.sum`), whose own
+   upstream is the public `jaredpalmer/kev` suite.
+2. **§4, marked in the text** — truncated / periodic backpropagation through time, the method lineage for
+   the 3,072-token `no_grad` prefix. Verified: Werbos, *Backpropagation through time*, Proceedings of the
+   IEEE 78(10):1550–1560, 1990, DOI 10.1109/5.58337; Williams & Zipser, Neural Computation 1(2):270–280,
+   1989, DOI 10.1162/neco.1989.1.2.270; Chen et al., arXiv:1604.06174 for the memory motive. **Lineage
+   only** — no paper analyses detaching a prefix of a transformer state scan.
+3. **§6, marked in the text** — needle-in-a-haystack long-context evaluation methodology. Verified: Liu et
+   al., *Lost in the Middle*, TACL 12:157–173, 2024, DOI 10.1162/tacl_a_00638; Kamradt's
+   `gkamradt/needle-in-a-haystack` as the harness's origin, citable as software (HEAD
+   `021385d68d3202e37893e9d3cd29011c569abe30`, 2026-06-08); and, if a peer-reviewed NIAH-named paper is
+   wanted, Yu et al., *Sequential-NIAH: A Needle-In-A-Haystack Benchmark for Extracting Sequential Needles
+   from Long Contexts*, arXiv:2504.04713. Lineage, never corroboration: that work measures positional
+   decay in models that can retrieve, and §6 reports a flat floor.
+4. **§7, marked in the text** — ONNX Runtime Web and its WebGPU/wasm environment, as software and
+   documentation: `onnxruntime-web` 1.30.0 (npm registry, published 2026-09-14T20:20:13Z; `latest` is
+   1.31.1, so this build is one minor behind — that is what was measured), the official web docs, the
+   2024-02-29 Microsoft Open Source Blog post on the WebGPU path, and the W3C WebGPU specification;
+   Haas, Rossberg et al., PLDI 2017, DOI 10.1145/3062341.3062363 for wasm itself. No peer-reviewed venue
+   exists for the runtime, and the blog must not be dressed up as one.
+5. **§10, marked in the text** — selective classification / reject-option work behind §10's framing, and
+   the calibration work behind the fitted confidence scalar. Verified: Geifman & El-Yaniv, *Selective
+   Classification for Deep Neural Networks*, Advances in Neural Information Processing Systems 30 (2017),
+   arXiv:1705.08500; Guo, Pleiss, Sun & Weinberger, *On Calibration of Modern Neural Networks*, ICML 2017,
+   PMLR 70. Both apply to us directly — the fitted single-scalar temperature is applied at inference (see
+   §10) — and Angelopoulos & Bates, arXiv:2107.07511 stays optional background because no coverage
+   guarantee is reported here.
+
+**Resolved — no marker remains.** The laya parameter count is cited in §3 as **software** with its version
+and pinned revision (PyPI `laya` 0.3.20; `convaiinnovations/laya` at
+`55cf4c4ebb4ebe31b2550e8bdf3bd21b99753851`), not as a paper: **no laya paper exists**, the card at that
+revision carries no BibTeX and no DOI, and the authors publish only a rounded "421M total". The 421,293,827
+count and the 394.78M / 26.51M split are ours, derived in §3 from the artifact's own tensor header and
+`runs/latency_matched.json`.
+
+**Withdrawn — no reference will be attached.** The compute-optimal "≈20 tokens/parameter" pretraining law
+is gone from §6 rather than cited: re-read in full, neither Hoffmann et al. (arXiv:2203.15556) nor Kaplan et
+al. (arXiv:2001.08361) states a tokens-per-parameter constant — the former gives equal scaling ("a = 0.50
+and b = 0.50", §3.1), the latter fits `D ∝ N^0.74`, which is not a constant ratio — so §6 now compares only
+against the pilot corpus's own ratio. No "≈20" appears anywhere in §6.
+
+**Absent by design.** No paper titled *CALM: Consistency-Aware Language Modelling for Text Classification*
+was found, so it is not cited here, is not cited in the SPEC, and must not be added to this draft.
 
 ## Proposed SPEC edits — recorded, **not applied** in this step
 

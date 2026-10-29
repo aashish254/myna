@@ -40,7 +40,7 @@ to clear, not a gap to reframe around. Where we lose, we print the loss.
 
 | axis | laya typed-decisions | myna target | label |
 |---|---|---|---|
-| parameters | 421.29M (enc 394.78M + head 26.51M) — *their published figure* | **14.45M in the shipped v0 artifact** (`n_params` 14,449,280, `runs/bench_mlx_int8.json`), **15.35M** at the default `MynaConfig` (vocab 4096 vs v0's 1740) — the same count, two configs; ≤ 32M allowed | measured |
+| parameters | **421,293,827 measured by us** at their pinned snapshot `55cf4c4e…` (`laya_params`, `bench/bench_latency_matched.py:350`, the same `sum(p.numel() … parameters())` expression Myna's count uses) — their card publishes only a rounded **≈421M total** (ModernBERT-large 395M + a decision head trained from scratch) and **no paper exists**, so the enc 394.78M / head 26.51M split is *our* arithmetic over that artifact's tensor header (421,293,830 across 206 tensors, minus the 3-value `temperature` registered as a buffer at `laya/common.py:600`); no witness here prints the split | **14.45M in the shipped v0 artifact** (`n_params` 14,449,280, `runs/bench_mlx_int8.json`), **15.35M** at the default `MynaConfig` (vocab 4096 vs v0's 1740) — the same count, two configs; ≤ 32M allowed | measured |
 | accuracy, kev decision-v2 **test** | **0.6319** (our own seeded witness, n=546) | **≥ 0.70** gate · 0.75 stretch | projected |
 | accuracy, their own typed-decisions bench | 0.766 (2,000 decisions) | not comparable — different suite; do not quote side by side | — |
 | p50 latency, 1 question (87-token state) | **100.7–117.7 ms** measured here on the M5 CPU · 39.5 ms on their T4 (their measured) | **33.1–38.3 ms** myna on the same box and process (two runs) = **3.04×** at the per-row minimum, and inside their T4 number | measured (§5 P4 4a, `runs/latency_matched.md`) |
@@ -505,8 +505,12 @@ lists **all 11 sources as trainable** with `holdout_sources: []` and explicitly 
 decontamination claim.
 
 **Done — the pilot slice is on disk** (`bench/pull_upstream.py`, `9e954f9`; corpus in
-`data/decision-v2-pilot/`, gitignored except its manifest). Every figure below is printed by that
-run and re-read from `upstream_manifest.json`, not transcribed from a log:
+`data/decision-v2-pilot/`, and **all six of its files are tracked in git** — `train.jsonl` 82,917,730 B,
+`development.jsonl` 1,700,635 B, `test.jsonl` 1,705,815 B, `calibration.jsonl` 623,092 B,
+`tokenizer-8192.json` 526,662 B, `upstream_manifest.json` 7,739 B; `.gitignore` carries no `data/` pattern
+at all, so this is the opposite of `runs/*`, which it does exclude — the corpus travels with the clone).
+Every figure below is printed by that run and re-read from `upstream_manifest.json`, not transcribed from
+a log:
 
 | item | target | measured |
 |---|---|---|
@@ -1613,8 +1617,12 @@ own commands, named above — while `macro 0.5339` was already bound by `antipri
   divisor is now stated (it was not when this line was written): 4,246,106 ÷ **15,353,984** = **0.2765**,
   the default `MynaConfig` count and the only one of §9.64 (i)'s three counts that reproduces 0.28 —
   against 14,449,280 the same numerator is 0.2939 and against 16,926,848 it is 0.2509 (§9.64 v).
-  Compute-optimal for pretraining (~20 tok/param) would want ~307M tokens.
-  This yardstick is a *pretraining* law; supervised fine-tuning is more sample-efficient — but the
+  The "≈20 tokens/parameter" compute-optimal constant this line used to quote is **withdrawn**: neither
+  scaling-law paper states a tokens-per-parameter constant (Hoffmann et al., arXiv:2203.15556, gives equal
+  scaling — `a = 0.50` and `b = 0.50` at §3.1 — and Kaplan et al., arXiv:2001.08361, fits `D ∝ N^0.74`,
+  which is not a constant ratio), so the ~307M-token target that constant produced goes with it and no
+  external per-parameter law is claimed here. The ratio above is this project's own pilot measure.
+  Supervised fine-tuning is more sample-efficient — but the
   capability we lack, following instructions never seen in training, is exactly the one that
   scales with tokens-per-parameter. That is the honest boundary.
 - **Therefore: parameters are not the lever.** 32M would still be 1,189× under the pretraining
@@ -4316,12 +4324,14 @@ Kept permanently, because the value of this project's claims is that they surviv
       comparison is one denominator used both ways (0.9627 ÷ 0.2765 = 3.48), and §6's sentence is
       arithmetically right while being silently under-specified.
 
-    **(vi) Two things this entry records and deliberately does not edit.** `SPEC.md:1669`'s risk row says
-    "15.35M cannot learn instruction-following well enough to clear G1"; the 15,353,984 count is the
-    default `MynaConfig` and is witnessed, but the arm that actually scored G1 is the 16,926,848
-    checkpoint, so that forward-looking risk sentence names a config nobody was scored on. §6's
-    "0.28 tokens/param" omits its denominator. Both are drafting-pass candidates on the owner's
-    instruction, not edits in this step, and neither is a disagreement with a witness.
+    **(vi) Both sentences this entry deferred were edited in commit `fd5f138`.** `SPEC.md:1669` — that §8
+    risk-table row, whose line has since moved to `SPEC.md:1680` as the edits around it grew the file — now
+    names the 16,926,848 /
+    vocab 8192 arm (`runs/v1b-kaggle-3600b`) that G1 was actually scored on instead of the default
+    `MynaConfig` count nobody was scored on, and §6's **0.28 tokens/param** now prints 4,246,106 ÷
+    **15,353,984** = **0.2765** with the other two counts beside it (0.2939 at 14,449,280, 0.2509 at
+    16,926,848). So this subpart records the edits rather than deferring them, and §9.64 (v)'s derivation
+    remains the witness for the arithmetic.
 
     **(vii) Verification on the tree this entry leaves.** `bench/gates.py --check` → **7/7 verdicts hold —
     3 of 7 met, 3 not met, 1 open — the release gate is NOT clear**; `bench/reproduce.py --check` →
