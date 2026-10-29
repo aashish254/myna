@@ -30,7 +30,7 @@ a 59.32 MiB artifact that loads in 253.9–394.4 ms and answers in a fixed 589,8
 state; a matched-condition throughput advantage over a competitor **we measure at 421,293,827
 parameters** (our count at their pinned snapshot, not a figure they publish) on the same inputs
 (33.083 ms against 100.691 ms at one question); and a release-gate registry in which 7/7 verdicts and
-34/34 rows re-derive from committed witnesses. We report the failures as the primary result, because the
+35/35 rows re-derive from committed witnesses. We report the failures as the primary result, because the
 instrument that detected them — a needle-recall harness that refuses to let a flat-at-chance curve be read
 as decay — is the part we can defend.
 
@@ -314,7 +314,7 @@ recorded under a deliberate CPU throttle in two of its three stages, appears now
 
 The mechanical claim is that every published figure re-derives from a committed artifact, and the audit
 passes: `bench/gates.py --check` → **7/7 verdicts hold** (3 met, 3 not met, 1 open; the release gate is
-NOT clear); `bench/reproduce.py --check` → **34/34 rows hold, 101 figures tied to a committed witness, 1
+NOT clear); `bench/reproduce.py --check` → **35/35 rows hold, 108 figures tied to a committed witness, 1
 gated with no witness**; the two suites that read these documents (`tests/test_gates.py`,
 `tests/test_reproduce.py`) → **67 passed**. A mutation battery of 21 string-anchored mutants backs the
 gate logic, and the anchor-presence check (21/21) is what tells us a prose edit has not silently turned one
@@ -345,9 +345,11 @@ on the same laptop as the original**, so it proves the clone-and-Release path yi
 is not a cross-machine determinism test. **And the interpreter was this project's existing virtualenv**
 (torch 2.14.0, python 3.13.14) rather than a fresh dependency install — the clone's own `src/myna` was
 proven to be the copy answering (`myna.__file__` points inside the clone), but a clean-environment install
-is still open. What remains open is separate from reproducibility: `bench/reproduce.py` has no registry row
-for this ladder, so these five cells are guarded by the committed JSON and this replay, not by the audit
-that guards the other 34 rows.
+is still open. **The registry binds the ladder now as well.** `bench/reproduce.py`'s row `needle-lc1-stageC`
+publishes the fetch and the five-rung command in one line, points at the replay's committed witnesses
+(`runs/needle_lc1_stageC_replay.{md,json}`), and quotes seven figures out of them, so `make repro` can now
+contradict these five cells the same way it contradicts the other 34 rows — which is the half of §9.64(x)'s
+gap that a Release alone could not close.
 
 ## 10. Diagnostic failures
 

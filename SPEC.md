@@ -70,7 +70,7 @@ Quote the ratio, never the millisecond figure.
 | **G4** | Long-context is *correct*, not just cheap | needle-style typed decision ≥ 0.90 at 4k and ≥ 0.85 at 16k state | **not met — measured on a completed dose, and no longer gated on hardware.** v0's needle curve (`runs/needle_myna-v0.md`) reads 0.188 at 128 tokens against a 0.167 floor — at chance on the shortest rung — so the longer rows are decay of nothing, and the harness says so itself rather than printing a table (§9.25). The 4k needle run then executed *on this box* (§6 prices it at 2.4 GiB retained, 1c measured 2.0194742679595947 s/update), was aborted at 425 of 1200 updates by 7b's own Stage A rule with the 128-rung at 0.1667 = the floor (§9.62), and was then resumed on the owner's order to the **full approved 1200-update dose**. Its n=60 ladder (`runs/needle_lc1_stageC_final.json`) reads **0.1833 at 4096 against G4's ≥ 0.90 — short by 0.7167 — and 0.150 at 16384 against ≥ 0.85, short by 0.700**, the first time either threshold has been measured on a 4k-trained checkpoint; the 128-rung is 0.150, so the harness still prints `readable: false` — not a decay curve, a flat line at chance (§9.63). Step 799 and step 1199 agree exactly on all three shared rungs (9, 13, 11 of 60), so the limiter is the mechanism, not the dose. The 16k *state* remains measured and cheap (§9.22) |
 | **G5** | Useful confidence, with abstention | risk/coverage curve on `calibration.jsonl`; ≥ 0.95 accuracy at ≥ 60% coverage on banking77 + dbpedia14 + trec | **not met on the level, met on the machinery.** Abstention ships: `Myna(ckpt, abstain_below=t)` withholds the commitment and prints the measured reason, the fallback seam labels every answer with the engine that committed, and the curve is a committed artifact (`runs/risk_coverage.md`, 448 rows / 568 questions). Accuracy on v0 climbs **0.349 → 0.535** as coverage falls 1.00 → 0.20 — the confidence ranks the answers, on a checkpoint that cannot do the task — and setting the 0.693 floor on the engine abstains on **227** questions where the curve withheld **227**. But **no rung reaches 0.95** (max 0.596, at 10% coverage) and G5's own three sources sit at 0.000 / 0.025 / 0.150, so the pass needs the `KAGGLE` checkpoint (§9.24) |
 | **G6** | No regression on what already worked | synthetic v0 test ≥ 0.94 | open — v0's measured test macro is **0.9523** (`runs/train-v0.log`, macro of its nine `=== test ===` rows), so the level clears today; the gate stays open until a v1 checkpoint is run against it, and a draft of this row cited "0.951", which no artifact prints (§9.30) |
-| **G7** | Reproducibility | one command per result, seeds pinned, witness JSONs committed, `pytest` green | **met, as a binding rather than a rebuild.** `bench/reproduce.py` holds 34 registry rows, each binding one published table cell to one command and one committed witness, and `make repro` re-reads the 101 quoted figures out of those artifacts rather than out of the prose; the python commands among those rows are checked against the tool behind them — its `--help` must still print every flag the row publishes (§9.43); the seeds live inside the printed commands (`--seed 0`, `--seeds 0 1`), not in sentences about them. What this does **not** say: no target *executes* the registry end to end — 22 rows re-run on this box, 6 retrain a checkpoint, 2 need a laya checkout on `PYTHONPATH`, 3 need Google Chrome and 1 is `KAGGLE` — which is why TODO 8b stays unticked and why G7 is discipline rather than a one-command rebuild. Every count in this cell is now read back against `ROWS` by `bench/gates.py`, so this row — the table's one hand-copied cell — goes red rather than quietly stale (§9.44) |
+| **G7** | Reproducibility | one command per result, seeds pinned, witness JSONs committed, `pytest` green | **met, as a binding rather than a rebuild.** `bench/reproduce.py` holds 35 registry rows, each binding one published table cell to one command and one committed witness, and `make repro` re-reads the 108 quoted figures out of those artifacts rather than out of the prose; the python commands among those rows are checked against the tool behind them — its `--help` must still print every flag the row publishes (§9.43); the seeds live inside the printed commands (`--seed 0`, `--seeds 0 1`), not in sentences about them. What this does **not** say: no target *executes* the registry end to end — 23 rows re-run on this box, 6 retrain a checkpoint, 2 need a laya checkout on `PYTHONPATH`, 3 need Google Chrome and 1 is `KAGGLE` — which is why TODO 8b stays unticked and why G7 is discipline rather than a one-command rebuild. Every count in this cell is now read back against `ROWS` by `bench/gates.py`, so this row — the table's one hand-copied cell — goes red rather than quietly stale (§9.44) |
 
 **This column is not a claim.** `make gates` (`bench/gates.py --check`) re-reads each cell's
 leading verdict word, the registry row that gate cites, and the named field inside a committed
@@ -4190,14 +4190,54 @@ Kept permanently, because the value of this project's claims is that they surviv
     lesson recorded for next time (prose with quotes goes through a heredoc or a Python writer, never
     through a shell group).
 
-    **(x) The reproducibility gap this entry opens, priced and not silently closed.** The full ladder is
-    now a published figure quoted in SPEC, which is exactly what a `bench/reproduce.py` row exists for —
-    but its command reads `--ckpt ~/myna-staging/lc1-4k-s0/stageC_final`, outside the repo, and the
-    checkpoint itself is 2 files that no Release carries. So a clean clone cannot re-run it, and adding
-    the row would make `make repro` either red or fake. The honest sequence is: ship the Stage C
-    checkpoint to a Release (task #28, owner-side), then add the row with the fetch command in it. Until
-    then the ladder is witnessed by committed JSON (`runs/needle_lc1_stageC_final.{md,json}`) and **not**
-    reproducible from a clone, and that distinction is the row's whole purpose.
+    **(x) The reproducibility gap this entry opened is closed, and the closure is replayed rather than
+    asserted.** As written, this subentry said three things: the ladder's command reads
+    `--ckpt ~/myna-staging/lc1-4k-s0/stageC_final`, the checkpoint is "2 files that no Release carries", and a
+    clean clone therefore cannot re-run it. All three were true the day they were typed, and all three are
+    superseded now — the weights are published and the ladder has been replayed from them, so this entry
+    records the closure instead of leaving the old sentence standing. **The Release** is
+    `lc1-4k-s0-stageC-weights` — id **428002663**, published **2026-10-29T14:53:44Z** on commit `1fb0ceb`,
+    titled "lc1-4k-s0 Stage C weights (1,200 updates at 4k truncated backprop — the n=60 ladder, G4 not met)"
+    — and it carries exactly three assets: `model.pt` 61,442,325 B
+    `fb37a28b88bea29a0bb871dceb8f7b835b216e8c11a987830a420fb15d39b7e8`, `tokenizer.json` 22,096 B
+    `5455c56a7e1ece5e254f04075c4b16d3349dbc5fc8595715726a2e8bae8c4c39`, and a `SHA256SUMS` manifest 156 B
+    `7e0be345d9542e95e837e725b77f2eb1f1929e866aeddc6267710d29240952ad`. `model_last.pt` (184,355,257 B,
+    `25b868e9f53660237d584da12066afc8d2b462f9392b8f2afa8d7ae9076674dd`) was deliberately not uploaded — it
+    carries the Adam moments plus `optimizer`/`scheduler` state, and `docs/release-stageC-draft.md` §3 prices
+    that gap byte for byte. The digests above are the ones GitHub computes server-side for those assets, read
+    back off the API after the upload, not digests this repo asserted about its own files.
+
+    **The replay**, run on 2026-10-29 outside this working tree: a fresh clone at `1fb0ceb`, then
+    `fetch_weights(tag="lc1-4k-s0-stageC-weights")` (`src/myna/weights.py`), both assets hashed against the
+    live `SHA256SUMS` **before any model ran**, then the ladder at n=60, seed 0, `cpu`, five rungs. **All five
+    accuracy cells came back equal at full precision** to `runs/needle_lc1_stageC_final.json` — **0.15 /
+    0.21666666666666667 / 0.18333333333333332 / 0.15 / 0.15** — and `baseline.readable` is `false` on both
+    sides. The replay's own pair is now committed as `runs/needle_lc1_stageC_replay.{md,json}` (copied
+    unmodified out of `/tmp/myna-stageC-replay/`, `cmp`-verified byte-identical on both files; json
+    `fbf306e93e3d59340f0d4ce12ea4b6ce92a3d69f6a12514ec0675da1f47fdf9f`, md
+    `a157f4c804d6b3adacf33100b738aa968e7f796de581d38e41d0aa5d1a5929d5`), and `bench/reproduce.py` binds it as
+    row **`needle-lc1-stageC`** — the deferred row this subentry used to describe as impossible, because its
+    command now carries the fetch instead of a path outside the tree:
+
+    ```bash
+    uv run python bench/eval_needle.py --ckpt "$(uv run python -c 'from myna.weights import fetch_weights; print(fetch_weights(tag="lc1-4k-s0-stageC-weights"))')" --device cpu --n 60 --seed 0 --lengths 128 1024 4096 8192 16384 --out runs/needle_lc1_stageC_replay.md
+    ```
+
+    `myna-weights --tag lc1-4k-s0-stageC-weights --print-path` is the same fetch as a console script, and
+    `myna.report`/`Myna(...)` take the directory it prints. **Three boundaries on the reproducibility claim,
+    stated because a reader cannot assume them.** Only the accuracy column is claimed: `ms` came back 99.40 /
+    838.80 / 2912.57 / 5222.39 / 10325.83 against the witness's 77.01 / 745.08 / 2857.48 / 5554.87 / 10989.17
+    and was never compared — §9.23 makes those absolutes load-dependent, which is why the row quotes
+    accuracies and not milliseconds. The replay ran **on the same laptop as the original**, so it proves the
+    clone-and-Release path yields the witnessed cells; it is not a cross-machine determinism test. And the
+    interpreter was this project's existing virtualenv (torch 2.14.0, python 3.13.14) rather than a fresh
+    dependency install — the clone's own `src/myna` was proven to be the copy answering (`myna.__file__`
+    pointed inside the clone), but a clean-environment install stays open.
+
+    **What the row does not do is change a verdict.** G4 remains **not met** — 0.1833 at 4096 against ≥ 0.90,
+    0.150 at 16384 against ≥ 0.85 — and `runs/needle_lc1_stageC_final.json` is still not itself a registry
+    witness, so (xi)'s sentence about the three stage artifacts stands. Publishing settled a logistics
+    question (who can re-run the ladder: now anyone with the tag), not the scientific one §9.63 leaves open.
 
     **(xi) Verification on the tree this entry leaves.** `bench/gates.py --check` → **7/7 verdicts hold —
     3 of 7 met, 3 not met, 1 open — the release gate is NOT clear**, with G4 still `not met` read from a

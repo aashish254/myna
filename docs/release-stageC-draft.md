@@ -140,10 +140,18 @@ accuracy cells returned bit-identical to `runs/needle_lc1_stageC_final.json`**. 
 compared. Three boundaries on that, recorded because they are what a reader cannot assume: same laptop as
 the original (not a cross-machine determinism test); this project's existing virtualenv as the interpreter
 (torch 2.14.0, python 3.13.14) rather than a fresh dependency install, though the clone's own `src/myna`
-was proven to be the copy answering via `myna.__file__`; and `bench/reproduce.py` still has no registry row
-for the lc1 ladder, so these five cells are guarded by this replay and the committed JSON, not by the audit
-that guards the other 34 rows.
+was proven to be the copy answering via `myna.__file__`.
+
+**The registry row this file's §4 said would follow is now written.** The replay had no row when it ran, which
+left the five cells guarded by the committed JSON alone; `bench/reproduce.py` now holds
+`needle-lc1-stageC`, whose command is the fetch and the five-rung ladder in one line and whose witnesses are
+this replay's committed pair, so `make repro` contradicts them like the other 34 rows. Adding it moved the
+hand-copied G7 counts, re-synced in SPEC §2.2 the same step: **35 registry rows, 108 quoted figures, 23 rows
+re-run on this box**, and `bench/reproduce.py --check` prints **35/35 rows hold; 108 figures tied to a
+committed witness, 1 gated with no witness**.
 
 `src/myna/weights.py`'s `DEFAULT_TAG` still `antiprior_off_s0-weights`; changing the default arm is a
-separate owner decision from shipping this one. The replay artifact itself lives at
-`/tmp/myna-stageC-replay/` — outside the repo, and not a committed witness.
+separate owner decision from shipping this one. The replay was written under `/tmp/myna-stageC-replay/` and
+is committed here as `runs/needle_lc1_stageC_replay.{md,json}` — copied out of that directory and
+`cmp`-verified byte-identical on both files (json `fbf306e93e3d59340f0d4ce12ea4b6ce92a3d69f6a12514ec0675da1f47fdf9f`,
+md `a157f4c804d6b3adacf33100b738aa968e7f796de581d38e41d0aa5d1a5929d5`), not rewritten.

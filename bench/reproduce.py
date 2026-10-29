@@ -128,6 +128,35 @@ ROWS = [
         "command. 0.188 at 128 tokens against a 0.167 floor is the cell that kills the "
         "decay reading."),
 
+    row("needle-lc1-stageC", "SPEC §2.2 G4 · §9.64 (the 4k-trained ladder, replayed from its Release)",
+        'uv run python bench/eval_needle.py --ckpt "$(uv run python -c \'from myna.weights import '
+        'fetch_weights; print(fetch_weights(tag="lc1-4k-s0-stageC-weights"))\')" --device cpu '
+        '--n 60 --seed 0 --lengths 128 1024 4096 8192 16384 '
+        '--out runs/needle_lc1_stageC_replay.md',
+        HERE,
+        ["runs/needle_lc1_stageC_replay.md", "runs/needle_lc1_stageC_replay.json"],
+        [("runs/needle_lc1_stageC_replay.md", "G4: **not measured by this run**"),
+         ("runs/needle_lc1_stageC_replay.json", '"acc": 0.18333333333333332'),
+         ("runs/needle_lc1_stageC_replay.json", '"acc": 0.21666666666666667'),
+         ("runs/needle_lc1_stageC_replay.json", '"acc": 0.15'),
+         ("runs/needle_lc1_stageC_replay.json", '"readable": false'),
+         ("runs/needle_lc1_stageC_replay.json", '"n_per_length": 60'),
+         ("runs/needle_lc1_stageC_replay.json", '"seed": 0')],
+        "The row §9.64(x) deferred until the weights had a Release to fetch. `--ckpt` is resolved "
+        "by the fetch itself — `myna.weights.fetch_weights(tag=…)` re-hashes every asset against the "
+        "digest GitHub computed for it and returns `~/.cache/myna/<tag>` — so a clean clone runs this "
+        "line with no path to edit; `myna-weights --tag lc1-4k-s0-stageC-weights --print-path` is the "
+        "same call as a console script. This witness is the fresh-clone **replay**, bound deliberately "
+        "instead of `runs/needle_lc1_stageC_final.json`: the published ladder's own `cmd` names "
+        "`~/myna-staging/lc1-4k-s0/stageC_final`, a checkpoint outside the tree, so that line is not a "
+        "command a clone can run. The replay returns its five accuracy cells exactly — 0.15 / "
+        "0.21666666666666667 / 0.18333333333333332 / 0.15 / 0.15 — and only that column: `ms` differs "
+        "between the two runs (99.40 vs 77.01 at 128 tokens) and is load-dependent (§9.23). G4 is NOT "
+        "met on these numbers — 0.1833 at 4096 against ≥ 0.90, 0.150 at 16384 against ≥ 0.85 — and "
+        "`readable: false` is quoted because the 128-rung sits on the 0.167 uniform floor, so neither "
+        "curve may be read as decay. Not comparable to the `needle` row above: n=60 against n=16, and "
+        "a 15.35M cold-trained checkpoint against v0's 14.45M."),
+
     row("laya-real-suite", "SPEC §2.1 G1 competitor row · README real-corpus table",
         "uv run python bench/eval_laya_real.py --split test --n-per-source 40 --seed 0 "
         "--out runs/laya_decision_v2_test.json",
