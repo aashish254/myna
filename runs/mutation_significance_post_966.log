@@ -1,0 +1,84 @@
+baseline copy: green (2 test files) 60 passed in 1.39s
+
+[ 1/39] caught      the 1e-9 statistic guard loosens to 1e-6
+            FAILED tests/test_significance.py::test_a_floor_the_rows_do_not_agree_with_stops_the_run
+[ 2/39] caught      G1's margin is not one of the statistics the guard checks
+            FAILED tests/test_significance.py::test_a_margin_the_report_invents_is_refused_though_the_macro_and_floors_mat
+[ 3/39] caught      a statistic that disagrees with the report still prints its interval
+            FAILED tests/test_significance.py::test_allow_subset_waives_the_pairing_guard_and_not_the_statistic_guard
+[ 4/39] caught      the pairing guard lets a subset through by default
+            FAILED tests/test_significance.py::test_a_paired_set_smaller_than_the_published_split_is_refused_then_allowed
+[ 5/39] caught      a missing input is read as an empty dict instead of named
+            FAILED tests/test_significance.py::test_a_missing_input_names_the_file_and_writes_nothing
+[ 6/39] caught      two dumps sharing no row id continue instead of stopping
+            FAILED tests/test_significance.py::test_two_dumps_that_share_no_row_id_stop_before_the_first_replicate
+[ 7/39] caught      the weights are drawn from a fixed seed 0
+            FAILED tests/test_significance.py::test_the_replicates_are_drawn_from_the_seed_this_file_records
+[ 8/39] caught      the weights are multinomial over cells, not rows
+            ERROR tests/test_significance.py::test_the_cell_set_is_filtered_by_min_rows_before_anything_is_resampled
+[ 9/39] caught      the floors are frozen at the point estimate
+            FAILED tests/test_significance.py::test_the_floors_are_functions_of_the_labels_and_move_with_them
+[10/39] caught      uniform floor divides by k instead of 1/k
+            ERROR tests/test_significance.py::test_the_cell_set_is_filtered_by_min_rows_before_anything_is_resampled
+[11/39] caught      the interval is the full range of the replicates
+            FAILED tests/test_significance.py::test_the_interval_is_the_two_and_a_half_and_ninety_seven_and_a_half_percent
+[12/39] caught      the interval is a 92.5% interval printed as 95%
+            FAILED tests/test_significance.py::test_the_interval_is_the_two_and_a_half_and_ninety_seven_and_a_half_percent
+[13/39] caught      the replicate digest is computed from w[lo]
+            FAILED tests/test_significance.py::test_the_replicates_are_drawn_from_the_seed_this_file_records
+[14/39] caught      the witness names a digest it never drew
+            FAILED tests/test_significance.py::test_the_headline_table_prints_all_six_statistics_and_no_others
+[15/39] caught      the paired set is myna minus laya
+            ERROR tests/test_significance.py::test_the_cell_set_is_filtered_by_min_rows_before_anything_is_resampled
+[16/39] caught      the paired set is the union, so one side answers alone
+            FAILED tests/test_significance.py::test_a_row_the_competitor_cannot_answer_leaves_both_sides
+[17/39] caught      McNemar counts concordant-as-discordant on myna's side
+            FAILED tests/test_significance.py::test_the_pooled_discordance_is_the_per_cell_table_summed
+[18/39] caught      the floor label is the first cell's majority for every cell
+            FAILED tests/test_significance.py::test_myna_against_the_floor_is_scored_on_the_majority_label_of_its_own_cell
+[19/39] caught      a laya-only answer is counted as paired
+            FAILED tests/test_significance.py::test_a_question_the_competitor_did_not_answer_is_counted_not_silently_paire
+[20/39] caught      the gold label index is 0
+            ERROR tests/test_significance.py::test_the_cell_set_is_filtered_by_min_rows_before_anything_is_resampled
+[21/39] caught      the witness claims nothing was unpaired
+            FAILED tests/test_significance.py::test_a_question_with_no_partner_is_counted_in_the_witness_not_only_in_memor
+[22/39] caught      the witness claims no row left the pairing
+            FAILED tests/test_significance.py::test_a_paired_set_smaller_than_the_published_split_is_refused_then_allowed
+[23/39] caught      the floor rule uses >= 0
+            FAILED tests/test_significance.py::test_an_interval_that_covers_the_threshold_rewrites_the_sentence
+[24/39] caught      the g1-margin rule uses >
+            FAILED tests/test_significance.py::test_an_interval_that_covers_the_threshold_rewrites_the_sentence
+[25/39] caught      the target rule is judged on the upper bound
+            FAILED tests/test_significance.py::test_an_interval_that_covers_the_threshold_rewrites_the_sentence
+[26/39] caught      the competitor rule uses the wrong side
+            FAILED tests/test_significance.py::test_an_interval_that_covers_the_threshold_rewrites_the_sentence
+[27/39] caught      the survival boolean is inverted
+            FAILED tests/test_significance.py::test_an_interval_that_covers_the_threshold_rewrites_the_sentence
+[28/39] caught      the headline table rounds the interval to two decimals
+            FAILED tests/test_significance.py::test_the_headline_table_prints_all_six_statistics_and_no_others
+[29/39] caught      the per-cell Δ column prints laya's level
+            FAILED tests/test_significance.py::test_the_per_cell_table_prints_the_numbers_the_json_carries
+[30/39] caught      every McNemar p-value prints as an absence of evidence
+            FAILED tests/test_significance.py::test_the_per_cell_table_prints_the_numbers_the_json_carries
+[31/39] caught      the markdown verdict word always says stands
+            FAILED tests/test_significance.py::test_the_adjudication_lines_are_printed_from_the_same_verdicts_the_json_wri
+[32/39] caught      the console verdict word always says REWRITTEN
+            FAILED tests/test_significance.py::test_the_run_announces_the_point_the_replicates_and_the_verdicts
+[33/39] caught      the mirror and the loader can disagree about which groups exist
+            FAILED tests/test_row_outcomes.py::test_a_row_that_one_reading_skips_shifts_every_later_prediction
+[34/39] caught      a group whose row count differs is accepted
+            FAILED tests/test_row_outcomes.py::test_a_row_that_one_reading_skips_shifts_every_later_prediction
+[35/39] caught      a changed chunk width mis-aligns predictions silently
+            FAILED tests/test_row_outcomes.py::test_a_prediction_chunk_the_width_changed_is_refused_by_number
+[36/39] caught      the cluster key is reported unique whatever it collides with
+            FAILED tests/test_row_outcomes.py::test_the_cluster_key_is_the_one_field_that_is_unique
+[37/39] caught      the report guard prints a dump that disagrees with it
+            FAILED tests/test_row_outcomes.py::test_a_report_the_dump_disagrees_with_is_refused_and_nothing_is_written
+[38/39] caught      a field other than accuracy is not compared to the report
+            FAILED tests/test_row_outcomes.py::test_every_field_of_the_row_is_compared_not_just_the_accuracy
+[39/39] caught      the dumped rows' macro may differ from the report by a row
+            FAILED tests/test_row_outcomes.py::test_a_macro_that_only_moves_with_the_guard_would_still_be_caught
+
+39/39 mutations caught
+       79.27 real        68.67 user        14.01 sys
+significance rc=0

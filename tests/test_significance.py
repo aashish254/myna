@@ -14,9 +14,11 @@ arithmetic the test computes itself:
   different number, and the replay says so.
 * **The point estimate is the published statistic.** `main()` refuses (exit 3) unless macro,
   both floors and G1's observed margin agree with the committed report to 1e-9. Each of those
-  four is tested by moving exactly one input: a doctored floor, `--min-rows` raised so a cell
-  leaves the macro, a row absent from the competitor dump so the paired set shrinks, and a
-  `--allow-subset` that says it out loud and continues.
+  four is tested by moving exactly one input: a doctored floor, an invented `g1.margin_observed`,
+  `--min-rows` raised so a cell leaves the macro, a row absent from the competitor dump so the
+  paired set shrinks, and a `--allow-subset` that says it out loud and continues. The tolerance
+  itself is measured from both sides — 1e-7 refused, 1e-10 accepted — because a boundary that is
+  only probed from outside is a value the code chose and no test read.
 * **Paired means both sides answered the same `(row, question)`.** `pack()` intersects on
   `_meta.id`, counts what it dropped, and McNemar reads only discordance — so the pooled counts
   are checked against the per-cell table and against a hand-counted truth table, and
@@ -675,11 +677,40 @@ def test_allow_subset_waives_the_pairing_guard_and_not_the_statistic_guard(sx, t
     assert not out.exists()
 
 
+def test_a_question_with_no_partner_is_counted_in_the_witness_not_only_in_memory(sx, tmp_path):
+    """`pack()` counts the myna questions the competitor left unanswered, and the run has to say
+    that number in the artifact — a witness writing `0` beside a pairing that lost a question is
+    a witness that misdescribes its own input, which is what the field exists to prevent."""
+    laya = laya_dump(sx.myna)
+    row = laya["rows"][0]
+    lost = sorted(row["questions"])[0]
+    del row["questions"][lost]
+    p = tmp_path / "gaplaya.json"
+    p.write_text(json.dumps(laya))
+    out = tmp_path / "g.json"
+    argv = ["--myna", str(sx.fx.dump_path), "--laya", str(p),
+            "--report", str(sx.fx.report_path), "--B", "200", "--seed", str(SEED),
+            "--out", str(out), "--md", str(tmp_path / "g.md")]
+    assert SIGN.main(argv) == 0, "an unpaired question is not a refused run"
+    got = json.loads(out.read_text())
+    assert got["unpaired_myna_questions"] == 1, got["unpaired_myna_questions"]
+    assert got["paired_question_instances"] == sx.res["paired_question_instances"] - 1
+    assert got["dropped_rows"] == []
+    # myna's side is untouched: the question still prices its cell, it just has no partner
+    assert got["point"]["myna_macro"] == pytest.approx(sx.res["point"]["myna_macro"], abs=1e-12)
+
+
 def test_a_floor_the_rows_do_not_agree_with_stops_the_run(sx, tmp_path, capsys):
     """The 1e-9 guard covers four statistics; this doctores only the floor, so the accuracy is
-    still right and only the margin half of the check can fire."""
+    still right and only the margin half of the check can fire.
+
+    The perturbation is 1e-7, not 1e-6, because the boundary has to be measured from inside it:
+    a difference of exactly 1e-6 is refused by the real guard and accepted by a loosened one,
+    which is the mutation `bench/mutation_significance.py` runs, so 1e-6 would pin the guard's
+    existence rather than its size.
+    """
     doc = json.loads(sx.fx.report_path.read_text())
-    doc["macro"]["majority"] += 1e-6
+    doc["macro"]["majority"] += 1e-7
     bad = tmp_path / "badreport.json"
     bad.write_text(json.dumps(doc))
     out = tmp_path / "n.json"
@@ -689,6 +720,40 @@ def test_a_floor_the_rows_do_not_agree_with_stops_the_run(sx, tmp_path, capsys):
     err = capsys.readouterr().err
     assert "majority_floor from these rows is" in err and "prints" in err, err
     assert not out.exists()
+
+
+def test_a_margin_the_report_invents_is_refused_though_the_macro_and_floors_match(sx, tmp_path,
+                                                                                  capsys):
+    """Four statistics, four ways to be wrong about one of them. The accuracy and both floors
+    still agree with this report; only `g1.margin_observed` is doctored, so the run has to be
+    stopped by the margin half of the check or the sentence about G1's second half is adjudicated
+    against a number no artifact printed."""
+    doc = json.loads(sx.fx.report_path.read_text())
+    doc["g1"]["margin_observed"] += 1e-7
+    bad = tmp_path / "marginreport.json"
+    bad.write_text(json.dumps(doc))
+    out = tmp_path / "m.json"
+    rc = SIGN.main(["--myna", str(sx.fx.dump_path), "--laya", str(sx.laya_path),
+                    "--report", str(bad), "--B", "200", "--seed", str(SEED),
+                    "--out", str(out), "--md", str(tmp_path / "m.md")])
+    assert rc == 3, "an invented margin passed the guard"
+    assert "margin_over_floor from these rows is" in capsys.readouterr().err
+    assert not out.exists()
+
+
+def test_the_guard_tolerates_a_disagreement_below_its_own_tolerance(sx, tmp_path, capsys):
+    """The other side of the same boundary: 1e-10 is float noise in a statistic that travelled
+    through a summation, and a guard that refused it would refuse the committed report too. This
+    is what makes the 1e-9 in the code a chosen number rather than a reflex."""
+    doc = json.loads(sx.fx.report_path.read_text())
+    doc["macro"]["majority"] += 1e-10
+    near = tmp_path / "nearreport.json"
+    near.write_text(json.dumps(doc))
+    out = tmp_path / "y.json"
+    assert SIGN.main(["--myna", str(sx.fx.dump_path), "--laya", str(sx.laya_path),
+                      "--report", str(near), "--B", "200", "--seed", str(SEED),
+                      "--out", str(out), "--md", str(tmp_path / "y.md")]) == 0
+    assert out.exists()
 
 
 def test_a_min_rows_above_the_smallest_kept_cell_moves_the_point_off_the_report(sx, tmp_path,

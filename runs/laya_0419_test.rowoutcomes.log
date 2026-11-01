@@ -1,0 +1,37 @@
+$ PYTHONPATH='<laya checkout>' <laya venv python> bench/eval_laya_row_outcomes.py --out runs/laya_0419_test.rowoutcomes.json
+laya 0.4.19 at /Users/aashish/github contribution /GIT/laya-scan-0419 commit 55a19f7b7b56 · python 3.14.4 torch 2.14.0
+Fetching 5 files:   0%|          | 0/5 [00:00<?, ?it/s]Fetching 5 files: 100%|██████████| 5/5 [00:00<00:00, 2693.84it/s]
+  laya warned: RuntimeWarning: laya: this checkpoint ships invalid temperatures or values outside [0.5, 5]; using choice:11+=0.10058280825614929 -> 0.5. Treat confidence from the affected entries as uncalibrated.
+Fetching 5 files:   0%|          | 0/5 [00:00<?, ?it/s]Fetching 5 files: 100%|██████████| 5/5 [00:00<00:00, 2923.67it/s]
+  100 rows in 39s (391 ms/row, 0 unanswered)
+  200 rows in 68s (340 ms/row, 0 unanswered)
+  300 rows in 95s (316 ms/row, 0 unanswered)
+  400 rows in 110s (274 ms/row, 0 unanswered)
+  500 rows in 150s (299 ms/row, 0 unanswered)
+  600 rows in 170s (283 ms/row, 0 unanswered)
+  700 rows in 190s (271 ms/row, 0 unanswered)
+  800 rows in 215s (269 ms/row, 0 unanswered)
+  900 rows in 232s (257 ms/row, 0 unanswered)
+  1000 rows in 257s (257 ms/row, 0 unanswered)
+  1100 rows in 277s (252 ms/row, 0 unanswered)
+1176 rows answered / 1440 question outcomes in 292s on cpu · 0 rows/questions failed
+wrote the raw outcomes to runs/laya_0419_test.rowoutcomes.raw.json before aggregating
+subset check vs laya_decision_v2_test.json: 17 (source, qid, type) rows on 440 rows, largest per-cell |delta| 0.024999999999999967
+wrote runs/laya_0419_test.rowoutcomes.json (0.76 MB) holding 1176 rows / 1440 question outcomes, removed the laya_0419_test.rowoutcomes.raw.json sidecar — the witness carries the rows
+  agnews/is_business    n=  43 acc=0.8837  noul:0.884(43)
+  agnews/is_scitech     n=  49 acc=0.9388  noul:0.939(49)
+  agnews/is_sports      n=  47 acc=0.9787  noul:0.979(47)
+  agnews/is_world       n=  45 acc=0.8000  noul:0.800(45)
+  agnews/topic          n= 116 acc=0.9138  choice:0.914(116)
+  amazon/stars          n=  80 acc=0.3000  score:0.300(80)
+  banking77/intent         n= 116 acc=0.2759  choice:0.276(116)
+  boolq/answer         n=  80 acc=0.7000  noul:0.700(80)
+  contrastive/decision       n= 196 acc=0.5969  choice:0.509(116) noul:0.725(80)
+  dbpedia14/category       n= 116 acc=0.7672  choice:0.767(116)
+  imdb/positive       n=  80 acc=0.4625  noul:0.463(80)
+  mnli/relation       n= 116 acc=0.5948  choice:0.595(116)
+  sst5/sentiment      n=  80 acc=0.3875  score:0.388(80)
+  trec/answer_type    n= 116 acc=0.7500  choice:0.750(116)
+  yelp/rating         n=  80 acc=0.5250  score:0.525(80)
+  yelp/recommend      n=  80 acc=0.7875  noul:0.787(80)
+EXIT=0

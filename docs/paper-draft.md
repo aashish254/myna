@@ -21,8 +21,9 @@ counted as `sum(p.numel() for p in model.parameters())`) that reads an observati
 over a fixed option set, and ships as a file small enough to run inside a browser tab. Our contribution is
 diagnostic, not a state-of-the-art claim: we pre-registered seven release gates against a frozen
 decision suite and ran them, and **four of the seven fail on the measured artifacts — G1 is not met (macro
-0.4893 against a 0.70 target, +0.0563 over a 0.4331 majority
-floor where +0.15 is required), G4 is not met (0.1833 at 4,096 state tokens against a required 0.90,
+0.4893, 95% CI [0.4647, 0.5139], against a 0.70 target, +0.0563 over a 0.4331 majority
+floor where +0.15 is required — and that margin's own row-clustered CI, [0.0192, 0.0676], keeps the whole
+deficit), G4 is not met (0.1833 at 4,096 state tokens against a required 0.90,
 0.150 at 16,384 against a required 0.85), G5 is not met (best accuracy 0.596 only at 10.04% coverage
 against a required 0.95 at ≥60% coverage), and G6 is not met (the v1 checkpoint `v1b-kaggle-3600b` measures
 0.3423 and 0.3489 on the synthetic test split at two seeds against the required 0.94, while the v0
@@ -31,8 +32,11 @@ deciding arm)**. What does hold is measured and reproducible:
 a 59.32 MiB artifact that loads in 253.9–394.4 ms and answers in a fixed 589,824-byte (576 KiB) decision
 state; a matched-condition throughput advantage over a competitor **we measure at 421,293,827
 parameters** (our count at their pinned snapshot, not a figure they publish) on the same inputs
-(33.083 ms against 100.691 ms at one question); and a release-gate registry in which 7/7 verdicts and
-36/36 rows re-derive from committed witnesses. We report the failures as the primary result, because the
+(33.083 ms against 100.691 ms at one question); a release-gate registry in which 7/7 verdicts and
+39/39 rows re-derive from committed witnesses; and a paired row-clustered bootstrap that puts a 95% interval
+on every headline accuracy in §5 and **refuses to write the file at all** unless macro, both floors and the
+gate's own margin agree with the committed report to 1e-9 — the instrument that, on its first run, rewrote
+two of the four sentences it was asked about. We report the failures as the primary result, because the
 instrument that detected them — a needle-recall harness that refuses to let a flat-at-chance curve be read
 as decay, and a synthetic-split harness that prints the chance floor beside every accuracy it reports — is
 the part we can defend.
@@ -60,8 +64,13 @@ than a table is what distinguishes the two.
 
 ## 3. Related work and positioning
 
-The only competitor scored in this repository is **laya 0.3.20** (`convaiinnovations/laya`, checkpoint
-snapshot `55cf4c4e…`, `Agent.system_one`). Its authors publish **≈421M parameters** — the card at the very
+The only competitor scored in this repository is **laya** (`NandhaKishorM/laya`; the weights are
+`convaiinnovations/laya` on the Hub), and it is pinned at **two different revisions for two different
+measurements**: **0.3.20** at checkpoint snapshot `55cf4c4e…`, `Agent.system_one`, which is what §8's
+latency and the parameter count below are measured on, and **0.4.19** at commit
+`55a19f7b7b56787e1a3e41063def9bb9a8737351`, which is what §5's paired accuracy is measured on. The pins are
+kept separate rather than quietly unified: no witness here re-runs latency at 0.4.19 or the 0.3.20 weights
+over myna's full test rows. Its authors publish **≈421M parameters** — the card at the very
 revision we measured says "*Backbone:* ModernBERT-large (395M, bidirectional, fully fine-tuned) + a
 decision head trained from scratch: 2 transformer layers, an option-marker scorer, and an act/escalate
 head. 421M total" — and **we** measure **421,293,827** in that artifact (`runs/latency_matched.json`
@@ -72,13 +81,24 @@ header sums to **421,293,830** across 206 tensors, and the 3-element `temperatur
 tensors are
 394,781,696 (394.78M) and everything but `temperature` is 26,512,131 (26.51M) — our arithmetic over their
 public tensor header, not a figure they publish, and no witness in this repository prints that split.
-Evaluated by us on the same 16 (source, question) cells as our own model, at **0.6668** macro accuracy (§5);
-that number is measured on this box with this harness, and it is the only external comparison this draft
-makes. Cited **as software, explicitly not as a paper and not as external literature**: Nandhakishor M. /
+Evaluated by us on the same 16 (source, question) cells **and the same 1,176 test rows** as our own model,
+at **0.6664** macro accuracy with a 95% CI of [0.6439, 0.6888] (§5, laya **0.4.19**); that number is
+measured on this box with this harness, and it is the only external comparison this draft makes. The
+**0.6668** that the committed report
+`runs/v1b_kaggle_3600b.report.json` prints beside myna's 0.4893 is a different draw — a `n_per_source: 40,
+seed: 0` slice whose 17 cell rows sum to **546 questions**, from an artifact that records no laya version —
+and comparing it to myna's 1,440-question macro was never a paired comparison; SPEC §9.66 records the
+re-measure that replaces it. Cited **as software, explicitly not as a paper and not as external literature**:
+Nandhakishor M. /
 Convai Innovations, *laya*, version 0.3.20 — GitHub https://github.com/NandhaKishorM/laya (Apache-2.0),
 PyPI https://pypi.org/project/laya/0.3.20/ (uploaded 2026-09-24T05:41:06Z), model artifact
 https://huggingface.co/convaiinnovations/laya at pinned revision
-`55cf4c4ebb4ebe31b2550e8bdf3bd21b99753851`, `typed-decisions/` subfolder; accessed 2026-10-29. **No laya
+`55cf4c4ebb4ebe31b2550e8bdf3bd21b99753851`, `typed-decisions/` subfolder; accessed 2026-10-29. **and**, for
+the paired accuracy of §5, *laya* version **0.4.19** — the same repository checked out at commit
+`55a19f7b7b56787e1a3e41063def9bb9a8737351`, whose package reports that version
+(`"version": "0.4.19"` in `runs/laya_0419_test.rowoutcomes.json`); a PyPI distribution `laya` 0.4.19 exists
+(uploaded 2026-10-31T07:46:22Z), but the §5 measurement ran from that git checkout, not from that wheel.
+**No laya
 paper exists**: the card at that revision carries no BibTeX and no DOI, and the repository README's only
 arXiv link is to somebody else's work. Their rounded "421M" is quoted above purely as attribution to the
 source; no measurement in this paper uses it, and every laya figure in §5 and §8 is ours.
@@ -171,18 +191,32 @@ fired (Stage A) while no machine rule ever did.
 
 All rows below are per-cell unweighted macros over the 16 (source, question) cells both engines score,
 read from the committed report `runs/v1b_kaggle_3600b.report.json` (`macro.acc` 0.4893271976084137,
-`macro.majority` 0.4330647953941198, `g1.margin_observed` 0.056262402214293905, `g1.pass` false). The
-accuracy arm is **16,926,848 parameters at vocab 8192** (`runs/v1b-kaggle-3600b`, 3,600 updates on Kaggle,
-last logged step 3599).
+`macro.majority` 0.4330647953941198, `g1.margin_observed` 0.056262402214293905, `g1.pass` false) — except
+the competitor row, which is read from the paired dump `runs/laya_0419_test.rowoutcomes.json` and its
+interval witness, and whose point estimate differs from the report's `macro.both.laya` for a reason stated
+below. The accuracy arm is **16,926,848 parameters at vocab 8192** (`runs/v1b-kaggle-3600b`, 3,600 updates
+on Kaggle, last logged step 3599).
 
 | arm | checkpoint (params / vocab) | scope | myna macro | majority floor | margin | verdict |
 |---|---|---|---|---|---|---|
-| **G1 primary** | v1b-kaggle-3600b, 16,926,848 / 8192 | 16 in-scope cells | **0.4893** | **0.4331** | **+0.0563** | **not met** — +0.15 required, and 0.211 short of the 0.70 level |
+| **G1 primary** | v1b-kaggle-3600b, 16,926,848 / 8192 | 16 in-scope cells | **0.4893** [0.4647, 0.5139] | **0.4331** [0.4270, 0.4647] | **+0.0563** [0.0192, 0.0676] | **not met** — +0.15 required, and 0.211 short of the 0.70 level |
 | sensitivity | same checkpoint | 14 cells (out-of-scope sources cut) | 0.5334 | 0.4666 | +0.0668 | not met — sensitivity only, never the headline |
 | excluded | same checkpoint | 11 cells (every cell below its own floor dropped) | 0.5526 | — | +0.0949 | **not a result**: 0.147 short of 0.70, and dropping failing cells after seeing the scores is cherry-picking |
-| competitor | laya 0.3.20, **421,293,827 parameters measured by us** at the pinned snapshot `55cf4c4e…` (their card's rounded ≈421M is attribution to the source, never the measurement) | the same 16 cells | 0.6668 | — | myna is 0.177 below | no parity claim |
+| competitor | laya **0.4.19**, the same 1,176 rows myna scores (§3 pins; 0.3.20's **421,293,827 parameters measured by us** at `55cf4c4e…` stand for §8's latency artifact, never for this row) | the same 16 cells **on the same rows** | **0.6664** [0.6439, 0.6888] | — | myna is **0.1771** below [−0.2080, −0.1463] | no parity claim |
 | control | untrained scratch, 16,926,848 / 8192, 2 seeds | same 16 cells | 0.346 / 0.351 (mean 0.348) | 0.433 | below floor | the trained arm clears the floor; the control does not |
 | contrast | void pre-`385e06c` checkpoint | — | 0.338 | — | — | disclosure only, never a result |
+
+**The brackets are intervals, and only three arms have them.** The four bracketed columns above come from
+`bench/significance.py` (`runs/significance.json`, `runs/significance.md`): 20,000 multinomial resamples of
+the **1,176 test rows** — the whole published split, `--B 20000 --seed 20261031`, first-replicate digest
+`d45e5c018ee550da` — with both floors **recomputed inside every replicate** rather than frozen at the point
+estimate, so the margin's interval carries the floor's own sampling error. The unit is the row, not the
+question: a row's 1,440-question instances never separate, which matters because 316 of the split's `_meta.row`
+values collide and `_meta.id` is the only key that is unique across all 1,176. The harness refuses to write
+anything unless macro, both floors and the report's `g1.margin_observed` agree with
+`runs/v1b_kaggle_3600b.report.json` to 1e-9, so these intervals are around the published numbers and not
+around a re-measurement of them. The sensitivity, excluded, control and contrast rows have **no interval**:
+that arm set was never resampled, and a bracket on it would be invented rather than measured.
 
 Three readings, all ours. First, **the margin and the level are separate requirements and the run fails
 both**; the gate demands ≥ 0.70 *and* ≥ +0.15 over the floor the surviving cells imply. Second, **no scope
@@ -191,6 +225,31 @@ cutting the dead ones lifts the level and the floor together, buying eleven thou
 (0.4893 → 0.5334 against 0.4331 → 0.4666). Third, the untrained control matters more than it looks: it
 sits *below* the majority floor, so the trained checkpoint's +0.0563 is real movement against a classifier
 that reads nothing, while remaining far from the gate.
+
+**A fourth reading is the pre-registered interval rule adjudicating its own first run.** The rule was fixed
+before the intervals existed: an interval that covers a threshold forces the sentence carrying it to be
+rewritten in the same change, and a verdict that would move a gate is escalated rather than edited here.
+Four sentences went through it (`runs/significance.md`, "Claims, adjudicated"), and the two that had to be
+rewritten are the two about G1: *"the margin over the floor reaches +0.15"* — the interval's **upper** bound
+is 0.0676, so the 0.094 deficit is not a sampling artefact a bigger draw averages away — and *"the macro
+reaches 0.70"* — [0.4647, 0.5139] excludes 0.70 entirely. Two stand, and each has a McNemar cross-check
+that reads no resample at all: myna is above its own majority floor (291 rows in myna's favour against 196
+for the cells' constants over `n = 487`, exact two-sided **p = 1.94e-05**) and laya is above myna on the
+same rows (158 myna-only against 436 laya-only over `n = 594`, **p = 4.75e-31**). **No gate verdict moved:**
+G1 was already `not met` on the point estimate, so `make gates` still prints 3 met / 4 not met / 0 open.
+What did change is that a claim of the form "the margin is +0.0563" is now four numbers — point, two bounds
+and the floor's own sampling error — and the sentence that read laya's 0.6668 as paired with myna's macro
+is gone from every doc in this repository.
+
+One cell goes the other way, and it is worth naming because a 15-of-16 pattern hides it: `imdb/positive`,
+myna **0.8000** against laya **0.4625**, Δ **+0.3375** with CI [0.2237, 0.4545] and McNemar p = 4.63e-07 —
+the only cell in the 16 where this checkpoint beats the competitor on the same rows, and one of the eight
+cells whose accuracy moves when their row's state is swapped (SPEC §9.47's `swap-state` arm, from
+`runs/diag_question_ablation.json`: 0.800 → 0.525). At the other end `agnews/topic` is −0.5431 [−0.6387, −0.4444]. What no interval here
+licenses is a statement about Myna rather than about this checkpoint on these rows: the 1,176 rows are a
+fixed draw, the interval is the sampling error of *this* split, and a second training run of the same
+3,600-update dose is a different sampling layer that would need its own checkpoint, which this box has not
+produced.
 
 ## 6. Results — long-context correctness (G4)
 
@@ -317,11 +376,15 @@ recorded under a deliberate CPU throttle in two of its three stages, appears now
 
 The mechanical claim is that every published figure re-derives from a committed artifact, and the audit
 passes: `bench/gates.py --check` → **7/7 verdicts hold** (3 met, 4 not met, 0 open; the release gate is
-NOT clear); `bench/reproduce.py --check` → **36/36 rows hold, 122 figures tied to a committed witness, 1
+NOT clear); `bench/reproduce.py --check` → **39/39 rows hold, 142 figures tied to a committed witness, 1
 gated with no witness**; the two suites that read these documents (`tests/test_gates.py`,
 `tests/test_reproduce.py`) → **67 passed**. A mutation battery of 21 string-anchored mutants backs the
 gate logic, and the anchor-presence check (21/21) is what tells us a prose edit has not silently turned one
-into a no-op.
+into a no-op. The significance harness is backed the same way: `bench/mutation_significance.py` scores
+**39/39** mutants over six families — the point-estimate guard, the resample unit, the pairing, the claiming
+rules, the print face and the outcome dumps themselves — and the three real gaps its first pass printed
+(14/21) are written up rather than quietly fixed, because a battery that only ever passes is not read
+(SPEC §9.66).
 
 **That gap is now closed, and the closure is replayed rather than asserted.** The Stage C weights are
 published as Release `lc1-4k-s0-stageC-weights` — id **428002663**,
@@ -426,8 +489,8 @@ arms were matched on coverage (§9.58), and it is not repeated here.
 
 ## 11. Limitations and recorded defects
 
-Beyond the §9 gap, we disclose three defects in our own documentation rather than smooth them, because two
-of them would otherwise enter the literature through this paper.
+Beyond the §9 gap, we disclose four defects in our own documentation rather than smooth them, because more
+than one of them would otherwise enter the literature through this paper.
 
 **(a) A v0 weight digest that no reader can check.** A `v0 model.pt` digest quoted during the hand-off
 (`88c14ef2…`) appears **nowhere in this checkout** — including README, whose weight disclosures name the
@@ -453,6 +516,21 @@ which is exactly what happened once already: the generator claimed G1 and G4 "ca
 box" for a day after both had been closed on it (§9.62 ix, §9.63 xii). The 21 mutants cover verdict logic
 and none reaches that prose, so we present the block as a drift guard with a named hole, not as a proof.
 
+**(d) A headline comparison that was not a comparison for as long as the report has been published.** The
+committed roll-up `runs/v1b_kaggle_3600b.report.json` prints `macro.both.laya` = 0.6668154761904762 beside
+myna's 0.4893271976084137 in the same object, and every document that quoted that pair — SPEC §2.2's G1
+cell, README's generated gate block, and this draft's own §3 until this change — read it as though the two
+numbers came from the same rows. They did not: the laya column is `bench/eval_laya_real.py --split test
+--n-per-source 40 --seed 0`, whose witness `runs/laya_decision_v2_test.json` holds 17 cell rows summing to
+**546 questions** and records **no laya version at all**, while myna's macro is the whole 1,176-row,
+1,440-question split. Re-measuring the competitor row for row (§5) moves the gap from −0.1775 to −0.1771 —
+almost nothing, in this case, which is exactly why the defect is worth printing: a direction can be right
+and still have been produced by a comparison that was undefined. The unpaired field is still in that
+artifact, so anyone who recomputes the gap from `runs/v1b_kaggle_3600b.report.json` alone reproduces the
+mistake; what closes it is `bench/significance.py`, which will not run on a row subset without
+`--allow-subset` and refuses to write any interval at all if its own point estimates disagree with the
+committed report by more than 1e-9.
+
 **Scope limits we accept.** One seed for the needle ladder and two for the scratch control; a
 single-box, single-browser measurement set; a frozen 16-cell suite and a needle ladder at `n = 60` per rung,
 where 60 samples give a 0.0481 standard error; and a corpus whose pilot is 4.25M state tokens —
@@ -466,15 +544,22 @@ We described Myna, a 16,926,848-parameter typed-decision engine whose shipped ar
 in a browser tab in 253.9–394.4 ms, holds state in a fixed 576 KiB, and answers 10 questions in
 120.753 ms against 506.277 ms from a competitor **we measure at 421,293,827 parameters** — our count at
 their pinned snapshot, not a figure they publish — on the same inputs and the same box. We also
-report that it does not pass its own release gates: **G1 is not met** at 0.4893 macro against a 0.70 level
-and a +0.15 margin over a 0.4331 floor, with no scope choice rescuing it; **G4 is not met** at 0.1833 at
+report that it does not pass its own release gates: **G1 is not met** at 0.4893 macro [0.4647, 0.5139]
+against a 0.70 level and a +0.15 margin over a 0.4331 floor — the margin is +0.0563 with its own CI
+[0.0192, 0.0676], so neither half of the failure is a sampling artefact — with no scope choice rescuing it;
+**G4 is not met** at 0.1833 at
 4,096 and 0.150 at 16,384 state tokens against 0.90 and 0.85, on a checkpoint that completed its approved
 1,200-update dose and whose loss sits on `ln(6)`; **G5 is not met**, peaking at 0.5965 only at 10.04%
 coverage against a required 0.95 at ≥ 60%; and **G6 is not met**, the v1 checkpoint measuring 0.3423 and
 0.3489 on the synthetic test split against a 0.94 level that the paired v0 arm clears at 0.9525 and 0.9496
 on the identical split. The size, latency and reproducibility numbers are the measured strengths;
 the four failures are the measured contribution, and the needle harness that
-refused to print a decay curve for a flat one is the instrument we would hand to the next person.
+refused to print a decay curve for a flat one is the instrument we would hand to the next person. Its
+successor is the paired bootstrap of §5: it resamples whole rows of the published split, recomputes both
+floors inside every replicate, compares the two engines on the same `(row, question)` pairs rather than on
+two samples that happened to share a cell list, and refuses to write its own file unless the point
+estimates agree with the committed report to 1e-9 — and adjudicating the four sentences it was handed, it
+rewrote the two about G1 without moving a single gate verdict.
 
 ---
 

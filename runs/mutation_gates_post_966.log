@@ -1,0 +1,8 @@
+            FAILED tests/test_gates.py::test_the_verdict_tally_is_the_one_the_readme_prints
+[20/21] caught      G7's proof reports green while registry rows drift
+            FAILED tests/test_gates.py::test_g7_goes_red_when_the_registry_itself_drifts
+[21/21] caught      --check's exit code stops reflecting the failures
+            FAILED tests/test_gates.py::test_check_exits_nonzero_when_a_verdict_breaks - ...
+
+21/21 mutations caught
+     1116.49 real       881.83 user       196.02 sys

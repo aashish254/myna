@@ -1,0 +1,8 @@
+$ uv run python bench/significance.py --myna runs/myna_v1b_test.rowoutcomes.json --laya runs/laya_0419_test.rowoutcomes.json --B 20000 --seed 20261031 --out runs/significance.json --md runs/significance.md
+point: myna 0.4893 · floor 0.4331 · laya 0.6664 · gap -0.1771 · macro, both floors and G1's margin match v1b_kaggle_3600b.report.json to 1e-9
+20,000 replicates over 1176 rows × 16 cells in 1.3s · cells kept per replicate min 16 max 16
+wrote runs/significance.json and runs/significance.md
+  STANDS    myna's test-split macro is above its own majority floor · margin_over_floor 0.0563 [0.0192, 0.0676] vs CI excludes 0
+  REWRITTEN the margin over the floor reaches G1's +0.15 · margin_over_floor 0.0563 [0.0192, 0.0676] vs CI lower bound ≥ 0.15
+  REWRITTEN the macro reaches G1's target of 0.7 · myna_macro 0.4893 [0.4647, 0.5139] vs CI lower bound ≥ 0.7
+  STANDS    laya's macro is above myna's on the same rows and cells · gap_myna_minus_laya -0.1771 [-0.2080, -0.1463] vs CI excludes 0 on the negative side

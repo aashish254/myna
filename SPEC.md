@@ -64,13 +64,13 @@ Quote the ratio, never the millisecond figure.
 
 | # | gate | pass condition | status |
 |---|---|---|---|
-| **G1** | Accuracy beats the witness | macro decision-v2 test ≥ 0.70 on the frozen split, per-source table published, ≥ 0.4331 majority floor by ≥ +0.15 | **not met, measured** — it was open on a missing *artifact*, not a missing *run*: `v1b-kaggle-3600b` trained 3,600 updates on Kaggle and its `metrics.json`, report roll-up and `train.log` are now committed (`runs/v1b_kaggle_3600b.*`), so the verdict comes from the artifact rather than from a transcript. Over the 16 cells both harnesses score, per-cell unweighted: **myna 0.4893 · laya 0.6668 · floor 0.4331**, which is +0.056 over the floor against the +0.15 required and 0.211 short of 0.70 — the report's own line reads `target 0.7 → not met`. `bench/reproduce.py`'s `v1b-kaggle-macro` row re-derives it. Still in the row for contrast: the untrained control (**0.346 / 0.351**, `runs/scratch_decision_v2_test.md`) and the void pre-`385e06c` checkpoint (**0.338**). The tail slope of that run's own dev curve is why *dose* is not the answer (§9.38) |
+| **G1** | Accuracy beats the witness | macro decision-v2 test ≥ 0.70 on the frozen split, per-source table published, ≥ 0.4331 majority floor by ≥ +0.15 | **not met, measured** — it was open on a missing *artifact*, not a missing *run*: `v1b-kaggle-3600b` trained 3,600 updates on Kaggle and its `metrics.json`, report roll-up and `train.log` are now committed (`runs/v1b_kaggle_3600b.*`), so the verdict comes from the artifact rather than from a transcript. Over the 16 cells both harnesses score, per-cell unweighted: **myna 0.4893 · floor 0.4331**, which is +0.0563 over the floor against the +0.15 required and 0.211 short of 0.70 — the report's own line reads `target 0.7 → not met`. `bench/significance.py` puts a row-clustered 95% CI on both halves (**margin [0.0192, 0.0676] · macro [0.4647, 0.5139]**), so neither shortfall is a sampling artefact (§9.66). The competitor on those same 1,176 rows is laya 0.4.19 at **0.6664** [0.6439, 0.6888]; the report's `0.6668` is a 546-question subsample and was never paired. `bench/reproduce.py`'s `v1b-kaggle-macro` row re-derives the point estimates and `significance-paired` re-derives the intervals. Still in the row for contrast: the untrained control (**0.346 / 0.351**, `runs/scratch_decision_v2_test.md`) and the void pre-`385e06c` checkpoint (**0.338**). The tail slope of that run's own dev curve is why *dose* is not the answer (§9.38) |
 | **G2** | Latency claim survives equal-footing re-measurement | same box, same window, same question count, direct `Agent` call not `Router`; published ratio recomputed from that or withdrawn | **met** (4a/4c): one M5 process, both fp32, `Agent.system_one`, ladder capped inside laya's 1024 window — **3.04×/3.21×/4.12×/3.60×** at 1/5/10/50 questions end-to-end and **6.78×/4.67×/4.75×/3.65×** on the ask-only path, each the minimum of two committed runs, `runs/latency_matched*.md`. G1 is *not* implied: v0's accuracy still fails (§4.2) |
 | **G3** | Deployment works for real | ONNX browser build answers a live page's decisions; bytes + p50 + cold-load measured in Chrome | **met, as a mechanics gate only.** `browser/index.html` runs the exported artifact in real Chrome 153 and answers three typed decisions with the same probabilities the torch engine prints (6/6 parity checks, both isolation modes, desktop and mobile widths, `runs/browser_g3.json`); bytes, cold-load and p50 are measured there with the box's load average recorded beside them. What this does **not** say: the artifact it deploys is v0, which still fails G1 and G5, the ≤ 20 MB int8 route is open at the byte level and closed at the agreement level (§9.28), and the Apple-silicon int8 route closes for the opposite reason — 17.40 MiB at 9.24e-03 and **no** latency win at all, so fp32 is the artifact on both paths (§9.29) |
 | **G4** | Long-context is *correct*, not just cheap | needle-style typed decision ≥ 0.90 at 4k and ≥ 0.85 at 16k state | **not met — measured on a completed dose, and no longer gated on hardware.** v0's needle curve (`runs/needle_myna-v0.md`) reads 0.188 at 128 tokens against a 0.167 floor — at chance on the shortest rung — so the longer rows are decay of nothing, and the harness says so itself rather than printing a table (§9.25). The 4k needle run then executed *on this box* (§6 prices it at 2.4 GiB retained, 1c measured 2.0194742679595947 s/update), was aborted at 425 of 1200 updates by 7b's own Stage A rule with the 128-rung at 0.1667 = the floor (§9.62), and was then resumed on the owner's order to the **full approved 1200-update dose**. Its n=60 ladder (`runs/needle_lc1_stageC_final.json`) reads **0.1833 at 4096 against G4's ≥ 0.90 — short by 0.7167 — and 0.150 at 16384 against ≥ 0.85, short by 0.700**, the first time either threshold has been measured on a 4k-trained checkpoint; the 128-rung is 0.150, so the harness still prints `readable: false` — not a decay curve, a flat line at chance (§9.63). Step 799 and step 1199 agree exactly on all three shared rungs (9, 13, 11 of 60), so the limiter is the mechanism, not the dose. The 16k *state* remains measured and cheap (§9.22) |
 | **G5** | Useful confidence, with abstention | risk/coverage curve on `calibration.jsonl`; ≥ 0.95 accuracy at ≥ 60% coverage on banking77 + dbpedia14 + trec | **not met on the level, met on the machinery.** Abstention ships: `Myna(ckpt, abstain_below=t)` withholds the commitment and prints the measured reason, the fallback seam labels every answer with the engine that committed, and the curve is a committed artifact (`runs/risk_coverage.md`, 448 rows / 568 questions). Accuracy on v0 climbs **0.349 → 0.535** as coverage falls 1.00 → 0.20 — the confidence ranks the answers, on a checkpoint that cannot do the task — and setting the 0.693 floor on the engine abstains on **227** questions where the curve withheld **227**. But **no rung reaches 0.95** (max 0.596, at 10% coverage) and G5's own three sources sit at 0.000 / 0.025 / 0.150, so the pass needs the `KAGGLE` checkpoint (§9.24) |
 | **G6** | No regression on what already worked | synthetic v0 test ≥ 0.94 | **not met — measured on the checkpoint the gate was written against, and the pairing is the artifact.** v0 scores **0.9525 / 0.9496** on the synthetic test split and `v1b-kaggle-3600b` — the checkpoint every G1 figure here is scored on — scores **0.3423 / 0.3489** on rows hashed to the same digest per seed (`998d7375…`, `fc9cbe3b…`), so the two arms differ by weights alone (§9.65). 0.3423 is **0.5977 short of 0.94**, and the floors the same witness prints (uniform **0.3370**, majority **0.3546 / 0.3463**) place it +0.0053 above chance and *below* the modal-label floor: 4 of 9 cells under chance on seed 0, so this is not an uninformative head either. What the verdict does **not** say is that v1 lost something v0 had: `v1b-kaggle-3600b` trained on the real `decision-v2` suite and never saw a synthetic row, so the number is zero-shot retention of the task family, and the transfer failure is the finding (§9.65). The logged **0.9523** of `runs/train-v0.log` stays out of the binding — §9.30 disqualifies its nine rows as a set this box can regenerate — and a draft of this row once cited "0.951", which no artifact printed |
-| **G7** | Reproducibility | one command per result, seeds pinned, witness JSONs committed, `pytest` green | **met, as a binding rather than a rebuild.** `bench/reproduce.py` holds 36 registry rows, each binding one published table cell to one command and one committed witness, and `make repro` re-reads the 122 quoted figures out of those artifacts rather than out of the prose; the python commands among those rows are checked against the tool behind them — its `--help` must still print every flag the row publishes (§9.43); the seeds live inside the printed commands (`--seed 0`, `--seeds 0 1`), not in sentences about them. What this does **not** say: no target *executes* the registry end to end — 24 rows re-run on this box, 6 retrain a checkpoint, 2 need a laya checkout on `PYTHONPATH`, 3 need Google Chrome and 1 is `KAGGLE` — which is why TODO 8b stays unticked and why G7 is discipline rather than a one-command rebuild. Every count in this cell is now read back against `ROWS` by `bench/gates.py`, so this row — the table's one hand-copied cell — goes red rather than quietly stale (§9.44) |
+| **G7** | Reproducibility | one command per result, seeds pinned, witness JSONs committed, `pytest` green | **met, as a binding rather than a rebuild.** `bench/reproduce.py` holds 39 registry rows, each binding one published table cell to one command and one committed witness, and `make repro` re-reads the 142 quoted figures out of those artifacts rather than out of the prose; the python commands among those rows are checked against the tool behind them — its `--help` must still print every flag the row publishes (§9.43); the seeds live inside the printed commands (`--seed 0`, `--seeds 0 1`, `--seed 20261031`), not in sentences about them. What this does **not** say: no target *executes* the registry end to end — 26 rows re-run on this box, 6 retrain a checkpoint, 3 need a laya checkout on `PYTHONPATH`, 3 need Google Chrome and 1 is `KAGGLE` — which is why TODO 8b stays unticked and why G7 is discipline rather than a one-command rebuild. Every count in this cell is now read back against `ROWS` by `bench/gates.py`, so this row — the table's one hand-copied cell — goes red rather than quietly stale (§9.44) |
 
 **This column is not a claim.** `make gates` (`bench/gates.py --check`) re-reads each cell's
 leading verdict word, the registry row that gate cites, and the named field inside a committed
@@ -4508,3 +4508,168 @@ Kept permanently, because the value of this project's claims is that they surviv
     (§9.x ticks, TODO 8d's tick, `docs/release-stageC-draft.md`, `docs/RELEASE-v0.1.0-notes.md`) are
     left as dated records and listed in the commit report rather than rewritten. **Nothing was pushed,
     merged, tagged, released, or submitted.**
+
+66. **Every headline accuracy in this repo was a point estimate, and the pre-registered rule that
+    decides a sentence now has an interval to decide it against — which rewrote two of the four claims
+    the first time it ran, on a competitor column that had never been paired, and with the row rather
+    than the question as the unit.** All figures below are read out of three committed witnesses
+    (`runs/myna_v1b_test.rowoutcomes.json`, `runs/laya_0419_test.rowoutcomes.json`,
+    `runs/significance.{json,md}`), none edited after it was written, and each is now a registry row
+    whose command this section prints:
+
+    ```bash
+    uv run python bench/row_outcomes.py --out runs/myna_v1b_test.rowoutcomes.json
+    PYTHONPATH="<laya 0.4.19 checkout>" "<laya venv>/bin/python" bench/eval_laya_row_outcomes.py --out runs/laya_0419_test.rowoutcomes.json
+    uv run python bench/significance.py --myna runs/myna_v1b_test.rowoutcomes.json --laya runs/laya_0419_test.rowoutcomes.json --B 20000 --seed 20261031 --out runs/significance.json --md runs/significance.md
+    ```
+
+    **(i) What was missing was not a test but a unit.** `runs/v1b_kaggle_3600b.report.json` collapses
+    1,440 question outcomes into 16 cell accuracies and then into four numbers, and a mean cannot be
+    resampled: there is nothing in a `0.4893` for a bootstrap to draw. So `bench/row_outcomes.py`
+    manufactures the input rather than deciding anything — it calls
+    `diag_question_ablation.score()`, the chunk-64 loop that already reproduced all 716 committed
+    per-set accuracies with 0 tie flips (§9.48), keeps every row's predictions, and **refuses to write**
+    unless `myna.report.cell_stats` / `accuracy_cells` / `roll_up` re-price all 16 cells of the
+    committed report key for key under that harness's own float tolerance (the witness prints
+    `"tie_flips": 0` and `"ok": true` in its `guard` block). A dump whose guard fails would be worse
+    than no dump, because it would look like the published measurement.
+
+    **(ii) The cluster key is load-bearing, and the witness prints the geometry that proves it.**
+    `load_split` throws `_meta` away — an `Example` is `(state, workflow, gold)` — so the join is
+    recovered by calling the loader's own `parse_questions` and `_signature` and then refusing to
+    continue unless every group's row count matches. The key a row-clustered resample needs is
+    `_meta.id`, unique over 1,176/1,176; `_meta.row` collides on **316** of these rows and
+    `_meta.row_sha256` on **219**, so clustering on either of those two would merge rows that are not
+    the same row and shrink the resample from underneath the interval. All three distinct-counts are
+    written beside each other in `cluster_key_check` (`"distinct_ids": 1176`, `"distinct_row": 860`,
+    `"distinct_row_sha256": 957`) precisely so a reader can check which field is the key instead of
+    being told.
+
+    **(iii) The competitor column had never been paired, and re-measuring it moved the headline by
+    4.2 ten-thousandths while changing what it means.** The published `0.6668` is
+    `runs/v1b_kaggle_3600b.report.json`'s `macro.both.laya` = `0.6668154761904762`, read from
+    `runs/laya_decision_v2_test.json` — a `n_per_source: 40, seed: 0` draw whose 17 cell rows sum to
+    **546 questions**, scored against myna's `0.4893271976084137` from **all 1,176 rows
+    and 1,440 questions**. Two samples of the same 16 cells are not a paired comparison; the gap that
+    prose quotes (`−0.1774882785820625`) is the difference of two macros computed on different rows.
+    `bench/eval_laya_row_outcomes.py` re-runs laya **0.4.19 at commit
+    `55a19f7b7b56787e1a3e41063def9bb9a8737351`** over myna's exact geometry — same `_meta.id`s, same
+    questions, `1,176` rows written with `1,440` outcomes and `"errors": []`, its progress log printing
+    1,100 rows at 277 s and **0 unanswered** — and the paired re-measure is laya
+    `0.6663989223833249`, gap `−0.17707172477491112`. So: the sentence "laya is ahead by about 0.177"
+    survives its own re-measurement almost untouched, and is now honest, because it is one sample and
+    not two. laya's *confidence* still cannot be compared — its own loader warns that this checkpoint
+    ships values outside its `[0.5, 5]` clamp, recorded verbatim in `laya_warnings` — so only
+    correctness is compared. What that re-measure also settles is the version pin: the competitor row
+    this spec and `docs/paper-draft.md` printed for a year was laya **0.3.20 at `55cf4c4e…`**, which is
+    the snapshot `runs/latency_matched.json` measured (`laya_version`, `laya_params` 421,293,827) and the
+    only snapshot whose *latency* is witnessed here. The *accuracy* row now prints 0.4.19 at
+    `55a19f7b…` with the paired number, and the two pins are kept separate rather than silently
+    unified (§9.66 iii).
+
+    **(iv) The interval is around the published number, or the run does not write.**
+    `bench/significance.py` packs each row into one vector of per-cell sums (myna counts and hits,
+    laya counts and hits, the row-weighted `Σ 1/K` for the uniform floor, and the gold-index histogram
+    for the majority floor) in float64, and `boot()` draws `B = 20,000` integer multinomial weight rows
+    over `N = 1,176` in float32 blocks of 1,000 — `rng.multinomial(N, [1/N]*N)`, so a replicate contains
+    whole rows and a row's questions never separate. **The floors are recomputed inside every
+    replicate**, which is the difference between an interval on G1's margin and an interval on myna's
+    macro with a constant subtracted. Before anything is drawn, `main()` refuses with exit 3 unless
+    macro, both floors and `g1.margin_observed` agree with the committed report to **1e-9**, and refuses
+    again unless the paired row set is the whole published split (a smaller set needs
+    `--allow-subset`, which waives the pairing guard and *not* the statistic guard). The run printed
+    `point: myna 0.4893 · floor 0.4331 · laya 0.6664 · gap -0.1771 · macro, both floors and G1's margin
+    match v1b_kaggle_3600b.report.json to 1e-9`, drew in **1.3 s**, kept **16 of 16 cells in every
+    replicate** (`cells_kept_min = cells_kept_max = 16`, so no replicate is quietly a 15-cell macro),
+    and pinned itself with first-replicate digest `d45e5c018ee550da`.
+
+    | statistic | point | 95% CI | |
+    |---|---|---|---|
+    | `myna_macro` | 0.4893 | [0.4647, 0.5139] | G1's level |
+    | `majority_floor` | 0.4331 | [0.4270, 0.4647] | per-cell constant predictor, recomputed per replicate |
+    | `uniform_floor` | 0.3321 | [0.3313, 0.3330] | 1/options, row-weighted |
+    | `margin_over_floor` | 0.0563 | **[0.0192, 0.0676]** | what G1's second half is judged on |
+    | `laya_macro` | 0.6664 | [0.6439, 0.6888] | same cells, same rows |
+    | `gap_myna_minus_laya` | −0.1771 | **[−0.2080, −0.1463]** | per-replicate difference, not two intervals subtracted |
+
+    **(v) The pre-registered rule adjudicated its own first run, and the two sentences it rewrote are
+    the two about G1.** The rule was fixed before the intervals existed: *an interval that covers the
+    threshold forces the sentence to be rewritten in the same change, and a verdict that moves a gate is
+    escalated rather than edited here.* Four sentences, four verdicts, all printed by the harness:
+
+    * **stands** — "myna's test-split macro is above its own majority floor": margin 0.0563
+      [0.0192, 0.0676], CI excludes 0. McNemar without a resample agrees: 291 in myna's favour against
+      196 for the cells' own majority label, `n = 487`, exact two-sided **p = 1.94e-05**.
+    * **rewritten** — "the margin over the floor reaches G1's +0.15": the interval's lower bound is
+      0.0192, not 0.15, and its *upper* bound is 0.0676, so the deficit is not a sampling artefact
+      waiting to be averaged away.
+    * **rewritten** — "the macro reaches G1's target of 0.70": [0.4647, 0.5139] excludes 0.70 entirely.
+    * **stands** — "laya's macro is above myna's on the same rows and cells": gap CI
+      [−0.2080, −0.1463] excludes 0 on the negative side, pooled McNemar 158 myna-only against 436
+      laya-only over `n = 594`, **p = 4.75e-31**.
+
+    **No gate verdict moved, and that is the escalation clause working rather than being cited.** G1 was
+    already `not met` on the point estimate, so an interval that also misses 0.70 and +0.15 changes the
+    *strength* of the prose, not the table: §2.2's G1 row, `bench/gates.py`'s verdicts and
+    `make gates`' **3 met / 4 not met / 0 open** are exactly what §9.65 left them at. What did have to
+    change is the paper: a claim of the form "the margin is +0.0563" is now four numbers — point, two
+    bounds, and the floor's own sampling error — and the sentence that read the 0.6668 as paired is gone.
+
+    **(vi) The one cell that goes the other way, and what no interval here licenses.** Across the 16
+    paired cells the per-cell gaps are negative in **15** of them; the exception is `imdb/positive`,
+    myna **0.8000** against laya **0.4625**, Δ **+0.3375** with CI [0.2237, 0.4545] and McNemar
+    p = 4.63e-07 — the single cell where this checkpoint beats the 421M-parameter competitor on the same
+    rows, and the cell the Tier 0 ablation (§9.47) already flagged as one of the **eight** cells whose
+    accuracy moves when their row's state is swapped — 0.800 as scored against 0.525 under `swap-state`,
+    the second-largest state delta of the 16 behind `dbpedia14/category`'s 0.457 → 0.069. At the other end `agnews/topic` is −0.5431 [−0.6387, −0.4444]. One interval does not buy a
+    generalisation: these 1,176 rows are a fixed draw, the interval is the sampling error of *this*
+    split, and a second training run of the same 3,600-update dose is a different sampling layer that
+    would need its own checkpoint — which this box has not produced. The claim licensed is about a
+    checkpoint on rows; the claim not licensed is about Myna.
+
+    **(vii) What moved on the tree, with the numbers this entry read back.** Three new registry rows
+    (`myna-rowoutcomes`, `laya-rowoutcomes` as `external-laya`, `significance-paired`; 7 + 5 + 8
+    quoted figures) → **39 registry rows, 142 quoted figures, 26 rows re-run on this box, 6 retrain,
+    3 need a laya checkout, 3 need Chrome, 1 `KAGGLE`**, all recomputed by `bench/gates.py` rather than
+    hand-copied, with SPEC §2.2's G7 cell and README's two generated blocks regenerated from
+    `reproduce.readme_block()` and `gates.py --readme-block`. `tests/test_significance.py` grew to
+    **37** tests and `tests/test_row_outcomes.py` holds **23**, and `tests/test_reproduce.py`'s coverage
+    assertion moves **29 → 32** — including that a command published with a
+    `PYTHONPATH="<laya 0.4.19 checkout>" "<laya venv>/bin/python"` placeholder still reaches the
+    `--help` question, so an `external-laya` row is exempt from running here and not from the flag
+    check. `bench/mutation_significance.py` is a new battery: **39/39 mutants caught** over six families
+    (guards, resample unit, pairing, claiming rules, printing face, and `row_outcomes.py` itself), in
+    79.27 s (`runs/mutation_significance_post_966.log`). Because `bench/gates.py`'s G1 prose and
+    `bench/reproduce.py`'s rows both moved, their own batteries were re-run against this tree rather than
+    quoted from the last tick: `bench/mutation_gates.py` **21/21 caught** in 1,116 s and
+    `bench/mutation_reproduce.py` **29/29 caught** in 684 s (`runs/mutation_gates_post_966.log`,
+    `runs/mutation_reproduce_post_966.log`), and the full suite re-ran green at **669 passed, 1 skipped**
+    in 570.33 s.
+    Its first pass scored 14/21, and the three classes of failure it printed are the honest record:
+    five patterns that did not exist in the code (`model.load_state_dict(...)` and
+    `"temperature": meta["temperature"]` are not in `bench/row_outcomes.py` at all — the checkpoint load
+    lives in `diag_question_ablation.load_run`, where its own battery already mutates it), one entry
+    duplicated under the same label so a survivor would have been counted twice, and three real gaps
+    now closed by tests — the 1e-6 probe was the mutant's own threshold instead of a value inside it
+    (now 1e-7 refused *and* 1e-10 accepted), `g1.margin_observed` could be invented while every other
+    statistic agreed, and the witness could print `"unpaired_myna_questions": 0` beside a pairing that
+    had lost a question. One mutant was **deleted rather than scored**: `score()`'s temperature divisor
+    survived because a positive scalar leaves every argmax — hence every `ok` this harness resamples —
+    exactly where it was, and only the `conf` column moves, which §9.40 calls a survivor that names no
+    claim. `docs/paper-draft.md` changed in five places, not one: §5's table now prints the brackets
+    inline — macro, floor and margin on the G1 row, laya and the gap on the competitor row — with a
+    paragraph naming what has an interval and what does not (the sensitivity, excluded, control and
+    contrast arms were never resampled); a fourth reading was added, which is the pre-registered rule
+    adjudicating its four sentences with both McNemar cross-checks; §3 re-pins the competitor as **two
+    revisions for two measurements** (0.3.20 at `55cf4c4e…` for latency and the parameter count, 0.4.19 at
+    `55a19f7b…` for the paired accuracy) instead of quietly unifying them; §11 gained defect **(d)**, the
+    unpaired-comparison disclosure; and the abstract and §12 now carry [0.4647, 0.5139] and
+    [0.0192, 0.0676] rather than a bare 0.4893. `bench/gates.py`'s G1 `reads` is the other half of that
+    rewrite — the sentence "**myna 0.4893 · laya 0.6668 · majority floor 0.4331**" is gone from the
+    generator, `significance-paired` is now among the rows G1 cites, and SPEC §2.2's hand-copied G1 cell
+    and README's generated gate block were regenerated from it, so the verdict column still reads
+    `not met, measured` and the numbers behind it are the paired ones. The `bench/reproduce.py` that
+    briefly replaced this repo's registry harness in the previous commit was **restored from `0a1d207`**,
+    and the registry rows above are the proper home for what that script was trying to print. **Nothing was
+    merged, tagged, released, or submitted**; the push that carries this entry is the one the owner gated
+    by name, from the account the owner named.
