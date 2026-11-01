@@ -1,0 +1,14 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.13.14, pytest-9.1.1, pluggy-1.6.0
+rootdir: /Users/aashish/next ko ne next gen model
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collected 67 items
+
+tests/test_gates.py .............................                        [ 43%]
+tests/test_reproduce.py ......................................           [100%]
+
+======================== 67 passed in 67.45s (0:01:07) =========================
+real 67.90
+user 52.48
+sys 12.68

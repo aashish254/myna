@@ -64,13 +64,13 @@ Quote the ratio, never the millisecond figure.
 
 | # | gate | pass condition | status |
 |---|---|---|---|
-| **G1** | Accuracy beats the witness | macro decision-v2 test ≥ 0.70 on the frozen split, per-source table published, ≥ 0.4331 majority floor by ≥ +0.15 | **not met, measured** — it was open on a missing *artifact*, not a missing *run*: `v1b-kaggle-3600b` trained 3,600 updates on Kaggle and its `metrics.json`, report roll-up and `train.log` are now committed (`runs/v1b_kaggle_3600b.*`), so the verdict comes from the artifact rather than from a transcript. Over the 16 cells both harnesses score, per-cell unweighted: **myna 0.4893 · floor 0.4331**, which is +0.0563 over the floor against the +0.15 required and 0.211 short of 0.70 — the report's own line reads `target 0.7 → not met`. `bench/significance.py` puts a row-clustered 95% CI on both halves (**margin [0.0192, 0.0676] · macro [0.4647, 0.5139]**), so neither shortfall is a sampling artefact (§9.66). The competitor on those same 1,176 rows is laya 0.4.19 at **0.6664** [0.6439, 0.6888]; the report's `0.6668` is a 546-question subsample and was never paired. `bench/reproduce.py`'s `v1b-kaggle-macro` row re-derives the point estimates and `significance-paired` re-derives the intervals. Still in the row for contrast: the untrained control (**0.346 / 0.351**, `runs/scratch_decision_v2_test.md`) and the void pre-`385e06c` checkpoint (**0.338**). The tail slope of that run's own dev curve is why *dose* is not the answer (§9.38) |
+| **G1** | Accuracy beats the witness | macro decision-v2 test ≥ 0.70 on the frozen split, per-source table published, ≥ 0.4331 majority floor by ≥ +0.15 | **not met, measured** — it was open on a missing *artifact*, not a missing *run*: `v1b-kaggle-3600b` trained 3,600 updates on Kaggle and its `metrics.json`, report roll-up and `train.log` are now committed (`runs/v1b_kaggle_3600b.*`), so the verdict comes from the artifact rather than from a transcript. Over the 16 cells both harnesses score, per-cell unweighted: **myna 0.4893 · floor 0.4331**, which is +0.0563 over the floor against the +0.15 required and 0.211 short of 0.70 — the report's own line reads `target 0.7 → not met`. `bench/significance.py` puts a row-clustered 95% CI on both halves (**margin [0.0192, 0.0676] · macro [0.4647, 0.5139]**), so neither shortfall is a sampling artefact (§9.66). The competitor on those same 1,176 rows is laya 0.4.19 at **0.6664** [0.6439, 0.6888]; the report's `0.6668` is a 546-question subsample and was never paired. `bench/vegaml_control.py` puts a *second* competitor in that same frozen slot, on the same rows and the same seed: vegaml 0.15.0 measures **0.6160** [0.5898, 0.6415], so myna sits **0.1266** below it [−0.1578, −0.0955] with 43.8% of the control's outcomes abstained and scored forced-choice (§9.67). `bench/reproduce.py`'s `v1b-kaggle-macro` row re-derives the point estimates, `significance-paired` re-derives laya's intervals and `vegaml-control-paired` the control's. Still in the row for contrast: the untrained control (**0.346 / 0.351**, `runs/scratch_decision_v2_test.md`) and the void pre-`385e06c` checkpoint (**0.338**). The tail slope of that run's own dev curve is why *dose* is not the answer (§9.38) |
 | **G2** | Latency claim survives equal-footing re-measurement | same box, same window, same question count, direct `Agent` call not `Router`; published ratio recomputed from that or withdrawn | **met** (4a/4c): one M5 process, both fp32, `Agent.system_one`, ladder capped inside laya's 1024 window — **3.04×/3.21×/4.12×/3.60×** at 1/5/10/50 questions end-to-end and **6.78×/4.67×/4.75×/3.65×** on the ask-only path, each the minimum of two committed runs, `runs/latency_matched*.md`. G1 is *not* implied: v0's accuracy still fails (§4.2) |
 | **G3** | Deployment works for real | ONNX browser build answers a live page's decisions; bytes + p50 + cold-load measured in Chrome | **met, as a mechanics gate only.** `browser/index.html` runs the exported artifact in real Chrome 153 and answers three typed decisions with the same probabilities the torch engine prints (6/6 parity checks, both isolation modes, desktop and mobile widths, `runs/browser_g3.json`); bytes, cold-load and p50 are measured there with the box's load average recorded beside them. What this does **not** say: the artifact it deploys is v0, which still fails G1 and G5, the ≤ 20 MB int8 route is open at the byte level and closed at the agreement level (§9.28), and the Apple-silicon int8 route closes for the opposite reason — 17.40 MiB at 9.24e-03 and **no** latency win at all, so fp32 is the artifact on both paths (§9.29) |
 | **G4** | Long-context is *correct*, not just cheap | needle-style typed decision ≥ 0.90 at 4k and ≥ 0.85 at 16k state | **not met — measured on a completed dose, and no longer gated on hardware.** v0's needle curve (`runs/needle_myna-v0.md`) reads 0.188 at 128 tokens against a 0.167 floor — at chance on the shortest rung — so the longer rows are decay of nothing, and the harness says so itself rather than printing a table (§9.25). The 4k needle run then executed *on this box* (§6 prices it at 2.4 GiB retained, 1c measured 2.0194742679595947 s/update), was aborted at 425 of 1200 updates by 7b's own Stage A rule with the 128-rung at 0.1667 = the floor (§9.62), and was then resumed on the owner's order to the **full approved 1200-update dose**. Its n=60 ladder (`runs/needle_lc1_stageC_final.json`) reads **0.1833 at 4096 against G4's ≥ 0.90 — short by 0.7167 — and 0.150 at 16384 against ≥ 0.85, short by 0.700**, the first time either threshold has been measured on a 4k-trained checkpoint; the 128-rung is 0.150, so the harness still prints `readable: false` — not a decay curve, a flat line at chance (§9.63). Step 799 and step 1199 agree exactly on all three shared rungs (9, 13, 11 of 60), so the limiter is the mechanism, not the dose. The 16k *state* remains measured and cheap (§9.22) |
 | **G5** | Useful confidence, with abstention | risk/coverage curve on `calibration.jsonl`; ≥ 0.95 accuracy at ≥ 60% coverage on banking77 + dbpedia14 + trec | **not met on the level, met on the machinery.** Abstention ships: `Myna(ckpt, abstain_below=t)` withholds the commitment and prints the measured reason, the fallback seam labels every answer with the engine that committed, and the curve is a committed artifact (`runs/risk_coverage.md`, 448 rows / 568 questions). Accuracy on v0 climbs **0.349 → 0.535** as coverage falls 1.00 → 0.20 — the confidence ranks the answers, on a checkpoint that cannot do the task — and setting the 0.693 floor on the engine abstains on **227** questions where the curve withheld **227**. But **no rung reaches 0.95** (max 0.596, at 10% coverage) and G5's own three sources sit at 0.000 / 0.025 / 0.150, so the pass needs the `KAGGLE` checkpoint (§9.24) |
 | **G6** | No regression on what already worked | synthetic v0 test ≥ 0.94 | **not met — measured on the checkpoint the gate was written against, and the pairing is the artifact.** v0 scores **0.9525 / 0.9496** on the synthetic test split and `v1b-kaggle-3600b` — the checkpoint every G1 figure here is scored on — scores **0.3423 / 0.3489** on rows hashed to the same digest per seed (`998d7375…`, `fc9cbe3b…`), so the two arms differ by weights alone (§9.65). 0.3423 is **0.5977 short of 0.94**, and the floors the same witness prints (uniform **0.3370**, majority **0.3546 / 0.3463**) place it +0.0053 above chance and *below* the modal-label floor: 4 of 9 cells under chance on seed 0, so this is not an uninformative head either. What the verdict does **not** say is that v1 lost something v0 had: `v1b-kaggle-3600b` trained on the real `decision-v2` suite and never saw a synthetic row, so the number is zero-shot retention of the task family, and the transfer failure is the finding (§9.65). The logged **0.9523** of `runs/train-v0.log` stays out of the binding — §9.30 disqualifies its nine rows as a set this box can regenerate — and a draft of this row once cited "0.951", which no artifact printed |
-| **G7** | Reproducibility | one command per result, seeds pinned, witness JSONs committed, `pytest` green | **met, as a binding rather than a rebuild.** `bench/reproduce.py` holds 39 registry rows, each binding one published table cell to one command and one committed witness, and `make repro` re-reads the 142 quoted figures out of those artifacts rather than out of the prose; the python commands among those rows are checked against the tool behind them — its `--help` must still print every flag the row publishes (§9.43); the seeds live inside the printed commands (`--seed 0`, `--seeds 0 1`, `--seed 20261031`), not in sentences about them. What this does **not** say: no target *executes* the registry end to end — 26 rows re-run on this box, 6 retrain a checkpoint, 3 need a laya checkout on `PYTHONPATH`, 3 need Google Chrome and 1 is `KAGGLE` — which is why TODO 8b stays unticked and why G7 is discipline rather than a one-command rebuild. Every count in this cell is now read back against `ROWS` by `bench/gates.py`, so this row — the table's one hand-copied cell — goes red rather than quietly stale (§9.44) |
+| **G7** | Reproducibility | one command per result, seeds pinned, witness JSONs committed, `pytest` green | **met, as a binding rather than a rebuild.** `bench/reproduce.py` holds 41 registry rows, each binding one published table cell to one command and one committed witness, and `make repro` re-reads the 159 quoted figures out of those artifacts rather than out of the prose; the python commands among those rows are checked against the tool behind them — its `--help` must still print every flag the row publishes (§9.43); the seeds live inside the printed commands (`--seed 0`, `--seeds 0 1`, `--seed 20261031`), not in sentences about them. What this does **not** say: no target *executes* the registry end to end — 27 rows re-run on this box, 6 retrain a checkpoint, 3 need a laya checkout on `PYTHONPATH`, 1 need vegaml in its own venv, 3 need Google Chrome and 1 is `KAGGLE` — which is why TODO 8b stays unticked and why G7 is discipline rather than a one-command rebuild. Every count in this cell is now read back against `ROWS` by `bench/gates.py`, so this row — the table's one hand-copied cell — goes red rather than quietly stale (§9.44) |
 
 **This column is not a claim.** `make gates` (`bench/gates.py --check`) re-reads each cell's
 leading verdict word, the registry row that gate cites, and the named field inside a committed
@@ -4673,3 +4673,192 @@ Kept permanently, because the value of this project's claims is that they surviv
     and the registry rows above are the proper home for what that script was trying to print. **Nothing was
     merged, tagged, released, or submitted**; the push that carries this entry is the one the owner gated
     by name, from the account the owner named.
+
+67. **A second competitor — same upstream author as laya — is now scored row-for-row as a
+    control, and it went into the frozen instrument without the instrument being edited: the
+    resample's own digest proves one draw served both competitors, and the one cell where myna
+    beat laya turns out to be a fact about laya.** All figures below are read out of four
+    committed witnesses (`runs/vegaml_0150_test.rowoutcomes.json`,
+    `runs/vegaml_0150_test.rowoutcomes.log`, `runs/vegaml_control.json`,
+    `runs/vegaml_control.md`), none edited after it was written, and each is a registry row whose
+    command this section prints:
+
+    ```bash
+    "<vegaml 0.15.0 venv>/bin/python" bench/eval_vegaml_row_outcomes.py --every 100 --out runs/vegaml_0150_test.rowoutcomes.json
+    uv run python bench/vegaml_control.py --control runs/vegaml_0150_test.rowoutcomes.json --B 20000 --seed 20261031 --out runs/vegaml_control.json --md runs/vegaml_control.md
+    ```
+
+    **(i) Why a control and not a rival.** `vegaml` 0.15.0 is the second engine by the same
+    author as laya, and the novelty bar this repository works under says that anything in Myna
+    copied from laya's or vegaml's design is not a contribution. So vegaml is scored as a
+    *control* — a check on what a same-author design of comparable trainable size does on
+    Myna's rows — and never as the thing G1 is measured against. The size comparison is the
+    reason it is worth having: the witness loads `Qwen/Qwen3.5-0.8B` at **752,393,024** frozen
+    reader params (torch.float32, 24 layers) behind an engine of **14,342,512** trainable
+    params (16,441,712 with its port), against laya's **421,293,827** measured in
+    `runs/latency_matched.json`. Myna's 16,926,848 is the same order as vegaml's trainable half
+    and two orders below the reader it drives, which is a fact no accuracy table in this repo
+    could have shown before this row existed.
+
+    **(ii) The acceptance was that the frozen instrument take a second competitor without being
+    touched, and the digest is the proof that it did.** `bench/significance.py` is P1's harness
+    and stays byte-for-byte as §9.66 left it. `bench/vegaml_control.py` imports `pack`,
+    `statize`, `boot`, `ci`, `mcnemar_exact` and `_p` out of it and puts the vegaml dump in the
+    column that file names `laya_macro`, relabelling exactly two keys —
+    `{"laya_macro": "vegaml_macro", "gap_myna_minus_laya": "gap_myna_minus_vegaml"}` — and
+    recording the map in the JSON so the relabel is auditable rather than asserted. What makes
+    this a check and not a wrapper: `runs/vegaml_control.json`'s `first_replicate_digest` is
+    **`d45e5c018ee550da`**, byte-identical to `runs/significance.json`'s, because `boot()`'s
+    draw depends only on `N = 1,176` and `--seed 20261031`. laya's interval and vegaml's are
+    therefore two reads of **one** row-clustered replicate set, so their difference carries no
+    resample noise of its own; had the digest moved, the harness would have been printing a
+    second experiment and calling it a comparison. The same 1e-9 guard runs before anything is
+    drawn — `myna_macro`, `majority_floor`, `uniform_floor`, `margin_over_floor` all re-derived
+    from the rows and checked against `runs/v1b_kaggle_3600b.report.json` — and it kept **16 of
+    16 cells** in every replicate (`cells_kept_min = cells_kept_max = 16`), with
+    `"dropped": {"rows": [], "questions": 0}`: the control shares myna's whole row set, so no
+    pairing loss separates the two competitor arms.
+
+    **(iii) What the control measured.** Per-cell unweighted macro over the same 16 cells:
+
+    | statistic | point | 95% CI |
+    |---|---|---|
+    | `myna_macro` | 0.4893 | [0.4647, 0.5139] |
+    | `majority_floor` | 0.4331 | [0.4270, 0.4647] |
+    | `margin_over_floor` | 0.0563 | [0.0192, 0.0676] |
+    | `vegaml_macro` | **0.6160** | **[0.5898, 0.6415]** |
+    | `gap_myna_minus_vegaml` | **−0.1266** | **[−0.1578, −0.0955]** |
+
+    Both pre-registered claims about that gap stand on their intervals — "myna and vegaml differ
+    on the shared rows" (CI excludes 0) and "vegaml's macro is above myna's on the same rows"
+    (CI excludes 0 on the negative side) — and the exact McNemar cross-check reads no resample at
+    all: 205 pairs myna-right-and-control-wrong against 404 the reverse, over `n = 609`
+    discordant pairs, **p = 5.69e-16**. Against the two same-author engines on the *same rows*,
+    myna sits 0.1266 below vegaml and 0.1771 below laya; the 0.0504 between the two competitors
+    is arithmetic on two paired points and has **no interval**, because the frozen instrument
+    takes one competitor per run. No gate verdict moved: G1 was already `not met` on the point
+    estimate, so `make gates` still prints **3 met / 4 not met / 0 open**.
+
+    **(iv) The finding worth more than the headline: myna's one cell-win against laya is a fact
+    about laya.** §9.66 could report that across the 16 paired cells the gap is negative in 15,
+    the exception being `imdb/positive`, where myna beat the competitor **+0.3375** with
+    p = 4.63e-07. On the same rows against vegaml that same cell is **−0.0750** with
+    p = 0.180 — myna loses it, not significantly. The set of cells where this checkpoint is ahead
+    is not a property of the checkpoint and the split; it is a property of the checkpoint, the
+    split *and* the engine it is paired with. Against vegaml the four positive cells are
+    `agnews/is_business` **+0.1395** [−0.0196, +0.2927], `agnews/is_world` **+0.1333**,
+    `contrastive/decision` **+0.0561** and `trec/answer_type` **+0.0172** — **none of the four
+    significant** — the smallest p among them is 0.146, and `trec/answer_type`'s is 0.897 — while
+    vegaml is ahead in **12 of 16**,
+    significantly (p < 0.05) in **8**. Its largest margins are the multi-class cells
+    `agnews/topic` −0.5172 [−0.6168, −0.4144] p = 1.30e-15 (myna 0.3707 against vegaml 0.8879) and
+    `banking77/intent` −0.2672 p = 3.67e-08 (0.0345 against 0.3017, where chance on 77 intents is
+    0.013). So the honest sentence is two sentences: no competitor read gives myna a cell it wins
+    on this split with statistical support, and `imdb/positive`'s Tier 0 sensitivity (§9.47's
+    0.800 as scored against 0.525 under `swap-state`) is now known to be a state-dependence, not
+    an advantage.
+
+    **(v) 43.8% of the control's outcomes came back declined, and they are scored forced-choice.**
+    `runs/vegaml_0150_test.rowoutcomes.json` writes `abstain: {"n": 631, "rate": 0.43819444444444444,
+    "accuracy_of_abstained": 0.46275752773375595, "mean_set_size": 1.3722222222222222}` — that is
+    **631 of 1,440** outcomes carrying the checkpoint's own thermal decline flag, with a mean
+    prediction set of 1.37 options, i.e. the "set" is nearly always a single answer plus a low
+    confidence rather than a real set-valued decline. The harness records the flag and applies no
+    decline, because neither myna nor laya can decline and a scored-with-decline control would not
+    be the same game: arithmetic on the witness's own fields gives 840 correct of 1,440 pooled
+    instances (0.5833), of which the 631 declined answer 292 (0.4628) and the 809 kept answer 548
+    (0.6774). A second flag from the same calibration is recorded and just as little applied, and it
+    is the more interesting one: **261 of the 1,440 outcomes** come back with `unbound` true —
+    vegaml's own `_api.py` sets it as `bool(float(out["nearest"][r]) > cal["unbound"])`, a
+    distance-from-the-calibration-manifold threshold rather than a confidence threshold — and **178
+    of those 261 are also flagged `abstain`**, so the engine has two independent reasons to distrust
+    the 18.1% of Myna's rows it calls unbound, and the published macro uses neither.
+    Two things follow, and only two. The engine's decline is *informative* — the
+    instances it flags are materially worse than the ones it keeps — which is precisely the
+    property G5 asks myna to demonstrate and myna does not have, because myna has no decline path
+    in this harness at all. And the published `vegaml_macro` of 0.6160 is a forced-choice number:
+    it understates what that engine would report under its own selectivity, and saying so is the
+    only way the control row can sit next to the myna row without quietly comparing different
+    games. Pooled-instance accuracy is not the published basis (§9.37's roll-up warning), which is
+    why the headline stays the 16-cell macro and the abstain numbers are printed as the dump's own
+    fields.
+
+    **(vi) The competitor's determinism is now measured, because a single pass was going to be
+    quoted.** Two independent full passes over the split are committed: pass 1's raw sidecar
+    `runs/vegaml_0150_pass1.rowoutcomes.raw.json` (880.9 s) and pass 2's published
+    `runs/vegaml_0150_test.rowoutcomes.json` (928.9 s), both reporting `init_sha256`
+    `daaa84b1fa864909` and the same checkpoint snapshot dir
+    `models--nandakishorm--vega-U/snapshots/4d2050287982ca…`.
+    `tests/test_vegaml_control.py` compares them field by field — `type`, `ok`, `gold`, `pred`,
+    `conf`, `abstain`, `set_n`, `unbound` over **1,440/1,440** outcomes, plus the 16-cell table,
+    the abstain block and `argmax_disagreements` — and asserts the count it compared, so the test
+    cannot pass on two files that turned out not to be the ones it reads. Zero differences. Pass 1
+    is also where two real defects were found and fixed: the live pass reached the shared
+    aggregation tail with `seen_n` unbound (`UnboundLocalError` after 1,440 answers), and the
+    resume half then died on `KeyError: 'warnings'` because the sidecar did not write the field its
+    reader asked for. Both are pinned by tests that read the source, and each has its own mutant,
+    so a regression re-opens a crash rather than a silent wrong number. Peak footprint for the
+    whole thing was 5,766,217,728 bytes of RSS on `device=cpu threads=1`, inside §6's ceiling, and
+    the pass wrote `"errors": []`, `"warnings": []` and 0 argmax disagreements against the
+    engine's own probability table.
+
+    **(vii) `views: 1` is a pinned configuration, not an accident, and its price is measured.**
+    vegaml can average several readings per question. A 200-row probe with `--views 2` costs
+    **2.36 s/row** (472 s, 916.6 reader tokens/row) — 46 min for the full 1,176 — and returned
+    `view_agreement {n: 280, mean: 0.8767857142857143, flipped: 60}`: 21.4% of the probe's
+    outcomes change between two readings of the same row. The published control therefore runs
+    single-view, the same shape `runs/vegaml_control.json` records as `mode: engine, views: 1`,
+    because a two-view ensemble would be a better score *and a different configuration* than the
+    one the checkpoint ships as its default path. `views=1` emits no agreement field, which is why
+    the probe's own rule string says the field is `None` on a single-reading pass rather than zero.
+
+    **(viii) What moved on the tree.** Two registry rows — `vegaml-rowoutcomes` as the first
+    `external-vegaml` row (9 quoted figures) and `vegaml-control-paired` (8 — the eighth is the
+    `unbound` line `bench/vegaml_control.py` prints in its own health block, so the 261 and the 178
+    are tied to a witness rather than recounted in prose) — take the registry to
+    **41 rows, 159 quoted figures, 27 rows re-run on this box, 6 retrain, 3 need a laya checkout on
+    `PYTHONPATH`, 1 need vegaml in its own venv, 3 need Google Chrome and 1 is `KAGGLE`**, and
+    `tests/test_reproduce.py`'s coverage assertion moves **32 → 34** because a row published with a
+    `"<vegaml 0.15.0 venv>/bin/python"` placeholder still owes the `--help` flag question even
+    though it cannot execute here. `bench/reproduce.py` gained the `VEGAML` status and
+    `bench/gates.py` the sixth count in `count_phrase()`, G7's prose follows the generated counts,
+    G1 now cites `vegaml-control-paired` among its rows, and SPEC §2.2's hand-copied G1 and G7
+    cells were updated by hand and re-read by `--check`. `tests/test_vegaml_control.py` holds 41
+    tests and `bench/mutation_vegaml_control.py` is a new battery of 54 mutants over six families
+    (the guards that can stop being inputs, the slot and its two-key relabel, the adjudication, the
+    witness face — including `control_health` and the second decline flag — the dump harness's own
+    scoring rules, and the crash-resume paths that cost the first pass its 880.9 s of inference). It is
+    committed twice over: `runs/mutation_vegaml_control_post_967.log` (baseline `41 passed in 1.90s`) and
+    `runs/mutation_vegaml_control_post_967b.log` (baseline `41 passed in 2.62s`, 143.81 s wall), the second
+    run paid for a figure that turned out to have no witness — the battery's own docstring said the first
+    pass "paid 888 s" while `runs/vegaml_0150_pass1.rowoutcomes.raw.json` writes `seconds: 880.9` — so the
+    prose was corrected to the sidecar and the battery re-run against the corrected file. Both print
+    **`54/54 mutations caught`**. One entry survived its first battery — "the resample ignores the
+    seed it was passed" — and the defect was in the test, not the code: it changed `--seed` while
+    leaving the harness's default `--B 500`, and `boot()` derives its replicate digest from the
+    first block, whose shape is `min(1000, B)`, so the digest moved for a reason unrelated to the
+    seed. Holding `B` at the fixture's 3,000 makes the comparison attribute the moved digest to the
+    seed alone, and that mutant then fails with `assert '5ad58654ad432e51' != '5ad58654ad432e51'`.
+
+    **(ix) The count change caught a defect in the layer §9.66 says is drift-guarded, and the guard was a
+    test rather than the check.** Raising G7's figure count 158 → 159 means re-splicing README's generated
+    block from `bench/gates.py --readme-block`, and the first splice left a duplicated
+    `<!-- gates:release:end -->` on README's marker line. `bench/gates.py --check` stayed green —
+    **7/7 verdicts hold**, every count correct, because the generator reads `ROWS` and never reads README —
+    while `tests/test_gates.py::test_readme_carries_the_generated_block_verbatim` went red, which is §11(c)
+    of the draft made concrete on our own tree: the block is drift-checked against the generator, not
+    truth-checked, and the only thing standing between a stale splice and a published README is that one
+    assertion. The marker line was repaired, and every figure in this entry is from the re-run that
+    followed: `tests/test_gates.py` + `tests/test_reproduce.py` **67 passed in 68.25 s**
+    (`runs/two_suites_post_967c.log`), whole suite **710 passed, 1 skipped in 616.22 s**
+    (`runs/suite_post_967d.log`), `bench/gates.py --check` **7/7** and `bench/reproduce.py --check`
+    **41/41 rows, 159 figures, 1 gated** (both exit 0, `runs/gates_check_post_967c.log` /
+    `runs/repro_check_post_967c.log`), `bench/mutation_gates.py` **21/21 caught** in 1,233 s and
+    `bench/mutation_reproduce.py` **29/29 caught** in 720 s against the two new rows
+    (`runs/mutation_gates_post_967.log` + `.time`, `runs/mutation_reproduce_post_967.log` + `.time`), and the
+    credential scan
+    **0 matches for 9 shapes across 819 blobs**, 13 of them unreachable from this box
+    (`runs/secrets_post_967c.log`).
+
+    **Nothing was merged, tagged, released, or submitted**; the push that carries this entry is the
+    one the owner gated by name, from the account the owner named.

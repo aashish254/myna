@@ -1,0 +1,59 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.13.14, pytest-9.1.1, pluggy-1.6.0
+rootdir: /Users/aashish/next ko ne next gen model
+configfile: pyproject.toml
+testpaths: tests
+plugins: anyio-4.15.1
+collected 711 items
+
+tests/test_abstain.py ...................                                [  2%]
+tests/test_anti_prior.py ...................................             [  7%]
+tests/test_cli_help.py ................................................. [ 14%]
+                                                                         [ 14%]
+tests/test_data_invariants.py .......                                    [ 15%]
+tests/test_device_and_calibration.py .........                           [ 16%]
+tests/test_diag_question_ablation.py ................................... [ 21%]
+........                                                                 [ 22%]
+tests/test_engine_parity.py ...                                          [ 23%]
+tests/test_fallback.py ...............                                   [ 25%]
+tests/test_gates.py .............................                        [ 29%]
+tests/test_kaggle_bundle.py ................................             [ 33%]
+tests/test_latency_matched.py ...........................                [ 37%]
+tests/test_longctx.py ...............                                    [ 39%]
+tests/test_memory_plan.py .................................              [ 44%]
+tests/test_mlx_int8.py ........                                          [ 45%]
+tests/test_mlx_parity.py ...                                             [ 45%]
+tests/test_model_longctx.py ...                                          [ 46%]
+tests/test_onnx_export.py ..............                                 [ 48%]
+tests/test_ordinal_loss.py ..................                            [ 50%]
+tests/test_paraphrase.py ..................                              [ 53%]
+tests/test_paraphrase_wiring.py ............                             [ 55%]
+tests/test_perrow_batch.py ...........                                   [ 56%]
+tests/test_real_data.py ......                                           [ 57%]
+tests/test_report.py ..........................................          [ 63%]
+tests/test_reproduce.py ......................................           [ 68%]
+tests/test_risk_coverage.py .....................                        [ 71%]
+tests/test_rlcd.py ..                                                    [ 72%]
+tests/test_row_outcomes.py .......................                       [ 75%]
+tests/test_scan_secrets.py ...                                           [ 75%]
+tests/test_scope_pricing.py ..................                           [ 78%]
+tests/test_scratch.py ...........                                        [ 79%]
+tests/test_serve.py ........                                             [ 80%]
+tests/test_significance.py .....................................         [ 86%]
+tests/test_train_logging.py ....                                         [ 86%]
+tests/test_train_longctx.py ....................                         [ 89%]
+tests/test_trunk_numerics.py ......                                      [ 90%]
+tests/test_upstream.py ........s                                         [ 91%]
+tests/test_vegaml_control.py .........................................   [ 97%]
+tests/test_weights.py ...................                                [100%]
+
+=============================== warnings summary ===============================
+.venv/lib/python3.13/site-packages/fastapi/testclient.py:1
+  /Users/aashish/next ko ne next gen model/.venv/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+============ 710 passed, 1 skipped, 1 warning in 616.22s (0:10:16) =============
+real 617.53
+user 602.10
+sys 135.76

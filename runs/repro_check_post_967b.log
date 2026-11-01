@@ -1,0 +1,53 @@
+ok   arch-params            here             2 quoted figure(s)
+ok   latency-matched        external-laya    2 quoted figure(s)
+     · needs a laya checkout on PYTHONPATH, so it only runs where laya is
+ok   v0-accuracy            retrain          2 quoted figure(s)
+ok   rlcd                   retrain          2 quoted figure(s)
+ok   risk-coverage          here             2 quoted figure(s)
+ok   needle                 here             2 quoted figure(s)
+ok   needle-lc1-stageC      here             7 quoted figure(s)
+ok   g6-synthetic-v1b       here             14 quoted figure(s)
+ok   laya-real-suite        external-laya    1 quoted figure(s)
+     · needs a laya checkout on PYTHONPATH, so it only runs where laya is
+ok   onnx-parity            here             2 quoted figure(s)
+ok   onnx-parity-widest     here             2 quoted figure(s)
+ok   browser-selftest       external-chrome  1 quoted figure(s)
+     · needs Google Chrome, so it only runs on a box that has it
+ok   browser-g3-fp32        external-chrome  3 quoted figure(s)
+     · needs Google Chrome, so it only runs on a box that has it
+ok   browser-g3-int8        external-chrome  2 quoted figure(s)
+     · needs Google Chrome, so it only runs on a box that has it
+ok   int8-quantize          here             2 quoted figure(s)
+ok   mlx-int8               here             2 quoted figure(s)
+ok   mlx-int8-keepgate      here             1 quoted figure(s)
+ok   mlx-kernel             here             2 quoted figure(s)
+ok   report-floors          here             1 quoted figure(s)
+ok   py311                  here             1 quoted figure(s)
+ok   scratch-control        here             3 quoted figure(s)
+ok   scratch-vs-laya        here             5 quoted figure(s)
+ok   void-vs-laya           here             1 quoted figure(s)
+ok   g1-v1                  gated-kaggle     0 quoted figure(s)
+ok   ordinal-ab             retrain          5 quoted figure(s)
+ok   v1b-kaggle-macro       here             5 quoted figure(s)
+ok   antiprior-off-macro    here             6 quoted figure(s)
+ok   tier0-off-control      retrain          8 quoted figure(s)
+ok   antiprior-on-macro     here             6 quoted figure(s)
+ok   tier0-on-arm           retrain          7 quoted figure(s)
+ok   v1b-kaggle-dev         here             3 quoted figure(s)
+ok   scope-pricing          here             3 quoted figure(s)
+ok   kaggle-wall-clock      here             1 quoted figure(s)
+ok   kaggle-dev-tail        here             3 quoted figure(s)
+ok   anti-prior-audit       here             8 quoted figure(s)
+ok   tier0-ablation         retrain          5 quoted figure(s)
+ok   myna-rowoutcomes       here             7 quoted figure(s)
+ok   laya-rowoutcomes       external-laya    5 quoted figure(s)
+     · needs a laya checkout on PYTHONPATH, so it only runs where laya is
+ok   significance-paired    here             8 quoted figure(s)
+ok   vegaml-rowoutcomes     external-vegaml  9 quoted figure(s)
+     · needs vegaml installed in its own venv, so it only runs where that interpreter is — this repository does not import a competitor
+ok   vegaml-control-paired  here             8 quoted figure(s)
+
+41/41 rows hold; 159 figures tied to a committed witness, 1 gated with no witness
+real 19.14
+user 16.33
+sys 2.56

@@ -948,6 +948,74 @@ sample. All three units below are measured on this box; the gate verdicts did no
       lane is open (SPEC §6).
 
 
+## P13 — A second engine scored as a control through an instrument that was not edited (SPEC §9.67)
+
+The control unit of the co-author spine asked one mechanical question — can `bench/significance.py`, P1's
+frozen harness, take a *second* competitor without being touched? — and answers it with a digest rather than
+a sentence. Everything below is measured on this box and no gate verdict moved.
+
+- [x] **13a** vegaml 0.15.0 scored row-for-row over the same split.
+      Done: `bench/eval_vegaml_row_outcomes.py` → `runs/vegaml_0150_test.rowoutcomes.json` — 1,176 rows /
+      1,440 questions / the same 16 cells, `errors: []`, **928.9 s** and 300,193 reader tokens on `cpu` at
+      `mode: engine`, `views: 1` (torch 2.15.0, transformers 5.22.1, 14,342,512 trainable behind a
+      752,393,024-param frozen reader, `init_sha256` `daaa84b1fa864909`). Registry row `vegaml-rowoutcomes`
+      is the repository's first `external-vegaml` row and runs in vegaml's own venv, so its published
+      command carries a `<vegaml 0.15.0 venv>/bin/python` placeholder and still owes the `--help` flag
+      question even though `make repro` cannot execute it here — which is why `tests/test_reproduce.py`'s
+      coverage assertion moves **32 → 34**, not 32 → 33.
+- [x] **13b** The frozen instrument takes the control in its second-engine slot, and the replicate draw is
+      provably shared.
+      Done: `bench/vegaml_control.py` imports `pack`, `statize`, `boot`, `ci`, `mcnemar_exact` and `_p` out
+      of `bench/significance.py` — byte-for-byte as §9.66 left it — and relabels exactly two keys
+      (`{"laya_macro": "vegaml_macro", "gap_myna_minus_laya": "gap_myna_minus_vegaml"}`), the map recorded
+      in the JSON. `runs/vegaml_control.json`'s first-replicate digest is **`d45e5c018ee550da`**, identical
+      to `runs/significance.json`'s, so laya's interval and vegaml's are two reads of **one** 20,000-replicate
+      row-clustered set at seed 20261031; `B = 20000`, `n_rows = 1176`, **16 of 16** cells kept in every
+      replicate and `"dropped": {"rows": [], "questions": 0}`. vegaml **0.6160** [0.5898, 0.6415], myna
+      **−0.1266** below it [−0.1578, −0.0955], McNemar 205/404 over `n = 609` at **p = 5.69e-16**; both
+      pre-registered claims stand and neither interval crosses 0.
+      The finding that outlives the headline: myna's single cell-win against laya (`imdb/positive`,
+      **+0.3375**, p = 4.63e-07) is **−0.0750** at p = 0.180 against the control; against vegaml myna leads
+      in **4 of 16** with the smallest McNemar p among those four **0.146** — none significant — while the
+      control leads in **12 of 16** and significantly (p < 0.05) in **8**. Which cells a checkpoint wins is a
+      property of the pairing, not of the checkpoint.
+- [x] **13c** The control's determinism measured, and both of its unused decline flags disclosed.
+      Done: pass 1's raw sidecar (880.9 s) against pass 2's published dump, compared field by field —
+      `type`, `ok`, `gold`, `pred`, `conf`, `abstain`, `set_n`, `unbound` — over **1,440/1,440** outcomes
+      with **zero differences**, in a test that asserts the count it compared rather than trusting two
+      filenames. **631 of 1,440 (43.8%)** outcomes carry the engine's confidence-based `abstain` flag and
+      **261 (18.1%)** carry its independent `unbound` flag (`_api.py` sets it from the distance to the
+      calibration manifold, not from confidence), **178** carrying both; neither is applied, because scoring
+      a declining control against two engines that cannot decline compares different games. The declined
+      subset answers 292/631 (0.4628) against 548/809 (0.6774) for the kept subset, so the flags are
+      informative — which is exactly the property G5 asks of myna and myna cannot show, having no decline
+      path in this harness at all.
+- [x] **13d** The tree this unit moved, and the one defect the suite caught that `--check` did not.
+      Registry **41/41 rows hold, 159 figures tied to a committed witness, 1 gated with no witness**; gates
+      **7/7 verdicts hold — 3 met / 4 not met / 0 open**, release gate NOT clear; `tests/test_vegaml_control.py`
+      **41 tests**; `bench/mutation_vegaml_control.py` a new battery over six families, **54/54 caught** from
+      a `41 passed` baseline and committed twice — the second run paid for one figure in its own docstring
+      that no witness prints ("888 s", where `runs/vegaml_0150_pass1.rowoutcomes.raw.json` writes
+      `seconds: 880.9`), which was corrected and the battery re-run against the corrected file
+      (`runs/mutation_vegaml_control_post_967.log`, `runs/mutation_vegaml_control_post_967b.log`); the two
+      batteries whose files changed re-run **21/21** and **29/29**
+      (`runs/mutation_gates_post_967.log`, `runs/mutation_reproduce_post_967.log`, both green — and note the
+      1,233 s / 720 s sidecars exist so the wall figures have a file behind them); whole suite
+      **710 passed, 1 skipped in 616.22 s** (`runs/suite_post_967d.log`); `make secrets` **0 matches for 9
+      shapes across 819 blobs**, 13 unreachable from this box (`runs/secrets_post_967c.log`).
+      The defect: raising G7's figure count 158 → 159 requires re-splicing README's generated gate block,
+      and the splice left a duplicated `<!-- gates:release:end -->`. `bench/gates.py --check` stayed green at
+      7/7 — it reads `ROWS`, never README — while
+      `tests/test_gates.py::test_readme_carries_the_generated_block_verbatim` went red
+      (`runs/two_suites_post_967.log`: `1 failed, 66 passed`). The block is drift-checked, not truth-checked;
+      that hole is now demonstrated on our own edit rather than only described.
+- [ ] **13e** What the control still cannot say, left open on purpose: the frozen instrument takes one
+      competitor per run, so laya-against-vegaml — 0.6664 against 0.6160, 0.0504 apart — has **no interval**
+      and appears in the draft's §5 as arithmetic on two paired points. Pairing the two competitors with each
+      other is a `bench/significance.py` revision, and not forking that file was this unit's acceptance
+      condition.
+
+
 ## Cross-cutting
 - [ ] Every new gate mutation-checked, witness quoted in the commit message (SPEC §7.1)
 - [ ] `pytest` green at every tick; 0 skips other than the KEV-gated parity test

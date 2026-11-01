@@ -1,0 +1,64 @@
+baseline copy: green (1 test file, 29 mutations)
+against a scratch copy of src/bench/tests + 9 top-level files (every *.md, pyproject.toml, Makefile), with
+data/runs/.git symlinked (§9.18), so no live tree is being edited.
+
+[ 1/29] caught      a figure the witness no longer prints is still a published figure
+            FAILED tests/test_reproduce.py::test_a_figure_the_witness_does_not_print_fails_the_row
+[ 2/29] caught      a witness that is not committed counts as a witness
+            FAILED tests/test_reproduce.py::test_a_witness_that_is_not_committed_fails_the_row
+[ 3/29] caught      a row may name a witness that does not exist
+            FAILED tests/test_reproduce.py::test_a_missing_witness_fails_the_row - Assert...
+[ 4/29] caught      a command the docs dropped is still published
+            FAILED tests/test_reproduce.py::test_a_command_the_docs_dropped_fails_the_row
+[ 5/29] caught      a row with no witness at all passes
+            FAILED tests/test_reproduce.py::test_a_row_that_names_no_witness_at_all_fails
+[ 6/29] caught      --check always exits zero
+            FAILED tests/test_reproduce.py::test_check_exits_nonzero_when_a_row_is_broken
+[ 7/29] caught      a command wrapped with a backslash stops being recognised
+            FAILED tests/test_reproduce.py::test_the_committed_tree_passes - AssertionErr...
+[ 8/29] caught      an inline doc comment becomes part of the command
+            FAILED tests/test_reproduce.py::test_wrapped_and_commented_commands_still_match
+[ 9/29] caught      the docs are read one file at a time, so only README counts
+            FAILED tests/test_reproduce.py::test_the_committed_tree_passes - AssertionErr...
+[10/29] caught      the registry's own generated index counts as a doc quoting the command
+            FAILED tests/test_reproduce.py::test_the_generated_index_is_not_evidence - as...
+[11/29] caught      a gated Kaggle row is allowed to grow a witness
+            FAILED tests/test_reproduce.py::test_a_gated_row_may_not_grow_a_witness - Ass...
+[12/29] caught      a row without a falsifiable figure is accepted
+            FAILED tests/test_reproduce.py::test_a_row_that_quotes_no_figure_is_refused
+[13/29] caught      --run overwrites a committed witness without asking
+            FAILED tests/test_reproduce.py::test_run_refuses_without_yes[needle-here] - F...
+[14/29] caught      a gated Kaggle row can be run locally
+            FAILED tests/test_reproduce.py::test_run_refuses_a_kaggle_row_even_with_yes
+[15/29] caught      a training row can be run on this box
+            FAILED tests/test_reproduce.py::test_run_refuses_a_training_row_even_with_yes
+[16/29] caught      the README block stops carrying a row's command
+            FAILED tests/test_reproduce.py::test_readme_prints_every_row_and_nothing_else
+[17/29] caught      the README block stops naming the table a command belongs to
+            FAILED tests/test_reproduce.py::test_readme_prints_every_row_and_nothing_else
+[18/29] caught      a flag the tool no longer accepts is still a published flag
+            FAILED tests/test_reproduce.py::test_a_flag_the_tool_dropped_fails_the_row - ...
+[19/29] caught      a tool that refuses --help is still the tool behind the command
+            FAILED tests/test_reproduce.py::test_a_command_whose_module_is_not_there_fails_the_row
+[20/29] caught      a hung --help ends the gate by traceback instead of by report
+            FAILED tests/test_reproduce.py::test_a_tool_that_never_answers_its_help_is_a_problem_not_a_traceback
+[21/29] caught      a `-m` command stops being recognised, so nobody is asked
+            FAILED tests/test_reproduce.py::test_a_command_whose_module_is_not_there_fails_the_row
+[22/29] caught      a `script.py` command stops being recognised, so nobody is asked
+            FAILED tests/test_reproduce.py::test_a_flag_the_tool_dropped_fails_the_row - ...
+[23/29] caught      a launcher prefix is treated as the command itself
+            FAILED tests/test_reproduce.py::test_a_flag_the_tool_dropped_fails_the_row - ...
+[24/29] caught      an env-prefixed command is left unchecked
+            FAILED tests/test_reproduce.py::test_an_env_prefixed_command_is_still_asked_its_flags
+[25/29] caught      a gated Kaggle row is asked to parse as a shell line
+            FAILED tests/test_reproduce.py::test_the_committed_tree_passes - AssertionErr...
+[26/29] caught      the risk/coverage witness stops printing its own command
+            FAILED tests/test_reproduce.py::test_a_real_run_leaves_its_command_at_the_top_of_its_witness
+[27/29] caught      the risk/coverage json stops carrying it
+            FAILED tests/test_reproduce.py::test_a_real_run_leaves_its_command_at_the_top_of_its_witness
+[28/29] caught      the needle markdown stops printing its command
+            FAILED tests/test_reproduce.py::test_a_needle_run_prints_its_command_into_both_witnesses
+[29/29] caught      the needle json stops carrying its command
+            FAILED tests/test_reproduce.py::test_a_needle_run_prints_its_command_into_both_witnesses
+
+29/29 mutations caught

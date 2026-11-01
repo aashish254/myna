@@ -1,0 +1,12 @@
+ok   G1   not met  8 row(s), 3 proof(s)
+ok   G2   met      1 row(s), 3 proof(s)
+ok   G3   met      3 row(s), 2 proof(s)
+ok   G4   not met  1 row(s), 1 proof(s)
+ok   G5   not met  1 row(s), 1 proof(s)
+ok   G6   not met  2 row(s), 2 proof(s)
+ok   G7   met      3 row(s), 1 proof(s)
+
+7/7 verdicts hold — **3 of 7 met, 4 not met, 0 open — the release gate is NOT clear.**
+real 21.11
+user 17.81
+sys 2.95

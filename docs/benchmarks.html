@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Myna Benchmarks — Measured Numbers</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.6.1/dist/chart.umd.min.js"></script>
     <style>
         * { box-sizing: border-box; }
         body {
@@ -46,6 +46,39 @@
         <div class="data-note">
             Sources: anti-prior <code>off</code> control 0.5339 (SPEC.md:1488), V1-B 0.4893 (SPEC.md:67), anti-prior <code>on</code> 0.4785 (SPEC.md:3430). 
             G1 target 0.70 is a gated requirement, not promised. Majority floor 0.4331.
+        </div>
+    </section>
+
+    <section id="engines">
+        <h2>Three engines on the same 1,176 rows</h2>
+        <div class="chart-container">
+            <canvas id="engineChart"></canvas>
+        </div>
+        <table>
+            <thead><tr><th>Engine</th><th>Macro over the 16 cells</th><th>95% CI (row-clustered, B=20,000)</th><th>Myna minus this engine</th><th>Exact McNemar</th></tr></thead>
+            <tbody>
+                <tr><td><strong>myna</strong> v1b-kaggle-3600b, 16,926,848 params</td><td>0.4893</td><td>[0.4647, 0.5139]</td><td>—</td><td>vs own majority floor: 291 / 196, n=487, p=1.94e-05</td></tr>
+                <tr><td>laya 0.4.19, 421,293,827 params (our count)</td><td>0.6664</td><td>[0.6439, 0.6888]</td><td><strong>&minus;0.1771</strong> [&minus;0.2080, &minus;0.1463]</td><td>158 / 436, n=594, p=4.75e-31</td></tr>
+                <tr><td>vegaml 0.15.0, 14,342,512 trainable behind a 752,393,024 reader — <em>scored as a control</em></td><td>0.6160</td><td>[0.5898, 0.6415]</td><td><strong>&minus;0.1266</strong> [&minus;0.1578, &minus;0.0955]</td><td>205 / 404, n=609, p=5.69e-16</td></tr>
+            </tbody>
+        </table>
+        <div class="data-note">
+            Sources: <code>runs/significance.md</code> (laya) and <code>runs/vegaml_control.md</code> (vegaml), from
+            <code>runs/myna_v1b_test.rowoutcomes.json</code>, <code>runs/laya_0419_test.rowoutcomes.json</code> and
+            <code>runs/vegaml_0150_test.rowoutcomes.json</code>. SPEC §9.66 and §9.67.
+            Whiskers are 95% intervals, not standard errors. The y-axis starts at 0.40, so bar heights are not
+            proportional to accuracy. Both competitor runs share one replicate set — same
+            1,176 rows, same <code>--seed 20261031</code>, first-replicate digest <code>d45e5c018ee550da</code> in both
+            files — so the 0.0504 that separates the two competitors is arithmetic on paired points with
+            <strong>no interval</strong>, and is not plotted.
+            The vegaml macro is <strong>forced-choice</strong>: 631 of its 1,440 outcomes (43.8%) carry its own decline
+            flag and are scored anyway, because neither myna nor laya can decline; of the 809 it answers it is right
+            548 times (0.6774), of the 631 it declines 292 (0.4628). A second, independent flag — <code>unbound</code>,
+            its calibration's distance-from-manifold test — fires on 261 of the 1,440 (18.1%), 178 of them also
+            declined; recorded, not applied. Its <code>views</code> is pinned to 1.
+            The cell where myna leads laya (<code>imdb/positive</code>, +0.3375, p=4.63e-07) is
+            <strong>&minus;0.0750, p=0.180 against the control</strong>: no competitor read gives this checkpoint a
+            cell it wins with statistical support.
         </div>
     </section>
 
@@ -93,13 +126,14 @@ Choice: billing · Weakest: shipping (0.00027509400388225913)</pre>
     <div class="footer">
         <p><strong>What these numbers don't claim:</strong></p>
         <ul>
-            <li>G1 (0.70 accuracy) is NOT MET — currently at 0.5339 (+0.056 over floor vs +0.15 required)</li>
+            <li>G1 (0.70 accuracy) is NOT MET — the Kaggle checkpoint is at 0.4893 [0.4647, 0.5139], +0.0563 [0.0192, 0.0676] over the 0.4331 floor against +0.15 required</li>
             <li>The 0.70 target is gated, not promised</li>
+            <li>Neither competitor comparison is a parity claim, and the 0.6160 control is a same-author design scored forced-choice, not a leaderboard entry</li>
             <li>Training closed at v0; v1 needs paid GPU work or Kaggle quota</li>
             <li>No measurements on larger batches, longer sequences, or multilingual data</li>
         </ul>
         <p>Full acceptance criteria: <a href="../SPEC.md#22-acceptance-gates---the-project-is-not-finished-until-all-pass">SPEC.md §2.2</a></p>
-        <p><em>Updated: 2026-10-02</em></p>
+        <p><em>Updated: 2026-11-02</em></p>
     </div>
 
     <script>
@@ -108,43 +142,97 @@ Choice: billing · Weakest: shipping (0.00027509400388225913)</pre>
         new Chart(accCtx, {
             type: 'bar',
             data: {
-                labels: ['Anti-prior OFF (champion)', 'V1-B', 'Anti-prior ON'],
+                labels: ['Anti-prior OFF (champion)', 'V1-B (G1 arm)', 'Anti-prior ON'],
                 datasets: [{
                     label: 'Test macro accuracy',
                     data: [0.5339, 0.4893, 0.4785],
                     backgroundColor: ['#16a341', '#2563eb', '#d97706'],
                     borderColor: ['#14532d', '#1e40af', '#92400e'],
                     borderWidth: 1
+                }, {
+                    type: 'line',
+                    label: 'G1 target 0.70 (gated)',
+                    data: [0.70, 0.70, 0.70],
+                    borderColor: '#dc2626',
+                    borderDash: [6, 6],
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    fill: false
+                }, {
+                    type: 'line',
+                    label: 'majority floor 0.4331',
+                    data: [0.4331, 0.4331, 0.4331],
+                    borderColor: '#6b7280',
+                    borderDash: [3, 3],
+                    borderWidth: 1.5,
+                    pointRadius: 0,
+                    fill: false
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { display: false },
-                    tooltip: { callbacks: { label: ctx => `Macro: ${ctx.parsed.y}` } }
+                    legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } },
+                    tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(4)}` } }
                 },
                 scales: {
                     y: {
                         beginAtZero: true,
                         min: 0.3,
-                        max: 0.7,
+                        max: 0.74,
                         ticks: { callback: v => v.toFixed(2) },
                         grid: { color: '#f0f0f0' }
                     },
                     x: { grid: { display: false } }
                 },
-                annotation: {
-                    annotations: [{
-                        type: 'line',
-                        mode: 'horizontal',
-                        scaleID: 'y',
-                        value: 0.7,
-                        borderColor: '#dc2626',
-                        borderWidth: 2,
-                        borderDash: [6, 6],
-                        label: { content: 'G1 accuracy target (gated)', enabled: true, position: 'start' }
-                    }]
+            }
+        });
+
+        // Three engines, same rows — point estimate as a bar, 95% CI as a floating bar
+        const engCtx = document.getElementById('engineChart').getContext('2d');
+        new Chart(engCtx, {
+            type: 'bar',
+            data: {
+                labels: ['myna 16.9M', 'laya 421M', 'vegaml 14.3M trainable'],
+                datasets: [
+                    {
+                        label: 'Macro accuracy',
+                        data: [0.4893, 0.6664, 0.6160],
+                        backgroundColor: ['#2563eb', '#7c3aed', '#0d9488'],
+                        borderColor: ['#1e40af', '#5b21b6', '#115e59'],
+                        borderWidth: 1,
+                        barPercentage: 0.55,
+                        categoryPercentage: 0.7
+                    },
+                    {
+                        label: '95% CI',
+                        data: [[0.4647, 0.5139], [0.6439, 0.6888], [0.5898, 0.6415]],
+                        backgroundColor: 'rgba(15, 23, 42, 0.22)',
+                        borderColor: 'rgba(15, 23, 42, 0.55)',
+                        borderWidth: 1,
+                        barPercentage: 0.14,
+                        categoryPercentage: 0.7
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } },
+                    tooltip: { callbacks: { label: ctx => Array.isArray(ctx.raw)
+                              ? `95% CI: [${ctx.raw[0].toFixed(4)}, ${ctx.raw[1].toFixed(4)}]`
+                              : `Macro: ${Number(ctx.raw).toFixed(4)}` } }
+                },
+                scales: {
+                    y: {
+                        min: 0.4,
+                        max: 0.7,
+                        ticks: { callback: v => v.toFixed(2) },
+                        grid: { color: '#f0f0f0' }
+                    },
+                    x: { grid: { display: false } }
                 }
             }
         });
@@ -153,7 +241,6 @@ Choice: billing · Weakest: shipping (0.00027509400388225913)</pre>
         const latCtx = document.getElementById('latencyChart').getContext('2d');
         new Chart(latCtx, {
             type: 'bar',
-            indexAxis: 'y',
             data: {
                 labels: ['GH download (M5)', 'Git install (M5)', 'Public install (M5)'],
                 datasets: [{
@@ -165,6 +252,7 @@ Choice: billing · Weakest: shipping (0.00027509400388225913)</pre>
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                indexAxis: 'y',
                 plugins: {
                     legend: { display: false },
                     tooltip: { callbacks: { label: ctx => `${ctx.parsed.x} ms` } }

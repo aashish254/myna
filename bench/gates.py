@@ -53,7 +53,8 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO / "bench"))
 
-from reproduce import (CHROME, HERE, KAGGLE, LAYA, RETRAIN, ROWS, check_row)  # noqa: E402
+from reproduce import (CHROME, HERE, KAGGLE, LAYA, RETRAIN, ROWS, VEGAML,
+                       check_row)  # noqa: E402
 
 MET, NOT_MET, OPEN = "met", "not met", "open"
 VERDICTS = (NOT_MET, MET, OPEN)          # NOT_MET first: "not met" contains "met"
@@ -99,16 +100,17 @@ def registry_counts():
         HERE: f"{by(HERE)} rows re-run on this box",
         RETRAIN: f"{by(RETRAIN)} retrain a checkpoint",
         LAYA: f"{by(LAYA)} need a laya checkout on `PYTHONPATH`",
+        VEGAML: f"{by(VEGAML)} need vegaml in its own venv",
         CHROME: f"{by(CHROME)} need Google Chrome",
         KAGGLE: f"{by(KAGGLE)} is `KAGGLE`",
     }
 
 
 def count_phrase():
-    """The five status halves as one sentence, so the sentence and the registry cannot
+    """The six status halves as one sentence, so the sentence and the registry cannot
     part company."""
     c = registry_counts()
-    head, tail = [c[k] for k in (HERE, RETRAIN, LAYA, CHROME)], c[KAGGLE]
+    head, tail = [c[k] for k in (HERE, RETRAIN, LAYA, VEGAML, CHROME)], c[KAGGLE]
     return ", ".join(head) + " and " + tail
 
 
@@ -118,7 +120,8 @@ GATES = [
          "≥ +0.15 over the 0.4331 majority floor",
          NOT_MET,
          ["v1b-kaggle-macro", "kaggle-dev-tail", "kaggle-wall-clock", "g1-v1",
-          "scratch-control", "scratch-vs-laya", "significance-paired"],
+          "scratch-control", "scratch-vs-laya", "significance-paired",
+          "vegaml-control-paired"],
          [proof("runs/v1b_kaggle_3600b.report.json", "g1/pass", False,
                 "the trained run's own roll-up prints the verdict for this gate, and it "
                 "prints false"),
@@ -138,7 +141,12 @@ GATES = [
          "never paired. Its `train.log` is committed beside it: 3,600 updates in 20,225 s on a "
          "T4, and a dev curve whose last 1,000 updates still gain **+0.0072** (0.4283 at step "
          "2,500 → 0.4355 at 3,500). For contrast, the untrained control here measures "
-         "**0.346 / 0.351** (`runs/scratch_decision_v2_test.md`).",
+         "**0.346 / 0.351** (`runs/scratch_decision_v2_test.md`). A second competitor is now "
+         "paired the same way: `bench/vegaml_control.py` puts vegaml 0.15.0 in the frozen "
+         "instrument's competitor slot, on the same 1,176 rows and the same seed, and it "
+         "scores **0.6160** [0.5898, 0.6415] — myna **0.1266** below it [−0.1578, −0.0955], "
+         "McNemar 205 against 404 over 609 discordant pairs, p = 5.69e-16 — with 43.8% of its "
+         "outcomes abstained and scored forced-choice (§9.67).",
          "not met, measured — and the measurement is an artifact rather than a transcript. "
          "§9.30 refuses a figure whose witness is not committed, and until this tick the "
          "Kaggle run's `metrics.json` lived in a notebook output directory, so the gate had "
