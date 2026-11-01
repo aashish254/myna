@@ -911,6 +911,43 @@ published arm is still **0.5339** against G1's 0.70.
       install path is verified without either.
 
 
+## P12 — Paired significance for every published accuracy (SPEC §9.66)
+
+The co-author spine asked for the arithmetic a reviewer expects: an interval on each headline number, on
+the row as the resample unit, with the competitor read on the same rows rather than on a similar-looking
+sample. All three units below are measured on this box; the gate verdicts did not move.
+
+- [x] **12a** Per-question outcome dumps for both engines, geometry-matched.
+      Done: `bench/row_outcomes.py` → `runs/myna_v1b_test.rowoutcomes.json` (1,176 rows / 1,440 questions /
+      957 distinct `_meta.row_sha256`, `report_macro` 0.4893271976084137, 0 tie flips) and
+      `bench/eval_laya_row_outcomes.py` → `runs/laya_0419_test.rowoutcomes.json` (laya **0.4.19** at
+      `55a19f7b…`, same 1,176 `_meta.id`s, `errors: []`, 277 s on CPU). Both are registry rows
+      (`myna-rowoutcomes`, `laya-rowoutcomes`); the myna dump is guarded — the script refuses to write if
+      any published cell disagrees with the committed report.
+- [x] **12b** Row-clustered paired bootstrap with a refuse-to-write guard, plus exact McNemar.
+      Done: `bench/significance.py --B 20000 --seed 20261031` → `runs/significance.json` /
+      `runs/significance.md` in 1.3 s, first-replicate digest `d45e5c018ee550da`, 16 of 16 cells kept in
+      every replicate. Margin over the floor **+0.0563 [0.0192, 0.0676]**, macro **[0.4647, 0.5139]**,
+      laya **0.6664 [0.6439, 0.6888]**, gap **−0.1771 [−0.2080, −0.1463]**; McNemar vs laya 158/436
+      (`n = 594`, p = 4.75e-31) and vs the cells' own majority label 291/196 (`n = 487`, p = 1.94e-05).
+      `tests/test_significance.py` **37**, `tests/test_row_outcomes.py` **23**,
+      `bench/mutation_significance.py` **39/39 caught** in 79 s, and the two batteries whose files this
+      unit touched re-run green against the tree — `bench/mutation_gates.py` **21/21** in 1,116 s,
+      `bench/mutation_reproduce.py` **29/29** in 684 s (`runs/mutation_*_post_966.log`);
+      suite at this tick **669 passed, 1 skipped** in 570.33 s; registry **39/39 rows, 142 figures**;
+      gates **7/7, 3 met / 4 not met / 0 open**; `make secrets` 0 matches over 768 blobs.
+- [x] **12c** The sentences the intervals adjudicated, rewritten where the rule said to.
+      Done: two claims **stand** (above the floor; laya above myna) and two are **rewritten** (the +0.15
+      margin, the 0.70 level) — in SPEC §2.2's G1 cell, `bench/gates.py`'s G1 `reads`, README's generated
+      gate block, and `docs/paper-draft.md` (abstract, §3's two-pin competitor citation, §5's table and
+      adjudication paragraph, §11 defect (d), §12). **No gate verdict moved**: G1 was already `not met` on
+      the point estimate, so this is prose strength, not a re-verdict.
+- [ ] **12d** The owner's decision this unit prices but does not make: a second checkpoint at the same
+      3,600-update dose would put an interval on the *training run* instead of on this split's rows.
+      Nothing here licenses a claim about Myna across runs, and the box cannot train one while a measurement
+      lane is open (SPEC §6).
+
+
 ## Cross-cutting
 - [ ] Every new gate mutation-checked, witness quoted in the commit message (SPEC §7.1)
 - [ ] `pytest` green at every tick; 0 skips other than the KEV-gated parity test

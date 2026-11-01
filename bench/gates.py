@@ -118,7 +118,7 @@ GATES = [
          "≥ +0.15 over the 0.4331 majority floor",
          NOT_MET,
          ["v1b-kaggle-macro", "kaggle-dev-tail", "kaggle-wall-clock", "g1-v1",
-          "scratch-control", "scratch-vs-laya"],
+          "scratch-control", "scratch-vs-laya", "significance-paired"],
          [proof("runs/v1b_kaggle_3600b.report.json", "g1/pass", False,
                 "the trained run's own roll-up prints the verdict for this gate, and it "
                 "prints false"),
@@ -128,12 +128,17 @@ GATES = [
                 "the untrained control fails the same gate, which is what makes the "
                 "trained number a movement rather than a ceiling")],
          "`v1b-kaggle-3600b`'s committed report prints `\"pass\": false` for this gate: over "
-         "the 16 cells both harnesses score, per-cell unweighted, **myna 0.4893 · laya 0.6668 "
-         "· majority floor 0.4331** — **+0.056** over the floor against the **+0.15** required "
-         "and 0.211 short of 0.70. Its `train.log` is committed beside it: 3,600 updates in "
-         "20,225 s on a T4, and a dev curve whose last 1,000 updates still gain **+0.0072** "
-         "(0.4283 at step 2,500 → 0.4355 at 3,500). For contrast, the untrained control here "
-         "measures **0.346 / 0.351** (`runs/scratch_decision_v2_test.md`).",
+         "the 16 cells both harnesses score, per-cell unweighted, **myna 0.4893 · majority "
+         "floor 0.4331** — **+0.0563** over the floor against the **+0.15** required and 0.211 "
+         "short of 0.70. `bench/significance.py` now puts a row-clustered 95% CI on both halves "
+         "of that sentence: the margin is **[0.0192, 0.0676]** and the macro **[0.4647, "
+         "0.5139]**, so the deficit is not a sampling artefact a bigger draw would average away "
+         "(§9.66). The competitor on those *same 1,176 rows* is laya 0.4.19 at **0.6664** "
+         "[0.6439, 0.6888] — the report's `0.6668` came from a 546-question subsample and was "
+         "never paired. Its `train.log` is committed beside it: 3,600 updates in 20,225 s on a "
+         "T4, and a dev curve whose last 1,000 updates still gain **+0.0072** (0.4283 at step "
+         "2,500 → 0.4355 at 3,500). For contrast, the untrained control here measures "
+         "**0.346 / 0.351** (`runs/scratch_decision_v2_test.md`).",
          "not met, measured — and the measurement is an artifact rather than a transcript. "
          "§9.30 refuses a figure whose witness is not committed, and until this tick the "
          "Kaggle run's `metrics.json` lived in a notebook output directory, so the gate had "
