@@ -53,8 +53,8 @@ BEGINS, ENDS = "<!-- reproduce:registry:begin -->", "<!-- reproduce:registry:end
 GENERATED = re.compile(re.escape(BEGINS) + r".*?" + re.escape(ENDS) + r"\n?", re.S)
 
 # status values, and what each one owes the reader
-HERE, LAYA, CHROME, KAGGLE, RETRAIN = ("here", "external-laya", "external-chrome",
-                                       "gated-kaggle", "retrain")
+HERE, LAYA, VEGAML, CHROME, KAGGLE, RETRAIN = ("here", "external-laya", "external-vegaml",
+                                               "external-chrome", "gated-kaggle", "retrain")
 
 
 def row(id, table, cmd, status, witness, quotes=(), note=""):
@@ -669,9 +669,60 @@ ROWS = [
         "so the interval is around the published number rather than a lookalike. Two pre-registered "
         "sentences fail on the printed intervals — G1's +0.15 margin and its 0.70 target — and the "
         "two that stand are the floor claim and laya being ahead of myna on these rows."),
+
+    row("vegaml-rowoutcomes", "SPEC §9.67 — vegaml 0.15.0's outcomes over the same rows",
+        '"<vegaml 0.15.0 venv>/bin/python" bench/eval_vegaml_row_outcomes.py --every 100 '
+        "--out runs/vegaml_0150_test.rowoutcomes.json",
+        VEGAML,
+        ["runs/vegaml_0150_test.rowoutcomes.json",
+         "runs/vegaml_0150_test.rowoutcomes.log"],
+        [("runs/vegaml_0150_test.rowoutcomes.json", '"version": "0.15.0"'),
+         ("runs/vegaml_0150_test.rowoutcomes.json", '"n_rows": 1176'),
+         ("runs/vegaml_0150_test.rowoutcomes.json", '"n_questions": 1440'),
+         ("runs/vegaml_0150_test.rowoutcomes.json", '"errors": []'),
+         ("runs/vegaml_0150_test.rowoutcomes.json", '"reader_params": 752393024'),
+         ("runs/vegaml_0150_test.rowoutcomes.json", '"engine_params": 14342512'),
+         ("runs/vegaml_0150_test.rowoutcomes.json", '"rate": 0.43819444444444444'),
+         ("runs/vegaml_0150_test.rowoutcomes.log",
+          "bench/eval_vegaml_row_outcomes.py --every 100 --out "
+          "runs/vegaml_0150_test.rowoutcomes.json"),
+         ("runs/vegaml_0150_test.rowoutcomes.log",
+          "cell-macro over 16 cells = 0.6159703414721118 · abstained 631/1440 = 0.4382")],
+        "The second competitor read the same 1,176 rows on myna's split geometry, its own engine "
+        "(14,342,512 trainable params) driving a 752,393,024-param `Qwen3.5-0.8B` reader on cpu. "
+        "631 of 1,440 outcomes came back with the abstain flag set — 43.8% — and are scored "
+        "forced-choice because neither myna nor laya can decline, so the rate is read with the "
+        "accuracy, not instead of it; a second, independent `unbound` flag (261 of 1,440, 178 of "
+        "them also declined) is recorded the same way and applied no more. Needs vegaml's own "
+        "venv, so it runs only where vegaml is installed; the figures re-read from this box are "
+        "the committed witness."),
+
+    row("vegaml-control-paired", "SPEC §2.2 G1 · §9.67 — the control in the frozen instrument's competitor slot",
+        "uv run python bench/vegaml_control.py "
+        "--control runs/vegaml_0150_test.rowoutcomes.json --B 20000 --seed 20261031 "
+        "--out runs/vegaml_control.json --md runs/vegaml_control.md",
+        HERE,
+        ["runs/vegaml_control.json", "runs/vegaml_control.md"],
+        [("runs/vegaml_control.json", '"vegaml_macro": 0.6159703414721118'),
+         ("runs/vegaml_control.json", '"gap_myna_minus_vegaml": -0.12664314386369813'),
+         ("runs/vegaml_control.json", '"first_replicate_digest": "d45e5c018ee550da"'),
+         ("runs/vegaml_control.json", '"paired_question_instances": 1440'),
+         ("runs/vegaml_control.md", "[0.5898, 0.6415]"),
+         ("runs/vegaml_control.md", "[-0.1578, -0.0955]"),
+         ("runs/vegaml_control.md", "p = 5.69e-16"),
+         ("runs/vegaml_control.md",
+          "261 of 1440 outcomes, 178 of them also flagged `abstain`")],
+        "`bench/significance.py` is never edited: this harness imports `pack`, `statize`, `boot`, "
+        "`ci`, `mcnemar_exact` and `_p` from it and puts the vegaml dump in the column the frozen "
+        "instrument names `laya_macro`, relabelling only that column and the gap. The same "
+        "`--B 20000 --seed 20261031` over the same 1,176 rows makes `d45e5c018ee550da` — the first "
+        "replicate's digest — byte-identical to `runs/significance.json`'s, so laya and vegaml are "
+        "intervals from one row-clustered draw rather than two draws that happen to agree. The 1e-9 "
+        "guard against the committed report runs before any resample, and both claims — the "
+        "difference and its direction — stand on their intervals."),
 ]
 
-STATUSES = (HERE, LAYA, CHROME, KAGGLE, RETRAIN)
+STATUSES = (HERE, LAYA, VEGAML, CHROME, KAGGLE, RETRAIN)
 
 
 def norm(s: str) -> str:
@@ -871,6 +922,9 @@ def check_row(r) -> tuple[list[str], list[str]]:
             bad.append(f"{f} no longer contains {value!r}")
     if r["status"] == LAYA:
         notes.append("needs a laya checkout on PYTHONPATH, so it only runs where laya is")
+    if r["status"] == VEGAML:
+        notes.append("needs vegaml installed in its own venv, so it only runs where that "
+                     "interpreter is — this repository does not import a competitor")
     if r["status"] == CHROME:
         notes.append("needs Google Chrome, so it only runs on a box that has it")
     if (pn := platform_note(r)):

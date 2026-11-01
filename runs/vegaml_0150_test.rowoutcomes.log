@@ -1,0 +1,59 @@
+$ '/Users/aashish/.venvs/vegaml-0.15.0/bin/python' bench/eval_vegaml_row_outcomes.py --every 100 --out runs/vegaml_0150_test.rowoutcomes.json
+Fetching 5 files:   0%|          | 0/5 [00:00<?, ?it/s]Fetching 5 files: 100%|██████████| 5/5 [00:00<00:00, 2156.90it/s]
+vegaml 0.15.0 at /Users/aashish/.venvs/vegaml-0.15.0/lib/python3.13/site-packages/vegaml · reader Qwen3.5-0.8B (1.75 GB) · ckpt 78f96be7c6a06abb · python 3.13.14 torch 2.15.0 transformers 5.22.1 · cpu threads=1 mode=engine views=1
+Fetching 5 files:   0%|          | 0/5 [00:00<?, ?it/s]Fetching 5 files: 100%|██████████| 5/5 [00:00<00:00, 2820.27it/s]
+W1101 23:30:06.534000 4754 torch/distributed/elastic/multiprocessing/redirects.py:35] NOTE: Redirects are currently not supported in MacOs.
+Loading weights:   0%|          | 0/320 [00:00<?, ?it/s]Loading weights:  69%|██████▉   | 220/320 [00:00<00:00, 2199.48it/s]Loading weights: 100%|██████████| 320/320 [00:00<00:00, 2194.46it/s]
+loaded: reader Qwen/Qwen3.5-0.8B at 752,393,024 params (torch.float32, 24 layers) · engine 14,342,512 trainable · warned 0
+[transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+[transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
+  100 rows in 164s (1639 ms/row, 648 tokens/row, 0 unanswered)
+  200 rows in 256s (1281 ms/row, 458 tokens/row, 0 unanswered)
+  300 rows in 343s (1142 ms/row, 384 tokens/row, 0 unanswered)
+  400 rows in 389s (972 ms/row, 317 tokens/row, 0 unanswered)
+  500 rows in 504s (1009 ms/row, 333 tokens/row, 0 unanswered)
+  600 rows in 559s (931 ms/row, 304 tokens/row, 0 unanswered)
+  700 rows in 614s (877 ms/row, 283 tokens/row, 0 unanswered)
+  800 rows in 680s (850 ms/row, 276 tokens/row, 0 unanswered)
+  900 rows in 730s (811 ms/row, 260 tokens/row, 0 unanswered)
+  1000 rows in 824s (824 ms/row, 270 tokens/row, 0 unanswered)
+  1100 rows in 886s (805 ms/row, 261 tokens/row, 0 unanswered)
+  1176 rows in 929s (790 ms/row, 255 tokens/row, 0 unanswered)
+1176 rows answered / 1440 question outcomes in 929s on cpu · 0 problems · 300193 reader tokens · 0 argmax disagreements
+wrote the raw outcomes to runs/vegaml_0150_test.rowoutcomes.raw.json before aggregating
+wrote runs/vegaml_0150_test.rowoutcomes.json (0.88 MB) holding 1176 rows / 1440 question outcomes, removed the vegaml_0150_test.rowoutcomes.raw.json sidecar — the witness carries the rows
+cell-macro over 16 cells = 0.6159703414721118 · abstained 631/1440 = 0.4382
+  agnews/is_business    n=  43 acc=0.5116  noul:0.512(43)
+  agnews/is_scitech     n=  49 acc=0.7755  noul:0.776(49)
+  agnews/is_sports      n=  47 acc=0.9362  noul:0.936(47)
+  agnews/is_world       n=  45 acc=0.6444  noul:0.644(45)
+  agnews/topic          n= 116 acc=0.8879  choice:0.888(116)
+  amazon/stars          n=  80 acc=0.5500  score:0.550(80)
+  banking77/intent         n= 116 acc=0.3017  choice:0.302(116)
+  boolq/answer         n=  80 acc=0.6750  noul:0.675(80)
+  contrastive/decision       n= 196 acc=0.4490  choice:0.414(116) noul:0.500(80)
+  dbpedia14/category       n= 116 acc=0.6466  choice:0.647(116)
+  imdb/positive       n=  80 acc=0.8750  noul:0.875(80)
+  mnli/relation       n= 116 acc=0.5259  choice:0.526(116)
+  sst5/sentiment      n=  80 acc=0.4250  score:0.425(80)
+  trec/answer_type    n= 116 acc=0.3017  choice:0.302(116)
+  yelp/rating         n=  80 acc=0.5375  score:0.537(80)
+  yelp/recommend      n=  80 acc=0.8125  noul:0.812(80)
+      936.29 real      1033.59 user        10.94 sys
+          5766217728  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              522617  page reclaims
+                  10  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                  20  messages sent
+                  68  messages received
+                   0  signals received
+                  32  voluntary context switches
+              780326  involuntary context switches
+       8192953302666  instructions retired
+       2386781509091  cycles elapsed
+          4131427464  peak memory footprint

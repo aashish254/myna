@@ -1,0 +1,38 @@
+$ '/Users/aashish/.venvs/vegaml-0.15.0/bin/python' bench/eval_vegaml_row_outcomes.py --views 2 --limit 200 --every 25 --out runs/probe_views2_would_not_be_written.json --raw runs/probe_vegaml_views2.raw.json --probe-out runs/probe_vegaml_views2.json
+Fetching 5 files:   0%|          | 0/5 [00:00<?, ?it/s]Fetching 5 files: 100%|██████████| 5/5 [00:00<00:00, 2114.92it/s]
+vegaml 0.15.0 at /Users/aashish/.venvs/vegaml-0.15.0/lib/python3.13/site-packages/vegaml · reader Qwen3.5-0.8B (1.75 GB) · ckpt 78f96be7c6a06abb · python 3.13.14 torch 2.15.0 transformers 5.22.1 · cpu threads=1 mode=engine views=2
+Fetching 5 files:   0%|          | 0/5 [00:00<?, ?it/s]Fetching 5 files: 100%|██████████| 5/5 [00:00<00:00, 1618.05it/s]
+W1101 23:47:18.907000 6832 torch/distributed/elastic/multiprocessing/redirects.py:35] NOTE: Redirects are currently not supported in MacOs.
+Loading weights:   0%|          | 0/320 [00:00<?, ?it/s]Loading weights:   0%|          | 1/320 [00:00<01:05,  4.90it/s]Loading weights: 100%|██████████| 320/320 [00:00<00:00, 1523.83it/s]
+loaded: reader Qwen/Qwen3.5-0.8B at 752,393,024 params (torch.float32, 24 layers) · engine 14,342,512 trainable · warned 0
+[transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+[transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
+  25 rows in 87s (3486 ms/row, 1531 tokens/row, 0 unanswered)
+  50 rows in 175s (3500 ms/row, 1540 tokens/row, 0 unanswered)
+  75 rows in 260s (3467 ms/row, 1535 tokens/row, 0 unanswered)
+  100 rows in 300s (2998 ms/row, 1296 tokens/row, 0 unanswered)
+  125 rows in 332s (2657 ms/row, 1121 tokens/row, 0 unanswered)
+  150 rows in 363s (2421 ms/row, 1003 tokens/row, 0 unanswered)
+  175 rows in 411s (2347 ms/row, 942 tokens/row, 0 unanswered)
+  200 rows in 472s (2359 ms/row, 917 tokens/row, 0 unanswered)
+200 rows answered / 280 question outcomes in 472s on cpu · 0 problems · 183326 reader tokens · 0 argmax disagreements
+PROBE: 200 rows at 2.36s/row puts the full 1,176-row pass at 46 min on this box with device=cpu threads=1; nothing was written to runs/probe_views2_would_not_be_written.json
+wrote the probe to runs/probe_vegaml_views2.json — 280 outcomes, view agreement {'n': 280, 'mean': 0.8767857142857143, 'flipped': 60, 'rule': 'views=1 emits no agreement field; this is None on a single-reading pass, not zero'}
+      479.41 real       555.58 user         5.43 sys
+          5736808448  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              430095  page reclaims
+                  11  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                  20  messages sent
+                  70  messages received
+                   0  signals received
+                4164  voluntary context switches
+              349305  involuntary context switches
+       4120775569535  instructions retired
+       1297421694421  cycles elapsed
+          4106310720  peak memory footprint

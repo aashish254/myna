@@ -1,0 +1,6453 @@
+{
+ "cmd": "'/Users/aashish/.venvs/vegaml-0.15.0/bin/python' bench/eval_vegaml_row_outcomes.py --views 2 --limit 200 --every 25 --out runs/probe_views2_would_not_be_written.json --raw runs/probe_vegaml_views2.raw.json --probe-out runs/probe_vegaml_views2.json",
+ "engine": "vegaml",
+ "vegaml": {
+  "version": "0.15.0",
+  "path": "/Users/aashish/.venvs/vegaml-0.15.0/lib/python3.13/site-packages/vegaml",
+  "commit": "no git commit reported (installed from a wheel)",
+  "init_sha256": "daaa84b1fa864909",
+  "python": "3.13.14",
+  "torch": "2.15.0",
+  "transformers": "5.22.1",
+  "numpy": "2.5.4",
+  "repo": "nandakishorm/vega-U",
+  "checkpoint_dir": "/Users/aashish/.cache/huggingface/hub/models--nandakishorm--vega-U/snapshots/4d2050287982ca7a7bb0c22fd19a389f5f94474e",
+  "checkpoint_files": {
+   "engine.safetensors": {
+    "sha256": "78f96be7c6a06abb",
+    "bytes": 57433776
+   },
+   "port.safetensors": {
+    "sha256": "398ae79d5e3956a3",
+    "bytes": 8397120
+   },
+   "vega_config.json": {
+    "sha256": "000461315c798b6e",
+    "bytes": 2552
+   },
+   "config.json": {
+    "sha256": "0c062ce4ea8634e5",
+    "bytes": 68
+   }
+  },
+  "reader": "Qwen3.5-0.8B",
+  "reader_hub_id": "Qwen/Qwen3.5-0.8B",
+  "device": "cpu",
+  "threads": 1,
+  "mode": "engine",
+  "views": 2,
+  "alpha": "0.1",
+  "reader_dir": "/Users/aashish/.cache/huggingface/hub/models--Qwen--Qwen3.5-0.8B/snapshots/2fc06364715b967f1860aea9cf38778875588b17",
+  "reader_weights": [
+   {
+    "file": "model.safetensors-00001-of-00001.safetensors",
+    "sha256": "04b1c301231dd422",
+    "bytes": 1746942600
+   }
+  ],
+  "reader_weight_bytes": 1746942600,
+  "backbone_used": "Qwen/Qwen3.5-0.8B",
+  "reader_params": 752393024,
+  "engine_params": 14342512,
+  "engine_params_total": 14342512,
+  "engine_params_with_port": 16441712,
+  "perc_dtype": "torch.float32",
+  "n_layers": 24,
+  "feature_layers": [
+   13,
+   19
+  ],
+  "option_layers": [
+   19
+  ],
+  "engine_class": "UniversalEngine"
+ },
+ "warnings": [],
+ "probe": true,
+ "n_rows": 200,
+ "n_questions": 280,
+ "seconds": 471.9,
+ "ms_per_row": 2359.4,
+ "tokens_per_row": 916.6,
+ "view_agreement": {
+  "n": 280,
+  "mean": 0.8767857142857143,
+  "flipped": 60,
+  "rule": "views=1 emits no agreement field; this is None on a single-reading pass, not zero"
+ },
+ "cells": [
+  {
+   "source": "agnews",
+   "question": "is_business",
+   "n": 16,
+   "hits": 9,
+   "acc": 0.5625,
+   "types": {
+    "noul": {
+     "acc": 0.5625,
+     "n": 16
+    }
+   }
+  },
+  {
+   "source": "agnews",
+   "question": "is_scitech",
+   "n": 22,
+   "hits": 17,
+   "acc": 0.7727272727272727,
+   "types": {
+    "noul": {
+     "acc": 0.7727272727272727,
+     "n": 22
+    }
+   }
+  },
+  {
+   "source": "agnews",
+   "question": "is_sports",
+   "n": 22,
+   "hits": 19,
+   "acc": 0.8636363636363636,
+   "types": {
+    "noul": {
+     "acc": 0.8636363636363636,
+     "n": 22
+    }
+   }
+  },
+  {
+   "source": "agnews",
+   "question": "is_world",
+   "n": 20,
+   "hits": 15,
+   "acc": 0.75,
+   "types": {
+    "noul": {
+     "acc": 0.75,
+     "n": 20
+    }
+   }
+  },
+  {
+   "source": "agnews",
+   "question": "topic",
+   "n": 40,
+   "hits": 36,
+   "acc": 0.9,
+   "types": {
+    "choice": {
+     "acc": 0.9,
+     "n": 40
+    }
+   }
+  },
+  {
+   "source": "banking77",
+   "question": "intent",
+   "n": 80,
+   "hits": 33,
+   "acc": 0.4125,
+   "types": {
+    "choice": {
+     "acc": 0.4125,
+     "n": 80
+    }
+   }
+  },
+  {
+   "source": "boolq",
+   "question": "answer",
+   "n": 80,
+   "hits": 53,
+   "acc": 0.6625,
+   "types": {
+    "noul": {
+     "acc": 0.6625,
+     "n": 80
+    }
+   }
+  }
+ ],
+ "rows": [
+  {
+   "meta": {
+    "id": "banking77/test/196",
+    "source": "banking77",
+    "row": 196,
+    "row_sha256": "2642e1233f234088ac42df20c8a89c0c1ee938a677b499209ca0b7a2f4aa382f",
+    "text_sha256": "453c5bdf1c8b3b8d74857b55d38220c4107b23f6b637246b0859a2527c1d0371",
+    "group_id": "banking77/test/196",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 0,
+     "gold": "extra_charge_on_statement",
+     "pred": "balance_not_updated_after_bank_transfer",
+     "conf": 0.053396,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/2557",
+    "source": "banking77",
+    "row": 2557,
+    "row_sha256": "264338a76c6b63bacb84b5f41229231aabade80eb07672a83633f3f7a872433e",
+    "text_sha256": "fb1ecd688609214fbefbab4477a8932a579893c51d99e9479eb78156219ec824",
+    "group_id": "banking77/test/2557",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "virtual_card_not_working",
+     "pred": "virtual_card_not_working",
+     "conf": 0.112289,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/357",
+    "source": "banking77",
+    "row": 357,
+    "row_sha256": "265116eab11b9a6dffab0cba723352b19702b41e7de308d2ac61a7862dadd422",
+    "text_sha256": "194b4f2941426bef35abc9952a821d205676628a01dd96d562938fc351533192",
+    "group_id": "banking77/test/357",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 0,
+     "gold": "automatic_top_up",
+     "pred": "pending_top_up",
+     "conf": 0.048148,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/1328",
+    "source": "banking77",
+    "row": 1328,
+    "row_sha256": "266798a6b6bd77fa2fcfdc435a497319eb549d2c7a7d93f2489fe280c503e2d9",
+    "text_sha256": "d9416b56aff6a58873832cc85056860869e126b87e93627d270c6da043fd561f",
+    "group_id": "banking77/test/1328",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 0,
+     "gold": "topping_up_by_card",
+     "pred": "transfer_into_account",
+     "conf": 0.091049,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/2736",
+    "source": "banking77",
+    "row": 2736,
+    "row_sha256": "275ee57de55269539e3e0715e8f895d62c98013e5d376137cabb9b64f312875d",
+    "text_sha256": "c5677fbd01cdc89c0d4604c4739f800bc2491d13ae5ccf9f9b07731b149c259d",
+    "group_id": "banking77/test/2736",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "cash_withdrawal_not_recognised",
+     "pred": "cash_withdrawal_not_recognised",
+     "conf": 0.032544,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 0.0,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/463",
+    "source": "banking77",
+    "row": 463,
+    "row_sha256": "27f56f1a42092fd84091db4fbb3d7e9cd15880d509b2fb64b5568c5f44765b66",
+    "text_sha256": "cdfe9e9ac712035f5dbf5601683a31b2d6a97b029e14a601849169c85822aefe",
+    "group_id": "banking77/test/463",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "lost_or_stolen_card",
+     "pred": "lost_or_stolen_card",
+     "conf": 0.17759,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/2422",
+    "source": "banking77",
+    "row": 2422,
+    "row_sha256": "283beece5badfaaae743a244ffecb3d926f3b436f56d7dfddc241d2b40ad16d6",
+    "text_sha256": "2de45aad7396d7ef08c109f0d341dfd711ac0ab98a188242c52b7cfa79c604fc",
+    "group_id": "banking77/test/2422",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 0,
+     "gold": "getting_spare_card",
+     "pred": "get_physical_card",
+     "conf": 0.048533,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/392",
+    "source": "banking77",
+    "row": 392,
+    "row_sha256": "289d8540afba4eab39c605872a443a64729ea30779bbe69b33210bb6a2bd6cd4",
+    "text_sha256": "4e6fc340788f398010ffd4e1090576d81bdea115a809be3d8eea369f8be5b890",
+    "group_id": "banking77/test/392",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "card_not_working",
+     "pred": "card_not_working",
+     "conf": 0.121611,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/2776",
+    "source": "banking77",
+    "row": 2776,
+    "row_sha256": "28b8746d4b6ae5a803d78c0a3e6b4cf71455630618af1ec48c6a878843d4d18b",
+    "text_sha256": "d200effec003cb83820634e6f762d9b8155b6abc1a4c0df0a09f06ae04264e64",
+    "group_id": "banking77/test/2776",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "exchange_charge",
+     "pred": "exchange_charge",
+     "conf": 0.045031,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 0.5,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/5",
+    "source": "banking77",
+    "row": 5,
+    "row_sha256": "29e5b805f023dde1d1fab2108018d4157d08a027198231eaeaf4d811fa001255",
+    "text_sha256": "03bbf02c4ab48425fb098ca22b32e27401cfefc40fa1ce047c5163c85849ad46",
+    "group_id": "banking77/test/5",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 0,
+     "gold": "card_arrival",
+     "pred": "pending_card_payment",
+     "conf": 0.026768,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 0.0,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/289",
+    "source": "banking77",
+    "row": 289,
+    "row_sha256": "2a03ec03ac80e9038b645a41b3e9a0ac3ccaea7d12dea73fd7200d570891dbd6",
+    "text_sha256": "d78cdcf4cd3691f078a76a5b3e52e616dbcc895b42aa38a802999e5638b52b13",
+    "group_id": "banking77/test/289",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 0,
+     "gold": "card_delivery_estimate",
+     "pred": "virtual_card_not_working",
+     "conf": 0.049183,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 0.5,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/2987",
+    "source": "banking77",
+    "row": 2987,
+    "row_sha256": "2a906e73ed4f398f8600477846ba32cf8f68ace2d790f18bb6f1bfac0be02a5e",
+    "text_sha256": "19a0ff1fee74a7e0220e36d674ff98ee460ffa96da0a79f79c90d093c422c69c",
+    "group_id": "banking77/test/2987",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 0,
+     "gold": "apple_pay_or_google_pay",
+     "pred": "topping_up_by_card",
+     "conf": 0.057729,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 0.5,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/1365",
+    "source": "banking77",
+    "row": 1365,
+    "row_sha256": "2a971fca856360c5729679991ac5b1393e2b06598f7ad77fd03eaa2d0c7f74de",
+    "text_sha256": "f26820bd57e1f6c935aa56506c7487e3ed84ecdc61757e3b775ea2e2961c18a3",
+    "group_id": "banking77/test/1365",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "disposable_card_limits",
+     "pred": "disposable_card_limits",
+     "conf": 0.068432,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/2456",
+    "source": "banking77",
+    "row": 2456,
+    "row_sha256": "2b87700bf9219ccbbb7e09672281de66d2aef5cb071cd0683057fa16386e9329",
+    "text_sha256": "3765fae4036b465074ae4fa504260ae5175e7dba7627d3a7d8e88c8071c661e6",
+    "group_id": "banking77/test/2456",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "top_up_by_cash_or_cheque",
+     "pred": "top_up_by_cash_or_cheque",
+     "conf": 0.183158,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 0.5,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/1812",
+    "source": "banking77",
+    "row": 1812,
+    "row_sha256": "2b9822da472a1655fe8f10ab8fd4d943737c1fa702b42a6a6307a0dada96953c",
+    "text_sha256": "4772962b3d539c12c8c103d525e88ada1fb774dbb627b35b1db2735061df7893",
+    "group_id": "banking77/test/1812",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 0,
+     "gold": "declined_card_payment",
+     "pred": "declined_cash_withdrawal",
+     "conf": 0.047097,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 0.5,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/1841",
+    "source": "banking77",
+    "row": 1841,
+    "row_sha256": "2c06f044479ad16e7be97ea2123449456ba792469f7de2ec91e9aa649ed24f3c",
+    "text_sha256": "3d6cc5685b870a80a56c900e8ea570f0bd191c52f4b00ad79824c2fcbcc99d96",
+    "group_id": "banking77/test/1841",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 0,
+     "gold": "pending_transfer",
+     "pred": "transfer_timing",
+     "conf": 0.031808,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 0.0,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/2154",
+    "source": "banking77",
+    "row": 2154,
+    "row_sha256": "2d03935e85384334d463041131ae5f8a43105932a7178dd44b247ecae1aca24c",
+    "text_sha256": "6fc3cf8d223751093ff6de6ffa75397ec189dcb5d62e1faee8623d94b2b76593",
+    "group_id": "banking77/test/2154",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 0,
+     "gold": "change_pin",
+     "pred": "pin_blocked",
+     "conf": 0.049195,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 0.5,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/2321",
+    "source": "banking77",
+    "row": 2321,
+    "row_sha256": "2d0a7f31c22310413b491c9ff4bb44e5db49598b8da11961fb1193a4404737a9",
+    "text_sha256": "0abd77fdbadc7ca3e94c587cf35aef9ef2264800d3c7393e43bbd818021a42e0",
+    "group_id": "banking77/test/2321",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 0,
+     "gold": "transfer_into_account",
+     "pred": "top_up_by_cash_or_cheque",
+     "conf": 0.046946,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 0.5,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/2219",
+    "source": "banking77",
+    "row": 2219,
+    "row_sha256": "2d16522fdb4f520c28fea4ae5bf9276642fc46b02f976dc91a7d294db9ed8754",
+    "text_sha256": "59c8149d79c984dfad4d0d2dac0cda023ac457a62843a04ee7f3766b1e44c0b3",
+    "group_id": "banking77/test/2219",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 0,
+     "gold": "transfer_fee_charged",
+     "pred": "extra_charge_on_statement",
+     "conf": 0.0608,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/1037",
+    "source": "banking77",
+    "row": 1037,
+    "row_sha256": "2e28b13ec913619d62eaedd3d4e2583836b8f957af4eb7f2bcd4da519e2066c9",
+    "text_sha256": "35445ba2f7a472829d5a00fab14200480da598bee3a35e19952b7712817dc022",
+    "group_id": "banking77/test/1037",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 0,
+     "gold": "top_up_reverted",
+     "pred": "pending_top_up",
+     "conf": 0.060469,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/2944",
+    "source": "banking77",
+    "row": 2944,
+    "row_sha256": "2eca10fe448cf98db531d278e0ea8df2b7d04eab079a8e09272a812a8ac8e6a3",
+    "text_sha256": "8b177a55aeaa773d340e191ca149f0a6e8980a0d24b27880e2f82836cdd13c52",
+    "group_id": "banking77/test/2944",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "card_about_to_expire",
+     "pred": "card_about_to_expire",
+     "conf": 0.420213,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/2344",
+    "source": "banking77",
+    "row": 2344,
+    "row_sha256": "2f6eed90d7f72c0af8e43eff85b3247e3ca8d6a8db9ef31fc475c9182400184b",
+    "text_sha256": "98d83619728e94a76025f5f6dfbf5bc2773ab0b048d4d1e9e514c618ca4f5f3a",
+    "group_id": "banking77/test/2344",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "transfer_into_account",
+     "pred": "transfer_into_account",
+     "conf": 0.070547,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 0.5,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/773",
+    "source": "banking77",
+    "row": 773,
+    "row_sha256": "2fb4b3de20e9b31a54bbcdd80c73bc096dc8aa643e771db3225bd8fa69071078",
+    "text_sha256": "1063156fbaec0b6f9c6709af208bcd930fb7acf2b674ff1966c06f973404e282",
+    "group_id": "banking77/test/773",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 0,
+     "gold": "wrong_amount_of_cash_received",
+     "pred": "passcode_forgotten",
+     "conf": 0.034379,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 0.0,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/645",
+    "source": "banking77",
+    "row": 645,
+    "row_sha256": "2fdbf7e3703bd74a3aa85b2147d5a54cebdf373018e6a859caad8224415bf85b",
+    "text_sha256": "9087545498ab2bd7a74bec2b3d925aa8ef09cef603040deaafebeae52ed6ffca",
+    "group_id": "banking77/test/645",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "pending_top_up",
+     "pred": "pending_top_up",
+     "conf": 0.046954,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 0.5,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/2143",
+    "source": "banking77",
+    "row": 2143,
+    "row_sha256": "2ff8f12ad3754797e545f1630421c30cd8f7351d347cd88455aae86fd6fe2a76",
+    "text_sha256": "9dc27dd194b8a2d5d7acc2088c242a5fe13c1edaee85f1779c0d28bd6006064f",
+    "group_id": "banking77/test/2143",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "change_pin",
+     "pred": "change_pin",
+     "conf": 0.060423,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 0.5,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/2336",
+    "source": "banking77",
+    "row": 2336,
+    "row_sha256": "3016646711e807cd68fa612ded664ceb252e6d19031363fed79d73778b9ba517",
+    "text_sha256": "aba19698847618e2f06dd6c05cb3789eb4272bed1c37286adc721662e00d83a3",
+    "group_id": "banking77/test/2336",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 0,
+     "gold": "transfer_into_account",
+     "pred": "top_up_by_bank_transfer_charge",
+     "conf": 0.055462,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 0.5,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/2678",
+    "source": "banking77",
+    "row": 2678,
+    "row_sha256": "305af9af61cf3bdde063ab5d888b36d2136df38f35068847609493770b94d653",
+    "text_sha256": "1d9fbc415e77af3cc3f1b9e89ae74d6ea78d424a91eab7086c26b995221593aa",
+    "group_id": "banking77/test/2678",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "top_up_failed",
+     "pred": "top_up_failed",
+     "conf": 0.068016,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 0.5,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/592",
+    "source": "banking77",
+    "row": 592,
+    "row_sha256": "311b9222e68ed5a973a85e32c970d7e36cb16850740f13d1be6f8ab16c192c99",
+    "text_sha256": "cf69edc5e31f248ac4b4f6fe0f817ca31da014e87b19bf512e3710d05d65f1d5",
+    "group_id": "banking77/test/592",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "contactless_not_working",
+     "pred": "contactless_not_working",
+     "conf": 0.247473,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/1937",
+    "source": "banking77",
+    "row": 1937,
+    "row_sha256": "31bc2504d750de490416bbe3ce547936fb8c5e37834e8cd8c6a4e35f7331b4ae",
+    "text_sha256": "f31991e5834875f28eeb2e07bbf523d9875178360b3f9c364f56952fdd9b9820",
+    "group_id": "banking77/test/1937",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 0,
+     "gold": "card_swallowed",
+     "pred": "get_physical_card",
+     "conf": 0.07574,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/2429",
+    "source": "banking77",
+    "row": 2429,
+    "row_sha256": "31c5488d79faa402c558c535727fa9011b5c64595e5dbd739946ad20bd18b8e3",
+    "text_sha256": "7358f4dca04dfd9710023ed004179e3a290a01e52565247bb59277d92d41e642",
+    "group_id": "banking77/test/2429",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 0,
+     "gold": "getting_spare_card",
+     "pred": "card_not_working",
+     "conf": 0.050847,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 0.5,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/2415",
+    "source": "banking77",
+    "row": 2415,
+    "row_sha256": "320f38443f1b346481a89118d996dbadba3d137c4f506a0ed0cdcefae17024ce",
+    "text_sha256": "6b0486839f6d00820ad3a565ce2baeded443f2727abb46b3d81b2530c1d573a5",
+    "group_id": "banking77/test/2415",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 0,
+     "gold": "getting_spare_card",
+     "pred": "get_physical_card",
+     "conf": 0.054094,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/919",
+    "source": "banking77",
+    "row": 919,
+    "row_sha256": "32226f1c19571cf17977fffcb9c8a163ac6fc27ce671f94332ad3ae4a3f54cbc",
+    "text_sha256": "3350d7b8af35dfde2d8d6c19e8e0a1ae8a112a2eec19e86fe093897e703296c9",
+    "group_id": "banking77/test/919",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "supported_cards_and_currencies",
+     "pred": "supported_cards_and_currencies",
+     "conf": 0.079935,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 0.5,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/1692",
+    "source": "banking77",
+    "row": 1692,
+    "row_sha256": "3226859b45da6c706b7da95b03862ebffdb6b7f9be59c305d8f3c22eda12ac81",
+    "text_sha256": "afe232bc2a6cd4ccbddd2d53e16878213adde6053ab3b92a00e4e2f72f6a0a1f",
+    "group_id": "banking77/test/1692",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 0,
+     "gold": "request_refund",
+     "pred": "Refund_not_showing_up",
+     "conf": 0.301834,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/687",
+    "source": "banking77",
+    "row": 687,
+    "row_sha256": "32312e4c07c494c7b1e28c8b8ca799cd48f9490e5c85a9b295b7815c1789d317",
+    "text_sha256": "7fa53b2580d05c7c7bf7c4d6206c2d3b3b8b6812734de8e8757463f28eb4e9c9",
+    "group_id": "banking77/test/687",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 0,
+     "gold": "cancel_transfer",
+     "pred": "reverted_card_payment?",
+     "conf": 0.13593,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/2601",
+    "source": "banking77",
+    "row": 2601,
+    "row_sha256": "32b05292db81614ee683c6f76effbd8a2e7b3c532514a72e11aeb6b957667fb6",
+    "text_sha256": "eef79837e6b11b7b27300999d60277e482ec88e2aa2613bbc5488a03ece98a5e",
+    "group_id": "banking77/test/2601",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "get_disposable_virtual_card",
+     "pred": "get_disposable_virtual_card",
+     "conf": 0.134125,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 0.5,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/150",
+    "source": "banking77",
+    "row": 150,
+    "row_sha256": "3384c43b0552cbe51ca9c41ff1402e80357e4e877555273b7ed0a5f197382003",
+    "text_sha256": "106ebb39bebb1aa3ced2484d4787d9b297c700447615bc1747f26c23f7f76eef",
+    "group_id": "banking77/test/150",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "card_payment_wrong_exchange_rate",
+     "pred": "card_payment_wrong_exchange_rate",
+     "conf": 0.081178,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 0.5,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/2165",
+    "source": "banking77",
+    "row": 2165,
+    "row_sha256": "34688c2e9cd8c8db204bd4108f94d65c6fd6a87c892dc7e925570f8372552cb5",
+    "text_sha256": "0220403e1bd4e80406e89ae4cc79ffc81dcca6afe73775a45c89c413e319db72",
+    "group_id": "banking77/test/2165",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 0,
+     "gold": "beneficiary_not_allowed",
+     "pred": "virtual_card_not_working",
+     "conf": 0.038656,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 0.5,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/282",
+    "source": "banking77",
+    "row": 282,
+    "row_sha256": "34befb2f62adc609035503e4ba4dbb7987a956121cd9f607ac3e8dbb0995ce8e",
+    "text_sha256": "94164c80584aca5f7ac3c0ab8d2b9de9afe8ab1944dd4726cf2d69a245df2d03",
+    "group_id": "banking77/test/282",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 0,
+     "gold": "card_delivery_estimate",
+     "pred": "activate_my_card",
+     "conf": 0.038842,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 0.5,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/148",
+    "source": "banking77",
+    "row": 148,
+    "row_sha256": "350feb5468042b41ed9043319fca191ac73ec749c892e60724f70c2ab73d88cb",
+    "text_sha256": "a84d0b4c2611822e1dfdec73027a3e7d1a00fd7d459003bf2e9c08315acd248d",
+    "group_id": "banking77/test/148",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 0,
+     "gold": "card_payment_wrong_exchange_rate",
+     "pred": "exchange_via_app",
+     "conf": 0.067681,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 0.5,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/2204",
+    "source": "banking77",
+    "row": 2204,
+    "row_sha256": "363f88963c297511c1c618116922df6f84ec324fbb47c10b0aaf3991ccb1df9f",
+    "text_sha256": "cccc20663ea0e88b3ef441bcc8e9f780a6a283e4a60824e56db659b2e5649154",
+    "group_id": "banking77/test/2204",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 0,
+     "gold": "transfer_fee_charged",
+     "pred": "declined_transfer",
+     "conf": 0.035335,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 0.5,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/38",
+    "source": "banking77",
+    "row": 38,
+    "row_sha256": "36813a33ffc400ce7fd1dc0a377e433c60373a6b760ef0aaa26b67a1ede52ecb",
+    "text_sha256": "2a34d7ab9e1abab906d4eb4f26569598b70a06eb19c67228da99ad5d3be7f1fc",
+    "group_id": "banking77/test/38",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 0,
+     "gold": "card_arrival",
+     "pred": "card_linking",
+     "conf": 0.042973,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 0.5,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/202",
+    "source": "banking77",
+    "row": 202,
+    "row_sha256": "368a8d77b2c570de5f07702500d33cddcc891f96afb305f216365603bc89f823",
+    "text_sha256": "d77f7b1fb22922984a001c3c8e1c44d5525993026ac91150305d190bada152f8",
+    "group_id": "banking77/test/202",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "pending_cash_withdrawal",
+     "pred": "pending_cash_withdrawal",
+     "conf": 0.074675,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/1125",
+    "source": "banking77",
+    "row": 1125,
+    "row_sha256": "36f29bfb854a55c4ac863acf2a65465c1d34e0fdb4b5a94941ffc987e75164de",
+    "text_sha256": "ebab8d0073d775a41671dd530a62b91581960f33c72ab20587f41a2748cb2d7a",
+    "group_id": "banking77/test/1125",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 0,
+     "gold": "edit_personal_details",
+     "pred": "virtual_card_not_working",
+     "conf": 0.040432,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 0.5,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/1169",
+    "source": "banking77",
+    "row": 1169,
+    "row_sha256": "372829dc087dd07d36af0679011ca949ce753d360972d4b0617dac4585daa83b",
+    "text_sha256": "90fdc137965175858ee1cd4a62733ecc2a7122f6490adbbaf9963d92d3502483",
+    "group_id": "banking77/test/1169",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 0,
+     "gold": "why_verify_identity",
+     "pred": "verify_top_up",
+     "conf": 0.042797,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 0.5,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/2879",
+    "source": "banking77",
+    "row": 2879,
+    "row_sha256": "37edea3c1f75999502798859df2f968ab95245cba6316dd015b78d7c372de24f",
+    "text_sha256": "3b2aead0a5d13aeafd8d921e01578e5eef60f63aa05ccdd4715e9b89e558377b",
+    "group_id": "banking77/test/2879",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "activate_my_card",
+     "pred": "activate_my_card",
+     "conf": 0.068336,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/2061",
+    "source": "banking77",
+    "row": 2061,
+    "row_sha256": "3b17d88ec7ea2e0a82d8e04fb13f92a1908333be5ca76b482a6ff39d25f42b27",
+    "text_sha256": "73fa5864331cb7b14b82978efe2f6f6eb1d2e576133a8b340aa0ce94c400b7d2",
+    "group_id": "banking77/test/2061",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "transfer_timing",
+     "pred": "transfer_timing",
+     "conf": 0.108776,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/843",
+    "source": "banking77",
+    "row": 843,
+    "row_sha256": "3cb1037d0e350f6b0f5ba21f2dd4c7afef59eab0e6e3858e910e92399593dd38",
+    "text_sha256": "59a5a0575ad893437b675e0f872a7b87c4cea85d3ed3d30a37092258e606f705",
+    "group_id": "banking77/test/843",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 0,
+     "gold": "transfer_not_received_by_recipient",
+     "pred": "failed_transfer",
+     "conf": 0.041912,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 0.5,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/1765",
+    "source": "banking77",
+    "row": 1765,
+    "row_sha256": "3d11ef4076546dc8c718cb498a377af2b47fd9aaed7377d8def9b4b41fe663c9",
+    "text_sha256": "32a6f7d55ff50858091899e4bcd13688059fb7cd4db9337f85c51e87036528e6",
+    "group_id": "banking77/test/1765",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "Refund_not_showing_up",
+     "pred": "Refund_not_showing_up",
+     "conf": 0.177761,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/895",
+    "source": "banking77",
+    "row": 895,
+    "row_sha256": "3d2f38c4fec50065a5137ee2e96f8837422d7df4855110b91270d3c60cf191ba",
+    "text_sha256": "f838cdbeed6334cc33bcdb82a2ba8ba44d8ada8aed9185196198f1cb9fcf3fa9",
+    "group_id": "banking77/test/895",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 0,
+     "gold": "supported_cards_and_currencies",
+     "pred": "topping_up_by_card",
+     "conf": 0.131703,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 0.5,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/2436",
+    "source": "banking77",
+    "row": 2436,
+    "row_sha256": "3de42901a3b400c5510a1aec6720d2986d77cffd75d96a1d31f3993f6a8a1486",
+    "text_sha256": "a3d55e0755527ded4c0d00c99af1d11aa7c1585a6ce33b19aff5fb591a3b8db7",
+    "group_id": "banking77/test/2436",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 0,
+     "gold": "getting_spare_card",
+     "pred": "get_physical_card",
+     "conf": 0.025079,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 0.0,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/1886",
+    "source": "banking77",
+    "row": 1886,
+    "row_sha256": "3e328df4d7df7904e395280be30e31b70fbc7507ae98d112d2e144d555500825",
+    "text_sha256": "ebd2acf2f823bba82efed838d54982a28050496b3c57aca6ef01f78ffb9f5cad",
+    "group_id": "banking77/test/1886",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "terminate_account",
+     "pred": "terminate_account",
+     "conf": 0.843101,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/1236",
+    "source": "banking77",
+    "row": 1236,
+    "row_sha256": "3e53799fb430da4dfbdfd94adc9d71e893f87e183f8b2e09a0f262bc1822582b",
+    "text_sha256": "2c5f2b122148b4fb5bf93ec45bcb1934117d1011cdabf3774df09379ce129ecd",
+    "group_id": "banking77/test/1236",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 0,
+     "gold": "unable_to_verify_identity",
+     "pred": "virtual_card_not_working",
+     "conf": 0.096368,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 0.5,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/1472",
+    "source": "banking77",
+    "row": 1472,
+    "row_sha256": "3ed0599cada582f8e1c2642ab041e080bb0e89b117124ed5220dad9bd2f195d2",
+    "text_sha256": "bd1b8df7ccfb7e369e4b520dba3c6639ffd8ef0156d183a5b3b46a5539027db8",
+    "group_id": "banking77/test/1472",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 0,
+     "gold": "atm_support",
+     "pred": "supported_cards_and_currencies",
+     "conf": 0.042974,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 0.5,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/96",
+    "source": "banking77",
+    "row": 96,
+    "row_sha256": "3f133f5109ad34190f5b1f9409386581b007f13a3493f1a7acafb315880ab870",
+    "text_sha256": "0a8298a86e78bc7ff61ddbd2f41e640f5b058c73c730e527e816eeb6babcc933",
+    "group_id": "banking77/test/96",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 0,
+     "gold": "exchange_rate",
+     "pred": "exchange_via_app",
+     "conf": 0.032769,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 0.5,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/525",
+    "source": "banking77",
+    "row": 525,
+    "row_sha256": "3f63b0441e1cced347221e0bc8e9303789a0344014d6124dad27e49d77f25c29",
+    "text_sha256": "1e59e937dc40ead3e7134a51387058b6900fd02003782a8fe6349749aaddb067",
+    "group_id": "banking77/test/525",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 0,
+     "gold": "pin_blocked",
+     "pred": "activate_my_card",
+     "conf": 0.036849,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 0.5,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/1370",
+    "source": "banking77",
+    "row": 1370,
+    "row_sha256": "3ff61ce0f5c634ff630ae159b795f4a9662d846e3cdcf33bf98181a3e09dc10a",
+    "text_sha256": "c28bf6cd619f749b9e49b667c228b696903be687128dea3dca4a8ad44d371e89",
+    "group_id": "banking77/test/1370",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "disposable_card_limits",
+     "pred": "disposable_card_limits",
+     "conf": 0.133252,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/2264",
+    "source": "banking77",
+    "row": 2264,
+    "row_sha256": "401c00dbf74c065ad3dec69cc9fb007855d9fbf0ba7527200fe04ce0602bdf17",
+    "text_sha256": "9c3b274f77cf4295c4896f6b70846acf690227cc8a84194890a7cfaefd923404",
+    "group_id": "banking77/test/2264",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 0,
+     "gold": "receiving_money",
+     "pred": "transfer_into_account",
+     "conf": 0.079872,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/1537",
+    "source": "banking77",
+    "row": 1537,
+    "row_sha256": "4044dac544f646f69f26613de04c0182b4e18e2b7ade9b0160c43c90afe24f58",
+    "text_sha256": "d8e452f99c517ae61133e1a38d87e70a0343a7e5bbe4c524deecc7aec9bf782e",
+    "group_id": "banking77/test/1537",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "passcode_forgotten",
+     "pred": "passcode_forgotten",
+     "conf": 0.093667,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 0.5,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/1656",
+    "source": "banking77",
+    "row": 1656,
+    "row_sha256": "40998d0aa6c28a5daba6aa6c2f491f3226e1742349991c717dc7fcd98b048c06",
+    "text_sha256": "752ec8dd43b3c846a80e9354ae815ff0bb0aabe54e4f7091f0750de9681d0526",
+    "group_id": "banking77/test/1656",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 0,
+     "gold": "lost_or_stolen_phone",
+     "pred": "virtual_card_not_working",
+     "conf": 0.053801,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 0.5,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/753",
+    "source": "banking77",
+    "row": 753,
+    "row_sha256": "41f44b39dee4a08e7df20ab1e5e23ed2a286e257dec99a0945884e07f17d4827",
+    "text_sha256": "5b5f263c9c6149497fb38967c578745e45034a7a4ebdea638422d8312e47e298",
+    "group_id": "banking77/test/753",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "top_up_limits",
+     "pred": "top_up_limits",
+     "conf": 0.060677,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/2868",
+    "source": "banking77",
+    "row": 2868,
+    "row_sha256": "41faa11f78c2f0e6b54d434a2f851c99e31ff3df98d5e027d2736dd126f8a248",
+    "text_sha256": "666de8d58521b0366595812f78b7e6de2ec19907b3500f077924497ecfc57a05",
+    "group_id": "banking77/test/2868",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "activate_my_card",
+     "pred": "activate_my_card",
+     "conf": 0.311266,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/572",
+    "source": "banking77",
+    "row": 572,
+    "row_sha256": "4204fd54173e52c5abaa7257ed9f592a2f8195422a5c63cfc676a754fc4f0180",
+    "text_sha256": "1bc8004a2b864f4591286e3720a153024069b3409db1aa9c1a7978fc4bda76cb",
+    "group_id": "banking77/test/572",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "contactless_not_working",
+     "pred": "contactless_not_working",
+     "conf": 0.152588,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/1813",
+    "source": "banking77",
+    "row": 1813,
+    "row_sha256": "433d8df8e688d9c2140c0e022be4e348c9edd057632259e5c26facb953aec753",
+    "text_sha256": "c41f6eb9864f68f44f49347ef96afd8e4618a80e8cbcc098215613114679924f",
+    "group_id": "banking77/test/1813",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 0,
+     "gold": "declined_card_payment",
+     "pred": "card_payment_wrong_exchange_rate",
+     "conf": 0.044274,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 0.5,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/1835",
+    "source": "banking77",
+    "row": 1835,
+    "row_sha256": "4396598fc926437349c6607fad16df3a8838825dfefdef8bb58d4f831df256ae",
+    "text_sha256": "f11b8f242cb59bd2538bef2839288d6b4cf79f6d8e7c6690838ebf6ff28067d1",
+    "group_id": "banking77/test/1835",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 0,
+     "gold": "declined_card_payment",
+     "pred": "card_not_working",
+     "conf": 0.1648,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/542",
+    "source": "banking77",
+    "row": 542,
+    "row_sha256": "43fc2fc492ad086aa66f0f5c8abc4fdbf5409c1033260533d3c25c36d68d52a0",
+    "text_sha256": "84ba569cfe5471e9dff2d19054b8e97e94a4b5b91668f0b038c09c73f0aaf9d2",
+    "group_id": "banking77/test/542",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "pin_blocked",
+     "pred": "pin_blocked",
+     "conf": 0.059269,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 0.5,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/750",
+    "source": "banking77",
+    "row": 750,
+    "row_sha256": "441ed38f04bbf2f20d43d9d9145fd79b4bee4c4a7758a689ce2779f39c440c30",
+    "text_sha256": "94793bf3e64d8a74d4765a2ecb6c79f19a81170fe289cc8c0261a0df2e6de3be",
+    "group_id": "banking77/test/750",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 0,
+     "gold": "top_up_limits",
+     "pred": "topping_up_by_card",
+     "conf": 0.043222,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 0.0,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/943",
+    "source": "banking77",
+    "row": 943,
+    "row_sha256": "442f4ca07f0a19ebc5bfe166553710bb2434aa249cd00368a6980dadeded8901",
+    "text_sha256": "5bf631b5f110e7c24f473a9be18dbaddd440f23a94d2bc461f46de2a1dcb088b",
+    "group_id": "banking77/test/943",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 0,
+     "gold": "getting_virtual_card",
+     "pred": "virtual_card_not_working",
+     "conf": 0.088227,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/2094",
+    "source": "banking77",
+    "row": 2094,
+    "row_sha256": "446282e8a7a964530edaa8d5500da11a42d3c0aa7244a277b8e240d245ba5789",
+    "text_sha256": "7362072acaeec320202080f457e1caedd14849403e60792bc43433921aef5afe",
+    "group_id": "banking77/test/2094",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 0,
+     "gold": "reverted_card_payment?",
+     "pred": "declined_card_payment",
+     "conf": 0.048874,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/2095",
+    "source": "banking77",
+    "row": 2095,
+    "row_sha256": "4463a3b39bffc92c99a6ebda5bc6d2f9bd87447289e5c4d6166c0fb84b15c6db",
+    "text_sha256": "ede6ac4b9849154c55e0f38c9767c007d1ebc834f7367e85670a955470a95a1b",
+    "group_id": "banking77/test/2095",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "reverted_card_payment?",
+     "pred": "reverted_card_payment?",
+     "conf": 0.125246,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/2519",
+    "source": "banking77",
+    "row": 2519,
+    "row_sha256": "449100538b76f9bf0c8d60a6ca5071e6e6c651036f69d7cfde9f3c8f29a2f25d",
+    "text_sha256": "75364a7ebe38be9d9a2e7d985a7aea37695a5129e3db008ca093e920c61c08ed",
+    "group_id": "banking77/test/2519",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 0,
+     "gold": "order_physical_card",
+     "pred": "get_physical_card",
+     "conf": 0.056847,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 0.5,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/389",
+    "source": "banking77",
+    "row": 389,
+    "row_sha256": "44e525e8d1c2bed5fd9f1db10dbe5212dfc89c081f387de5bfd6ed1058bc38f0",
+    "text_sha256": "e2a046a450473fda25a0dce256b0f15e248aa07deed0d4b8ce9b035f280d969a",
+    "group_id": "banking77/test/389",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 0,
+     "gold": "card_not_working",
+     "pred": "virtual_card_not_working",
+     "conf": 0.053445,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 0.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/810",
+    "source": "banking77",
+    "row": 810,
+    "row_sha256": "4585812b51ee66bb730c00485b639a026fed1a753ce74e13e7406023f884aa61",
+    "text_sha256": "fb86202a8d440ed113d646f8ab791e8649a23c2e286b41326f25c70515f3a2d6",
+    "group_id": "banking77/test/810",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 0,
+     "gold": "card_payment_fee_charged",
+     "pred": "pending_card_payment",
+     "conf": 0.032025,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 0.0,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/926",
+    "source": "banking77",
+    "row": 926,
+    "row_sha256": "4622ab8d3f24d40e226984f50e09d3640d3734319f0666592d0bc76bbc06f863",
+    "text_sha256": "54a89079e4c8ec4a8023dcb029b1fe9445c8c3ea4fbd87a47ef8340230ac88f7",
+    "group_id": "banking77/test/926",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "getting_virtual_card",
+     "pred": "getting_virtual_card",
+     "conf": 0.068459,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 0.5,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/1673",
+    "source": "banking77",
+    "row": 1673,
+    "row_sha256": "46c5901b7c2e590ff77555c2a1486c5c1dbb1d013aade8498d16f88f116eed65",
+    "text_sha256": "adad1c85e0e7d200caf4780908cc3d5cc6348b6b7b0a3d8a725cc10f92830e8e",
+    "group_id": "banking77/test/1673",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 0,
+     "gold": "lost_or_stolen_phone",
+     "pred": "lost_or_stolen_card",
+     "conf": 0.111549,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 0.5,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/2510",
+    "source": "banking77",
+    "row": 2510,
+    "row_sha256": "46db4b71844e3db4c3de829715e2931316354443f14ccd407f561cd4e555ebda",
+    "text_sha256": "9d89f2eba395c247de0611933fa0ec8401a31ef5630e8f90a8cc7f93c8a6f382",
+    "group_id": "banking77/test/2510",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 0,
+     "gold": "order_physical_card",
+     "pred": "get_physical_card",
+     "conf": 0.043177,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 0.5,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/571",
+    "source": "banking77",
+    "row": 571,
+    "row_sha256": "47275b8451d8fc5a4399dadf07bfec0e88dfa4f4d03ad75a0b05cbd3158affc6",
+    "text_sha256": "7ef83d90c70a05458797a2b541f715d1c366d5b8fffb5cee68ae2ad625d2a5c2",
+    "group_id": "banking77/test/571",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "contactless_not_working",
+     "pred": "contactless_not_working",
+     "conf": 0.051475,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/230",
+    "source": "banking77",
+    "row": 230,
+    "row_sha256": "4741710fc6a0a157489a3c290e38e29860415032041e0a1fab78ebea33a0c247",
+    "text_sha256": "1fd283dd6f743b0906b205ae2c686817d93c6b1a3d59c2157211454b1ed57d67",
+    "group_id": "banking77/test/230",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "pending_cash_withdrawal",
+     "pred": "pending_cash_withdrawal",
+     "conf": 0.066922,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 0.5,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/948",
+    "source": "banking77",
+    "row": 948,
+    "row_sha256": "476445a0bb680afe02622e7827216d0377afe7e1b06c54da5f9a38a749aac78b",
+    "text_sha256": "de0aa29c183722a90590e7ac996e9e8dd4d5d38642c6afb94d8478d75e81f6b7",
+    "group_id": "banking77/test/948",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "getting_virtual_card",
+     "pred": "getting_virtual_card",
+     "conf": 0.156031,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/111",
+    "source": "banking77",
+    "row": 111,
+    "row_sha256": "4792049bbe65b842a29a44e9c8d792642e5402ae637fae99ae2b520e1358bc68",
+    "text_sha256": "78ed5550929e076167042dd1f7e5489e41f4517169bb08ac41b09b10ea6290da",
+    "group_id": "banking77/test/111",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 0,
+     "gold": "exchange_rate",
+     "pred": "exchange_via_app",
+     "conf": 0.045196,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 0.0,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "banking77/test/892",
+    "source": "banking77",
+    "row": 892,
+    "row_sha256": "479913a55dfdbe5d62690ddf4dfcb297f2095e6bd306bf5dd1925a410fad1ebc",
+    "text_sha256": "b887945cd62c6d7cf7c6478b0d57383cbc4e3caab90230cbed444e9e869d805c",
+    "group_id": "banking77/test/892",
+    "variant": "clean",
+    "repo": "legacy-datasets/banking77",
+    "revision": "f54121560de48f2852f90be299010d1d6dc612ec",
+    "split": "test"
+   },
+   "questions": {
+    "intent": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "supported_cards_and_currencies",
+     "pred": "supported_cards_and_currencies",
+     "conf": 0.045218,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 0.5,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/2058",
+    "source": "boolq",
+    "row": 2058,
+    "row_sha256": "26563fcfc84323e6a5e6315b865cf60b48d05ef970cfdde32555dc05520fbf3f",
+    "text_sha256": "91681b3dffb5d440ecf69c791aa724235e74957728a0060db79362e0dc49fe99",
+    "group_id": "boolq/validation/2058",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 0,
+     "gold": true,
+     "pred": false,
+     "conf": 0.910155,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/2142",
+    "source": "boolq",
+    "row": 2142,
+    "row_sha256": "268a335c3bcc0f8611b366feb2d0bf73d467d132742ee62e60442ee0faabfb29",
+    "text_sha256": "fbb43a783a4362ec4f46d38bb6b024bf3f8e5415542be45b84415512f9d905d9",
+    "group_id": "boolq/validation/2142",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 0,
+     "gold": true,
+     "pred": false,
+     "conf": 0.526777,
+     "abstain": true,
+     "set_n": 2,
+     "agree": 0.5,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/2177",
+    "source": "boolq",
+    "row": 2177,
+    "row_sha256": "27fe3b9433af9c078e7dbf1ee511a9810b52200f2c70cda6c27dfd28e2cb9e2d",
+    "text_sha256": "7e5ec3b8112f7a5bf189b2f2081ffe7a56d9f01e2bd197d3161150fbc08d3b49",
+    "group_id": "boolq/validation/2177",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 1,
+     "gold": true,
+     "pred": true,
+     "conf": 0.99844,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/1156",
+    "source": "boolq",
+    "row": 1156,
+    "row_sha256": "280da687fbe72220e75bd0802cb5309910d37820441a3e6f2a006a3f850ca388",
+    "text_sha256": "d4602d001552f6b19bd4fbe63c4dd0e35137af98bd0a31b013302f24ae8fa94b",
+    "group_id": "boolq/validation/1156",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 1,
+     "gold": true,
+     "pred": true,
+     "conf": 0.955853,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/1114",
+    "source": "boolq",
+    "row": 1114,
+    "row_sha256": "28953f41f9206e1fde6445b599e90c7bf80ee19a05cee51a24453dadfcb1aa24",
+    "text_sha256": "695aee8f014955d17918992580d4e0377424b52e0701ff78a7b4f96eb58d43b9",
+    "group_id": "boolq/validation/1114",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 1,
+     "gold": true,
+     "pred": true,
+     "conf": 0.876081,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/2643",
+    "source": "boolq",
+    "row": 2643,
+    "row_sha256": "2a05b772e5579604f1e1a75c1562a9916736bf98e7cfebea6060103cb378f605",
+    "text_sha256": "749d786b33c70fbc46c8817fd877c3690702c07f086b35f8db2137b4df1c3924",
+    "group_id": "boolq/validation/2643",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 0,
+     "gold": false,
+     "pred": true,
+     "conf": 0.767272,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/2622",
+    "source": "boolq",
+    "row": 2622,
+    "row_sha256": "2a0a32ae2486a9746a4d4175bd99bfe5208c7866b18cbcda009aa1e9b50be6af",
+    "text_sha256": "55e549e756ba4837987ccbf24f74c6a13d91643f593af4edc567b24c3ba6ea30",
+    "group_id": "boolq/validation/2622",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 1,
+     "gold": true,
+     "pred": true,
+     "conf": 0.875656,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/2328",
+    "source": "boolq",
+    "row": 2328,
+    "row_sha256": "2a0bbe2e8c6bae6c8d6b3c976f8b1e1fd90fd2aa6c86f01f1e1703261ce86538",
+    "text_sha256": "0909581e0ecdb787d6de2a3b9da6406aa175e747b7d49fbf0d923ff0d21387b0",
+    "group_id": "boolq/validation/2328",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 0,
+     "gold": false,
+     "pred": true,
+     "conf": 0.654244,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/1784",
+    "source": "boolq",
+    "row": 1784,
+    "row_sha256": "2a3c6aa5d12ec3f06a2eebd37538b4eaaa16bf053153eef81901111069ea0711",
+    "text_sha256": "3a1edea2c4085e0f5e97e0678cb8aa0c8e92db94e37d1cb35656a496f1749a96",
+    "group_id": "boolq/validation/1784",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 1,
+     "gold": true,
+     "pred": true,
+     "conf": 0.505395,
+     "abstain": true,
+     "set_n": 2,
+     "agree": 0.5,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/3189",
+    "source": "boolq",
+    "row": 3189,
+    "row_sha256": "2a431c578b0a69eb5d0a68ad8d712919f8e3e14dd8d61c988aac24737306db45",
+    "text_sha256": "720c321c544ff60875771dbafb9731f06717dce6be470bc4244d47d336c2f0fe",
+    "group_id": "boolq/validation/3189",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 0,
+     "gold": false,
+     "pred": true,
+     "conf": 0.574695,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 0.5,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/1758",
+    "source": "boolq",
+    "row": 1758,
+    "row_sha256": "2a88cfa44cd28f6d8b78bcda51ac323b5b4d5c5aeb5f5b549f4c07dda575df00",
+    "text_sha256": "7fa7e903bf201a523af5b75a51a604df4dc89ee335ba22d254fb4fa810906191",
+    "group_id": "boolq/validation/1758",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 1,
+     "gold": true,
+     "pred": true,
+     "conf": 0.959971,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/1646",
+    "source": "boolq",
+    "row": 1646,
+    "row_sha256": "2abbb0970499b07ebb7154bbd858a35ac0d83b57fe567bd273ef5bd87adf0e98",
+    "text_sha256": "b013c44183090b0aba936b21272c9ab8df085015ee263420d157fe03395f75ae",
+    "group_id": "boolq/validation/1646",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 1,
+     "gold": true,
+     "pred": true,
+     "conf": 0.701103,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/426",
+    "source": "boolq",
+    "row": 426,
+    "row_sha256": "2ac8e5ef4075a0ae912b9686cf9e7622a6de724637cc5f4aa1be01f37eb28196",
+    "text_sha256": "b48aa47816551e8ad4fbda4ba1c2cd68df9cc0cdf92046e8aab60857f9d49d79",
+    "group_id": "boolq/validation/426",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 0,
+     "gold": false,
+     "pred": true,
+     "conf": 0.948774,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/1957",
+    "source": "boolq",
+    "row": 1957,
+    "row_sha256": "2b9c2c0e9d4d64e865fa63ad7b94bc1769eaf82ab7e0a4c934e9c84ae7b1a241",
+    "text_sha256": "1a16ba20b5f8dcc93f1bba3aa6db1c9aaeca4f15c941729aee3528ee5bfc6cba",
+    "group_id": "boolq/validation/1957",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 0,
+     "gold": false,
+     "pred": true,
+     "conf": 0.571389,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/1440",
+    "source": "boolq",
+    "row": 1440,
+    "row_sha256": "2c485dbc701c354c9282ec3cc046b2680653f52fcd556dac37700618c05998bc",
+    "text_sha256": "4deffbdf476a7ffde0d8881aa8f7698380b126bd9ca129f58fd113a972042b45",
+    "group_id": "boolq/validation/1440",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 1,
+     "gold": true,
+     "pred": true,
+     "conf": 0.961063,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/19",
+    "source": "boolq",
+    "row": 19,
+    "row_sha256": "2c8d76657c5da8935b66b55ccbf86677008398c8fc2f0f127e1a5cec0b3477a5",
+    "text_sha256": "6605d8674d46df751686b25ef9545b0bf81ba4e3c5b17a719c146badab202b79",
+    "group_id": "boolq/validation/19",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 1,
+     "gold": true,
+     "pred": true,
+     "conf": 0.892602,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/2052",
+    "source": "boolq",
+    "row": 2052,
+    "row_sha256": "2ce281bdb6c92514ddf587221eb96a277014efaf7023b96df9df30016a6d00d0",
+    "text_sha256": "d1744d2f9235918dd398dc93d5e53fed593e620e841c611b83d73c0b33d325ee",
+    "group_id": "boolq/validation/2052",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.551031,
+     "abstain": true,
+     "set_n": 2,
+     "agree": 0.5,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/867",
+    "source": "boolq",
+    "row": 867,
+    "row_sha256": "2d89e2893c3848310e49858075dfbde2171dd9683ba32f188ef68f9e9abe4cec",
+    "text_sha256": "1621e03e232883660947fee3a78237f314c3a0e6ba6714af80e4e8d53b468a00",
+    "group_id": "boolq/validation/867",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.730985,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/840",
+    "source": "boolq",
+    "row": 840,
+    "row_sha256": "2dddffced40aaae8c9f3cd62ad71b59f2a220291f97c8d32df72dd28dc346656",
+    "text_sha256": "4eeeca87ff66da5eb3130b1eac1eec3b49ffa991cabae4ff317266c52e4419ae",
+    "group_id": "boolq/validation/840",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 0,
+     "gold": false,
+     "pred": true,
+     "conf": 0.944525,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/858",
+    "source": "boolq",
+    "row": 858,
+    "row_sha256": "2ecf974294a481a9878396dfeb91675a4f09c99125e1748bfd4bf87c22c306b7",
+    "text_sha256": "a1a7ed1c14394a38bc92787653ba292d902347a797ec5de834eb043ce2425702",
+    "group_id": "boolq/validation/858",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 0,
+     "gold": false,
+     "pred": true,
+     "conf": 0.611382,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/1487",
+    "source": "boolq",
+    "row": 1487,
+    "row_sha256": "300312d70430f29e68101ec88498078df7d419e791cf8355fc6ec337a005a550",
+    "text_sha256": "c2fea08e3a851574dc54a513d2acdf5e8335af6ed8bc017c2cd2bffad430990f",
+    "group_id": "boolq/validation/1487",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 1,
+     "gold": true,
+     "pred": true,
+     "conf": 0.973762,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/906",
+    "source": "boolq",
+    "row": 906,
+    "row_sha256": "30520aa54cf88e742033aa9539ea68be282a67aec98c2158b7cb8a72b5481973",
+    "text_sha256": "607a941f92f5999753d712fce0a11e06be9356b9a621b3efdb13c2f924547b93",
+    "group_id": "boolq/validation/906",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.763441,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/3128",
+    "source": "boolq",
+    "row": 3128,
+    "row_sha256": "3075e7ad35a50d781d2c7b1edc7764ca7f668d2f5fd98718d6ebfed82e4af9ca",
+    "text_sha256": "09b4ecf26476d424285b7698939d48f4e73082cef7c125889c7be08d7688bd00",
+    "group_id": "boolq/validation/3128",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 1,
+     "gold": true,
+     "pred": true,
+     "conf": 0.991633,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/2614",
+    "source": "boolq",
+    "row": 2614,
+    "row_sha256": "307d9c917e68cda59521a0c9a6762f7e96410d0abe4c632efb20790834f8930b",
+    "text_sha256": "906f6cb444bae662bf764d830efb5fa88a52aa2da69181972c2b6167dbfa332f",
+    "group_id": "boolq/validation/2614",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 1,
+     "gold": true,
+     "pred": true,
+     "conf": 0.958412,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/1100",
+    "source": "boolq",
+    "row": 1100,
+    "row_sha256": "309bb51c95b8b88ed2296a56bdc2b67a36ba113e2114be3fbf153bb80ebe08f9",
+    "text_sha256": "fa27120561c136e600e3f7a592ad3b313a4014acd9d4fd7a1c3303f180dc0577",
+    "group_id": "boolq/validation/1100",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 0,
+     "gold": false,
+     "pred": true,
+     "conf": 0.853378,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/274",
+    "source": "boolq",
+    "row": 274,
+    "row_sha256": "3107233ce7ba9d819a81e0df7b83031f9b8fb0f8ba000af218370ee20394a2a6",
+    "text_sha256": "faddd43338aaa906788cb71ff55d4cb05182cf3e9587d2d848e95eec656af469",
+    "group_id": "boolq/validation/274",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 1,
+     "gold": true,
+     "pred": true,
+     "conf": 0.694598,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/1550",
+    "source": "boolq",
+    "row": 1550,
+    "row_sha256": "32d0eca6ab617bbb73d165225b3a13dd5d2f1ca9a0a9d117142fa971b7a62ebd",
+    "text_sha256": "c969a982c2bd1ecf1d67406b3b236ef189885e63ac41e25f464eab15e8065e3b",
+    "group_id": "boolq/validation/1550",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 0,
+     "gold": false,
+     "pred": true,
+     "conf": 0.910992,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/1907",
+    "source": "boolq",
+    "row": 1907,
+    "row_sha256": "3337a27e15f00e72fe45d6475f80877ba647498b626d567a6544dc6e89640ce7",
+    "text_sha256": "daf32378c75fb61aa97cb0ef6289aa5406bee65f9c1104fc4dd3c1617dad8afa",
+    "group_id": "boolq/validation/1907",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 0,
+     "gold": false,
+     "pred": true,
+     "conf": 0.83986,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/3205",
+    "source": "boolq",
+    "row": 3205,
+    "row_sha256": "33943e4df1607aa006411466fd7629de95eae43ff9c1f4b7bb3b87d6707801e3",
+    "text_sha256": "0e2c955c9f84be3a3e8ae2e2e7223682d69a1cd5ac04740a361aa57bd16a412d",
+    "group_id": "boolq/validation/3205",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 1,
+     "gold": true,
+     "pred": true,
+     "conf": 0.973915,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/1684",
+    "source": "boolq",
+    "row": 1684,
+    "row_sha256": "339e7e91d1f0cc8d47e857a65f74ab0a1ca0a5273caba8f788c938751bf35e1e",
+    "text_sha256": "30c46b63529af4740246e74c99d1e087fcf455de6963fe07961b407c0a265612",
+    "group_id": "boolq/validation/1684",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 0,
+     "gold": false,
+     "pred": true,
+     "conf": 0.957226,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/2584",
+    "source": "boolq",
+    "row": 2584,
+    "row_sha256": "34cb3786ae8594a11e2cc736a50ee08b22bc2aeb616757a46b148382149b08da",
+    "text_sha256": "205a87d42cebd557368ea4ada36f2bc738578908b73615e414e735cd04d48796",
+    "group_id": "boolq/validation/2584",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 0,
+     "gold": false,
+     "pred": true,
+     "conf": 0.67296,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/203",
+    "source": "boolq",
+    "row": 203,
+    "row_sha256": "34ec1567c0bbb3e6541df88e75f7e8d3f8def6067f5d075375184bd4898b7910",
+    "text_sha256": "7ddd7984b4054ced38bb33b9fc6109527fd874cd94b2f21bb03e372542818995",
+    "group_id": "boolq/validation/203",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.685853,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/2327",
+    "source": "boolq",
+    "row": 2327,
+    "row_sha256": "360af489bd3be8ce9cac254d09e71da146cb2d62a6fd880990439c4cb46eb395",
+    "text_sha256": "15e264decc85a3924141aaf71ae57667e66efb2f699c830ed80d992e18c935a4",
+    "group_id": "boolq/validation/2327",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 0,
+     "gold": false,
+     "pred": true,
+     "conf": 0.974382,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/493",
+    "source": "boolq",
+    "row": 493,
+    "row_sha256": "360b99545aa69557203414c33f532bd318ae578eedf10a429c92588dd0b6e88b",
+    "text_sha256": "d10b7d0513d4600232a9169777813ee010bb01f9b27fb40fb1d1be051f8ce9be",
+    "group_id": "boolq/validation/493",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.874979,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/1929",
+    "source": "boolq",
+    "row": 1929,
+    "row_sha256": "3642f786086bae60ae5ff82a8590bdc382d80ab33f2b3bb31619d7bca81d89a9",
+    "text_sha256": "cfc545e6cbc551b8c484ca595fdaaa5c7c03b49f2b612d5e4991c9b96c0ae4c2",
+    "group_id": "boolq/validation/1929",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 1,
+     "gold": true,
+     "pred": true,
+     "conf": 0.554633,
+     "abstain": true,
+     "set_n": 2,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/2791",
+    "source": "boolq",
+    "row": 2791,
+    "row_sha256": "367d4bfee7955b2299a8bda861700df3889a096d3fbe9a5cec501f2a1ddbc6fe",
+    "text_sha256": "93a459f01cc3f5d0f9a95a67e1d6e10f04cd6654024a6c53244a35f60a9aa4e8",
+    "group_id": "boolq/validation/2791",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.547966,
+     "abstain": true,
+     "set_n": 2,
+     "agree": 0.5,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/2416",
+    "source": "boolq",
+    "row": 2416,
+    "row_sha256": "36bc0b2ae3d434750a6e147ff33b63922592571d24d8a464542c2e96b41c9134",
+    "text_sha256": "1ba0fe736c40ef2d5e1c8f7de3c6925847f8b8bd4c3ed9ffd8b02422426940e0",
+    "group_id": "boolq/validation/2416",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 0,
+     "gold": true,
+     "pred": false,
+     "conf": 0.984733,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/3113",
+    "source": "boolq",
+    "row": 3113,
+    "row_sha256": "36ccaeb7edfe51f60dc2a25aa4193a156a3177df70590bef2ab3c6110be2d675",
+    "text_sha256": "8a6eb10fe9f0b650e19f4a366e13e886a8058d52e565d735171b10b006998fb5",
+    "group_id": "boolq/validation/3113",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.639889,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/2277",
+    "source": "boolq",
+    "row": 2277,
+    "row_sha256": "37a5ca99cebe2310346a93665037e476f5a12f23b59d0aaa9b904070ca43db3d",
+    "text_sha256": "16e6c941f5cd6ee3cf89ed11385c59a3d3b6c0c06db5375766ee585167803ca7",
+    "group_id": "boolq/validation/2277",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.85446,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/3244",
+    "source": "boolq",
+    "row": 3244,
+    "row_sha256": "3829702b0f3bf7f0c0905568c0e4bef7c2adff8dbf5edd086e955e22a099ca33",
+    "text_sha256": "2d8bbe7b12de10b74d9bd3894757b13a7d76b71ff056f74f94b97df0cd8af5b4",
+    "group_id": "boolq/validation/3244",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.627161,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/1490",
+    "source": "boolq",
+    "row": 1490,
+    "row_sha256": "38b740afa6e1232ad423543d2ae6f763edf3dc0a7a07ea0a034a0c541649b2a1",
+    "text_sha256": "6e422f14b71427e4644dfdc6c6894791f5a27a645793dbd58702b66923e417f9",
+    "group_id": "boolq/validation/1490",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.620537,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/34",
+    "source": "boolq",
+    "row": 34,
+    "row_sha256": "38d97151f1ea0bb036c0486aecab8f36e8adc688af950be888a09cd250ed8369",
+    "text_sha256": "a709ba70272dab6536a539ac6cad9c759ca72685cd44d07ada2396d84593ca0e",
+    "group_id": "boolq/validation/34",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 1,
+     "gold": true,
+     "pred": true,
+     "conf": 0.856928,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/1039",
+    "source": "boolq",
+    "row": 1039,
+    "row_sha256": "38fb12927ec63c53c4a2fbe1e6442a44439eb214530c23b4ba1908d8e49bb433",
+    "text_sha256": "46cd509c7520c15ff3b0d3e0b069f917906756355bb30a6fb5aa38f79f2c1958",
+    "group_id": "boolq/validation/1039",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 0,
+     "gold": true,
+     "pred": false,
+     "conf": 0.665839,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/2577",
+    "source": "boolq",
+    "row": 2577,
+    "row_sha256": "392df57b2a357e29735436a5ea09246e8f3d97d205e05639e78f135b465bc88c",
+    "text_sha256": "954a0ee34fb4a3170ebd5c003c5032376d20aab7406191e22e22409f599af429",
+    "group_id": "boolq/validation/2577",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.879772,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/1058",
+    "source": "boolq",
+    "row": 1058,
+    "row_sha256": "39a47050618fd60d5c1c1e301d60144cf89abff32cf6e699a74b4704955f8cfe",
+    "text_sha256": "80e1357bdb44a6f1fbd0b4ad70ca6410118a255280da90e0d86da58fc8a41dcb",
+    "group_id": "boolq/validation/1058",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 0,
+     "gold": true,
+     "pred": false,
+     "conf": 0.751638,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/1786",
+    "source": "boolq",
+    "row": 1786,
+    "row_sha256": "3a12ddb9108e09db2bca471f990bafba5747c53f86e8a36fd04cb2592533897c",
+    "text_sha256": "0c839bc5df8022e613a448bf13ffc24ee54d50098d9f590fc0caea62c17aaea6",
+    "group_id": "boolq/validation/1786",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 1,
+     "gold": true,
+     "pred": true,
+     "conf": 0.927406,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/2905",
+    "source": "boolq",
+    "row": 2905,
+    "row_sha256": "3a8f64386ad2566e659233a126280fc18eafc84b11aa77c85f261f0b4f6e13cc",
+    "text_sha256": "cdd5625b6118c7023a68c410177420d023241e5c671158e89f998e6c5be61e1d",
+    "group_id": "boolq/validation/2905",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 1,
+     "gold": true,
+     "pred": true,
+     "conf": 0.567586,
+     "abstain": true,
+     "set_n": 2,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/1792",
+    "source": "boolq",
+    "row": 1792,
+    "row_sha256": "3af3897c9b6f3bbeb6ce937cd18999685160108e829f94a3e25d241170a7311b",
+    "text_sha256": "2b2a36aed43e0df8023fded978489965c1a161c90270b448b05efb108a54c331",
+    "group_id": "boolq/validation/1792",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 1,
+     "gold": true,
+     "pred": true,
+     "conf": 0.972782,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/1203",
+    "source": "boolq",
+    "row": 1203,
+    "row_sha256": "3b36e9eb1c4ea75bd426cab23e4abe1bb1ecd57c7142361166b0d46f85f7b7b0",
+    "text_sha256": "e5c7d0a02af07be0155e123b65f80778e709c3eab789d8a2767369dc2d03a7e8",
+    "group_id": "boolq/validation/1203",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 1,
+     "gold": true,
+     "pred": true,
+     "conf": 0.852277,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/1948",
+    "source": "boolq",
+    "row": 1948,
+    "row_sha256": "3b40ecf78ee6eb02b0ab4b0f3b51c0852b87f9c22d9d54c97f21b9d2574777aa",
+    "text_sha256": "897d23ff6332770e581eb4a4a123419d90ef57d06cc5f1566198cbf0eba644ac",
+    "group_id": "boolq/validation/1948",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.594693,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 0.5,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/3162",
+    "source": "boolq",
+    "row": 3162,
+    "row_sha256": "3c410b5d4fe68d9f9b5f732748c0bd6dcf413cb69c086f1bc3849a37c4184e36",
+    "text_sha256": "bf27ca110ffd8053d32207c91ffdce7f29da38fb48105554ff771860bf52a011",
+    "group_id": "boolq/validation/3162",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 1,
+     "gold": true,
+     "pred": true,
+     "conf": 0.829825,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/2196",
+    "source": "boolq",
+    "row": 2196,
+    "row_sha256": "3c797e432bb67f3a55e8e6121ed870e5f9bc1610822ab5c0100c725bee77e8e1",
+    "text_sha256": "87b424c05b47fb52db1f8aceb02b3705d7dea49599c8badce788df86a384d055",
+    "group_id": "boolq/validation/2196",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 1,
+     "gold": true,
+     "pred": true,
+     "conf": 0.987932,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/277",
+    "source": "boolq",
+    "row": 277,
+    "row_sha256": "3d5304315c241d90e1f80b1ac354a364369b8ea5d245033b3ca033885f86a4b7",
+    "text_sha256": "8172ae01f09a7e43b66adcb4f12b91d925c7b93acb2e9d2fc573d4c1a197edba",
+    "group_id": "boolq/validation/277",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.750791,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/2311",
+    "source": "boolq",
+    "row": 2311,
+    "row_sha256": "3d9da55fee9ee7ce262a36816993240e3a4e0fba240322d06b4dcf7820e13138",
+    "text_sha256": "c3d0a24347c3b3676d160740044d03489117ff15d628f38dd2fd3d708e10bc99",
+    "group_id": "boolq/validation/2311",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.858441,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/758",
+    "source": "boolq",
+    "row": 758,
+    "row_sha256": "3dd0779855393729681e282bbde05be57be52935cb5df2df61bde3ab8daddc3a",
+    "text_sha256": "b242bb595fa7d571e98c8c50081b95b35ebf6340f9ad1af30ddfe7258284d42c",
+    "group_id": "boolq/validation/758",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.724602,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/2439",
+    "source": "boolq",
+    "row": 2439,
+    "row_sha256": "3e1a8a6567259973ffbec1b436159cee114564ed3cec1717bc5b0aadf5da8a31",
+    "text_sha256": "0610dd725975f15c53a0cd3b8a46f0d1771b14b61c1f5a4d1ff12cc5992eef5d",
+    "group_id": "boolq/validation/2439",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 0,
+     "gold": false,
+     "pred": true,
+     "conf": 0.853769,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/2138",
+    "source": "boolq",
+    "row": 2138,
+    "row_sha256": "3e52a308ea0a3131b5aa96102ab261eaf722be3fe8644dabc6905caf6fdc8d82",
+    "text_sha256": "0216063dbdb9a79a5b3cd5ceb7ec65517b19efdeedab86ab0154d6ef22c2637f",
+    "group_id": "boolq/validation/2138",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 0,
+     "gold": false,
+     "pred": true,
+     "conf": 0.727715,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/1774",
+    "source": "boolq",
+    "row": 1774,
+    "row_sha256": "3f1b2d38b36dcbb1e0e96e87d003db7386857aa997b04d5701f40f7d8904d662",
+    "text_sha256": "63c0c35f31d7264050589e0a0b14adf6a6aa68f43101fdf0acc33e58a5333e00",
+    "group_id": "boolq/validation/1774",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.70575,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/687",
+    "source": "boolq",
+    "row": 687,
+    "row_sha256": "3fcd35682c4118388a0bee432b7cc0f05c9b08db0c1dc7b53fd69b1c262f9199",
+    "text_sha256": "8bc7b45a3ca346aa60d6058f47aa4f0749708ba7de8c22d5865576ffeba4684e",
+    "group_id": "boolq/validation/687",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.682187,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/1999",
+    "source": "boolq",
+    "row": 1999,
+    "row_sha256": "403eeef3ebaeaebab076bf71b26cc7ab425d700432fee19a3302893b7f7c2fc6",
+    "text_sha256": "cf90b4c4c52b7a484d5db5585870f7d51e2dc29bd76f16ac64c662adf716c7ed",
+    "group_id": "boolq/validation/1999",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.528958,
+     "abstain": true,
+     "set_n": 2,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/215",
+    "source": "boolq",
+    "row": 215,
+    "row_sha256": "405da40bc28e6f249395fde723f3a77b2cce4112a97edde54e9ccec171194a98",
+    "text_sha256": "54b3b8d0a134dbf0cd257571510f411f35a405fa96b25b371b0987a3b24d17b7",
+    "group_id": "boolq/validation/215",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 1,
+     "gold": true,
+     "pred": true,
+     "conf": 0.934844,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/2717",
+    "source": "boolq",
+    "row": 2717,
+    "row_sha256": "409e30af989bf158860d64e98f3b2ee2e9d3fcad145562e0131eef8eff86f6c2",
+    "text_sha256": "e581cc60108399701178eb50979d75351adec428cac6a455698c03619cc22975",
+    "group_id": "boolq/validation/2717",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 1,
+     "gold": true,
+     "pred": true,
+     "conf": 0.997032,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/2538",
+    "source": "boolq",
+    "row": 2538,
+    "row_sha256": "41e876296a823efd2ba618918531cac2d1d4131b67ad6516b073d9124d8ba41a",
+    "text_sha256": "8f1eee2bab9ccaba298522348d0476d6494a95a28dde2e261a4ed47cc582e429",
+    "group_id": "boolq/validation/2538",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.640912,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/2369",
+    "source": "boolq",
+    "row": 2369,
+    "row_sha256": "42764427c08e6c1b912e662a58d2b1b98410322c20be11783a6d357c7e6404ec",
+    "text_sha256": "9c160d14bb6d85948928fe672e0706bece89b3c47b420a5b88f24065981ce613",
+    "group_id": "boolq/validation/2369",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 0,
+     "gold": true,
+     "pred": false,
+     "conf": 0.560615,
+     "abstain": true,
+     "set_n": 2,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/270",
+    "source": "boolq",
+    "row": 270,
+    "row_sha256": "4318f1fbc4322619463273f3eef4ede671c536c051866b4cc8e9f39e91274d74",
+    "text_sha256": "1583f6e8b6068cd7fea57dad78fa2cea7d5ca5fbae768d340280fa1fa577fa26",
+    "group_id": "boolq/validation/270",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 1,
+     "gold": true,
+     "pred": true,
+     "conf": 0.96928,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/1901",
+    "source": "boolq",
+    "row": 1901,
+    "row_sha256": "44d15601310b71f739eea47506fc66c76379bdfe864fd69c2577b7fccaf5a07a",
+    "text_sha256": "1279641b9ac4bd8f2a6dd46eb110beeb0df839451e4dd36db7c7ca973185cfd2",
+    "group_id": "boolq/validation/1901",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 1,
+     "gold": true,
+     "pred": true,
+     "conf": 0.944503,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/618",
+    "source": "boolq",
+    "row": 618,
+    "row_sha256": "44e7c6830fc5c5bbfe9b3a2d99572c3983c4f11d5180a40a182a404f4cbd8430",
+    "text_sha256": "e3175eab08d0d1a7335d1e371b9262482a716d82532bd74562573b3d93f3d140",
+    "group_id": "boolq/validation/618",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 0,
+     "gold": true,
+     "pred": false,
+     "conf": 0.703782,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/3067",
+    "source": "boolq",
+    "row": 3067,
+    "row_sha256": "4584f0a9f289a94c64d72d6a6f41488517e6f18020e2ac94315b4e5370debb64",
+    "text_sha256": "d4efbc54e16c9a8f408bb6a1254f743cd578831913449be657e2359ec161432f",
+    "group_id": "boolq/validation/3067",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 0,
+     "gold": false,
+     "pred": true,
+     "conf": 0.90293,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/1159",
+    "source": "boolq",
+    "row": 1159,
+    "row_sha256": "4590d22e3c84ae5e5609ec9a00fc6c382f8c39b6b0ca4e933a7250c5ccdcbf6b",
+    "text_sha256": "32a147d7839b4356fca70cc271e77212a37a3e40a507a48edf22212d1111feab",
+    "group_id": "boolq/validation/1159",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 1,
+     "gold": true,
+     "pred": true,
+     "conf": 0.82409,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/962",
+    "source": "boolq",
+    "row": 962,
+    "row_sha256": "45a97d06447769c450939fd51898b26eea46380a81725bcaf483e5b57afdb2bc",
+    "text_sha256": "16617cffa068fcb07b9da6f20bcb45ccc74b503f60cf5fc57acf73850e300cc5",
+    "group_id": "boolq/validation/962",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.872374,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/1420",
+    "source": "boolq",
+    "row": 1420,
+    "row_sha256": "45ab96c383f90bb8ebf130d61e00d367c48de766fb0edf4482dc8442a1975a22",
+    "text_sha256": "36c1e187edd3e484e2e453190a6a528688d65b96c067633851cf5280d8529222",
+    "group_id": "boolq/validation/1420",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 1,
+     "gold": true,
+     "pred": true,
+     "conf": 0.842645,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/3175",
+    "source": "boolq",
+    "row": 3175,
+    "row_sha256": "45cfbee451f5caba223a5ff34ff087ada18d0e6d8c76f34b635737b954bd8118",
+    "text_sha256": "c5c83efd2d8dcdcb7ef21ac4a66bc64e8016911e045d76e30dc0625778849c78",
+    "group_id": "boolq/validation/3175",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 0,
+     "gold": true,
+     "pred": false,
+     "conf": 0.533793,
+     "abstain": true,
+     "set_n": 2,
+     "agree": 0.5,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/3134",
+    "source": "boolq",
+    "row": 3134,
+    "row_sha256": "4616175ccd44895218eb06a27b85eb7ab722f230dc9040ee8907d0d466ab3908",
+    "text_sha256": "6d82f897dce8577dee2f257284f6d9df5f4e6e2b0965833540fabe3d76dc39a7",
+    "group_id": "boolq/validation/3134",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 0,
+     "gold": true,
+     "pred": false,
+     "conf": 0.523886,
+     "abstain": true,
+     "set_n": 2,
+     "agree": 0.5,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/1458",
+    "source": "boolq",
+    "row": 1458,
+    "row_sha256": "46e88b00ce73a557fcee45d0ff1ec5ff1363f8aad4048e9ba821bcb3a4643f0a",
+    "text_sha256": "b8e349841a55126fca05360196adb1cd1ab3f06cc7afaf83fb8cb4e4e43cc220",
+    "group_id": "boolq/validation/1458",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 1,
+     "gold": true,
+     "pred": true,
+     "conf": 0.856282,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/768",
+    "source": "boolq",
+    "row": 768,
+    "row_sha256": "477565ce27d478039ddcb5bc680214899d216c49f4714ee3a370b56a5a26341e",
+    "text_sha256": "8cb787d77058b50d409c90a8399c566742bee6f9dd2348ae243aefd4abe39c06",
+    "group_id": "boolq/validation/768",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 1,
+     "gold": true,
+     "pred": true,
+     "conf": 0.994498,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/535",
+    "source": "boolq",
+    "row": 535,
+    "row_sha256": "48064f384194425f4891a5072bca2cf6dcafc7175e67adffb8f46b41e56a83b9",
+    "text_sha256": "482f935fdf9bfdb3b8404da8c7510da3f536cdd4c0346afd46f5cdf9c0878e80",
+    "group_id": "boolq/validation/535",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 0,
+     "gold": true,
+     "pred": false,
+     "conf": 0.546518,
+     "abstain": true,
+     "set_n": 2,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/2053",
+    "source": "boolq",
+    "row": 2053,
+    "row_sha256": "48c530358c92473bb7ea5ee8cd0cc8867e77407e02bb2b1025fc94d436264b21",
+    "text_sha256": "2f05b516f72e9ed3f5c02a4991e5ae24f6f4c8541b51e331e038000845da7954",
+    "group_id": "boolq/validation/2053",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 1,
+     "gold": true,
+     "pred": true,
+     "conf": 0.994019,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/175",
+    "source": "boolq",
+    "row": 175,
+    "row_sha256": "48daae9a03579e5b6305440c556e3923e6fc13f2811b1ec3fe36bb0763f86e6e",
+    "text_sha256": "c1053b7876174269466c14bd0f8ebcca8f3a149c9b373dac7124af259d865549",
+    "group_id": "boolq/validation/175",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 0,
+     "gold": true,
+     "pred": false,
+     "conf": 0.896887,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/3196",
+    "source": "boolq",
+    "row": 3196,
+    "row_sha256": "4925dd8d90742da7629bd2f70bafaf5b80e33da4cd0ba8f6d575e14241666676",
+    "text_sha256": "328bdf0d7a77f5d81ad46d335cec826fcc74a2365e3d03a0e35073e3d96f73a4",
+    "group_id": "boolq/validation/3196",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.714727,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "boolq/validation/1383",
+    "source": "boolq",
+    "row": 1383,
+    "row_sha256": "49ea29e83f85e5335f86d788faa7644205f602eea5e9d15170cbcd276f51b87f",
+    "text_sha256": "a8de3db56642a41af2204562cf47faef19f179083133985aaef10bc6c522db55",
+    "group_id": "boolq/validation/1383",
+    "variant": "clean",
+    "repo": "google/boolq",
+    "revision": "35b264d03638db9f4ce671b711558bf7ff0f80d5",
+    "split": "validation"
+   },
+   "questions": {
+    "answer": {
+     "type": "noul",
+     "ok": 1,
+     "gold": true,
+     "pred": true,
+     "conf": 0.952049,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "agnews/test/1901",
+    "source": "agnews",
+    "row": 1901,
+    "row_sha256": "24a34b330771d0f9e4adf53d1098f9dd1cae12b2ad894753592efdb13f64b3da",
+    "text_sha256": "51f274ea858a93c2e7e5e35881ba48efbde809eb1d291d95967e6083ab07848a",
+    "group_id": "agnews/test/1901",
+    "variant": "clean",
+    "repo": "fancyzhx/ag_news",
+    "revision": "eb185aade064a813bc0b7f42de02595523103ca4",
+    "split": "test"
+   },
+   "questions": {
+    "topic": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "scitech",
+     "pred": "scitech",
+     "conf": 0.98976,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_sports": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.983765,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_business": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.90535,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "agnews/test/6309",
+    "source": "agnews",
+    "row": 6309,
+    "row_sha256": "256d7ef6535b3c94001df12f3b36f36fced387c2c2b99298721d77d76b7f043f",
+    "text_sha256": "78d5d82d4d916427c08ca90ad8e9455b922f0b0c00815b7e0254d7f26da11df7",
+    "group_id": "agnews/test/6309",
+    "variant": "clean",
+    "repo": "fancyzhx/ag_news",
+    "revision": "eb185aade064a813bc0b7f42de02595523103ca4",
+    "split": "test"
+   },
+   "questions": {
+    "topic": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "scitech",
+     "pred": "scitech",
+     "conf": 0.501855,
+     "abstain": true,
+     "set_n": 2,
+     "agree": 0.5,
+     "unbound": true
+    },
+    "is_sports": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.884469,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_scitech": {
+     "type": "noul",
+     "ok": 0,
+     "gold": true,
+     "pred": false,
+     "conf": 0.921597,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "agnews/test/234",
+    "source": "agnews",
+    "row": 234,
+    "row_sha256": "257a609c331492308cbaa3a3417cb5d5e977b013a82660bc20ae50672009dee9",
+    "text_sha256": "f8a94306ace9504f6df55a277e270923555dc16b84785f0fbbc487ea86210e77",
+    "group_id": "agnews/test/234",
+    "variant": "clean",
+    "repo": "fancyzhx/ag_news",
+    "revision": "eb185aade064a813bc0b7f42de02595523103ca4",
+    "split": "test"
+   },
+   "questions": {
+    "topic": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "business",
+     "pred": "business",
+     "conf": 0.732771,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_business": {
+     "type": "noul",
+     "ok": 0,
+     "gold": true,
+     "pred": false,
+     "conf": 0.959569,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_sports": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.978488,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "agnews/test/6066",
+    "source": "agnews",
+    "row": 6066,
+    "row_sha256": "25f8769edeb08f823a0fd51e9eb1e37738d18a5c7f93cc8670f9e895386c8edf",
+    "text_sha256": "d4db4410e2a9e340f03063fb1e0ae1681304d8a0f3c0b7689a01afc89384cabd",
+    "group_id": "agnews/test/6066",
+    "variant": "clean",
+    "repo": "fancyzhx/ag_news",
+    "revision": "eb185aade064a813bc0b7f42de02595523103ca4",
+    "split": "test"
+   },
+   "questions": {
+    "topic": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "business",
+     "pred": "business",
+     "conf": 0.988678,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_scitech": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.963642,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_sports": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.955793,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "agnews/test/4022",
+    "source": "agnews",
+    "row": 4022,
+    "row_sha256": "2778578027912c62e8799ec31aa156ae63d646293982d6b0234518696d911f6a",
+    "text_sha256": "f758ff30992295a6ca948bf407684e6e452fca786b0ad1179c08326ddd50a71d",
+    "group_id": "agnews/test/4022",
+    "variant": "clean",
+    "repo": "fancyzhx/ag_news",
+    "revision": "eb185aade064a813bc0b7f42de02595523103ca4",
+    "split": "test"
+   },
+   "questions": {
+    "topic": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "business",
+     "pred": "business",
+     "conf": 0.942705,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_scitech": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.970894,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_sports": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.972079,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "agnews/test/7199",
+    "source": "agnews",
+    "row": 7199,
+    "row_sha256": "27ff651f9435bac3e0a83c236e8b269c1d9d1d1bd7b85f422875a79c95163447",
+    "text_sha256": "71a0221218b00f01f09c9c8258325d10fee53f4db7fc7dc0c0791913f2dc2aa6",
+    "group_id": "agnews/test/7199",
+    "variant": "clean",
+    "repo": "fancyzhx/ag_news",
+    "revision": "eb185aade064a813bc0b7f42de02595523103ca4",
+    "split": "test"
+   },
+   "questions": {
+    "topic": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "sports",
+     "pred": "sports",
+     "conf": 0.999992,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_world": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.683273,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_scitech": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.794098,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "agnews/test/2203",
+    "source": "agnews",
+    "row": 2203,
+    "row_sha256": "28f2321f733bd807a06d06911091eecbeddb1e3f7b6259abd4309a6fbde9737b",
+    "text_sha256": "57870d18d0f16de88bf73244495149344db154a134ee19e1c55cddcad540a4ec",
+    "group_id": "agnews/test/2203",
+    "variant": "clean",
+    "repo": "fancyzhx/ag_news",
+    "revision": "eb185aade064a813bc0b7f42de02595523103ca4",
+    "split": "test"
+   },
+   "questions": {
+    "topic": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "world",
+     "pred": "world",
+     "conf": 0.995202,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_world": {
+     "type": "noul",
+     "ok": 0,
+     "gold": true,
+     "pred": false,
+     "conf": 0.903456,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_scitech": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.969257,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "agnews/test/2085",
+    "source": "agnews",
+    "row": 2085,
+    "row_sha256": "29606cfba70204ce4b6c86415f210d3420d84f76e5bbb20ab1b85de0f0dc8ec2",
+    "text_sha256": "396dbd5910b73e11fcd540272b3c1c6958ecbcf28934410a3bd655ec0017501e",
+    "group_id": "agnews/test/2085",
+    "variant": "clean",
+    "repo": "fancyzhx/ag_news",
+    "revision": "eb185aade064a813bc0b7f42de02595523103ca4",
+    "split": "test"
+   },
+   "questions": {
+    "topic": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "scitech",
+     "pred": "scitech",
+     "conf": 0.854877,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_scitech": {
+     "type": "noul",
+     "ok": 0,
+     "gold": true,
+     "pred": false,
+     "conf": 0.863985,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_world": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.708845,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "agnews/test/5119",
+    "source": "agnews",
+    "row": 5119,
+    "row_sha256": "2a8bb2bb833f569245b3e6723014b3bb8b15a04606d4e9777561d074f34d7966",
+    "text_sha256": "7c5da173f31c6d1b306fa233ca3e8a2099a83cd0891d60a227fb2bf152ce4252",
+    "group_id": "agnews/test/5119",
+    "variant": "clean",
+    "repo": "fancyzhx/ag_news",
+    "revision": "eb185aade064a813bc0b7f42de02595523103ca4",
+    "split": "test"
+   },
+   "questions": {
+    "topic": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "business",
+     "pred": "business",
+     "conf": 0.827234,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_world": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.925974,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_business": {
+     "type": "noul",
+     "ok": 0,
+     "gold": true,
+     "pred": false,
+     "conf": 0.694919,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "agnews/test/4617",
+    "source": "agnews",
+    "row": 4617,
+    "row_sha256": "2af2d59b95d1e40bcc3af40c0ef78c1c73cbf49bd572aaf610240766c84fad0e",
+    "text_sha256": "71e97883e45acebc70e20e30edc1cb8f52599077c98d562eee3ccda9a1a74abf",
+    "group_id": "agnews/test/4617",
+    "variant": "clean",
+    "repo": "fancyzhx/ag_news",
+    "revision": "eb185aade064a813bc0b7f42de02595523103ca4",
+    "split": "test"
+   },
+   "questions": {
+    "topic": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "scitech",
+     "pred": "scitech",
+     "conf": 0.999301,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_sports": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.964643,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_scitech": {
+     "type": "noul",
+     "ok": 0,
+     "gold": true,
+     "pred": false,
+     "conf": 0.674294,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "agnews/test/7025",
+    "source": "agnews",
+    "row": 7025,
+    "row_sha256": "2b09b3c4e7390f15b17bcae4dac47f19b106339938829edc1b08bd5ca6cf320a",
+    "text_sha256": "8638f86cd6ea527b1a3b3751c05f05ad84a913424293033549d58fb1dec5a909",
+    "group_id": "agnews/test/7025",
+    "variant": "clean",
+    "repo": "fancyzhx/ag_news",
+    "revision": "eb185aade064a813bc0b7f42de02595523103ca4",
+    "split": "test"
+   },
+   "questions": {
+    "topic": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "world",
+     "pred": "world",
+     "conf": 0.982186,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_business": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.717096,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": true
+    },
+    "is_scitech": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.745607,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "agnews/test/3118",
+    "source": "agnews",
+    "row": 3118,
+    "row_sha256": "2b6217fbb99ccaaf2cc2ccdf62cc34114e8664f7c82c101a1c3ee57e44ec842f",
+    "text_sha256": "292f6477e817b9d0c46c34316d5f498c634a0722e982273474a1fca34e1521c0",
+    "group_id": "agnews/test/3118",
+    "variant": "clean",
+    "repo": "fancyzhx/ag_news",
+    "revision": "eb185aade064a813bc0b7f42de02595523103ca4",
+    "split": "test"
+   },
+   "questions": {
+    "topic": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "world",
+     "pred": "world",
+     "conf": 0.999955,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_world": {
+     "type": "noul",
+     "ok": 1,
+     "gold": true,
+     "pred": true,
+     "conf": 0.54005,
+     "abstain": true,
+     "set_n": 2,
+     "agree": 0.5,
+     "unbound": true
+    },
+    "is_scitech": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.941596,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "agnews/test/2871",
+    "source": "agnews",
+    "row": 2871,
+    "row_sha256": "2b9fd1f9d3987b6ce51c585dad6613a90aa94cb799c10fa2c10da1977fb8bc1d",
+    "text_sha256": "89e08a26a3558c9288b8454f1319274733541d63d530a5a41d0c3dbb85feadaf",
+    "group_id": "agnews/test/2871",
+    "variant": "clean",
+    "repo": "fancyzhx/ag_news",
+    "revision": "eb185aade064a813bc0b7f42de02595523103ca4",
+    "split": "test"
+   },
+   "questions": {
+    "topic": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "sports",
+     "pred": "sports",
+     "conf": 0.999801,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_business": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.741179,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_sports": {
+     "type": "noul",
+     "ok": 1,
+     "gold": true,
+     "pred": true,
+     "conf": 0.566351,
+     "abstain": true,
+     "set_n": 2,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "agnews/test/4341",
+    "source": "agnews",
+    "row": 4341,
+    "row_sha256": "2c35162a7af35b9b784a1748169cfc38619297080018ab1207302fe5e0c2dc00",
+    "text_sha256": "28a73d40c1b0907a725141d12ee7217d9cccbc212d496e042536881bab62f39a",
+    "group_id": "agnews/test/4341",
+    "variant": "clean",
+    "repo": "fancyzhx/ag_news",
+    "revision": "eb185aade064a813bc0b7f42de02595523103ca4",
+    "split": "test"
+   },
+   "questions": {
+    "topic": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "sports",
+     "pred": "sports",
+     "conf": 0.995917,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_sports": {
+     "type": "noul",
+     "ok": 0,
+     "gold": true,
+     "pred": false,
+     "conf": 0.649922,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_business": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.871225,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "agnews/test/3796",
+    "source": "agnews",
+    "row": 3796,
+    "row_sha256": "2cd1cbfae1f4da1611515a2fb350ebc75ceb3e7ee1ce21ed0998a8691a6185c0",
+    "text_sha256": "e763ce37f94fa3f3bdd62c90ba814e74e27f8ff363aab60bb2192616dc06cfe9",
+    "group_id": "agnews/test/3796",
+    "variant": "clean",
+    "repo": "fancyzhx/ag_news",
+    "revision": "eb185aade064a813bc0b7f42de02595523103ca4",
+    "split": "test"
+   },
+   "questions": {
+    "topic": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "business",
+     "pred": "business",
+     "conf": 0.620977,
+     "abstain": false,
+     "set_n": 2,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_sports": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.972402,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_world": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.901749,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "agnews/test/5143",
+    "source": "agnews",
+    "row": 5143,
+    "row_sha256": "2ce84bd045a73b66931318fb0c8902c6dfdd0beb350a6d77d7f51bcc7bc62207",
+    "text_sha256": "23068c907c643f9ebfce0f052bf7b5c66b4fba8f3c3d6a83c05cbe89206a201b",
+    "group_id": "agnews/test/5143",
+    "variant": "clean",
+    "repo": "fancyzhx/ag_news",
+    "revision": "eb185aade064a813bc0b7f42de02595523103ca4",
+    "split": "test"
+   },
+   "questions": {
+    "topic": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "business",
+     "pred": "business",
+     "conf": 0.993601,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_business": {
+     "type": "noul",
+     "ok": 1,
+     "gold": true,
+     "pred": true,
+     "conf": 0.520805,
+     "abstain": true,
+     "set_n": 2,
+     "agree": 0.5,
+     "unbound": false
+    },
+    "is_world": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.625909,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "agnews/test/3525",
+    "source": "agnews",
+    "row": 3525,
+    "row_sha256": "2dd813b2ffbaaf1ce3f63ba568a93b6a92ffde5891a2c6a342ab83ec6aedbb22",
+    "text_sha256": "3da32865666831ff6dc09efde5e271f2bd52109ded47ada7da71f4034de98303",
+    "group_id": "agnews/test/3525",
+    "variant": "clean",
+    "repo": "fancyzhx/ag_news",
+    "revision": "eb185aade064a813bc0b7f42de02595523103ca4",
+    "split": "test"
+   },
+   "questions": {
+    "topic": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "sports",
+     "pred": "sports",
+     "conf": 0.99986,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_scitech": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.960934,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_world": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.892442,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "agnews/test/439",
+    "source": "agnews",
+    "row": 439,
+    "row_sha256": "2deaed52806e518a643746542d2fe10700cfb6d28f0ae9e9ef090c66568acb18",
+    "text_sha256": "e7a788cbd2894d568022fabe74ec433fe449f33ba9e10863ec40448b1589a1e3",
+    "group_id": "agnews/test/439",
+    "variant": "clean",
+    "repo": "fancyzhx/ag_news",
+    "revision": "eb185aade064a813bc0b7f42de02595523103ca4",
+    "split": "test"
+   },
+   "questions": {
+    "topic": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "scitech",
+     "pred": "scitech",
+     "conf": 0.969711,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_sports": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.96005,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_world": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.725355,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "agnews/test/2413",
+    "source": "agnews",
+    "row": 2413,
+    "row_sha256": "2e11bbdf1685f95f5010a5ae6edcfb066289751a726bf79aafaf602339d6f308",
+    "text_sha256": "c50183d3946a2d791945b729609f6e6392c9af60b36a79fc6e8b3402ef872a20",
+    "group_id": "agnews/test/2413",
+    "variant": "clean",
+    "repo": "fancyzhx/ag_news",
+    "revision": "eb185aade064a813bc0b7f42de02595523103ca4",
+    "split": "test"
+   },
+   "questions": {
+    "topic": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "business",
+     "pred": "business",
+     "conf": 0.96878,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_sports": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.979218,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_world": {
+     "type": "noul",
+     "ok": 0,
+     "gold": false,
+     "pred": true,
+     "conf": 0.821006,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "agnews/test/4",
+    "source": "agnews",
+    "row": 4,
+    "row_sha256": "2e64355ae8d42c0669cb786805f7cc71063d88d6ad40a839262266bb05f1f4cc",
+    "text_sha256": "184e481f40d8b69ab6d3dff384c7aa2f699e35d3a42afde03e3e3a1bcb6e31ec",
+    "group_id": "agnews/test/4",
+    "variant": "clean",
+    "repo": "fancyzhx/ag_news",
+    "revision": "eb185aade064a813bc0b7f42de02595523103ca4",
+    "split": "test"
+   },
+   "questions": {
+    "topic": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "scitech",
+     "pred": "scitech",
+     "conf": 0.996895,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_business": {
+     "type": "noul",
+     "ok": 0,
+     "gold": false,
+     "pred": true,
+     "conf": 0.605659,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": true
+    },
+    "is_sports": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.830174,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "agnews/test/1106",
+    "source": "agnews",
+    "row": 1106,
+    "row_sha256": "2ec735de5eaf7c661bfd5b3fb71b129f3da750cf66a22c7c3befe9d7ef1478ab",
+    "text_sha256": "1aac87d1825b9e5dab689df75706179c19f0038f74042b1530b768ef8c0c7085",
+    "group_id": "agnews/test/1106",
+    "variant": "clean",
+    "repo": "fancyzhx/ag_news",
+    "revision": "eb185aade064a813bc0b7f42de02595523103ca4",
+    "split": "test"
+   },
+   "questions": {
+    "topic": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "scitech",
+     "pred": "scitech",
+     "conf": 0.892564,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": true
+    },
+    "is_world": {
+     "type": "noul",
+     "ok": 0,
+     "gold": false,
+     "pred": true,
+     "conf": 0.89644,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_scitech": {
+     "type": "noul",
+     "ok": 0,
+     "gold": true,
+     "pred": false,
+     "conf": 0.687181,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": true
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "agnews/test/7149",
+    "source": "agnews",
+    "row": 7149,
+    "row_sha256": "2ed016526b70310fcead6f19f4a458ae5019adf6bb2c21756dd65747932f7d95",
+    "text_sha256": "b4023dc3c45391c0c3549f45baa71c1fce558c025e9ce04b93fae06f8aee33b0",
+    "group_id": "agnews/test/7149",
+    "variant": "clean",
+    "repo": "fancyzhx/ag_news",
+    "revision": "eb185aade064a813bc0b7f42de02595523103ca4",
+    "split": "test"
+   },
+   "questions": {
+    "topic": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "sports",
+     "pred": "sports",
+     "conf": 0.59652,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_world": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.886904,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_sports": {
+     "type": "noul",
+     "ok": 0,
+     "gold": true,
+     "pred": false,
+     "conf": 0.665393,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "agnews/test/4203",
+    "source": "agnews",
+    "row": 4203,
+    "row_sha256": "2ee6d66210418bf8e9969f3a0dc4fc47506114159989eb47739b22b338237873",
+    "text_sha256": "22b21923cc02247cf7d41705ba08a471790dca8c0f88e841eef572557b20ffc2",
+    "group_id": "agnews/test/4203",
+    "variant": "clean",
+    "repo": "fancyzhx/ag_news",
+    "revision": "eb185aade064a813bc0b7f42de02595523103ca4",
+    "split": "test"
+   },
+   "questions": {
+    "topic": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "scitech",
+     "pred": "scitech",
+     "conf": 0.988963,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_scitech": {
+     "type": "noul",
+     "ok": 1,
+     "gold": true,
+     "pred": true,
+     "conf": 0.97436,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_business": {
+     "type": "noul",
+     "ok": 0,
+     "gold": false,
+     "pred": true,
+     "conf": 0.731193,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "agnews/test/2572",
+    "source": "agnews",
+    "row": 2572,
+    "row_sha256": "307e1f3d5de0a28b8a8c78217f5d8a68acb5d59d89a5231ef2f8694ea2b35264",
+    "text_sha256": "d41a74ba677cb813c10923a523255dbc94b7f343291cef7384a4614ccc340f24",
+    "group_id": "agnews/test/2572",
+    "variant": "clean",
+    "repo": "fancyzhx/ag_news",
+    "revision": "eb185aade064a813bc0b7f42de02595523103ca4",
+    "split": "test"
+   },
+   "questions": {
+    "topic": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "world",
+     "pred": "world",
+     "conf": 0.999398,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_scitech": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.975542,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_business": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.963932,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "agnews/test/7309",
+    "source": "agnews",
+    "row": 7309,
+    "row_sha256": "30878c7094cbfbd9d0c26fd08215454417cc073ba5843f594cbb8b67b12f11a8",
+    "text_sha256": "f85901f9892261767847cef11ebe93ab7a71762cd9949d75898e16a110aa3c3d",
+    "group_id": "agnews/test/7309",
+    "variant": "clean",
+    "repo": "fancyzhx/ag_news",
+    "revision": "eb185aade064a813bc0b7f42de02595523103ca4",
+    "split": "test"
+   },
+   "questions": {
+    "topic": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "business",
+     "pred": "business",
+     "conf": 0.629811,
+     "abstain": false,
+     "set_n": 2,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_sports": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.943241,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_scitech": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.810418,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "agnews/test/1381",
+    "source": "agnews",
+    "row": 1381,
+    "row_sha256": "3199870e0acbba3402e659535b38088106a03691fbfeda8a7f8648ecd62de39b",
+    "text_sha256": "ad053d15dd3c420f80100d56d448298a3e8ea975b94d557c4b7f6c523570fe3e",
+    "group_id": "agnews/test/1381",
+    "variant": "clean",
+    "repo": "fancyzhx/ag_news",
+    "revision": "eb185aade064a813bc0b7f42de02595523103ca4",
+    "split": "test"
+   },
+   "questions": {
+    "topic": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "sports",
+     "pred": "sports",
+     "conf": 0.997148,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_world": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.631315,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": true
+    },
+    "is_scitech": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.882759,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "agnews/test/555",
+    "source": "agnews",
+    "row": 555,
+    "row_sha256": "31c4c1706fc0ee8103e57f4878cc09ee3b4f966b88c3b4b05612956e7eb47b1a",
+    "text_sha256": "8ba4dbb33758bd52f0e79c8265d3adc03f7ff31a73c6afd25a896e703719e847",
+    "group_id": "agnews/test/555",
+    "variant": "clean",
+    "repo": "fancyzhx/ag_news",
+    "revision": "eb185aade064a813bc0b7f42de02595523103ca4",
+    "split": "test"
+   },
+   "questions": {
+    "topic": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "scitech",
+     "pred": "scitech",
+     "conf": 0.938547,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_world": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.720418,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_sports": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.940624,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "agnews/test/1321",
+    "source": "agnews",
+    "row": 1321,
+    "row_sha256": "31ce668d00fed9b13f89d0c3074f1e4a4e64ea2a165a2cd352367fdf05b8a07d",
+    "text_sha256": "5602913e068768879e253b131da4ddf6fe7c6d6bb0bc1b7bb440c6f4308e81ed",
+    "group_id": "agnews/test/1321",
+    "variant": "clean",
+    "repo": "fancyzhx/ag_news",
+    "revision": "eb185aade064a813bc0b7f42de02595523103ca4",
+    "split": "test"
+   },
+   "questions": {
+    "topic": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "business",
+     "pred": "business",
+     "conf": 0.997958,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_scitech": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.972552,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_world": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.950041,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "agnews/test/4934",
+    "source": "agnews",
+    "row": 4934,
+    "row_sha256": "322ccb1b5bee02ef640ded13c08fb8624cf4a33ed5c311b02c7268594e781bc2",
+    "text_sha256": "65011af06f9749850f3056c9a304f1d21812f44928218f09483274210ed83b4a",
+    "group_id": "agnews/test/4934",
+    "variant": "clean",
+    "repo": "fancyzhx/ag_news",
+    "revision": "eb185aade064a813bc0b7f42de02595523103ca4",
+    "split": "test"
+   },
+   "questions": {
+    "topic": {
+     "type": "choice",
+     "ok": 0,
+     "gold": "business",
+     "pred": "scitech",
+     "conf": 0.763837,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_scitech": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.594742,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_sports": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.960331,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "agnews/test/3072",
+    "source": "agnews",
+    "row": 3072,
+    "row_sha256": "326e1a07281c63d195e5aae6d36518411ff7a423159a6a3d2f45b29cee763577",
+    "text_sha256": "34083b4f9bafbcde8c76547db8bfdf5b4bd5db2af32c3db503f5b6022dc7ab3d",
+    "group_id": "agnews/test/3072",
+    "variant": "clean",
+    "repo": "fancyzhx/ag_news",
+    "revision": "eb185aade064a813bc0b7f42de02595523103ca4",
+    "split": "test"
+   },
+   "questions": {
+    "topic": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "sports",
+     "pred": "sports",
+     "conf": 0.999147,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_sports": {
+     "type": "noul",
+     "ok": 1,
+     "gold": true,
+     "pred": true,
+     "conf": 0.746564,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_scitech": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.955981,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "agnews/test/6054",
+    "source": "agnews",
+    "row": 6054,
+    "row_sha256": "32bd86335cb13bd2b6acffc4f9965c34323bffad3064cc287cfa8aa238e35e5d",
+    "text_sha256": "1b8e585f7b8e1dbecab93c36fcd2da9d3c06b012b0b50651964cb9add27a0601",
+    "group_id": "agnews/test/6054",
+    "variant": "clean",
+    "repo": "fancyzhx/ag_news",
+    "revision": "eb185aade064a813bc0b7f42de02595523103ca4",
+    "split": "test"
+   },
+   "questions": {
+    "topic": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "business",
+     "pred": "business",
+     "conf": 0.977544,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_sports": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.981511,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_world": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.93971,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "agnews/test/1339",
+    "source": "agnews",
+    "row": 1339,
+    "row_sha256": "3318a437c4fab7ce5c167c595298d0ffc765c077033f2481ea943ddf94cc7758",
+    "text_sha256": "ed7ded02ef7d6b119c98eda7c57dcf5feccdfe855863e903a6806892ab493bdf",
+    "group_id": "agnews/test/1339",
+    "variant": "clean",
+    "repo": "fancyzhx/ag_news",
+    "revision": "eb185aade064a813bc0b7f42de02595523103ca4",
+    "split": "test"
+   },
+   "questions": {
+    "topic": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "world",
+     "pred": "world",
+     "conf": 0.999876,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_scitech": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.975885,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_world": {
+     "type": "noul",
+     "ok": 0,
+     "gold": true,
+     "pred": false,
+     "conf": 0.862763,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "agnews/test/1755",
+    "source": "agnews",
+    "row": 1755,
+    "row_sha256": "3333893217fc30cf74bb8a0b9c905af6f5c2a0924309338cde7d83b650ee50ee",
+    "text_sha256": "baff28bef2d2b7dd7b244d1472fc5c52b5d77d464a593c4361ca9942afc82d25",
+    "group_id": "agnews/test/1755",
+    "variant": "clean",
+    "repo": "fancyzhx/ag_news",
+    "revision": "eb185aade064a813bc0b7f42de02595523103ca4",
+    "split": "test"
+   },
+   "questions": {
+    "topic": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "world",
+     "pred": "world",
+     "conf": 0.937083,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_sports": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.950482,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_scitech": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.954661,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "agnews/test/136",
+    "source": "agnews",
+    "row": 136,
+    "row_sha256": "34cbc0d4f6d1ebd4bc647d6070cca331655c2271fbf68f5849f8c8f3164c8dfb",
+    "text_sha256": "fe472f88b0c1526440104c9edc7342a56fe0eb8a9be89bc80383c0549ef9868d",
+    "group_id": "agnews/test/136",
+    "variant": "clean",
+    "repo": "fancyzhx/ag_news",
+    "revision": "eb185aade064a813bc0b7f42de02595523103ca4",
+    "split": "test"
+   },
+   "questions": {
+    "topic": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "world",
+     "pred": "world",
+     "conf": 0.566455,
+     "abstain": true,
+     "set_n": 2,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_sports": {
+     "type": "noul",
+     "ok": 0,
+     "gold": false,
+     "pred": true,
+     "conf": 0.585583,
+     "abstain": true,
+     "set_n": 1,
+     "agree": 0.5,
+     "unbound": false
+    },
+    "is_world": {
+     "type": "noul",
+     "ok": 1,
+     "gold": true,
+     "pred": true,
+     "conf": 0.935103,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "agnews/test/4700",
+    "source": "agnews",
+    "row": 4700,
+    "row_sha256": "3568799179381b0d952370bfe7e934270406d11f5b49277ad7b82ea08ae8f49c",
+    "text_sha256": "d9eaf6939cb848882b244b2a11a6276a1c765886057d4be63623028a92300b4c",
+    "group_id": "agnews/test/4700",
+    "variant": "clean",
+    "repo": "fancyzhx/ag_news",
+    "revision": "eb185aade064a813bc0b7f42de02595523103ca4",
+    "split": "test"
+   },
+   "questions": {
+    "topic": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "world",
+     "pred": "world",
+     "conf": 0.999636,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_scitech": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.959466,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_business": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.886927,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "agnews/test/1878",
+    "source": "agnews",
+    "row": 1878,
+    "row_sha256": "364fc48d96ff11d226537ef810198d96f1c98195bf4e17041f273f2551e1f601",
+    "text_sha256": "31507b9da08aca57adab73dae72c76a2b23c1487154e5805bc189b4e076b8829",
+    "group_id": "agnews/test/1878",
+    "variant": "clean",
+    "repo": "fancyzhx/ag_news",
+    "revision": "eb185aade064a813bc0b7f42de02595523103ca4",
+    "split": "test"
+   },
+   "questions": {
+    "topic": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "scitech",
+     "pred": "scitech",
+     "conf": 0.996772,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_business": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.86131,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_scitech": {
+     "type": "noul",
+     "ok": 0,
+     "gold": true,
+     "pred": false,
+     "conf": 0.87607,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "agnews/test/6113",
+    "source": "agnews",
+    "row": 6113,
+    "row_sha256": "36fff9b199947530b037c7564a7ab6f57424b2f3d9e83efbfeef5bdf7d8dbc56",
+    "text_sha256": "3368e71518960d772c2592c592a48c23d4a9d08eea2d9b6d84a8de47de2b3df1",
+    "group_id": "agnews/test/6113",
+    "variant": "clean",
+    "repo": "fancyzhx/ag_news",
+    "revision": "eb185aade064a813bc0b7f42de02595523103ca4",
+    "split": "test"
+   },
+   "questions": {
+    "topic": {
+     "type": "choice",
+     "ok": 0,
+     "gold": "business",
+     "pred": "scitech",
+     "conf": 0.974942,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_sports": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.987582,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_business": {
+     "type": "noul",
+     "ok": 0,
+     "gold": true,
+     "pred": false,
+     "conf": 0.951919,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "agnews/test/7326",
+    "source": "agnews",
+    "row": 7326,
+    "row_sha256": "3760f6356d4e2e71b5c73bdbfc9680aae0512a268b8ab0d267f79cc43b2e3e82",
+    "text_sha256": "9cd3b917ecbe852b14cb72b4c2ba49b1f1f2073471225accf6445678c7760d19",
+    "group_id": "agnews/test/7326",
+    "variant": "clean",
+    "repo": "fancyzhx/ag_news",
+    "revision": "eb185aade064a813bc0b7f42de02595523103ca4",
+    "split": "test"
+   },
+   "questions": {
+    "topic": {
+     "type": "choice",
+     "ok": 0,
+     "gold": "sports",
+     "pred": "scitech",
+     "conf": 0.863585,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_business": {
+     "type": "noul",
+     "ok": 0,
+     "gold": false,
+     "pred": true,
+     "conf": 0.964291,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_world": {
+     "type": "noul",
+     "ok": 0,
+     "gold": false,
+     "pred": true,
+     "conf": 0.664895,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "agnews/test/3631",
+    "source": "agnews",
+    "row": 3631,
+    "row_sha256": "376459a6fe5a204e7ce058562711caf413dc4aa666d64d338a2c70eccdc8dcff",
+    "text_sha256": "9b5b2e450e2f03105d838f71e41bdd27613c52657d05ff899005811fe7d634d7",
+    "group_id": "agnews/test/3631",
+    "variant": "clean",
+    "repo": "fancyzhx/ag_news",
+    "revision": "eb185aade064a813bc0b7f42de02595523103ca4",
+    "split": "test"
+   },
+   "questions": {
+    "topic": {
+     "type": "choice",
+     "ok": 0,
+     "gold": "business",
+     "pred": "world",
+     "conf": 0.908493,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_business": {
+     "type": "noul",
+     "ok": 0,
+     "gold": true,
+     "pred": false,
+     "conf": 0.836708,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_sports": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.953607,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  },
+  {
+   "meta": {
+    "id": "agnews/test/7138",
+    "source": "agnews",
+    "row": 7138,
+    "row_sha256": "376af18d3f650a63091eaba633e11c497dabc59b06bc6fe4298efc85e273f0c5",
+    "text_sha256": "77ec57b1b81b11dfff69ea308f0f3c73992dd41b08a144835599254c54e69091",
+    "group_id": "agnews/test/7138",
+    "variant": "clean",
+    "repo": "fancyzhx/ag_news",
+    "revision": "eb185aade064a813bc0b7f42de02595523103ca4",
+    "split": "test"
+   },
+   "questions": {
+    "topic": {
+     "type": "choice",
+     "ok": 1,
+     "gold": "sports",
+     "pred": "sports",
+     "conf": 0.995965,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_world": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.964767,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    },
+    "is_business": {
+     "type": "noul",
+     "ok": 1,
+     "gold": false,
+     "pred": false,
+     "conf": 0.951588,
+     "abstain": false,
+     "set_n": 1,
+     "agree": 1.0,
+     "unbound": false
+    }
+   }
+  }
+ ]
+}

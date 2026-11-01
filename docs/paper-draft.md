@@ -33,7 +33,7 @@ a 59.32 MiB artifact that loads in 253.9–394.4 ms and answers in a fixed 589,8
 state; a matched-condition throughput advantage over a competitor **we measure at 421,293,827
 parameters** (our count at their pinned snapshot, not a figure they publish) on the same inputs
 (33.083 ms against 100.691 ms at one question); a release-gate registry in which 7/7 verdicts and
-39/39 rows re-derive from committed witnesses; and a paired row-clustered bootstrap that puts a 95% interval
+41/41 rows re-derive from committed witnesses; and a paired row-clustered bootstrap that puts a 95% interval
 on every headline accuracy in §5 and **refuses to write the file at all** unless macro, both floors and the
 gate's own margin agree with the committed report to 1e-9 — the instrument that, on its first run, rewrote
 two of the four sentences it was asked about. We report the failures as the primary result, because the
@@ -64,7 +64,7 @@ than a table is what distinguishes the two.
 
 ## 3. Related work and positioning
 
-The only competitor scored in this repository is **laya** (`NandhaKishorM/laya`; the weights are
+Two engines are scored in this repository, both by the same upstream author: **laya** (`NandhaKishorM/laya`; the weights are
 `convaiinnovations/laya` on the Hub), and it is pinned at **two different revisions for two different
 measurements**: **0.3.20** at checkpoint snapshot `55cf4c4e…`, `Agent.system_one`, which is what §8's
 latency and the parameter count below are measured on, and **0.4.19** at commit
@@ -83,7 +83,7 @@ tensors are
 public tensor header, not a figure they publish, and no witness in this repository prints that split.
 Evaluated by us on the same 16 (source, question) cells **and the same 1,176 test rows** as our own model,
 at **0.6664** macro accuracy with a 95% CI of [0.6439, 0.6888] (§5, laya **0.4.19**); that number is
-measured on this box with this harness, and it is the only external comparison this draft makes. The
+measured on this box with this harness — one of the two external comparisons this draft makes, the other being the **vegaml** control below. The
 **0.6668** that the committed report
 `runs/v1b_kaggle_3600b.report.json` prints beside myna's 0.4893 is a different draw — a `n_per_source: 40,
 seed: 0` slice whose 17 cell rows sum to **546 questions**, from an artifact that records no laya version —
@@ -102,6 +102,36 @@ the paired accuracy of §5, *laya* version **0.4.19** — the same repository ch
 paper exists**: the card at that revision carries no BibTeX and no DOI, and the repository README's only
 arXiv link is to somebody else's work. Their rounded "421M" is quoted above purely as attribution to the
 source; no measurement in this paper uses it, and every laya figure in §5 and §8 is ours.
+
+**The second engine, scored as a control and not as a rival.** `vegaml` **0.15.0** is the same author's
+other design, and we run it for the reason §2's novelty bar gives: nothing in Myna that copies laya's or
+vegaml's structure is a contribution, so vegaml's place in this paper is a *control* — a check on what a
+same-author design of comparable **trainable** size does on Myna's rows — never the bar G1 is judged
+against. Its shape is different from laya's in the way that matters for the comparison: the witness loads
+`Qwen/Qwen3.5-0.8B` at **752,393,024** frozen reader params (torch.float32, 24 layers) behind an engine of
+**14,342,512** trainable params (16,441,712 including its port), so Myna's 16,926,848 is the same order as
+vegaml's trainable half and two orders below the backbone it drives, while laya's 421,293,827 is one engine
+end to end. Evaluated by us on the same 16 cells **and the same 1,176 rows** as our own model, over cpu at
+`mode: engine, views: 1`, it measures **0.6160** macro with a 95% CI of [0.5898, 0.6415], putting Myna
+**0.1266** below it [−0.1578, −0.0955] (exact McNemar: 205 pairs Myna-only against 404 the reverse over
+`n = 609`, p = 5.69e-16). Three disclosures belong with that number. **43.8%** of its 1,440 outcomes carry its
+own thermal decline flag (`runs/vegaml_0150_test.rowoutcomes.json`), and we score them forced-choice,
+because neither Myna nor laya can decline: arithmetic on the witness's fields gives 840/1,440 pooled
+instances (0.5833), of which the 631 declined answer 292 (0.4628) and the 809 kept answer 548 (0.6774) —
+informative decline, which is exactly the property G5 asks of Myna and Myna has no path to show here. A
+second, independent flag fires on **261 of the 1,440** outcomes (18.1%): vegaml's `_api.py` sets
+`unbound` to `bool(float(out["nearest"][r]) > cal["unbound"])`, a distance-from-calibration-manifold test
+rather than a confidence test, and **178 of those 261 are also flagged `abstain`** — so this engine carries
+two separate ways of saying it does not recognise Myna's row, and the published macro uses neither. And
+`views` is pinned to 1: a 200-row probe at `--views 2` costs 2.36 s/row (46 min for the full split) and
+returns 60 flipped readings out of 280 (agreement mean 0.8768), so a two-view number would be a better score
+*and a different configuration* than the checkpoint's default path. Cited **as software, explicitly not as a
+paper and not as external literature**: Nandakishor M, *vegaml*, version 0.15.0 — GitHub
+https://github.com/NandhaKishorM/vegaml (Apache-2.0), PyPI https://pypi.org/project/vegaml/0.15.0/
+(wheel uploaded 2026-10-31T08:13:47Z), engine artifact https://huggingface.co/nandakishorm/vega-U at
+snapshot `4d2050287982ca…`, reader https://huggingface.co/Qwen/Qwen3.5-0.8B at snapshot
+`2fc06364715b96…`; accessed 2026-11-02. No vegaml paper exists either, and every vegaml figure in §5 is
+ours.
 
 We deliberately do not use the mixed-basis laya figure that appears elsewhere in the project's history. It
 is computed over a different denominator, and §9.37 and §9.41 of the spec record the two measurement bugs
@@ -192,9 +222,9 @@ fired (Stage A) while no machine rule ever did.
 All rows below are per-cell unweighted macros over the 16 (source, question) cells both engines score,
 read from the committed report `runs/v1b_kaggle_3600b.report.json` (`macro.acc` 0.4893271976084137,
 `macro.majority` 0.4330647953941198, `g1.margin_observed` 0.056262402214293905, `g1.pass` false) — except
-the competitor row, which is read from the paired dump `runs/laya_0419_test.rowoutcomes.json` and its
-interval witness, and whose point estimate differs from the report's `macro.both.laya` for a reason stated
-below. The accuracy arm is **16,926,848 parameters at vocab 8192** (`runs/v1b-kaggle-3600b`, 3,600 updates
+the two same-author rows, the **competitor** read from `runs/laya_0419_test.rowoutcomes.json` and the
+**control arm** read from `runs/vegaml_0150_test.rowoutcomes.json`, each with its own interval witness, and
+each whose point estimate differs from the report's `macro.both.laya` for a reason stated below. The accuracy arm is **16,926,848 parameters at vocab 8192** (`runs/v1b-kaggle-3600b`, 3,600 updates
 on Kaggle, last logged step 3599).
 
 | arm | checkpoint (params / vocab) | scope | myna macro | majority floor | margin | verdict |
@@ -203,20 +233,28 @@ on Kaggle, last logged step 3599).
 | sensitivity | same checkpoint | 14 cells (out-of-scope sources cut) | 0.5334 | 0.4666 | +0.0668 | not met — sensitivity only, never the headline |
 | excluded | same checkpoint | 11 cells (every cell below its own floor dropped) | 0.5526 | — | +0.0949 | **not a result**: 0.147 short of 0.70, and dropping failing cells after seeing the scores is cherry-picking |
 | competitor | laya **0.4.19**, the same 1,176 rows myna scores (§3 pins; 0.3.20's **421,293,827 parameters measured by us** at `55cf4c4e…` stand for §8's latency artifact, never for this row) | the same 16 cells **on the same rows** | **0.6664** [0.6439, 0.6888] | — | myna is **0.1771** below [−0.2080, −0.1463] | no parity claim |
-| control | untrained scratch, 16,926,848 / 8192, 2 seeds | same 16 cells | 0.346 / 0.351 (mean 0.348) | 0.433 | below floor | the trained arm clears the floor; the control does not |
+| control arm | vegaml **0.15.0** (§3: 14,342,512 trainable behind a 752,393,024 frozen reader, `mode: engine`, `views: 1`, cpu), the same 1,176 rows | the same 16 cells **on the same rows**, scored forced-choice through its own 43.8% decline flag | **0.6160** [0.5898, 0.6415] | — | myna is **0.1266** below [−0.1578, −0.0955] | no parity claim; a control, not the G1 bar |
+| untrained control | scratch, 16,926,848 / 8192, 2 seeds | same 16 cells | 0.346 / 0.351 (mean 0.348) | 0.433 | below floor | the trained arm clears the floor; the untrained control does not |
 | contrast | void pre-`385e06c` checkpoint | — | 0.338 | — | — | disclosure only, never a result |
 
-**The brackets are intervals, and only three arms have them.** The four bracketed columns above come from
-`bench/significance.py` (`runs/significance.json`, `runs/significance.md`): 20,000 multinomial resamples of
+**The brackets are intervals, and only three of the six rows carry them.** The seven bracketed cells above come from
+two runs of one instrument — `bench/significance.py` (`runs/significance.json`, `runs/significance.md`) for
+laya and `bench/vegaml_control.py` (`runs/vegaml_control.json`, `runs/vegaml_control.md`) for the control,
+which imports `pack`, `statize`, `boot`, `ci`, `mcnemar_exact` and `_p` from the first file rather than
+restating them — and both draw 20,000 multinomial resamples of
 the **1,176 test rows** — the whole published split, `--B 20000 --seed 20261031`, first-replicate digest
-`d45e5c018ee550da` — with both floors **recomputed inside every replicate** rather than frozen at the point
-estimate, so the margin's interval carries the floor's own sampling error. The unit is the row, not the
+`d45e5c018ee550da` — a digest the control run **reproduces byte for byte**, because the draw depends only on
+the row count and the seed: the laya arm and the vegaml arm are two reads of one replicate set, so their
+difference carries no resample noise of its own — with both floors **recomputed inside every replicate**
+rather than frozen at the point estimate, so the margin's interval carries the floor's own sampling error. The unit is the row, not the
 question: a row's 1,440-question instances never separate, which matters because 316 of the split's `_meta.row`
 values collide and `_meta.id` is the only key that is unique across all 1,176. The harness refuses to write
 anything unless macro, both floors and the report's `g1.margin_observed` agree with
 `runs/v1b_kaggle_3600b.report.json` to 1e-9, so these intervals are around the published numbers and not
-around a re-measurement of them. The sensitivity, excluded, control and contrast rows have **no interval**:
-that arm set was never resampled, and a bracket on it would be invented rather than measured.
+around a re-measurement of them. The sensitivity, excluded, untrained-control and contrast rows have **no
+interval**: that arm set was never resampled, and a bracket on it would be invented rather than measured.
+Neither does the 0.0504 between the two same-author engines (0.6664 − 0.6160): the frozen instrument takes
+one competitor per run, so that is arithmetic on two paired points, not an interval.
 
 Three readings, all ours. First, **the margin and the level are separate requirements and the run fails
 both**; the gate demands ≥ 0.70 *and* ≥ +0.15 over the floor the surviving cells imply. Second, **no scope
@@ -235,17 +273,32 @@ is 0.0676, so the 0.094 deficit is not a sampling artefact a bigger draw average
 reaches 0.70"* — [0.4647, 0.5139] excludes 0.70 entirely. Two stand, and each has a McNemar cross-check
 that reads no resample at all: myna is above its own majority floor (291 rows in myna's favour against 196
 for the cells' constants over `n = 487`, exact two-sided **p = 1.94e-05**) and laya is above myna on the
-same rows (158 myna-only against 436 laya-only over `n = 594`, **p = 4.75e-31**). **No gate verdict moved:**
+same rows (158 myna-only against 436 laya-only over `n = 594`, **p = 4.75e-31**). The control run put two
+more sentences through the same rule and both stand: myna and vegaml differ on the shared rows (gap CI
+excludes 0), and vegaml's macro is above myna's on the same rows (CI excludes 0 on the negative side) —
+cross-checked without a resample at 205 myna-only against 404 the reverse over `n = 609`, **p = 5.69e-16**.
+**No gate verdict moved:**
 G1 was already `not met` on the point estimate, so `make gates` still prints 3 met / 4 not met / 0 open.
 What did change is that a claim of the form "the margin is +0.0563" is now four numbers — point, two bounds
 and the floor's own sampling error — and the sentence that read laya's 0.6668 as paired with myna's macro
 is gone from every doc in this repository.
 
-One cell goes the other way, and it is worth naming because a 15-of-16 pattern hides it: `imdb/positive`,
-myna **0.8000** against laya **0.4625**, Δ **+0.3375** with CI [0.2237, 0.4545] and McNemar p = 4.63e-07 —
-the only cell in the 16 where this checkpoint beats the competitor on the same rows, and one of the eight
-cells whose accuracy moves when their row's state is swapped (SPEC §9.47's `swap-state` arm, from
-`runs/diag_question_ablation.json`: 0.800 → 0.525). At the other end `agnews/topic` is −0.5431 [−0.6387, −0.4444]. What no interval here
+One cell went the other way against laya, and it is worth naming because a 15-of-16 pattern hides it — and
+worth naming twice, because the control takes it away. Against laya, `imdb/positive` is myna **0.8000**
+against **0.4625**, Δ **+0.3375** with CI [0.2237, 0.4545] and McNemar p = 4.63e-07, the only cell in the 16
+where this checkpoint beats that competitor on the same rows, and one of the eight cells whose accuracy moves
+when their row's state is swapped (SPEC §9.47's `swap-state` arm, from `runs/diag_question_ablation.json`:
+0.800 → 0.525). Against vegaml, the **same cell on the same rows** is **−0.0750** with p = 0.180: myna loses
+it, not significantly. So the set of cells where this checkpoint leads is not a property of the checkpoint
+and the split; it is a property of the checkpoint, the split *and* the engine it is paired with. Against the
+control the four positive cells are `agnews/is_business` **+0.1395** [−0.0196, +0.2927], `agnews/is_world`
+**+0.1333**, `contrastive/decision` **+0.0561** and `trec/answer_type` **+0.0172**, with the smallest
+McNemar p among them 0.146 — **none significant** — while vegaml leads in 12 of 16 and significantly (p <
+0.05) in 8, most sharply on the multi-class cells `agnews/topic` −0.5172 [−0.6168, −0.4144] p = 1.30e-15
+(0.3707 against 0.8879) and `banking77/intent` −0.2672 p = 3.67e-08 (0.0345 against 0.3017, where chance on
+77 intents is 0.013). The honest sentence is therefore two sentences: no competitor read gives this
+checkpoint a cell it wins with statistical support, and `imdb/positive` is a state-dependence, not an
+advantage. At the laya arm's other end `agnews/topic` is −0.5431 [−0.6387, −0.4444]. What no interval here
 licenses is a statement about Myna rather than about this checkpoint on these rows: the 1,176 rows are a
 fixed draw, the interval is the sampling error of *this* split, and a second training run of the same
 3,600-update dose is a different sampling layer that would need its own checkpoint, which this box has not
@@ -376,15 +429,32 @@ recorded under a deliberate CPU throttle in two of its three stages, appears now
 
 The mechanical claim is that every published figure re-derives from a committed artifact, and the audit
 passes: `bench/gates.py --check` → **7/7 verdicts hold** (3 met, 4 not met, 0 open; the release gate is
-NOT clear); `bench/reproduce.py --check` → **39/39 rows hold, 142 figures tied to a committed witness, 1
+NOT clear); `bench/reproduce.py --check` → **41/41 rows hold, 159 figures tied to a committed witness, 1
 gated with no witness**; the two suites that read these documents (`tests/test_gates.py`,
-`tests/test_reproduce.py`) → **67 passed**. A mutation battery of 21 string-anchored mutants backs the
-gate logic, and the anchor-presence check (21/21) is what tells us a prose edit has not silently turned one
-into a no-op. The significance harness is backed the same way: `bench/mutation_significance.py` scores
+`tests/test_reproduce.py`) → **67 passed**, and the whole suite → **710 passed, 1 skipped** in 616.22 s
+(`runs/suite_post_967d.log`). Mutation batteries back each of those layers. 21 string-anchored mutants back
+the gate logic and re-ran against this tree at **21/21 caught** in 1,233 s (`runs/mutation_gates_post_967.log`,
+its `/usr/bin/time -p` sidecar `runs/mutation_gates_post_967.time`);
+the anchor-presence check is what tells us a prose edit has not silently turned one into a no-op. The
+significance harness is backed the same way: `bench/mutation_significance.py` scores
 **39/39** mutants over six families — the point-estimate guard, the resample unit, the pairing, the claiming
 rules, the print face and the outcome dumps themselves — and the three real gaps its first pass printed
 (14/21) are written up rather than quietly fixed, because a battery that only ever passes is not read
 (SPEC §9.66).
+
+**The §5 control arm carries its own battery, because a thin wrapper is where a silent wrong answer lives.**
+`bench/mutation_vegaml_control.py` prints a baseline of `41 passed` and then **54/54 mutations caught**
+(`runs/mutation_vegaml_control_post_967.log`, `runs/mutation_vegaml_control_post_967b.log`), over six
+families: the guards that stop being inputs
+(the engine check, the `--allow-subset` refusal, each of the four 1e-9 branches), the slot (`pack()`'s
+positional order and the two-key relabel map), the adjudication (the two-sided rule and its two one-sided
+neighbours, interval-vs-point as the thing a claim is judged on, `b`/`c` in the pooled McNemar), the witness
+face (including `control_health`, which a clean fixture cannot distinguish from a hardcoded `0`, and the
+control's second decline flag — a denominator that quietly becomes rows, an overlap that becomes
+"everything", and a prose count the JSON never computed are three separate lies), the dump's scoring rules,
+and the crash-resume paths that cost the first pass 880.9 s of inference before dying twice in the code after
+it. `bench/mutation_reproduce.py` re-runs against the two new registry rows at **29/29 caught** in 720 s
+(`runs/mutation_reproduce_post_967.log`, sidecar `runs/mutation_reproduce_post_967.time`).
 
 **That gap is now closed, and the closure is replayed rather than asserted.** The Stage C weights are
 published as Release `lc1-4k-s0-stageC-weights` — id **428002663**,
@@ -489,7 +559,7 @@ arms were matched on coverage (§9.58), and it is not repeated here.
 
 ## 11. Limitations and recorded defects
 
-Beyond the §9 gap, we disclose four defects in our own documentation rather than smooth them, because more
+Beyond the §9 gap, we disclose five defects in our own documentation rather than smooth them, because more
 than one of them would otherwise enter the literature through this paper.
 
 **(a) A v0 weight digest that no reader can check.** A `v0 model.pt` digest quoted during the hand-off
@@ -515,6 +585,12 @@ verbatim in README, so a stale *sentence* can survive while every *verdict* is r
 which is exactly what happened once already: the generator claimed G1 and G4 "cannot be closed on this
 box" for a day after both had been closed on it (§9.62 ix, §9.63 xii). The 21 mutants cover verdict logic
 and none reaches that prose, so we present the block as a drift guard with a named hole, not as a proof.
+The hole was demonstrated on this very edit: re-splicing the block for the registry's new figure count left
+a duplicated `<!-- gates:release:end -->` marker, `bench/gates.py --check` stayed green at **7/7 verdicts
+hold** with every count still correct, and only
+`tests/test_gates.py::test_readme_carries_the_generated_block_verbatim` went red
+(`runs/two_suites_post_967.log`, `1 failed, 66 passed`). The guard is that test, not the check, and a
+generated block can be internally consistent and still not be what the file contains.
 
 **(d) A headline comparison that was not a comparison for as long as the report has been published.** The
 committed roll-up `runs/v1b_kaggle_3600b.report.json` prints `macro.both.laya` = 0.6668154761904762 beside
@@ -530,6 +606,19 @@ artifact, so anyone who recomputes the gap from `runs/v1b_kaggle_3600b.report.js
 mistake; what closes it is `bench/significance.py`, which will not run on a row subset without
 `--allow-subset` and refuses to write any interval at all if its own point estimates disagree with the
 committed report by more than 1e-9.
+
+**(e) The two competitor arms are not compared to each other, only each to Myna.** laya's 0.6664 and
+vegaml's 0.6160 are both paired to Myna's rows, both drawn from the same 20,000-replicate set (first-replicate
+digest `d45e5c018ee550da` in each file), and the 0.0504 between them appears in §5 as arithmetic on two
+paired point estimates **with no interval**, because `bench/significance.py` accepts one second-engine dump
+per run and §9.67's acceptance was that it not be edited to take two. A reviewer who wants laya-against-vegaml
+paired needs a three-way pack in the instrument, which is a change to a frozen harness and therefore a
+decision rather than an edit. Three related pins are disclosed rather than smoothed: the control's decline flag
+is recorded and not applied, so its published macro is a forced-choice number that understates what that
+engine would claim under its own selectivity; its second, independent `unbound` flag fires on 261 of the 1,440
+outcomes and is likewise recorded and not applied, so 18.1% of rows the engine does not recognise are still
+scored as answers; and its `views` is pinned to 1, where a 200-row probe at
+`--views 2` flips 60 of 280 readings and costs 2.36 s/row.
 
 **Scope limits we accept.** One seed for the needle ladder and two for the scratch control; a
 single-box, single-browser measurement set; a frozen 16-cell suite and a needle ladder at `n = 60` per rung,
@@ -559,7 +648,11 @@ successor is the paired bootstrap of §5: it resamples whole rows of the publish
 floors inside every replicate, compares the two engines on the same `(row, question)` pairs rather than on
 two samples that happened to share a cell list, and refuses to write its own file unless the point
 estimates agree with the committed report to 1e-9 — and adjudicating the four sentences it was handed, it
-rewrote the two about G1 without moving a single gate verdict.
+rewrote the two about G1 without moving a single gate verdict. Its own successor check is that a *second*
+same-author engine went into that frozen instrument's competitor slot without the instrument being edited,
+reproducing the same replicate digest: vegaml 0.15.0 measures 0.6160 [0.5898, 0.6415] on the identical rows,
+and the one cell this checkpoint won against laya it loses against the control. Two competitors, two
+intervals, one draw, and the same verdict.
 
 ---
 

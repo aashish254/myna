@@ -1,0 +1,115 @@
+baseline copy: green (1 test file) 41 passed in 2.62s
+
+[ 1/54] caught      vegaml_control.py: a dump from any engine is accepted into the vegaml slot
+            FAILED tests/test_vegaml_control.py::test_engine_guard_refuses_a_foreign_dump
+[ 2/54] caught      vegaml_control.py: a paired set smaller than the split is not refused
+            FAILED tests/test_vegaml_control.py::test_a_subset_that_prices_no_kept_cell_is_refused_then_allowed
+[ 3/54] caught      vegaml_control.py: the 1e-9 check on myna's macro, floors and uniform loosens to 1e-4
+            FAILED tests/test_vegaml_control.py::test_myna_guard_fires_on_each_reported_statistic[macro-acc]
+[ 4/54] caught      vegaml_control.py: the 1e-9 check on G1's margin loosens to 1e-4
+            FAILED tests/test_vegaml_control.py::test_myna_guard_fires_on_each_reported_statistic[g1-margin_observed]
+[ 5/54] caught      vegaml_control.py: G1's margin is not one of the statistics the guard checks
+            FAILED tests/test_vegaml_control.py::test_myna_guard_fires_on_each_reported_statistic[g1-margin_observed]
+[ 6/54] caught      vegaml_control.py: a statistic that disagrees with the report still prints its interval
+            FAILED tests/test_vegaml_control.py::test_allow_subset_waives_the_pairing_guard_and_not_the_statistic_guard
+[ 7/54] caught      vegaml_control.py: a missing input is read as an empty dict instead of named
+            FAILED tests/test_vegaml_control.py::test_missing_input_is_exit_2 - FileNotFo...
+[ 8/54] caught      vegaml_control.py: two dumps sharing no row id are resampled instead of refused
+            FAILED tests/test_vegaml_control.py::test_two_dumps_sharing_no_row_id_are_refused
+[ 9/54] caught      vegaml_control.py: the control is packed into the myna slot
+            FAILED tests/test_vegaml_control.py::test_a_control_below_myna_stands_the_difference_and_not_the_parity
+[10/54] caught      vegaml_control.py: the relabel map stops renaming the gap column
+            FAILED tests/test_vegaml_control.py::test_a_control_below_myna_stands_the_difference_and_not_the_parity
+[11/54] caught      vegaml_control.py: the relabel map renames myna's own macro into the control's column
+            FAILED tests/test_vegaml_control.py::test_a_control_below_myna_stands_the_difference_and_not_the_parity
+[12/54] caught      vegaml_control.py: statize's per-replicate arrays are published beside the statistics
+            FAILED tests/test_vegaml_control.py::test_a_control_below_myna_stands_the_difference_and_not_the_parity
+[13/54] caught      vegaml_control.py: the point estimate keeps the instrument's competitor names
+            FAILED tests/test_vegaml_control.py::test_a_control_below_myna_stands_the_difference_and_not_the_parity
+[14/54] caught      vegaml_control.py: the interval map is not relabelled
+            FAILED tests/test_vegaml_control.py::test_a_control_below_myna_stands_the_difference_and_not_the_parity
+[15/54] caught      vegaml_control.py: the resample ignores the seed it was passed
+            FAILED tests/test_vegaml_control.py::test_the_seed_reaches_the_resample - Ass...
+[16/54] caught      vegaml_control.py: the witness names a digest it never drew
+            FAILED tests/test_vegaml_control.py::test_the_seed_reaches_the_resample - Ass...
+[17/54] caught      vegaml_control.py: the bootstrap block reports the published row count, not the paired one
+            FAILED tests/test_vegaml_control.py::test_a_subset_that_prices_no_kept_cell_is_refused_then_allowed
+[18/54] caught      vegaml_control.py: the witness claims no row left the pairing
+            FAILED tests/test_vegaml_control.py::test_a_subset_that_prices_no_kept_cell_is_refused_then_allowed
+[19/54] caught      vegaml_control.py: the paired instance count is myna's own question count
+            FAILED tests/test_vegaml_control.py::test_mcnemar_pooled_is_the_sum_of_the_cells
+[20/54] caught      vegaml_control.py: the difference claim reads only the negative side
+            FAILED tests/test_vegaml_control.py::test_a_control_below_myna_stands_the_difference_and_not_the_parity
+[21/54] caught      vegaml_control.py: the parity claim reads the positive side
+            FAILED tests/test_vegaml_control.py::test_direction_of_the_fixture_control - ...
+[22/54] caught      vegaml_control.py: a claim is adjudicated on the point estimate instead of its interval
+            FAILED tests/test_vegaml_control.py::test_direction_of_the_fixture_control - ...
+[23/54] caught      vegaml_control.py: the per-cell Δ column prints the difference the wrong way round
+            FAILED tests/test_vegaml_control.py::test_mcnemar_pooled_is_the_sum_of_the_cells
+[24/54] caught      vegaml_control.py: McNemar's b counts pairs the control also got right
+            FAILED tests/test_vegaml_control.py::test_mcnemar_pooled_is_the_sum_of_the_cells
+[25/54] caught      vegaml_control.py: McNemar's c counts pairs myna also got right
+            FAILED tests/test_vegaml_control.py::test_mcnemar_pooled_is_the_sum_of_the_cells
+[26/54] caught      vegaml_control.py: the pooled count loses the side where the control won
+            FAILED tests/test_vegaml_control.py::test_mcnemar_pooled_is_the_sum_of_the_cells
+[27/54] caught      vegaml_control.py: the markdown table drops the gap row
+            FAILED tests/test_vegaml_control.py::test_md_text_names_the_relabel_and_the_abstain_rule
+[28/54] caught      vegaml_control.py: the markdown table rounds to two decimals
+            FAILED tests/test_vegaml_control.py::test_md_text_names_the_relabel_and_the_abstain_rule
+[29/54] caught      vegaml_control.py: the markdown verdict word always says stands
+            FAILED tests/test_vegaml_control.py::test_a_control_below_myna_stands_the_difference_and_not_the_parity
+[30/54] caught      vegaml_control.py: the console verdict word always says SURVIVES
+            FAILED tests/test_vegaml_control.py::test_a_control_below_myna_stands_the_difference_and_not_the_parity
+[31/54] caught      vegaml_control.py: the markdown's McNemar p is a number this file invented
+            FAILED tests/test_vegaml_control.py::test_a_control_that_answers_exactly_like_myna_stands_nothing
+[32/54] caught      vegaml_control.py: the control's version is the one this file expects
+            FAILED tests/test_vegaml_control.py::test_the_control_provenance_and_health_are_carried_from_the_dump
+[33/54] caught      vegaml_control.py: a control that failed to answer rows reports no failures
+            FAILED tests/test_vegaml_control.py::test_the_control_provenance_and_health_are_carried_from_the_dump
+[34/54] caught      vegaml_control.py: the argmax disagreements are reported as none
+            FAILED tests/test_vegaml_control.py::test_the_control_provenance_and_health_are_carried_from_the_dump
+[35/54] caught      vegaml_control.py: the engine's warnings are dropped from the witness
+            FAILED tests/test_vegaml_control.py::test_the_control_provenance_and_health_are_carried_from_the_dump
+[36/54] caught      vegaml_control.py: the abstain block is a clean summary instead of the dump's
+            FAILED tests/test_vegaml_control.py::test_the_control_provenance_and_health_are_carried_from_the_dump
+[37/54] caught      vegaml_control.py: the unbound rate is divided by rows instead of question outcomes
+            FAILED tests/test_vegaml_control.py::test_the_unbound_flag_is_tallied_from_the_dump_rows
+[38/54] caught      vegaml_control.py: every unbound outcome is reported as one that also declined
+            FAILED tests/test_vegaml_control.py::test_the_unbound_flag_is_tallied_from_the_dump_rows
+[39/54] caught      vegaml_control.py: the markdown prints an overlap count the JSON never computed
+            FAILED tests/test_vegaml_control.py::test_the_unbound_flag_is_tallied_from_the_dump_rows
+[40/54] caught      eval_vegaml_row_outcomes.py: the shim hands the engine its gold
+            FAILED tests/test_vegaml_control.py::test_vegaml_questions_renames_and_strips_gold
+[41/54] caught      eval_vegaml_row_outcomes.py: noul reaches vegaml under the suite's own name
+            FAILED tests/test_vegaml_control.py::test_suite_types_are_all_mapped - Assert...
+[42/54] caught      eval_vegaml_row_outcomes.py: an unmapped question type is dropped instead of refused
+            ERROR tests/test_vegaml_control.py
+[43/54] caught      eval_vegaml_row_outcomes.py: a question with no criteria is sent an empty option set
+            FAILED tests/test_vegaml_control.py::test_vegaml_questions_renames_and_strips_gold
+[44/54] caught      eval_vegaml_row_outcomes.py: the score gold is read as a level text, not the index it is
+            FAILED tests/test_vegaml_control.py::test_outcome_score_is_the_positional_index_rule
+[45/54] caught      eval_vegaml_row_outcomes.py: the score readout argmins its own distribution
+            FAILED tests/test_vegaml_control.py::test_outcome_score_is_the_positional_index_rule
+[46/54] caught      eval_vegaml_row_outcomes.py: the boolean half-line becomes a strict majority
+            FAILED tests/test_vegaml_control.py::test_outcome_boolean_uses_the_half_line
+[47/54] caught      eval_vegaml_row_outcomes.py: the choice readout is an argmax over probs, not the engine's field
+            FAILED tests/test_vegaml_control.py::test_disagreement_between_probs_and_the_answer_field_is_counted
+[48/54] caught      eval_vegaml_row_outcomes.py: the boolean check stops comparing the field with its own probs
+            FAILED tests/test_vegaml_control.py::test_boolean_disagreement_needs_both_the_side_and_the_confidence
+[49/54] caught      eval_vegaml_row_outcomes.py: the boolean check stops comparing confidence with the table's max
+            FAILED tests/test_vegaml_control.py::test_boolean_disagreement_needs_both_the_side_and_the_confidence
+[50/54] caught      eval_vegaml_row_outcomes.py: the confidence column is flattened
+            FAILED tests/test_vegaml_control.py::test_outcome_choice_matches_the_label_field
+[51/54] caught      eval_vegaml_row_outcomes.py: a cell counts every instance as a hit
+            FAILED tests/test_vegaml_control.py::test_cell_table_merges_two_types_into_one_cell
+[52/54] caught      eval_vegaml_row_outcomes.py: every type in a cell is folded into the choice part
+            FAILED tests/test_vegaml_control.py::test_cell_table_merges_two_types_into_one_cell
+[53/54] caught      eval_vegaml_row_outcomes.py: the sidecar stops writing the warnings the reader asks for
+            FAILED tests/test_vegaml_control.py::test_the_raw_sidecar_writes_every_field_from_raw_reads
+[54/54] caught      eval_vegaml_row_outcomes.py: the live pass leaves a name the shared aggregation tail reads unbound
+            FAILED tests/test_vegaml_control.py::test_from_raw_and_a_live_pass_bind_the_same_names
+
+54/54 mutations caught
+real 143.81
+user 121.36
+sys 22.18
