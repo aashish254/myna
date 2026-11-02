@@ -70,7 +70,7 @@ Quote the ratio, never the millisecond figure.
 | **G4** | Long-context is *correct*, not just cheap | needle-style typed decision ≥ 0.90 at 4k and ≥ 0.85 at 16k state | **not met — measured on a completed dose, and no longer gated on hardware.** v0's needle curve (`runs/needle_myna-v0.md`) reads 0.188 at 128 tokens against a 0.167 floor — at chance on the shortest rung — so the longer rows are decay of nothing, and the harness says so itself rather than printing a table (§9.25). The 4k needle run then executed *on this box* (§6 prices it at 2.4 GiB retained, 1c measured 2.0194742679595947 s/update), was aborted at 425 of 1200 updates by 7b's own Stage A rule with the 128-rung at 0.1667 = the floor (§9.62), and was then resumed on the owner's order to the **full approved 1200-update dose**. Its n=60 ladder (`runs/needle_lc1_stageC_final.json`) reads **0.1833 at 4096 against G4's ≥ 0.90 — short by 0.7167 — and 0.150 at 16384 against ≥ 0.85, short by 0.700**, the first time either threshold has been measured on a 4k-trained checkpoint; the 128-rung is 0.150, so the harness still prints `readable: false` — not a decay curve, a flat line at chance (§9.63). Step 799 and step 1199 agree exactly on all three shared rungs (9, 13, 11 of 60), so the limiter is the mechanism, not the dose. The 16k *state* remains measured and cheap (§9.22) |
 | **G5** | Useful confidence, with abstention | risk/coverage curve on `calibration.jsonl`; ≥ 0.95 accuracy at ≥ 60% coverage on banking77 + dbpedia14 + trec | **not met on the level, met on the machinery.** Abstention ships: `Myna(ckpt, abstain_below=t)` withholds the commitment and prints the measured reason, the fallback seam labels every answer with the engine that committed, and the curve is a committed artifact (`runs/risk_coverage.md`, 448 rows / 568 questions). Accuracy on v0 climbs **0.349 → 0.535** as coverage falls 1.00 → 0.20 — the confidence ranks the answers, on a checkpoint that cannot do the task — and setting the 0.693 floor on the engine abstains on **227** questions where the curve withheld **227**. But **no rung reaches 0.95** (max 0.596, at 10% coverage) and G5's own three sources sit at 0.000 / 0.025 / 0.150, so the pass needs the `KAGGLE` checkpoint (§9.24) |
 | **G6** | No regression on what already worked | synthetic v0 test ≥ 0.94 | **not met — measured on the checkpoint the gate was written against, and the pairing is the artifact.** v0 scores **0.9525 / 0.9496** on the synthetic test split and `v1b-kaggle-3600b` — the checkpoint every G1 figure here is scored on — scores **0.3423 / 0.3489** on rows hashed to the same digest per seed (`998d7375…`, `fc9cbe3b…`), so the two arms differ by weights alone (§9.65). 0.3423 is **0.5977 short of 0.94**, and the floors the same witness prints (uniform **0.3370**, majority **0.3546 / 0.3463**) place it +0.0053 above chance and *below* the modal-label floor: 4 of 9 cells under chance on seed 0, so this is not an uninformative head either. What the verdict does **not** say is that v1 lost something v0 had: `v1b-kaggle-3600b` trained on the real `decision-v2` suite and never saw a synthetic row, so the number is zero-shot retention of the task family, and the transfer failure is the finding (§9.65). The logged **0.9523** of `runs/train-v0.log` stays out of the binding — §9.30 disqualifies its nine rows as a set this box can regenerate — and a draft of this row once cited "0.951", which no artifact printed |
-| **G7** | Reproducibility | one command per result, seeds pinned, witness JSONs committed, `pytest` green | **met, as a binding rather than a rebuild.** `bench/reproduce.py` holds 41 registry rows, each binding one published table cell to one command and one committed witness, and `make repro` re-reads the 159 quoted figures out of those artifacts rather than out of the prose; the python commands among those rows are checked against the tool behind them — its `--help` must still print every flag the row publishes (§9.43); the seeds live inside the printed commands (`--seed 0`, `--seeds 0 1`, `--seed 20261031`), not in sentences about them. What this does **not** say: no target *executes* the registry end to end — 27 rows re-run on this box, 6 retrain a checkpoint, 3 need a laya checkout on `PYTHONPATH`, 1 need vegaml in its own venv, 3 need Google Chrome and 1 is `KAGGLE` — which is why TODO 8b stays unticked and why G7 is discipline rather than a one-command rebuild. Every count in this cell is now read back against `ROWS` by `bench/gates.py`, so this row — the table's one hand-copied cell — goes red rather than quietly stale (§9.44) |
+| **G7** | Reproducibility | one command per result, seeds pinned, witness JSONs committed, `pytest` green | **met, as a binding rather than a rebuild.** `bench/reproduce.py` holds 42 registry rows, each binding one published table cell to one command and one committed witness, and `make repro` re-reads the 173 quoted figures out of those artifacts rather than out of the prose; the python commands among those rows are checked against the tool behind them — its `--help` must still print every flag the row publishes (§9.43); the seeds live inside the printed commands (`--seed 0`, `--seeds 0 1`, `--seed 20261031`), not in sentences about them. What this does **not** say: no target *executes* the registry end to end — 28 rows re-run on this box, 6 retrain a checkpoint, 3 need a laya checkout on `PYTHONPATH`, 1 need vegaml in its own venv, 3 need Google Chrome and 1 is `KAGGLE` — which is why TODO 8b stays unticked and why G7 is discipline rather than a one-command rebuild. Every count in this cell is now read back against `ROWS` by `bench/gates.py`, so this row — the table's one hand-copied cell — goes red rather than quietly stale (§9.44) |
 
 **This column is not a claim.** `make gates` (`bench/gates.py --check`) re-reads each cell's
 leading verdict word, the registry row that gate cites, and the named field inside a committed
@@ -4862,3 +4862,188 @@ Kept permanently, because the value of this project's claims is that they surviv
 
     **Nothing was merged, tagged, released, or submitted**; the push that carries this entry is the
     one the owner gated by name, from the account the owner named.
+
+68. **Myna v6 Unified is integrated, and its published table now has a reproduction instead of only
+    a transcript — 8 of 16 cells exact to the question and +5 questions of 1,440 overall — while the
+    one decomposition this box cannot reproduce is named, the four places the checkpoint contradicts
+    the campaign notes are written down, and the two gates v6's numbers clear stay `not met` because
+    flipping them is a decision with three separate levers, none of them mechanical.**
+
+    **(i) What was built, and what proves the topology rather than guessing it.**
+    `src/myna/v6_engine.py` carries `SetAwareBankingHead`, `CoralOrdinalScoreHead`, `GraphModule`,
+    an `Observation` with `engine.Observation`'s surface, and `MynaV6`, which loads from a local
+    campaign directory or a Hugging Face repo id. The four heads load with `strict=True` — **60
+    tensors** (packed scorer 6, set-aware banking head 19, ordinal head 22, graph module 13) — so the
+    class definitions in this tree are proven to be the checkpoint's topology, not a plausible shape
+    that happens to accept a subset. `MASK_FILL = -65000.0` everywhere a mask is filled: `-1e9`
+    overflows `c10::Half` and would have turned an fp16 CUDA run into `-inf`. `Myna(<directory>)`
+    dispatches on the directory's contents (`myna-v6-unified.pt` or `myna-v5-unified.pt` beside
+    `deberta-v5-finetuned/` → v6; `model.pt` + `tokenizer.json` → the v0/v1b engine), which is why
+    all 545 pre-existing tests still load `runs/myna-v0` unchanged; `src/myna/__init__.py` exports
+    `MynaV6` through PEP 562, so `import myna` still works without `transformers` and only touching
+    the name raises the install sentence. `pyproject.toml` gained the `v6` extra
+    (`transformers`, `safetensors`, `huggingface_hub`), separate from the pre-existing `bench` extra
+    because `bench` scores competitors and CI installs neither. `myna.serve`'s preflight accepts a v6
+    campaign directory. `bench/v6_audit.py` scores a frozen split and writes **its own command as
+    the first field of the witness it emits**, so a reader can tell which invocation printed a number.
+
+    **(ii) The reproduction, measured on this box.** `uv run python -m bench.v6_audit --ckpt
+    "myna-v5-prototype 2" --split test --every 1 --out runs/v6_rescore_test.json` scored **all
+    1,176 test bundles** — 1,440 questions, 16 cells, nothing sampled — through this tree's engine on
+    CPU fp32 in **775.5 s**. It prints macro **0.8620375366903147** against the campaign witness's
+    **0.8582510184910809** and overall **0.8631944444444445** (1,243 of 1,440) against
+    **0.8597222222222223** (1,238). **8 of the 16 cells agree to the question**; the 8 movers are
+    `mnli/relation` 100 against 97, `boolq/answer` 68 against 66, `agnews/is_world` 45 against 44,
+    `imdb/positive` 77 against 76, `sst5/sentiment` 49 against 48, `banking77/intent` 78 against 77,
+    `trec/answer_type` 110 against 111 and `yelp/rating` 50 against 53 — a net **+5**, the local arm
+    the higher of the two, so the published table is not the flattering measurement and the registry
+    row quotes both. The engine's `abstain` flag fired on **119 of 1,440** answers with no floor set
+    — the CAL-fitted conformal 90% set came out empty — and both arms rank those answers anyway, so
+    the comparison is on one definition and a *selective* accuracy would be a different number.
+
+    **(iii) The one thing that does not reproduce is named, not averaged.** `banking77/intent`
+    reproduces in aggregate (78/116 against 77/116) and **fails in its variant decomposition**: this
+    box prints `clean` 60/80, `none_absent` **0/12**, `none_present` 9/12, `permuted` 9/12 against the
+    witness's 58/80, **7/12**, 5/12, 7/12. The aggregate survives because the other three variants
+    over-score to cover the hole. The cause is specific and it is this integration's own limit: the
+    open-set rejection path — `SetAwareBankingHead.extract_gate_features`'s six features and the
+    `T_fallback` / 0.45 threshold — is **reconstructed from the tensor shapes**, because the archive
+    carries weights and no training code, so nothing in the tree pins that recipe the way
+    `strict=True` pins the other 60 tensors. That is why `'"none_absent": "0/12"'` is one of the
+    quoted figures in the `v6-rescore-test` row: a row that quotes the disagreement cannot quietly
+    become agreeable, and a reader who asks what v6 does with a 78-option intent list that contains
+    no correct option should get the answer *"unverified on this box"*, not a copied 7/12.
+
+    **(iv) The checkpoint contradicts the campaign notes in four places**, each read out of the
+    artifact rather than the transcript: the backbone file is **390 tensors / 434,012,160 fp32
+    parameters** (`deberta-v5-finetuned/model.safetensors`, counted from its own header, 1,736,094,384
+    bytes) and not the "304M" a note carried; `config["use_coral_score_head"]` is **false**, so the
+    CORAL/EMD ordinal head is loaded and **inert in every published figure** — the `score` primitive's
+    0.6333 is packed argmax over the level options, and no v6 number in this repository is an ordinal
+    result; `graph_module`'s `gate_logit` is **-2.3756585** (sigmoid **0.0850478**), so the gate was
+    *trained down* from the −2.0 / 0.1192 initialisation the notes describe and the two are not the
+    same reading; and `b77_none_mode` is `T_fallback` at `b77_none_param` **0.45**, which is the
+    threshold (iii) is about. One more, in the code rather than the numbers:
+    `CoralOrdinalScoreHead` stores `b0` plus **three** `deltas` for a five-level `score`, so the fold
+    from three offsets to five levels is not determined by the artifact, and the module returns its
+    parts instead of inventing the missing scalar.
+
+    **(v) The 5-arm causal-graph falsification is reported, and is not published.** The campaign's
+    five arms — scorer-only, graph-full, graph-off, graph-shuffled, exact factor-graph decoding —
+    all printing 388/436 on dev and 387/436 on test, with 139/172 and 134/172 joint and 1/172 then
+    0/172 contradictions, is the result that says cross-question consistency lives in the fine-tuned
+    encoder rather than in post-hoc message passing. It is also the result **no committed witness
+    carries**: none of the eight JSONs in the archive holds per-arm scores, and `bench/` has no
+    ablation harness for it. So it stays in this entry as *reported*, with no README table and no
+    registry row, because §9.30 refuses a published figure whose witness is not committed and a
+    transcript is not a witness. Closing it means the notebook, not a re-derivation — the graph module
+    itself is here (13 tensors, `strict=True`) and its gate is read above.
+
+    **(vi) Both gates v6 clears stay `not met`, deliberately.** G1's condition is macro ≥ 0.70 on the
+    frozen split with a per-source table and ≥ +0.15 over the published 0.4331 majority floor; 0.8583
+    satisfies it, +0.4252 over that floor. G5's condition is ≥ 0.95 accuracy at ≥ 60% coverage on
+    `banking77` + `dbpedia14` + `trec`; the witness prints **0.9904**. Three reasons the verdicts did
+    not move, each one the owner's lever rather than mine:
+    - *they are pinned.* `tests/test_gates.py::test_the_release_state_counts_the_verdicts_that_are_there`
+      asserts the tally `{met: 3, not_met: 4, open: 0}` and its headline string, and
+      `test_g1_is_not_met_on_the_trained_run_and_stays_off_the_void_one` asserts G1's verdict plus the
+      rows it cites. The integration brief for this tick says the status strings pytest asserts are
+      not to be deleted, so no test was edited to make a gate read better.
+    - *a verdict's proof is an artifact.* G1 rests on `runs/v1b_kaggle_3600b.report.json`'s
+      `g1/pass: false` read out of the frozen instrument. Re-pointing that proof at
+      `runs/witness-v6-master-paper.json` is a statement about **what G1 gates** — the from-scratch
+      System-1 engine the paper claims, or the best engine the repository ships — and §9.31's rule is
+      that the verdict column is read, not generated.
+    - *the floor and the intervals are not v6's.* §4.2's 0.4331 is this harness's majority floor over
+      the SSM arms, and `bench/significance.py` has never been run against a v6 dump, so G1's second
+      clause is **quoted** for v6 rather than measured. The same instrument would have to be run on
+      v6's per-question outcomes before a `met` would rest on intervals instead of on a point estimate
+      inherited from a different model.
+
+    What *is* closed by this entry is G7 in the only sense G7 is ever closed: the four campaign
+    witnesses are committed, and one registry row binds the reproduction to a command that re-runs
+    here. §2.2's tally — generated from the verdicts — still reads **3 of 7 met, 4 not met, 0 open**.
+
+    **(vii) v6 does not "never re-read", and that is the architecture claim.** `MynaV6`'s
+    `Observation` holds text and token ids, and every `ask` re-encodes the whole state through the
+    24-layer bidirectional encoder: the fixed-size 576 KiB state matrix, the delta-scanned `append`
+    and the O(1)-per-append cost are properties of the gated-linear-attention trunk, and none of them
+    transfers. G2's **3.04×/6.78×** ratios are therefore statements about the SSM engine, **no v6
+    latency is measured anywhere in this repository**, and README says so in the section's first
+    paragraph rather than in a footnote. The two engines share the question schema, the readout
+    contract, the abstention seam and `myna.serve`, which is what makes the split legible rather than
+    contradictory.
+
+    **(viii) None of the weights are in git, and `scripts/upload_to_hf.py` is the route.** Matched by
+    `.gitignore`: `myna-v6-unified.pt` (50,499,775 B), `myna-v5-unified.pt` (4,226,511 B),
+    `myna-v5-best.pt` and the two per-option scorers (~2.11 MB each),
+    `deberta-v5-finetuned/model.safetensors` (1,736,094,384 B) and the campaign directory itself,
+    whose name contains a space — `myna-v5-prototype*/` is the pattern that catches it, since a
+    gitignore pattern cannot quote `"myna-v5-prototype 2"/` and a quoted line would match a path with
+    literal quote marks in it. The upload script sends two groups — `upload_folder` with an
+    explicit `allow_patterns` list for what lives inside the campaign directory, then one
+    `upload_file` per committed witness — generates the model card's 16-cell table from the
+    witness JSONs at run time rather than from a copy of the prose, and **prefers the committed
+    `runs/` copies of those witnesses** over the campaign's, so a Hub card and the paper's table
+    cannot drift apart. `--dry-run` prints the manifest and its arithmetic; on this box that is
+    **10 files, 1,799,177,588 B = 1.799 GB** (6 paths inside the directory — the backbone's four
+    files plus both unified `.pt` — and 4 committed witnesses) and a 4,692-character card. The
+    campaign's other weights (`myna-v5-best.pt`, the two ~2.11 MB per-option scorers) are
+    deliberately *not* in that list: the pattern is derived from the same list that is printed,
+    so the Hub gets the checkpoint the paper scores and nothing else.
+
+    **(ix) What the verification run on this box printed.** Nothing in §9.68 was accepted by
+    inspection; each line below is an instrument's own output on 2026-11-02, after the eight
+    witnesses, the engine, the audit harness and the uploader were staged.
+
+    - `uv run pytest -q -rs` → **730 passed, 1 skipped** in 581.85 s (the skip is
+      `tests/test_upstream.py:131`, which needs `KEV_ROOT` and `datasets`). 18 of the added
+      tests are `tests/test_v6_engine.py` and 2 are the `--help` rows for the two new
+      harnesses.
+    - `uv run python -m bench.reproduce --check` → **42/42 rows hold; 173 figures tied to a
+      committed witness, 1 gated with no witness**, and the new row answers the flag question:
+      `bench/v6_audit.py --help` prints `--split`, `--every`, `--out` and the rest of the
+      published command's flags.
+    - `uv run python -m bench.gates --check` → **7/7 verdicts hold — 3 of 7 met, 4 not met,
+      0 open**. §2.2's hand-copied G7 cell (42 rows / 173 figures / 28 HERE) and README's
+      generated block both read back out of `ROWS` and are green.
+    - `uv run python bench/scan_secrets.py` → **0 matches for 9 shapes across 863 blobs**;
+      25 unreachable blobs remain in this clone's local object store. That debt is this box's
+      own history — the earlier commit this unit replaced, plus the staging and re-amending the
+      verification did while writing these very lines — and none of it is in what gets pushed.
+    - `git status` with everything staged lists **no** `.pt`, `.pth`, `.bin`, `.safetensors`,
+      `.zip`, `.onnx` or `.pdf`, and no path under `myna-v5-prototype*/`; the largest file in
+      the repository is the pre-existing `data/decision-v2-pilot/train.jsonl` at 79 MiB, so the
+      100 MB rule still holds for every tracked path.
+    - `uv run python -m bench.v6_audit --ckpt "myna-v5-prototype 2" --split test --every 1 …`
+      → 1,176 bundles in **775.5 s**, macro **0.8620375366903147** against the committed
+      **0.8582510184910809**.
+    - `MynaV6("myna-v5-prototype 2")` in the test harness loads 390 backbone tensors and the 60
+      head tensors (`load_state_dict(strict=True)` on all four) and answers three primitives in
+      **4.17 s** at **1.73 GiB** peak resident set (`/usr/bin/time -l`), reporting
+      **446,631,182** parameters — 434,012,160 encoder + 12,619,022 heads, which is the
+      arithmetic behind README's weights paragraph. The same block, run as the README prints it,
+      is committed as `runs/v6_live_smoke.json`.
+    - `uv run python scripts/upload_to_hf.py --ckpt-dir "myna-v5-prototype 2" --repo-id
+      aashish254/myna-v6 --dry-run` → **10 files, 1,799,177,588 B = 1.799 GB**, card 4,692
+      chars, nothing uploaded.
+
+    Running the uploader is what found its four defects, and each is fixed rather than noted:
+    `relative_to()` raised on the committed witnesses because they live outside the campaign
+    directory; `upload_folder(..., multi_commits=True)` and `upload_files(...)` are both gone
+    from the huggingface_hub 1.33 client this box resolves, so the real upload would have died
+    *after* authorisation; a folder upload would have skipped the witnesses it had just printed;
+    and `COMPETITORS` named `VegaML (0.8B reader)` where the witness key is
+    `VegaML (vega-U 0.8B)`, which the card generator would have rendered as an empty column that
+    reads as a zero score. `test_the_upload_command_dry_runs_and_adds_up` now pins the manifest
+    arithmetic and refuses a missing arm key.
+
+    One class of defect this run adds to §9.44's list rather than to the record's credit: the
+    README block was re-spliced with a script that appended the end marker a second time. The
+    mutation was then re-run on purpose — with `<!-- gates:release:end -->` appearing twice in
+    README, `bench/gates.py --check` prints **7/7 verdicts hold** and stays green, because its
+    splice guard counts the *begin* marker only, while
+    `tests/test_gates.py::test_readme_carries_the_generated_block_verbatim` fails in 0.03 s by
+    comparing the whole generated string. README was restored from a copy taken before the
+    mutation, and a duplicated marker is therefore a second reason not to hand-edit inside
+    `<!-- gates:release:* -->`.

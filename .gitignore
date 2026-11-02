@@ -67,3 +67,29 @@ docs/screenshots/int8/
 .kaggle-dataset/
 kaggle-dataset/
 .local-kaggle-upload/
+
+# The v5/v6 Colab campaign folder, dropped in the repo root by the owner on 2026-11-02: 1.7 GB,
+# of which `deberta-v5-finetuned/model.safetensors` alone is 1,736,094,384 bytes. GitHub rejects a
+# blob over 100 MB and the repo's own rule (SPEC §7.1, the G7 witness promise) is that weights live
+# outside git and figures live inside it, so the folder's JSON witnesses are copied to `runs/` and
+# nothing under this folder is ever staged.
+#
+# `myna-v5-prototype*/` is the pattern that actually works. The integration brief also listed
+# `"myna-v5-prototype 2"/`, quoted because the name has a space in it; gitignore has no quoting, so
+# that line would match a directory whose name starts and ends with a literal double-quote character
+# and would have ignored nothing. A quoted path is a shell concern, not an ignore-file concern.
+myna-v5-prototype*/
+local_checkpoints/
+deberta-v5-finetuned/
+
+# Weights and archives, wherever they appear. None of these extensions is tracked in this repo's
+# history (`git ls-files` over all of them is empty), so these lines forbid new weight commits
+# without orphaning any witness that is already committed. The .onnx case is the browser gate's own
+# export, which `npm run g3 -- --artifact runs/onnx_int8` redraws on demand.
+*.pt
+*.pth
+*.bin
+*.safetensors
+*.zip
+*.onnx
+*.pdf

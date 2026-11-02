@@ -128,6 +128,28 @@ class Observation:
 
 
 class Myna:
+    def __new__(cls, ckpt_dir: str | Path = "runs/myna-v0", device: str = "cpu",
+                abstain_below: float | None = None):
+        """Point `Myna` at a directory and get the engine that checkpoint belongs to.
+
+        A campaign directory (one holding `myna-v6-unified.pt`, `myna-v5-unified.pt` or
+        `deberta-v5-finetuned/`) and a `user/repo` Hugging Face id route to `MynaV6`;
+        everything else — `runs/myna-v0`, a `myna-weights` download, any legacy
+        `model.pt` + `tokenizer.json` pair — builds the SSM engine below, untouched.
+
+        The import is inside the branch on purpose. `v6_engine` needs `transformers`, which
+        is an optional extra, and CI installs only `--extra browser`: a module-level import
+        would make every `import myna` in the suite fail on a box that cannot run v6. Note
+        that `isinstance(Myna(v6_dir), Myna)` is False — the returned object is a `MynaV6`,
+        which implements `observe`/`ask`/`predict`/`n_params`/`temperature` rather than
+        subclassing, so `myna.serve` works on either without knowing which it got.
+        """
+        from .v6_engine import is_v6_source
+        if cls is Myna and is_v6_source(ckpt_dir):
+            from .v6_engine import MynaV6
+            return MynaV6(ckpt_dir, device=device, abstain_below=abstain_below)
+        return super().__new__(cls)
+
     def __init__(self, ckpt_dir: str | Path, device: str = "cpu",
                  abstain_below: float | None = None):
         """`abstain_below=None` (the default) never abstains: the latency and

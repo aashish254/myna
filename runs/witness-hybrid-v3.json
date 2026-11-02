@@ -1,0 +1,73 @@
+{
+  "dev": {
+    "overall_acc": 0.8638888888888889,
+    "macro_acc": 0.8607058748142296,
+    "bundle_exact_acc": 0.8460884353741497,
+    "contradiction_rate": 0.005813953488372093,
+    "per_cell": {
+      "agnews/is_business": 0.9333333333333333,
+      "agnews/is_scitech": 0.9361702127659575,
+      "agnews/is_sports": 0.9423076923076923,
+      "agnews/is_world": 0.95,
+      "agnews/topic": 0.8793103448275862,
+      "amazon/stars": 0.6125,
+      "banking77/intent": 0.7327586206896551,
+      "boolq/answer": 0.8875,
+      "contrastive/decision": 1.0,
+      "dbpedia14/category": 0.9310344827586207,
+      "imdb/positive": 0.95,
+      "mnli/relation": 0.853448275862069,
+      "sst5/sentiment": 0.5875,
+      "trec/answer_type": 0.8879310344827587,
+      "yelp/rating": 0.7625,
+      "yelp/recommend": 0.925
+    },
+    "primitives": {
+      "noul": 0.9404761904761905,
+      "choice": 0.8807471264367817,
+      "score": 0.6541666666666667
+    },
+    "banking77_variants": {
+      "clean": 0.7125,
+      "none_present": 0.75,
+      "none_absent": 0.8333333333333334,
+      "permuted": 0.75
+    }
+  },
+  "test": {
+    "overall_acc": 0.8493055555555555,
+    "macro_acc": 0.8501691219393568,
+    "bundle_exact_acc": 0.8248299319727891,
+    "contradiction_rate": 0.0,
+    "per_cell": {
+      "agnews/is_business": 0.9534883720930233,
+      "agnews/is_scitech": 0.9183673469387755,
+      "agnews/is_sports": 0.9787234042553191,
+      "agnews/is_world": 0.9777777777777777,
+      "agnews/topic": 0.9051724137931034,
+      "amazon/stars": 0.6375,
+      "banking77/intent": 0.5344827586206896,
+      "boolq/answer": 0.825,
+      "contrastive/decision": 0.9846938775510204,
+      "dbpedia14/category": 0.9568965517241379,
+      "imdb/positive": 0.95,
+      "mnli/relation": 0.8362068965517241,
+      "sst5/sentiment": 0.6,
+      "trec/answer_type": 0.9568965517241379,
+      "yelp/rating": 0.6625,
+      "yelp/recommend": 0.925
+    },
+    "primitives": {
+      "noul": 0.9305555555555556,
+      "choice": 0.8649425287356322,
+      "score": 0.6333333333333333
+    },
+    "banking77_variants": {
+      "clean": 0.6125,
+      "none_present": 0.25,
+      "none_absent": 0.5,
+      "permuted": 0.3333333333333333
+    }
+  },
+  "threshold_T": 0.4
+}

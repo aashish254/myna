@@ -73,6 +73,38 @@ exactly, with zero drift.
     0.9626 is a different dev draw than the train log's 0.9599 — the claim is
     the before/after pair, not either level.)
 
+11. **Cardinality is a routing decision, not a truncation parameter.** A 77-option `banking77`
+    question packed into one 512-token sequence leaves each option about 3 tokens, and the v5
+    packed arm scores **0.0086** there — 1 of 80 clean rows. Routing every question with more than
+    16 options to decoupled per-option encodings, scored against their own bundle competition,
+    moves that cell to 0.5345 and the 16-cell macro **+0.0329** — which is the *entire* step,
+    because the other 15 cells are byte-identical across the two columns and 0.5259/16 = 0.0329
+    exactly. Lesson: measure what a route buys cell by cell; an aggregate gain that is one cell
+    is a statement about that cell. (`runs/witness-competitor-head-to-head-1440.json`, and
+    `bench/v6_audit.py` reproduces it here.)
+12. **A reconstructed head is only trustworthy where `strict=True` says so.** The four readout
+    heads in `myna-v6-unified.pt` load into this tree's class definitions with
+    `load_state_dict(strict=True)` — 60 tensors, no missing key, no unexpected one — so the
+    topology is proven rather than plausible. Everything *downstream* of those tensors is a
+    reconstruction, and the one that matters is the open-set rejection gate: `banking77`'s
+    `none_absent` twins score **0/12** here against the campaign's **7/12**, while the cell
+    aggregate still lands 78/116 vs 77/116. Lesson: a reconstruction that reproduces an aggregate
+    can be wrong about the mechanism, and the decomposition is where it shows.
+13. **The checkpoint is the note; the note is not the checkpoint.** Four times the artifact
+    contradicts the campaign write-up: 434,012,160 encoder parameters rather than "304M";
+    `use_coral_score_head: false`, so the ordinal head is inert in every published figure;
+    `gate_logit` trained down to −2.3757 (sigmoid 0.0850) rather than the −2.0 / 0.1192
+    initialisation described; and a three-cut ordinal head asked to emit five levels, whose fold
+    the artifact does not determine. Lesson: read the tensors before transcribing the prose, and
+    when the artifact underdetermines a design, return its parts instead of inventing the scalar.
+14. **A gate that a new model clears is not cleared by the new model.** v6's 0.8583 satisfies G1's
+    arithmetic (≥ 0.70, +0.4252 over §4.2's published floor) and its 0.9904 satisfies G5's, and
+    both verdicts still read `not met`: the floor and the row-clustered intervals have never been
+    computed on v6's rows, the gates' proofs are fields of the frozen instrument's artifacts, and
+    the tally is pinned by two tests. Lesson (the same one §9.31 teaches about generated tables):
+    a verdict is a claim about an artifact, so it moves when the artifact does and not when a
+    prettier number arrives. SPEC §9.68 (vi) names the three levers and who pulls them.
+
 ## Benchmarks
 
 ### WITHDRAWN (2026-09-26, SPEC §9.20) — kept here as the record, not as a result

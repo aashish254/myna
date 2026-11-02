@@ -545,6 +545,11 @@ serve = [
     { name = "fastapi" },
     { name = "uvicorn" },
 ]
+v6 = [
+    { name = "huggingface-hub" },
+    { name = "safetensors" },
+    { name = "transformers" },
+]
 
 [package.dev-dependencies]
 dev = [
@@ -559,6 +564,7 @@ requires-dist = [
     { name = "fastapi", marker = "extra == 'serve'", specifier = ">=0.110" },
     { name = "httpx", marker = "extra == 'dev'", specifier = ">=0.27" },
     { name = "huggingface-hub", marker = "extra == 'bench'", specifier = ">=0.20" },
+    { name = "huggingface-hub", marker = "extra == 'v6'", specifier = ">=0.20" },
     { name = "mlx", marker = "extra == 'mlx'", specifier = ">=0.20" },
     { name = "numpy", specifier = ">=2.0" },
     { name = "onnx", marker = "extra == 'browser'", specifier = ">=1.23.0" },
@@ -567,13 +573,15 @@ requires-dist = [
     { name = "pyarrow", specifier = ">=18.0" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0" },
     { name = "safetensors", marker = "extra == 'bench'", specifier = ">=0.4" },
+    { name = "safetensors", marker = "extra == 'v6'", specifier = ">=0.4" },
     { name = "tokenizers", specifier = ">=0.20" },
     { name = "torch", specifier = ">=2.6" },
     { name = "tqdm", specifier = ">=4.66" },
     { name = "transformers", marker = "extra == 'bench'", specifier = ">=4.48" },
+    { name = "transformers", marker = "extra == 'v6'", specifier = ">=4.48" },
     { name = "uvicorn", marker = "extra == 'serve'", specifier = ">=0.29" },
 ]
-provides-extras = ["mlx", "serve", "bench", "dev", "browser"]
+provides-extras = ["mlx", "serve", "v6", "bench", "dev", "browser"]
 
 [package.metadata.requires-dev]
 dev = [

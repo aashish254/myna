@@ -1,0 +1,82 @@
+{
+  "model_label": "myna-v5 (DeBERTa-v3-large + Multi-Primitive Question-Graph Head)",
+  "base_model": "microsoft/deberta-v3-large",
+  "seed": 42,
+  "temperatures": {
+    "choice": 1.25,
+    "score": 1.0,
+    "noul": 1.0
+  },
+  "calibration_and_g5": {
+    "temperatures": {
+      "choice": 1.25,
+      "score": 1.0,
+      "noul": 1.0
+    },
+    "test_ece": 0.0204049877731854,
+    "test_brier": 0.04448106814717742,
+    "g5_acc_at_60pct_cov": 0.9807692307692307
+  },
+  "dev_16cell_audit": {
+    "overall_acc": 0.80625,
+    "macro_acc": 0.8159860472280226,
+    "num_cells": 16,
+    "bundle_exact_acc": 0.7755102040816326,
+    "contradiction_rate": 0.005813953488372093,
+    "score_mae": 0.09583333333333334,
+    "per_cell": {
+      "agnews/is_business": 0.9333333333333333,
+      "agnews/is_scitech": 0.9361702127659575,
+      "agnews/is_sports": 0.9423076923076923,
+      "agnews/is_world": 0.95,
+      "agnews/topic": 0.8793103448275862,
+      "amazon/stars": 0.6125,
+      "banking77/intent": 0.017241379310344827,
+      "boolq/answer": 0.8875,
+      "contrastive/decision": 1.0,
+      "dbpedia14/category": 0.9310344827586207,
+      "imdb/positive": 0.95,
+      "mnli/relation": 0.853448275862069,
+      "sst5/sentiment": 0.5875,
+      "trec/answer_type": 0.8879310344827587,
+      "yelp/rating": 0.7625,
+      "yelp/recommend": 0.925
+    },
+    "primitives": {
+      "choice": 0.7614942528735632,
+      "noul": 0.9404761904761905,
+      "score": 0.6541666666666667
+    }
+  },
+  "test_16cell_audit": {
+    "overall_acc": 0.8069444444444445,
+    "macro_acc": 0.817302742629012,
+    "num_cells": 16,
+    "bundle_exact_acc": 0.7729591836734694,
+    "contradiction_rate": 0.0,
+    "score_mae": 0.10104166666666667,
+    "per_cell": {
+      "agnews/is_business": 0.9534883720930233,
+      "agnews/is_scitech": 0.9183673469387755,
+      "agnews/is_sports": 0.9787234042553191,
+      "agnews/is_world": 0.9777777777777777,
+      "agnews/topic": 0.9051724137931034,
+      "amazon/stars": 0.6375,
+      "banking77/intent": 0.008620689655172414,
+      "boolq/answer": 0.825,
+      "contrastive/decision": 0.9846938775510204,
+      "dbpedia14/category": 0.9568965517241379,
+      "imdb/positive": 0.95,
+      "mnli/relation": 0.8362068965517241,
+      "sst5/sentiment": 0.6,
+      "trec/answer_type": 0.9568965517241379,
+      "yelp/rating": 0.6625,
+      "yelp/recommend": 0.925
+    },
+    "primitives": {
+      "choice": 0.7772988505747126,
+      "noul": 0.9305555555555556,
+      "score": 0.6333333333333333
+    }
+  }
+}

@@ -1,0 +1,124 @@
+{
+  "dev_audit": {
+    "label": "Myna v6 (dev)",
+    "overall_acc": 0.8645833333333334,
+    "macro_acc": 0.8610022110211261,
+    "bundle_exact_acc": 0.8469387755102041,
+    "contradictions": "1/172",
+    "primitives": {
+      "choice": 0.8836206896551724,
+      "noul": 0.9404761904761905,
+      "score": 0.65
+    },
+    "banking77_variants": {
+      "clean": "61/80 (0.7625)",
+      "none_absent": "10/12 (0.8333)",
+      "none_present": "7/12 (0.5833)",
+      "permuted": "9/12 (0.7500)"
+    },
+    "per_cell": {
+      "agnews/is_business": 0.9333333333333333,
+      "agnews/is_scitech": 0.9361702127659575,
+      "agnews/is_sports": 0.9423076923076923,
+      "agnews/is_world": 0.95,
+      "agnews/topic": 0.8793103448275862,
+      "amazon/stars": 0.6125,
+      "banking77/intent": 0.75,
+      "boolq/answer": 0.8875,
+      "contrastive/decision": 1.0,
+      "dbpedia14/category": 0.9310344827586207,
+      "imdb/positive": 0.95,
+      "mnli/relation": 0.853448275862069,
+      "sst5/sentiment": 0.575,
+      "trec/answer_type": 0.8879310344827587,
+      "yelp/rating": 0.7625,
+      "yelp/recommend": 0.925
+    }
+  },
+  "test_audit": {
+    "label": "Myna v6 (test)",
+    "overall_acc": 0.8597222222222223,
+    "macro_acc": 0.8582510184910809,
+    "bundle_exact_acc": 0.8375850340136054,
+    "contradictions": "0/172",
+    "primitives": {
+      "choice": 0.8864942528735632,
+      "noul": 0.9305555555555556,
+      "score": 0.6333333333333333
+    },
+    "banking77_variants": {
+      "clean": "58/80 (0.7250)",
+      "none_absent": "7/12 (0.5833)",
+      "none_present": "5/12 (0.4167)",
+      "permuted": "7/12 (0.5833)"
+    },
+    "per_cell": {
+      "agnews/is_business": 0.9534883720930233,
+      "agnews/is_scitech": 0.9183673469387755,
+      "agnews/is_sports": 0.9787234042553191,
+      "agnews/is_world": 0.9777777777777777,
+      "agnews/topic": 0.9051724137931034,
+      "amazon/stars": 0.6375,
+      "banking77/intent": 0.6637931034482759,
+      "boolq/answer": 0.825,
+      "contrastive/decision": 0.9846938775510204,
+      "dbpedia14/category": 0.9568965517241379,
+      "imdb/positive": 0.95,
+      "mnli/relation": 0.8362068965517241,
+      "sst5/sentiment": 0.6,
+      "trec/answer_type": 0.9568965517241379,
+      "yelp/rating": 0.6625,
+      "yelp/recommend": 0.925
+    }
+  },
+  "calibration_dev": {
+    "temperatures": {
+      "choice": 0.9,
+      "score": 0.9,
+      "noul": 0.85
+    },
+    "conformal_q90": {
+      "choice": 0.5424,
+      "score": 0.7885,
+      "noul": 0.195
+    },
+    "conformal_q95": {
+      "choice": 0.8766,
+      "score": 0.8732,
+      "noul": 0.4576
+    },
+    "argmax_flips": 0,
+    "ece": 0.019599439809098815,
+    "brier": 0.045097514884770123,
+    "conformal_empirical_90": 0.85625,
+    "conformal_empirical_95": 0.9333333333333333,
+    "selective_acc_60pct_all": 0.9733796296296297,
+    "coverage_at_5pct_risk": 0.7576388888888889,
+    "g5_acc_60pct_slice": 0.9615384615384616
+  },
+  "calibration_test": {
+    "temperatures": {
+      "choice": 0.9,
+      "score": 0.9,
+      "noul": 0.85
+    },
+    "conformal_q90": {
+      "choice": 0.5424,
+      "score": 0.7885,
+      "noul": 0.195
+    },
+    "conformal_q95": {
+      "choice": 0.8766,
+      "score": 0.8732,
+      "noul": 0.4576
+    },
+    "argmax_flips": 0,
+    "ece": 0.0189072495792061,
+    "brier": 0.0433770229255186,
+    "conformal_empirical_90": 0.8548611111111111,
+    "conformal_empirical_95": 0.9368055555555556,
+    "selective_acc_60pct_all": 0.9872685185185185,
+    "coverage_at_5pct_risk": 0.7861111111111111,
+    "g5_acc_60pct_slice": 0.9903846153846154
+  }
+}

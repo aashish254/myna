@@ -118,11 +118,14 @@ def test_a_gated_row_is_not_asked_to_parse_as_a_shell_line():
 
 def test_the_flag_question_reaches_every_python_command_and_only_those():
     """A coverage assertion, not a behaviour one: the prefix-stripping above and the
-    `uv run` skip are what make 34 of the 41 rows checkable, and a checker that quietly
-    recognised fewer targets would still print 41/41."""
+    `uv run` skip are what make 35 of the 42 rows checkable, and a checker that quietly
+    recognised fewer targets would still print 42/42."""
     asked = [r["id"] for r in R.ROWS
              if r["status"] != R.KAGGLE and R.python_target(r["cmd"])]
-    assert len(asked) == 34, asked
+    assert len(asked) == 35, asked
+    assert "v6-rescore-test" in asked, (
+        "the row §9.68 added scores a checkpoint this box has on disk, so it owes the "
+        "flag question like every other `uv run python -m bench.*` row")
     assert "vegaml-rowoutcomes" in asked, (
         "a row published with a `\"<vegaml 0.15.0 venv>/bin/python\"` placeholder still "
         "owes the flag question")

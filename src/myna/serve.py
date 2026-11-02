@@ -109,12 +109,16 @@ def main(argv: list[str] | None = None):
     # that first, because a wrong `--ckpt` is the common mistake and a missing extra
     # is the rare one — and because this check is the half a reader can hit anywhere.
     ckpt = Path(args.ckpt)
-    missing = [name for name in ("model.pt", "tokenizer.json") if not (ckpt / name).is_file()]
+    from .v6_engine import is_v6_directory
+    if is_v6_directory(ckpt):
+        missing = []  # a v6 campaign directory carries its checkpoint under another name
+    else:
+        missing = [name for name in ("model.pt", "tokenizer.json") if not (ckpt / name).is_file()]
     if missing:
         raise SystemExit(
             f"{ckpt} has no {', '.join(missing)}. Fetch a published checkpoint with "
-            f"`myna-weights --dest {args.ckpt}`, or name a directory that already has one "
-            "with --ckpt.")
+            f"`myna-weights --dest {args.ckpt}`, name a directory that already has one "
+            "with --ckpt, or point --ckpt at a v6 campaign directory.")
 
     # imported after parse_args so `--help` works on a box without the `serve`
     # extra: an optional dependency must not be what breaks the usage text

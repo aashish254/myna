@@ -1,0 +1,224 @@
+{
+  "witness_for": "README 'v6 quickstart' \u2014 a live inference against the local campaign directory",
+  "date": "2026-11-02",
+  "box": {
+    "platform": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+    "machine": "arm64",
+    "python": "3.13.14",
+    "torch": "2.14.0",
+    "device": "cpu"
+  },
+  "ckpt_dir": "myna-v5-prototype 2",
+  "model_label": "myna-v6-unified (DeBERTa-v3-large + SetAwareBankingHead + CORAL Ordinal + Conformal G5)",
+  "n_params": 446631182,
+  "head_params": 12619022,
+  "encoder_params": 434012160,
+  "temperatures": {
+    "choice": 0.9,
+    "score": 0.9,
+    "noul": 0.85
+  },
+  "conformal_q90": {
+    "choice": 0.5424,
+    "score": 0.7885,
+    "noul": 0.195
+  },
+  "conformal_q95": {
+    "choice": 0.8766,
+    "score": 0.8732,
+    "noul": 0.4576
+  },
+  "audit_test_macro_acc": 0.8582510184910809,
+  "quickstart_answer": {
+    "answers": {
+      "refund": {
+        "type": "noul",
+        "noul": 0.7094255685806274,
+        "yes": null,
+        "confidence": 0.7094255685806274,
+        "abstain": true,
+        "reason": "yes at p=0.709 falls under the 0.805 conformal floor for noul",
+        "margin": 0.4188511371612549,
+        "conformal_set_90": [],
+        "probabilities": {
+          "no": 0.29057443141937256,
+          "yes": 0.7094255685806274
+        }
+      },
+      "severity": {
+        "type": "score",
+        "score": null,
+        "level": null,
+        "legend": {
+          "0": "trivial",
+          "1": "minor",
+          "2": "moderate",
+          "3": "severe",
+          "4": "critical"
+        },
+        "confidence": 0.4672558009624481,
+        "abstain": true,
+        "reason": "severe at p=0.467 falls under the 0.212 conformal floor for score",
+        "margin": 0.2539878934621811,
+        "conformal_set_90": [
+          "moderate",
+          "severe"
+        ],
+        "probabilities": {
+          "trivial": 0.03871080279350281,
+          "minor": 0.07300952076911926,
+          "moderate": 0.21326790750026703,
+          "severe": 0.4672558009624481,
+          "critical": 0.2077559232711792
+        }
+      }
+    },
+    "usage": {
+      "state_tokens": 15,
+      "question_tokens": 65
+    },
+    "policy": {
+      "abstain_below": 0.85,
+      "abstained": [
+        "refund",
+        "severity"
+      ],
+      "conformal_level": 0.9,
+      "b77_none_mode": "T_fallback",
+      "b77_none_param": 0.45,
+      "use_coral_score_head": false
+    },
+    "routing": {
+      "refund": {
+        "mode": "packed",
+        "n_options": 2,
+        "primitive": "noul",
+        "temperature": 0.85
+      },
+      "severity": {
+        "mode": "packed",
+        "n_options": 5,
+        "primitive": "score",
+        "temperature": 0.9
+      }
+    },
+    "latency_ms": 519.33
+  },
+  "set_aware_probe_77_options": {
+    "answers": {
+      "intent": {
+        "type": "choice",
+        "choice": null,
+        "confidence": 0.03837881609797478,
+        "abstain": true,
+        "reason": "intent_30 at p=0.038 falls under the 0.458 conformal floor for choice",
+        "margin": 0.003207005560398102,
+        "conformal_set_90": [],
+        "probabilities": {
+          "intent_0": 0.023018497973680496,
+          "intent_1": 0.0019640985410660505,
+          "intent_2": 0.004022861365228891,
+          "intent_3": 0.01782698556780815,
+          "intent_4": 0.007138193119317293,
+          "intent_5": 0.006048621144145727,
+          "intent_6": 0.006835473235696554,
+          "intent_7": 0.007259106729179621,
+          "intent_8": 0.010369115509092808,
+          "intent_9": 0.0061445352621376514,
+          "intent_10": 0.005814516916871071,
+          "intent_11": 0.005777686834335327,
+          "intent_12": 0.023372802883386612,
+          "intent_13": 0.006910436786711216,
+          "intent_14": 0.011990669183433056,
+          "intent_15": 0.016300639137625694,
+          "intent_16": 0.01175389438867569,
+          "intent_17": 0.008979851379990578,
+          "intent_18": 0.009410238824784756,
+          "intent_19": 0.007564995903521776,
+          "intent_20": 0.013750819489359856,
+          "intent_21": 0.007717557717114687,
+          "intent_22": 0.00870403554290533,
+          "intent_23": 0.009735998697578907,
+          "intent_24": 0.03011494316160679,
+          "intent_25": 0.018026720732450485,
+          "intent_26": 0.01438975054770708,
+          "intent_27": 0.018309516832232475,
+          "intent_28": 0.014582216739654541,
+          "intent_29": 0.01110129151493311,
+          "intent_30": 0.03837881609797478,
+          "intent_31": 0.00956298690289259,
+          "intent_32": 0.012098506093025208,
+          "intent_33": 0.015086312778294086,
+          "intent_34": 0.011614620685577393,
+          "intent_35": 0.015618526376783848,
+          "intent_36": 0.0194967370480299,
+          "intent_37": 0.010249045677483082,
+          "intent_38": 0.012368239462375641,
+          "intent_39": 0.010625272057950497,
+          "intent_40": 0.017006702721118927,
+          "intent_41": 0.009181255474686623,
+          "intent_42": 0.00987148005515337,
+          "intent_43": 0.008929313160479069,
+          "intent_44": 0.010673890821635723,
+          "intent_45": 0.029372746124863625,
+          "intent_46": 0.013656606897711754,
+          "intent_47": 0.01052044052630663,
+          "intent_48": 0.035171810537576675,
+          "intent_49": 0.011953962035477161,
+          "intent_50": 0.01508533488959074,
+          "intent_51": 0.006400526966899633,
+          "intent_52": 0.012769359163939953,
+          "intent_53": 0.010548881255090237,
+          "intent_54": 0.016655225306749344,
+          "intent_55": 0.017635131254792213,
+          "intent_56": 0.009324709884822369,
+          "intent_57": 0.009733788669109344,
+          "intent_58": 0.008651220239698887,
+          "intent_59": 0.00835106149315834,
+          "intent_60": 0.0350038968026638,
+          "intent_61": 0.007193938363343477,
+          "intent_62": 0.01156838983297348,
+          "intent_63": 0.011606681160628796,
+          "intent_64": 0.011683877557516098,
+          "intent_65": 0.017587916925549507,
+          "intent_66": 0.008465132676064968,
+          "intent_67": 0.01038952637463808,
+          "intent_68": 0.008595643565058708,
+          "intent_69": 0.008188030682504177,
+          "intent_70": 0.016140427440404892,
+          "intent_71": 0.007500764913856983,
+          "intent_72": 0.027713028714060783,
+          "intent_73": 0.009762887842953205,
+          "intent_74": 0.01234961673617363,
+          "intent_75": 0.015491367317736149,
+          "intent_76": 0.009230323135852814
+        }
+      }
+    },
+    "usage": {
+      "state_tokens": 15,
+      "question_tokens": 28
+    },
+    "policy": {
+      "abstain_below": null,
+      "abstained": [
+        "intent"
+      ],
+      "conformal_level": 0.9,
+      "b77_none_mode": "T_fallback",
+      "b77_none_param": 0.45,
+      "use_coral_score_head": false
+    },
+    "routing": {
+      "intent": {
+        "mode": "set-aware",
+        "n_options": 77,
+        "primitive": "choice",
+        "temperature": 0.9
+      }
+    },
+    "latency_ms": 3157.21
+  },
+  "source_block": "the '### v6 quickstart' python block in README.md, run verbatim against the local campaign directory on 2026-11-02 (`./.venv/bin/python` reading the block from a heredoc); a second `predict` in the same process sends a 77-option choice question, which is the set-aware probe below. No `--out` command reproduces this file: it is a smoke run, not a registry row.",
+  "set_aware_probe_note": "the same state, one choice question whose 77 criteria are intent_0..intent_76 with null descriptions \u2014 placeholder labels, so the near-uniform probabilities are the point: the row proves the > 16-option branch fires and returns 77 scores, not an answer"
+}

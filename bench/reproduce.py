@@ -720,6 +720,44 @@ ROWS = [
         "intervals from one row-clustered draw rather than two draws that happen to agree. The 1e-9 "
         "guard against the committed report runs before any resample, and both claims — the "
         "difference and its direction — stand on their intervals."),
+
+    row("v6-rescore-test", "README v6 table · SPEC §9.68 (Myna v6 Unified's test audit, re-scored here)",
+        'uv run python -m bench.v6_audit --ckpt "myna-v5-prototype 2" --split test '
+        '--every 1 --out runs/v6_rescore_test.json',
+        HERE,
+        ["runs/v6_rescore_test.json", "runs/witness-v6-master-paper.json",
+         "runs/witness-competitor-head-to-head-1440.json",
+         "runs/witness-v5-master-paper.json", "runs/witness-hybrid-v3.json"],
+        [("runs/v6_rescore_test.json", '"macro_acc": 0.8620375366903147'),
+         ("runs/v6_rescore_test.json", '"overall_acc": 0.8631944444444445'),
+         ("runs/v6_rescore_test.json", '"none_absent": "0/12"'),
+         ("runs/witness-v6-master-paper.json", '"macro_acc": 0.8582510184910809'),
+         ("runs/witness-v6-master-paper.json", '"overall_acc": 0.8597222222222223'),
+         ("runs/witness-v6-master-paper.json", '"bundle_exact_acc": 0.8375850340136054'),
+         ("runs/witness-v6-master-paper.json", '"banking77/intent": 0.6637931034482759'),
+         ("runs/witness-v6-master-paper.json", '"ece": 0.0189072495792061'),
+         ("runs/witness-v6-master-paper.json", '"g5_acc_60pct_slice": 0.9903846153846154'),
+         ("runs/witness-competitor-head-to-head-1440.json", '"macro_acc": 0.8501691219393568'),
+         ("runs/witness-competitor-head-to-head-1440.json", '"macro_acc": 0.7049731487692815'),
+         ("runs/witness-competitor-head-to-head-1440.json", '"macro_acc": 0.4638129535502855'),
+         ("runs/witness-v5-master-paper.json", '"macro_acc": 0.817302742629012'),
+         ("runs/witness-hybrid-v3.json", '"macro_acc": 0.8501691219393568')],
+        "The v6 arm is the Colab campaign's own artifact, so this row is the reproduction rather "
+        "than the origin: the command re-scores all 1,176 test bundles through `src/myna/"
+        "v6_engine.py` on this box and prints macro 0.8620 against the committed 0.8583 — 8 of 16 "
+        "cells exact to the question, a net +5 of 1,440 questions, 775.5 s wall on CPU. Two "
+        "things this row does NOT cover, said here because the README prints them: the Phase-5 "
+        "calibration, conformal and G5 figures come from the same committed witness but the code "
+        "that fitted them is in the notebook and not in this tree, so no local command re-derives "
+        "them; and the 5-arm graph ablation appears in no witness at all, so it is prose-labelled "
+        "and not a table. The quoted `none_absent` figure is the one this row prints that "
+        "*contradicts* its witness — the campaign's witness says 7/12, this box gets 0/12 — and it "
+        "is quoted because that is the reconstructed open-set rejection gate failing, not a "
+        "rounding gap. The two `Myna v5` columns' per-arm origins — "
+        "`runs/witness-v5-master-paper.json` (Packed, macro 0.8173) and "
+        "`runs/witness-hybrid-v3.json` (the card-routed arm, 0.8502) — are witnesses here "
+        "because the README names them beside those macros; neither is produced by this row's "
+        "command, and `witness-hybrid-v3.json` is that arm under its earlier name."),
 ]
 
 STATUSES = (HERE, LAYA, VEGAML, CHROME, KAGGLE, RETRAIN)

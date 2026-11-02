@@ -1,0 +1,222 @@
+{
+  "Laya (English Default)": {
+    "label": "Laya (English Default)",
+    "overall_acc": 0.6333333333333333,
+    "macro_acc": 0.6623849137626352,
+    "n_errors": 0,
+    "bundle_exact_acc": 0.5595238095238095,
+    "contradictions": "1/172",
+    "primitives": {
+      "choice": 0.6264367816091954,
+      "noul": 0.7579365079365079,
+      "score": 0.39166666666666666
+    },
+    "banking77_variants": {
+      "clean": "29/80 (0.3625)",
+      "none_absent": "0/12 (0.0000)",
+      "none_present": "1/12 (0.0833)",
+      "permuted": "2/12 (0.1667)"
+    },
+    "per_cell": {
+      "agnews/is_business": 0.8837209302325582,
+      "agnews/is_scitech": 0.9387755102040817,
+      "agnews/is_sports": 0.9787234042553191,
+      "agnews/is_world": 0.8,
+      "agnews/topic": 0.8879310344827587,
+      "amazon/stars": 0.3,
+      "banking77/intent": 0.27586206896551724,
+      "boolq/answer": 0.7,
+      "contrastive/decision": 0.5969387755102041,
+      "dbpedia14/category": 0.7413793103448276,
+      "imdb/positive": 0.4625,
+      "mnli/relation": 0.5775862068965517,
+      "sst5/sentiment": 0.375,
+      "trec/answer_type": 0.7672413793103449,
+      "yelp/rating": 0.5,
+      "yelp/recommend": 0.8125
+    }
+  },
+  "Laya (Raised + Tournament)": {
+    "label": "Laya (Raised + Tournament)",
+    "overall_acc": 0.6597222222222222,
+    "macro_acc": 0.6828590516936697,
+    "n_errors": 0,
+    "bundle_exact_acc": 0.5918367346938775,
+    "contradictions": "1/172",
+    "primitives": {
+      "choice": 0.6810344827586207,
+      "noul": 0.7579365079365079,
+      "score": 0.39166666666666666
+    },
+    "banking77_variants": {
+      "clean": "50/80 (0.6250)",
+      "none_absent": "12/12 (1.0000)",
+      "none_present": "1/12 (0.0833)",
+      "permuted": "7/12 (0.5833)"
+    },
+    "per_cell": {
+      "agnews/is_business": 0.8837209302325582,
+      "agnews/is_scitech": 0.9387755102040817,
+      "agnews/is_sports": 0.9787234042553191,
+      "agnews/is_world": 0.8,
+      "agnews/topic": 0.8879310344827587,
+      "amazon/stars": 0.3,
+      "banking77/intent": 0.603448275862069,
+      "boolq/answer": 0.7,
+      "contrastive/decision": 0.5969387755102041,
+      "dbpedia14/category": 0.7413793103448276,
+      "imdb/positive": 0.4625,
+      "mnli/relation": 0.5775862068965517,
+      "sst5/sentiment": 0.375,
+      "trec/answer_type": 0.7672413793103449,
+      "yelp/rating": 0.5,
+      "yelp/recommend": 0.8125
+    }
+  },
+  "Laya (Typed-Decisions Best)": {
+    "label": "Laya (Typed-Decisions Best)",
+    "overall_acc": 0.6791666666666667,
+    "macro_acc": 0.7049731487692815,
+    "n_errors": 0,
+    "bundle_exact_acc": 0.6181972789115646,
+    "contradictions": "0/172",
+    "primitives": {
+      "choice": 0.6882183908045977,
+      "noul": 0.7777777777777778,
+      "score": 0.44583333333333336
+    },
+    "banking77_variants": {
+      "clean": "56/80 (0.7000)",
+      "none_absent": "0/12 (0.0000)",
+      "none_present": "6/12 (0.5000)",
+      "permuted": "6/12 (0.5000)"
+    },
+    "per_cell": {
+      "agnews/is_business": 0.8837209302325582,
+      "agnews/is_scitech": 0.9183673469387755,
+      "agnews/is_sports": 0.9787234042553191,
+      "agnews/is_world": 0.8888888888888888,
+      "agnews/topic": 0.9051724137931034,
+      "amazon/stars": 0.325,
+      "banking77/intent": 0.5862068965517241,
+      "boolq/answer": 0.7875,
+      "contrastive/decision": 0.5969387755102041,
+      "dbpedia14/category": 0.7327586206896551,
+      "imdb/positive": 0.4625,
+      "mnli/relation": 0.5948275862068966,
+      "sst5/sentiment": 0.4875,
+      "trec/answer_type": 0.8189655172413793,
+      "yelp/rating": 0.525,
+      "yelp/recommend": 0.7875
+    }
+  },
+  "VegaML (vega-U 0.8B)": {
+    "label": "VegaML (vega-U 0.8B)",
+    "overall_acc": 0.49583333333333335,
+    "macro_acc": 0.4638129535502855,
+    "n_errors": 0,
+    "bundle_exact_acc": 0.44982993197278914,
+    "contradictions": "0/172",
+    "primitives": {
+      "choice": 0.5517241379310345,
+      "noul": 0.42063492063492064,
+      "score": 0.49166666666666664
+    },
+    "banking77_variants": {
+      "clean": "32/80 (0.4000)",
+      "none_absent": "2/12 (0.1667)",
+      "none_present": "4/12 (0.3333)",
+      "permuted": "5/12 (0.4167)"
+    },
+    "per_cell": {
+      "agnews/is_business": 0.3023255813953488,
+      "agnews/is_scitech": 0.3469387755102041,
+      "agnews/is_sports": 0.19148936170212766,
+      "agnews/is_world": 0.2222222222222222,
+      "agnews/topic": 0.8879310344827587,
+      "amazon/stars": 0.525,
+      "banking77/intent": 0.3706896551724138,
+      "boolq/answer": 0.5375,
+      "contrastive/decision": 0.4489795918367347,
+      "dbpedia14/category": 0.7758620689655172,
+      "imdb/positive": 0.5375,
+      "mnli/relation": 0.5603448275862069,
+      "sst5/sentiment": 0.425,
+      "trec/answer_type": 0.3017241379310345,
+      "yelp/rating": 0.525,
+      "yelp/recommend": 0.4625
+    }
+  },
+  "Myna v5 Pristine (Packed)": {
+    "label": "Myna v5 Pristine (Packed)",
+    "overall_acc": 0.8069444444444445,
+    "macro_acc": 0.8173027426290119,
+    "bundle_exact_acc": 0.7729591836734694,
+    "contradictions": "0/172",
+    "primitives": {
+      "choice": 0.7772988505747126,
+      "noul": 0.9305555555555556,
+      "score": 0.6333333333333333
+    },
+    "banking77_variants": {
+      "clean": "1/80 (0.0125)",
+      "none_absent": "0/12 (0.0000)",
+      "none_present": "0/12 (0.0000)",
+      "permuted": "0/12 (0.0000)"
+    },
+    "per_cell": {
+      "agnews/is_business": 0.9534883720930233,
+      "agnews/is_scitech": 0.9183673469387755,
+      "agnews/is_sports": 0.9787234042553191,
+      "agnews/is_world": 0.9777777777777777,
+      "agnews/topic": 0.9051724137931034,
+      "amazon/stars": 0.6375,
+      "banking77/intent": 0.008620689655172414,
+      "boolq/answer": 0.825,
+      "contrastive/decision": 0.9846938775510204,
+      "dbpedia14/category": 0.9568965517241379,
+      "imdb/positive": 0.95,
+      "mnli/relation": 0.8362068965517241,
+      "sst5/sentiment": 0.6,
+      "trec/answer_type": 0.9568965517241379,
+      "yelp/rating": 0.6625,
+      "yelp/recommend": 0.925
+    }
+  },
+  "Myna v5 Unified (Card-Routed)": {
+    "label": "Myna v5 Unified (Card-Routed)",
+    "overall_acc": 0.8493055555555555,
+    "macro_acc": 0.8501691219393568,
+    "bundle_exact_acc": 0.8248299319727891,
+    "contradictions": "0/172",
+    "primitives": {
+      "choice": 0.8649425287356322,
+      "noul": 0.9305555555555556,
+      "score": 0.6333333333333333
+    },
+    "banking77_variants": {
+      "clean": "49/80 (0.6125)",
+      "none_absent": "6/12 (0.5000)",
+      "none_present": "3/12 (0.2500)",
+      "permuted": "4/12 (0.3333)"
+    },
+    "per_cell": {
+      "agnews/is_business": 0.9534883720930233,
+      "agnews/is_scitech": 0.9183673469387755,
+      "agnews/is_sports": 0.9787234042553191,
+      "agnews/is_world": 0.9777777777777777,
+      "agnews/topic": 0.9051724137931034,
+      "amazon/stars": 0.6375,
+      "banking77/intent": 0.5344827586206896,
+      "boolq/answer": 0.825,
+      "contrastive/decision": 0.9846938775510204,
+      "dbpedia14/category": 0.9568965517241379,
+      "imdb/positive": 0.95,
+      "mnli/relation": 0.8362068965517241,
+      "sst5/sentiment": 0.6,
+      "trec/answer_type": 0.9568965517241379,
+      "yelp/rating": 0.6625,
+      "yelp/recommend": 0.925
+    }
+  }
+}

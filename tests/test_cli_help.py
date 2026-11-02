@@ -84,6 +84,8 @@ def test_module_help_renders(module, flag):
     ("bench/mutation_scope_pricing.py", "Mutation battery"),
     ("bench/anti_prior_audit.py", "--compare"),
     ("bench/mutation_anti_prior.py", "Mutation battery"),
+    ("bench/v6_audit.py", "--split"),
+    ("scripts/upload_to_hf.py", "--dry-run"),
 ])
 def test_bench_script_help_renders(script, expect):
     """The diag scripts took `sys.argv[1]` positionally, so `--help` was parsed as a

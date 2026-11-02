@@ -11,6 +11,175 @@ decision models, and both re-encode the entire state on every request. Agent
 loops don't work that way — the state grows at the edge and the questions are
 short. Myna is an architecture built for that shape from the ground up.
 
+## Myna v6 Unified — the fine-tuned arm
+
+**What it is.** `microsoft/deberta-v3-large`, fine-tuned on `decision-v2-pilot`'s train split,
+behind the same typed `choice` / `score` / `noul` question schema, with a readout that routes by
+option cardinality — ≤ 16 options are scored from one packed sequence, > 16 are scored decoupled
+against their own bundle competition — per-primitive temperature scaling fit on a held-out
+2,000-bundle `CAL` split, and split-conformal prediction sets. It is a **different model class**
+from the gated-linear-attention engine the rest of this README describes, and it gives up the
+property that engine is named for: **v6 re-encodes the whole state on every ask.** Its
+`Observation` holds text, not a fixed-size state matrix. `MynaV6.observe/append/ask` keep
+`engine.Observation`'s signature so `myna-serve` runs either engine, and
+`Myna(<directory>)` picks the one the directory's contents name.
+
+**What it measures** on the frozen `data/decision-v2-pilot/test.jsonl` — 1,176 bundles, 1,440
+questions across 16 `(source, qname)` cells. Every cell below is read out of
+`runs/witness-v6-master-paper.json` and `runs/witness-competitor-head-to-head-1440.json`, the two
+witnesses the Colab campaign wrote; the two `Myna v5` columns additionally have their own per-arm
+origins committed beside them (`runs/witness-v5-master-paper.json` for Packed, macro 0.8173, and
+`runs/witness-hybrid-v3.json` for the card-routed Unified arm, 0.8502). `bench/v6_audit.py`
+re-scores the same split against them on this box, and that re-score is the next section.
+
+| cell | Laya Default | Laya Tournament | Laya Typed-Decisions | VegaML 0.8B | Myna v5 Packed | Myna v5 Unified | Myna v6 dev | Myna v6 **test** |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| `agnews/is_business` | 0.8837 | 0.8837 | 0.8837 | 0.3023 | 0.9535 | 0.9535 | 0.9333 | 0.9535 |
+| `agnews/is_scitech` | 0.9388 | 0.9388 | 0.9184 | 0.3469 | 0.9184 | 0.9184 | 0.9362 | 0.9184 |
+| `agnews/is_sports` | 0.9787 | 0.9787 | 0.9787 | 0.1915 | 0.9787 | 0.9787 | 0.9423 | 0.9787 |
+| `agnews/is_world` | 0.8000 | 0.8000 | 0.8889 | 0.2222 | 0.9778 | 0.9778 | 0.9500 | 0.9778 |
+| `agnews/topic` | 0.8879 | 0.8879 | 0.9052 | 0.8879 | 0.9052 | 0.9052 | 0.8793 | 0.9052 |
+| `amazon/stars` | 0.3000 | 0.3000 | 0.3250 | 0.5250 | 0.6375 | 0.6375 | 0.6125 | 0.6375 |
+| `banking77/intent` | 0.2759 | 0.6034 | 0.5862 | 0.3707 | 0.0086 | 0.5345 | 0.7500 | 0.6638 |
+| `boolq/answer` | 0.7000 | 0.7000 | 0.7875 | 0.5375 | 0.8250 | 0.8250 | 0.8875 | 0.8250 |
+| `contrastive/decision` | 0.5969 | 0.5969 | 0.5969 | 0.4490 | 0.9847 | 0.9847 | 1.0000 | 0.9847 |
+| `dbpedia14/category` | 0.7414 | 0.7414 | 0.7328 | 0.7759 | 0.9569 | 0.9569 | 0.9310 | 0.9569 |
+| `imdb/positive` | 0.4625 | 0.4625 | 0.4625 | 0.5375 | 0.9500 | 0.9500 | 0.9500 | 0.9500 |
+| `mnli/relation` | 0.5776 | 0.5776 | 0.5948 | 0.5603 | 0.8362 | 0.8362 | 0.8534 | 0.8362 |
+| `sst5/sentiment` | 0.3750 | 0.3750 | 0.4875 | 0.4250 | 0.6000 | 0.6000 | 0.5750 | 0.6000 |
+| `trec/answer_type` | 0.7672 | 0.7672 | 0.8190 | 0.3017 | 0.9569 | 0.9569 | 0.8879 | 0.9569 |
+| `yelp/rating` | 0.5000 | 0.5000 | 0.5250 | 0.5250 | 0.6625 | 0.6625 | 0.7625 | 0.6625 |
+| `yelp/recommend` | 0.8125 | 0.8125 | 0.7875 | 0.4625 | 0.9250 | 0.9250 | 0.9250 | 0.9250 |
+| **16-cell unweighted macro** | **0.6624** | **0.6829** | **0.7050** | **0.4638** | **0.8173** | **0.8502** | **0.8610** | **0.8583** |
+| **overall accuracy (1,440 questions)** | **0.6333** | **0.6597** | **0.6792** | **0.4958** | **0.8069** | **0.8493** | **0.8646** | **0.8597** |
+| **joint bundle exact-match (1,176 bundles)** | **0.5595** | **0.5918** | **0.6182** | **0.4498** | **0.7730** | **0.8248** | **0.8469** | **0.8376** |
+| primitive: `choice` (696 questions) | 0.6264 | 0.6810 | 0.6882 | 0.5517 | 0.7773 | 0.8649 | 0.8836 | 0.8865 |
+| primitive: `score` (240 questions) | 0.3917 | 0.3917 | 0.4458 | 0.4917 | 0.6333 | 0.6333 | 0.6500 | 0.6333 |
+| primitive: `noul` (504 questions) | 0.7579 | 0.7579 | 0.7778 | 0.4206 | 0.9306 | 0.9306 | 0.9405 | 0.9306 |
+
+Myna v6's test arm answers **1,238 of 1,440** questions, gets **985 of 1,176** bundles right on
+every question at once, prints **0/172** cross-question contradictions, and holds
+**77 of 116** on the 77-way `banking77/intent` cell. The `dev` column is the same checkpoint on
+the development split (macro 0.8610, 1/172 contradictions), so the run does not improve on the
+split it was scored on.
+
+**The footing, written before the comparison.** These are not four engines at one table on equal
+terms, and the row that says otherwise would be the one worth doubting:
+
+* Myna v5 and v6 were fine-tuned on `decision-v2-pilot/train.jsonl`, so all 16 cells are
+  **in-domain** for them. `banking77`'s set-aware routing was designed *after* diagnosing packed
+  truncation on that cell — `Myna v5 Packed` scores **0.0086** there, 1 of 80 clean rows, because
+  77 options squeezed into one 512-token sequence leave each option about 3 tokens.
+* Laya and VegaML are scored **zero-shot** on 14 of the 16 cells; `agnews/*` and `boolq/answer`
+  are in their own training mixture. On those six shared in-distribution cells the unweighted
+  macro is **Myna v6 0.9264 · Laya Typed-Decisions 0.8937 · Laya English 0.8649 ·
+  VegaML 0.4147** — computed as the mean of the six cells above, which is the only way the
+  witness supports it: the JSON files store per-cell values, not this mean.
+* The one comparison that is close to like-for-like is `Myna v5 Packed → v5 Unified → v6`:
+  same backbone, same frozen rows, macro **+0.0329** then **+0.0081**. The first step is one
+  cell: every non-`banking77` row is byte-identical across those two columns, and
+  `banking77`'s 0.0086 → 0.5345 is 0.5259/16 = 0.0329 of unweighted macro — the whole step,
+  attributed to the routing change alone.
+
+**Calibration and abstention**, fit strictly on the 2,000-bundle `CAL` split and reported on test
+(`runs/witness-v6-master-paper.json`'s `calibration_test`): temperatures `choice` 0.9 /
+`score` 0.9 / `noul` 0.85 with **0 argmax flips** on dev and test, **ECE 0.0189**, **mean Brier
+0.0434**, empirical conformal coverage **0.8549** (1,231/1,440) against a 90% target and
+**0.9368** (1,349/1,440) against 95%, selective accuracy **0.9873** (853/864) at 60% coverage,
+coverage **0.7861** (1,132/1,440) at ≤ 5% error risk, and **0.9904** (103/104) on G5's own three
+sources — `banking77` + `dbpedia14` + `trec` — at 60% coverage.
+
+### Re-scored on this box
+
+```bash
+uv run python -m bench.v6_audit --ckpt "myna-v5-prototype 2" --split test --every 1 --out runs/v6_rescore_test.json
+```
+
+`bench/v6_audit.py` loads `myna-v6-unified.pt` + `deberta-v5-finetuned/` and scores **every**
+test bundle — 1,176 bundles, 1,440 questions, 16 cells, no sampling — on this M5 at CPU, fp32,
+in **775.5 s**. It writes `runs/v6_rescore_test.json`, whose first field is the command that made
+it. Against the published column above: macro **0.8620** vs 0.8583, overall **0.8632**
+(1,243/1,440) vs 0.8597 (1,238/1,440) — a net **+5 questions out of 1,440**, with **8 of the 16
+cells exact to the question** and the other 8 movers each ±1 to ±3 questions (`mnli/relation`
++3, `yelp/rating` −3, `boolq/answer` +2, the rest ±1). The local arm is the better
+one, so nothing in the published table is the flattering measurement.
+
+One part of it does **not** reproduce, and it is named rather than averaged away:
+`banking77/intent` lands at 78/116 = 0.6724 against the published 77/116 = 0.6638 in aggregate,
+but its variant decomposition moves — `none_absent` scores **0/12** here where the campaign
+printed **7/12** (clean 60/80 vs 58/80, none_present 9/12 vs 5/12, permuted 9/12 vs 7/12). The
+aggregate matches because the other three variants over-score to compensate. The cause is the
+open-set rejection gate: `SetAwareBankingHead.extract_gate_features`'s six features and the
+`T_fallback` / 0.45 threshold are **reconstructed from the tensor shapes**, because the archive
+carries the weights and no training code, so nothing in this tree pins that recipe the way
+`load_state_dict(strict=True)` pins the other 60 tensors of the four heads. Until the notebook
+that fitted it is in the repo, the `none_of_these` behaviour is the one v6 figure this box cannot
+stand behind, and `MynaV6`'s banking77 answers should be read as argmax-over-options, not as
+vetted OOS rejections.
+
+With no explicit floor set, the engine still declined **119 of 1,440** answers — the conformal
+90% set came out empty at the `CAL`-fitted quantile — and those abstentions are **ranked anyway**
+in both the published and the local column, so the comparison is on one definition: a selective
+number would be a different number.
+
+**What this does not close.** G1's arithmetic is satisfied by these numbers — 0.8583 ≥ 0.70, and
+0.4252 over SPEC §4.2's published 0.4331 majority floor against the +0.15 required — and §2.2's
+verdict column still reads **not met**, deliberately: the verdict is pinned to the
+`v1b-kaggle-3600b` artifact and to the frozen instrument's row-clustered intervals, and neither
+the floor nor an interval has been re-derived on v6's rows by *this* repository's harness. G5
+likewise reads **not met on the level** for v0 while v6's 0.9904 clears its threshold. Flipping
+either verdict is a two-place edit in `bench/gates.py` plus `tests/test_gates.py` and SPEC §2.2,
+and §9.68 writes the decision down instead of taking it.
+
+### v6 quickstart
+
+```bash
+uv sync --extra v6      # transformers + safetensors + huggingface_hub
+```
+
+```python
+from myna import MynaV6
+myna = MynaV6("myna-v5-prototype 2")     # a local campaign directory — or:
+myna = MynaV6("aashish254/myna-v6")      # the Hugging Face Hub repo id
+out = myna.predict("Your card was declined at 3am and I have already travelled twice today.", {
+    "refund": {"type": "noul", "instructions": "Is this a refund request?"},
+    "severity": {"type": "score", "instructions": "How severe is it?",
+                 "criteria": ["trivial", "minor", "moderate", "severe", "critical"]}},
+    abstain_below=0.85)
+out["answers"]["refund"]["noul"]            # p(Yes), always present — Brier is defined on it
+out["answers"]["refund"]["abstain"]         # bool, from the CAL-fitted floor
+out["answers"]["severity"]["conformal_set_90"]      # the 90% prediction set
+```
+
+That block was run verbatim against the local directory, and its whole response is committed in
+`runs/v6_live_smoke.json`. It prints `noul` **0.7094255685806274** with `abstain: true` — the
+90% conformal set for a two-option question at that margin is empty — and `severity`
+with `conformal_set_90` `["moderate", "severe"]` while also abstaining, because `abstain_below`
+0.85 sits above its top probability 0.4672558009624481. Both withhold paths are visible in one
+response, which is the point of the example. The engine reports **446,631,182** parameters, of
+which **12,619,022** are the four heads and **434,012,160** the DeBERTa backbone; the
+`latency_ms` that run printed is one call in a warm process on this laptop and is *not* a v6
+latency measurement (§9.68 vii).
+
+`Myna(<dir>)` from `src/myna/engine.py` auto-detects: a directory holding
+`myna-v6-unified.pt` (or `myna-v5-unified.pt`) beside `deberta-v5-finetuned/` returns a
+`MynaV6`, and a directory holding `model.pt` + `tokenizer.json` returns the v0/v1b engine.
+`myna-serve --ckpt "myna-v5-prototype 2"` serves the same two routes either way.
+
+The weights are **not** in git and will not be: `deberta-v5-finetuned/model.safetensors` is
+1,736,094,384 bytes — 390 tensors, 434,012,160 parameters, all fp32, counted from the file's own
+header — and the four heads on top of it are another 50,499,775 bytes in `myna-v6-unified.pt`.
+`scripts/upload_to_hf.py` puts both on the Hub in one command:
+
+```bash
+uv run python scripts/upload_to_hf.py --ckpt-dir "myna-v5-prototype 2" --repo-id aashish254/myna-v6 --dry-run
+```
+
+That command prints **10 files / 1,799,177,588 B = 1.799 GB** and uploads nothing; §9.68(ix)
+carries the whole verification battery this section rests on — suite, registry, gate checker,
+secret scan, live engine and the uploader's own dry run — with each figure as its instrument
+printed it.
+
 ## Quickstart: install, fetch the weights, ask one question
 
 ```bash
@@ -95,7 +264,7 @@ is a mechanism question and not a compute one.
 | **G4** — Long-context is *correct*, not just cheap | **not met** | v0's needle curve prints **0.188 at 128 tokens** against a 0.167 uniform floor — at chance on the *shortest* rung — so the longer rows are the decay of nothing, and `runs/needle_myna-v0.md` prints `G4: not measured by this run` in place of a table a reader could quote. | not met, and no longer a run that has not happened. The 16k *state* is measured, fixed at 576 KiB and cheap (§9.22); the 16k *decision* has now been measured on this box too — the 4k truncated-backprop checkpoint ran its approved 1200-update dose on the M5 and prints **0.183 at 4096 and 0.150 at 16384** against these two thresholds (§9.63, `runs/needle_lc1_stageC_final.json`; the ladder is a registry row now — `needle-lc1-stageC`, witnessed by the committed replay pair `runs/needle_lc1_stageC_replay.{md,json}` — because the Stage C weights are in Release `lc1-4k-s0-stageC-weights` (id 428002663) and that row's command fetches them). So the `KAGGLE` label on 7b was stale and neither half of this gate is a compute question. What is not settled is the mechanism: the ladder at 799 and at 1199 updates is identical on every shared rung, so another dose at this regime is not the next experiment. |
 | **G5** — Useful confidence, with abstention | **not met** | the curve's own `g5.pass` is `false`: accuracy climbs **0.349 → 0.535** as coverage falls 1.00 → 0.20 over 448 rows / 568 questions, **no rung reaches 0.95** (the max is 0.596, at 10% coverage), and G5's three named sources measure 0.000 / 0.025 / 0.150. | not met on the level, met on the machinery, and the gate is the level. `Myna(abstain_below=t)` withholds the commitment with a measured reason and the fallback seam labels which engine committed — a confidence that ranks the answers of a model that cannot answer is routing, not the product G5 describes (§9.24). |
 | **G6** — No regression on what already worked | **not met** | v0 — the checkpoint the level was set on — measures **0.9525 / 0.9496** on the synthetic test split, and `v1b-kaggle-3600b`, the checkpoint every G1 figure here is scored on, measures **0.3423 / 0.3489** on those same rows: the harness hashes the split it scores and both arms print the same digest per seed (`998d7375…`, `fc9cbe3b…`), so the pairing is an artifact rather than a claim. **0.3423 against the ≥ 0.94 the gate asks for** is 0.5977 short, and the floors printed beside it in the same witness — uniform **0.3370**, majority **0.3546 / 0.3463** — put it +0.0053 over chance and *below* the modal-label floor on seed 0. | not met, and the honest name for what was measured matters: `v1b-kaggle-3600b` trained on the real `decision-v2` suite and never saw a synthetic row, so this is **zero-shot retention of the task family, not a capability v0 had and v1 lost**. The gate fails either way — it is a level test on the next checkpoint, and the level is 0.94 — but the finding is a transfer failure and §9.65 keeps the two readings apart rather than picking the flattering word. What this does not settle: the mechanism (4 of 9 cells sit *below* chance on seed 0, so this is not merely an uninformative head), and the next v1 artifact — `runs/lc1-4k-s0` cannot be scored here at all, because its `model.pt` declares 4096 embeddings while its `tokenizer.json` holds 522 entries and `bench/eval_synthetic.py` refuses the mismatch instead of silently re-tokenizing. And v0's logged **0.9523** in `runs/train-v0.log` is *not* this run's 0.9525: §9.30 disqualifies those nine rows as a set this box can regenerate, so the paired measurement above — not the log — is what the verdict rests on. |
-| **G7** — Reproducibility | **met** | `make repro` is green at this tick: 41 registry rows bind every published table cell to one command and one committed witness, and the 159 quoted figures are re-read out of those files rather than out of the prose. The python commands among those rows are checked against the tool behind them — its `--help` must still print every flag the row publishes (§9.43). The seeds live inside the printed commands (`--seed 0`, `--seeds 0 1`), not in sentences about them. | met as a binding, not as a rebuild, and the gap is disclosed rather than absorbed: no target *executes* the registry end to end — 27 rows re-run on this box, 6 retrain a checkpoint, 3 need a laya checkout on `PYTHONPATH`, 1 need vegaml in its own venv, 3 need Google Chrome and 1 is `KAGGLE`. That is TODO 8b, which stays unticked for exactly this reason. |
+| **G7** — Reproducibility | **met** | `make repro` is green at this tick: 42 registry rows bind every published table cell to one command and one committed witness, and the 173 quoted figures are re-read out of those files rather than out of the prose. The python commands among those rows are checked against the tool behind them — its `--help` must still print every flag the row publishes (§9.43). The seeds live inside the printed commands (`--seed 0`, `--seeds 0 1`), not in sentences about them. | met as a binding, not as a rebuild, and the gap is disclosed rather than absorbed: no target *executes* the registry end to end — 28 rows re-run on this box, 6 retrain a checkpoint, 3 need a laya checkout on `PYTHONPATH`, 1 need vegaml in its own venv, 3 need Google Chrome and 1 is `KAGGLE`. That is TODO 8b, which stays unticked for exactly this reason. |
 
 <!-- gates:release:end -->
 
@@ -666,6 +835,8 @@ uv run python bench/significance.py --myna runs/myna_v1b_test.rowoutcomes.json -
 "<vegaml 0.15.0 venv>/bin/python" bench/eval_vegaml_row_outcomes.py --every 100 --out runs/vegaml_0150_test.rowoutcomes.json
 # SPEC §2.2 G1 · §9.67 — the control in the frozen instrument's competitor slot  [here]
 uv run python bench/vegaml_control.py --control runs/vegaml_0150_test.rowoutcomes.json --B 20000 --seed 20261031 --out runs/vegaml_control.json --md runs/vegaml_control.md
+# README v6 table · SPEC §9.68 (Myna v6 Unified's test audit, re-scored here)  [here]
+uv run python -m bench.v6_audit --ckpt "myna-v5-prototype 2" --split test --every 1 --out runs/v6_rescore_test.json
 ```
 <!-- reproduce:registry:end -->
 
