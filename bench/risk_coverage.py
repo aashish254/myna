@@ -222,6 +222,24 @@ def table(rows, per_source, title, g5_rung) -> str:
     return "\n".join(lines)
 
 
+def select_sources(groups: dict, wanted: list[str], fname: str) -> dict:
+    """Pool the curve over the named sources, or hand back the whole split.
+
+    This is the seam G5's own wording runs through — the gate names banking77, dbpedia14
+    and trec, and a curve over all eleven sources is not that curve. A name the split does
+    not carry is refused rather than ignored, because a silently dropped source shrinks the
+    denominator of the verdict without saying so.
+    """
+    if not wanted:
+        return groups
+    have = sorted({k.split("#", 1)[0] for k in groups})
+    absent = [s for s in wanted if s not in have]
+    if absent:
+        raise SystemExit(f"--source names {', '.join(absent)}, which {fname} does not "
+                         f"carry (it has: {', '.join(have)})")
+    return {k: v for k, v in groups.items() if k.split("#", 1)[0] in wanted}
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description="risk/coverage curve for one checkpoint")
     ap.add_argument("--ckpt", default="runs/myna-v0")
@@ -230,6 +248,12 @@ def main(argv=None) -> int:
                     choices=["calibration", "development", "test"])
     ap.add_argument("--device", default="cpu")
     ap.add_argument("--limit", type=int, default=None, help="cap rows per source (smoke runs)")
+    ap.add_argument("--source", default=None, metavar="NAMES",
+                    help="comma-separated sources to pool into one curve (e.g. "
+                         "banking77,dbpedia14,trec). G5's own words name those three, and a "
+                         "curve over all eleven is a different sample from the one the gate "
+                         "is written against — so which one is being read has to be a flag, "
+                         "not a sentence.")
     ap.add_argument("--no-verify", action="store_true",
                     help="skip the engine re-run that proves the floor is settable")
     ap.add_argument("--out", default="runs/risk_coverage.md")
@@ -246,6 +270,8 @@ def main(argv=None) -> int:
     if not path.exists():
         raise SystemExit(f"--suite {args.suite} has no {fname}")
     groups = load_split(path)
+    wanted = [s.strip() for s in (args.source or "").split(",") if s.strip()]
+    groups = select_sources(groups, wanted, fname)
     if args.limit:
         groups = {k: (q, exs[: args.limit]) for k, (q, exs) in groups.items()}
     n_rows = sum(len(exs) for _q, exs in groups.values())
@@ -260,7 +286,8 @@ def main(argv=None) -> int:
         report.append(line)
 
     emit("$ " + cmd)
-    emit(f"{args.split}: {n_rows} rows / {n_q} questions over {len(groups)} question-sets")
+    emit(f"{args.split}: {n_rows} rows / {n_q} questions over {len(groups)} question-sets"
+         + (f" — pooled over {args.source} only" if args.source else ""))
 
     myna = Myna(args.ckpt, device=args.device)
     emit(f"checkpoint {args.ckpt}: {myna.n_params/1e6:.2f}M params, temperature "
@@ -320,6 +347,7 @@ def main(argv=None) -> int:
     out_json.write_text(json.dumps({"cmd": cmd,
                                     "ckpt": str(args.ckpt), "suite": str(args.suite),
                                     "split": args.split, "file": fname,
+                                    "sources": sorted({k.split("#", 1)[0] for k in groups}),
                                     "temperature": myna.temperature,
                                     "n_rows": n_rows, "n_questions": n_q,
                                     "curve": rows, "per_source": per_source_rows,

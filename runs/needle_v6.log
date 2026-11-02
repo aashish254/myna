@@ -1,0 +1,22 @@
+W1103 00:09:28.970000 33734 torch/distributed/elastic/multiprocessing/redirects.py:35] NOTE: Redirects are currently not supported in MacOs.
+/Users/aashish/next ko ne next gen model/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+Loading weights:   0%|          | 0/390 [00:00<?, ?it/s]Loading weights: 100%|██████████| 390/390 [00:00<00:00, 11056.59it/s]
+Traceback (most recent call last):
+  File "/Users/aashish/next ko ne next gen model/bench/eval_needle.py", line 123, in <module>
+    main()
+    ~~~~^^
+  File "/Users/aashish/next ko ne next gen model/bench/eval_needle.py", line 73, in main
+    rows = eval_lengths(myna, args.lengths, n_per_length=args.n, seed=args.seed)
+  File "/Users/aashish/next ko ne next gen model/src/myna/longctx.py", line 105, in eval_lengths
+    nd = make_needle(myna.tok, L, rng)
+  File "/Users/aashish/next ko ne next gen model/src/myna/longctx.py", line 69, in make_needle
+    enc_needle = len(encode_text(tok, needle))
+                     ~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/aashish/next ko ne next gen model/src/myna/tokenizer.py", line 45, in encode_text
+    return tok.encode(text, add_special_tokens=False).ids
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'ids'
+real 4.35
+user 3.33
+sys 0.71

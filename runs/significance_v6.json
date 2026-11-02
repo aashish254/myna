@@ -1,0 +1,484 @@
+{
+ "cmd": "uv run python bench/significance.py --myna runs/myna_v6_test.rowoutcomes.json --laya runs/laya_0419_test.rowoutcomes.json --report runs/v6_test.report.json --B 20000 --seed 20261031 --out runs/significance_v6.json --md runs/significance_v6.md",
+ "suite": "data/decision-v2-pilot",
+ "split": "test",
+ "report": "runs/v6_test.report.json",
+ "report_macro": 0.8620375366903147,
+ "min_rows": 30,
+ "n_cells": 16,
+ "myna": {
+  "engine": "myna-v6",
+  "dump": "runs/myna_v6_test.rowoutcomes.json",
+  "model_sha256": "207b41fea5df67ceac7aac95806c37cb9eb6e4d959666822a9c59ecb9f163e1a",
+  "temperature": {
+   "choice": 0.9,
+   "score": 0.9,
+   "noul": 0.85
+  },
+  "run_dir": "myna-v5-prototype 2"
+ },
+ "laya": {
+  "engine": "laya",
+  "dump": "runs/laya_0419_test.rowoutcomes.json",
+  "version": "0.4.19",
+  "commit": "55a19f7b7b56787e1a3e41063def9bb9a8737351",
+  "path": "/Users/aashish/github contribution /GIT/laya-scan-0419"
+ },
+ "laya_warnings": [
+  "RuntimeWarning: laya: this checkpoint ships invalid temperatures or values outside [0.5, 5]; using choice:11+=0.10058280825614929 -> 0.5. Treat confidence from the affected entries as uncalibrated."
+ ],
+ "bootstrap": {
+  "B": 20000,
+  "seed": 20261031,
+  "n_rows": 1176,
+  "cluster_key": "meta.id",
+  "resampled": "rows, each carrying all of its questions",
+  "floor": "recomputed from the resampled labels each replicate",
+  "first_replicate_digest": "d45e5c018ee550da",
+  "cells_kept_min": 16,
+  "cells_kept_max": 16
+ },
+ "paired_question_instances": 1440,
+ "unpaired_myna_questions": 0,
+ "dropped_rows": [],
+ "point": {
+  "myna_macro": 0.8620375366903146,
+  "laya_macro": 0.6663989223833249,
+  "majority_floor": 0.4330647953941198,
+  "uniform_floor": 0.3321192559493051,
+  "gap_myna_minus_laya": 0.1956386143069898,
+  "margin_over_floor": 0.4289727412961948
+ },
+ "ci95": {
+  "myna_macro": [
+   0.8430020689964295,
+   0.8799813583493232
+  ],
+  "laya_macro": [
+   0.6438993066549301,
+   0.6888020992279053
+  ],
+  "majority_floor": [
+   0.4269979991018772,
+   0.4647498100996017
+  ],
+  "uniform_floor": [
+   0.3312622234225273,
+   0.3329510435461998
+  ],
+  "margin_over_floor": [
+   0.39004559963941576,
+   0.44241928607225417
+  ],
+  "gap_myna_minus_laya": [
+   0.17007784061133863,
+   0.2210496377199888
+  ]
+ },
+ "claims": [
+  {
+   "id": "floor",
+   "claim": "myna's test-split macro is above its own majority floor",
+   "statistic": "margin_over_floor",
+   "point": 0.4289727412961948,
+   "ci95": [
+    0.39004559963941576,
+    0.44241928607225417
+   ],
+   "threshold": "CI excludes 0",
+   "survives": true,
+   "consequence": "the sentence as written stands"
+  },
+  {
+   "id": "g1-margin",
+   "claim": "the margin over the floor reaches G1's +0.15",
+   "statistic": "margin_over_floor",
+   "point": 0.4289727412961948,
+   "ci95": [
+    0.39004559963941576,
+    0.44241928607225417
+   ],
+   "threshold": "CI lower bound \u2265 0.15",
+   "survives": true,
+   "consequence": "the sentence as written stands"
+  },
+  {
+   "id": "g1-target",
+   "claim": "the macro reaches G1's target of 0.7",
+   "statistic": "myna_macro",
+   "point": 0.8620375366903146,
+   "ci95": [
+    0.8430020689964295,
+    0.8799813583493232
+   ],
+   "threshold": "CI lower bound \u2265 0.7",
+   "survives": true,
+   "consequence": "the sentence as written stands"
+  },
+  {
+   "id": "competitor",
+   "claim": "laya's macro is above myna's on the same rows and cells",
+   "statistic": "gap_myna_minus_laya",
+   "point": 0.1956386143069898,
+   "ci95": [
+    0.17007784061133863,
+    0.2210496377199888
+   ],
+   "threshold": "CI excludes 0 on the negative side",
+   "survives": false,
+   "consequence": "the sentence must be rewritten in the same PR"
+  }
+ ],
+ "mcnemar": {
+  "vs_laya": {
+   "b": 391,
+   "c": 67,
+   "n": 458,
+   "p": 1.0478628673927744e-56
+  },
+  "vs_floor": {
+   "b": 746,
+   "c": 49,
+   "n": 795,
+   "p": 4.893064814026619e-161
+  }
+ },
+ "per_cell": [
+  {
+   "cell": "agnews/is_business",
+   "n": 43,
+   "myna": 0.9534883720930233,
+   "laya": 0.8837209302325582,
+   "gap": 0.06976744186046512,
+   "myna_ci95": [
+    0.8809523582458496,
+    1.0
+   ],
+   "gap_ci95": [
+    -0.026315748691558838,
+    0.17391306161880493
+   ],
+   "mcnemar": {
+    "b": 4,
+    "c": 1,
+    "n": 5,
+    "p": 0.3750000000000007
+   }
+  },
+  {
+   "cell": "agnews/is_scitech",
+   "n": 49,
+   "myna": 0.9183673469387755,
+   "laya": 0.9387755102040817,
+   "gap": -0.02040816326530612,
+   "myna_ci95": [
+    0.8333333134651184,
+    0.9818181991577148
+   ],
+   "gap_ci95": [
+    -0.09433960914611816,
+    0.04651165008544922
+   ],
+   "mcnemar": {
+    "b": 1,
+    "c": 2,
+    "n": 3,
+    "p": 1.0
+   }
+  },
+  {
+   "cell": "agnews/is_sports",
+   "n": 47,
+   "myna": 0.9787234042553191,
+   "laya": 0.9787234042553191,
+   "gap": 0.0,
+   "myna_ci95": [
+    0.9285714030265808,
+    1.0
+   ],
+   "gap_ci95": [
+    0.0,
+    0.0
+   ],
+   "mcnemar": {
+    "b": 0,
+    "c": 0,
+    "n": 0,
+    "p": null
+   }
+  },
+  {
+   "cell": "agnews/is_world",
+   "n": 45,
+   "myna": 1.0,
+   "laya": 0.8,
+   "gap": 0.2,
+   "myna_ci95": [
+    1.0,
+    1.0
+   ],
+   "gap_ci95": [
+    0.08695650100708008,
+    0.3255813717842102
+   ],
+   "mcnemar": {
+    "b": 9,
+    "c": 0,
+    "n": 9,
+    "p": 0.00390625
+   }
+  },
+  {
+   "cell": "agnews/topic",
+   "n": 116,
+   "myna": 0.9051724137931034,
+   "laya": 0.9137931034482759,
+   "gap": -0.008620689655172414,
+   "myna_ci95": [
+    0.8474576473236084,
+    0.9553620949387546
+   ],
+   "gap_ci95": [
+    -0.0703125,
+    0.05263155698776245
+   ],
+   "mcnemar": {
+    "b": 6,
+    "c": 7,
+    "n": 13,
+    "p": 0.9999999999999981
+   }
+  },
+  {
+   "cell": "amazon/stars",
+   "n": 80,
+   "myna": 0.6375,
+   "laya": 0.3,
+   "gap": 0.3375,
+   "myna_ci95": [
+    0.529411792755127,
+    0.7407407164573669
+   ],
+   "gap_ci95": [
+    0.2028985619544983,
+    0.46590906381607056
+   ],
+   "mcnemar": {
+    "b": 32,
+    "c": 5,
+    "n": 37,
+    "p": 7.427530363202134e-06
+   }
+  },
+  {
+   "cell": "banking77/intent",
+   "n": 116,
+   "myna": 0.6724137931034483,
+   "laya": 0.27586206896551724,
+   "gap": 0.39655172413793105,
+   "myna_ci95": [
+    0.5871559381484985,
+    0.7567567825317383
+   ],
+   "gap_ci95": [
+    0.2916666567325592,
+    0.5
+   ],
+   "mcnemar": {
+    "b": 51,
+    "c": 5,
+    "n": 56,
+    "p": 1.1702924740398128e-10
+   }
+  },
+  {
+   "cell": "boolq/answer",
+   "n": 80,
+   "myna": 0.85,
+   "laya": 0.7,
+   "gap": 0.15,
+   "myna_ci95": [
+    0.767123281955719,
+    0.925000011920929
+   ],
+   "gap_ci95": [
+    0.039473652839660645,
+    0.2623002484440799
+   ],
+   "mcnemar": {
+    "b": 17,
+    "c": 5,
+    "n": 22,
+    "p": 0.01690053939819328
+   }
+  },
+  {
+   "cell": "contrastive/decision",
+   "n": 196,
+   "myna": 0.9846938775510204,
+   "laya": 0.5969387755102041,
+   "gap": 0.3877551020408163,
+   "myna_ci95": [
+    0.9653465151786804,
+    1.0
+   ],
+   "gap_ci95": [
+    0.3184080109000206,
+    0.45728641748428345
+   ],
+   "mcnemar": {
+    "b": 77,
+    "c": 1,
+    "n": 78,
+    "p": 5.227781471335261e-22
+   }
+  },
+  {
+   "cell": "dbpedia14/category",
+   "n": 116,
+   "myna": 0.9568965517241379,
+   "laya": 0.7672413793103449,
+   "gap": 0.1896551724137931,
+   "myna_ci95": [
+    0.9173553586006165,
+    0.9909111469984053
+   ],
+   "gap_ci95": [
+    0.10000002384185791,
+    0.27927929162979126
+   ],
+   "mcnemar": {
+    "b": 27,
+    "c": 5,
+    "n": 32,
+    "p": 0.0001130742020904995
+   }
+  },
+  {
+   "cell": "imdb/positive",
+   "n": 80,
+   "myna": 0.9625,
+   "laya": 0.4625,
+   "gap": 0.5,
+   "myna_ci95": [
+    0.9156626462936401,
+    1.0
+   ],
+   "gap_ci95": [
+    0.37179481983184814,
+    0.6222221851348877
+   ],
+   "mcnemar": {
+    "b": 43,
+    "c": 3,
+    "n": 46,
+    "p": 4.621938387572193e-10
+   }
+  },
+  {
+   "cell": "mnli/relation",
+   "n": 116,
+   "myna": 0.8620689655172413,
+   "laya": 0.5948275862068966,
+   "gap": 0.2672413793103448,
+   "myna_ci95": [
+    0.7966101765632629,
+    0.9230769276618958
+   ],
+   "gap_ci95": [
+    0.16260164976119995,
+    0.37254899740219116
+   ],
+   "mcnemar": {
+    "b": 38,
+    "c": 7,
+    "n": 45,
+    "p": 3.1213096463034323e-06
+   }
+  },
+  {
+   "cell": "sst5/sentiment",
+   "n": 80,
+   "myna": 0.6125,
+   "laya": 0.3875,
+   "gap": 0.225,
+   "myna_ci95": [
+    0.5049505233764648,
+    0.7183098793029785
+   ],
+   "gap_ci95": [
+    0.0694444477558136,
+    0.375
+   ],
+   "mcnemar": {
+    "b": 30,
+    "c": 12,
+    "n": 42,
+    "p": 0.007915897334896855
+   }
+  },
+  {
+   "cell": "trec/answer_type",
+   "n": 116,
+   "myna": 0.9482758620689655,
+   "laya": 0.75,
+   "gap": 0.19827586206896552,
+   "myna_ci95": [
+    0.9047619104385376,
+    0.9834710955619812
+   ],
+   "gap_ci95": [
+    0.1120672270655632,
+    0.2871313795447347
+   ],
+   "mcnemar": {
+    "b": 27,
+    "c": 4,
+    "n": 31,
+    "p": 3.395322710275602e-05
+   }
+  },
+  {
+   "cell": "yelp/rating",
+   "n": 80,
+   "myna": 0.625,
+   "laya": 0.525,
+   "gap": 0.1,
+   "myna_ci95": [
+    0.5147058963775635,
+    0.7311828136444092
+   ],
+   "gap_ci95": [
+    -0.02857142686843872,
+    0.227848082780838
+   ],
+   "mcnemar": {
+    "b": 18,
+    "c": 10,
+    "n": 28,
+    "p": 0.18493334203958667
+   }
+  },
+  {
+   "cell": "yelp/recommend",
+   "n": 80,
+   "myna": 0.925,
+   "laya": 0.7875,
+   "gap": 0.1375,
+   "myna_ci95": [
+    0.8624892354011535,
+    0.976190447807312
+   ],
+   "gap_ci95": [
+    0.06521037667989732,
+    0.2207791805267334
+   ],
+   "mcnemar": {
+    "b": 11,
+    "c": 0,
+    "n": 11,
+    "p": 0.0009765624999999999
+   }
+  }
+ ]
+}

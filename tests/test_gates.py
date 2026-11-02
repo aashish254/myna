@@ -95,22 +95,33 @@ def test_an_unmutated_verdict_holds():
 def test_the_release_state_counts_the_verdicts_that_are_there():
     t = G.tally()
     assert sum(t.values()) == len(G.GATES) == 7
-    assert t == {G.MET: 3, G.NOT_MET: 4, G.OPEN: 0}
+    assert t == {G.MET: 5, G.NOT_MET: 2, G.OPEN: 0}
     # README's headline is this string, so changing a verdict is a two-place edit
-    assert G.release_state().startswith("**3 of 7 met, 4 not met, 0 open")
+    assert G.release_state().startswith("**5 of 7 met, 2 not met, 0 open")
 
 
-def test_g1_is_not_met_on_the_trained_run_and_stays_off_the_void_one():
-    """G1 moved from `open` to `not met` when the Kaggle run's artifacts got committed, and
-    the row list is the shape of that move: the trained run's roll-up is cited, the void
-    pre-`385e06c` checkpoint is not, even though its 0.338 is the lowest nearby number."""
+def test_the_two_open_gates_are_the_two_v6_cannot_touch():
+    """G1 and G5 were the gates the level was missing, and v6 closes both. The remaining
+    pair is missing *instrumentation*, not dose: v6 truncates its state into a 512-token
+    budget, so there is no 4k/16k ladder to score (§9.69), and the synthetic-retention
+    harness refuses a checkpoint that is not the SSM architecture."""
+    assert {g["id"] for g in G.GATES if g["verdict"] != G.MET} == {"G4", "G6"}
+
+
+def test_g1_is_met_on_the_v6_artifact_and_still_rests_on_no_void_one():
+    """G1 sat at `not met` on the Kaggle run's committed report, which prints the verdict
+    as false; it moves only because this box re-scored the frozen split with v6 and the
+    frozen `myna.report` arithmetic accepts those rows. The v1b roll-up stays in the row
+    list as the *before* number, and the void pre-`385e06c` checkpoint is still not cited,
+    even though its 0.338 is the lowest nearby figure."""
     g = gate_of("G1")
-    assert g["verdict"] == G.NOT_MET
-    assert "v1b-kaggle-macro" in g["rows"] and "kaggle-dev-tail" in g["rows"]
-    assert "void-vs-laya" not in g["rows"], "a not-met verdict may not rest on a void file"
-    assert any(p["expect"] is False for p in g["proofs"])
-    assert any("v1b_kaggle_3600b" in p["file"] for p in g["proofs"]), \
-        "the verdict must read the trained artifact, not the control"
+    assert g["verdict"] == G.MET
+    assert "v6-g1-report" in g["rows"] and "v1b-kaggle-macro" in g["rows"]
+    assert "void-vs-laya" not in g["rows"], "no verdict may rest on a void file"
+    assert any(p["expect"] is True for p in g["proofs"])
+    assert any(p["expect"] is True for p in g["proofs"]
+               if p["file"] == "runs/v6_test.report.json"), \
+        "the verdict must read the v6 artifact, not a control"
 
 
 def test_g7s_prose_prints_the_registry_it_actually_has():
@@ -282,11 +293,13 @@ def test_open_must_name_the_run_this_box_cannot_do():
 
 
 def test_prose_and_code_must_lead_with_the_same_word():
-    g = gate_of("G1")
-    assert problems(g) == []
-    assert "§2.2 says 'met'" in messages(g, dict(PROSE, G1="met"))
-    g2 = gate_of("G5")
-    assert "§2.2 says 'met'" in messages(g2, dict(PROSE, G5="met"))
+    """Written against every gate rather than two named ones: §9.69 moved verdicts, and a
+    test that hard-codes which row is `met` goes stale on the very change it is meant to
+    police. Each gate is edited to the other verdict and the check has to see it."""
+    for g in G.GATES:
+        assert problems(g) == [], (g["id"], problems(g))
+        other = next(v for v in (G.MET, G.NOT_MET) if v != g["verdict"])
+        assert f"§2.2 says {other!r}" in messages(g, dict(PROSE, **{g["id"]: other})), g["id"]
 
 
 def test_a_gate_with_no_prose_row_of_its_own_reds():

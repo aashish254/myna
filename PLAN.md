@@ -99,11 +99,16 @@ exactly, with zero drift.
     when the artifact underdetermines a design, return its parts instead of inventing the scalar.
 14. **A gate that a new model clears is not cleared by the new model.** v6's 0.8583 satisfies G1's
     arithmetic (≥ 0.70, +0.4252 over §4.2's published floor) and its 0.9904 satisfies G5's, and
-    both verdicts still read `not met`: the floor and the row-clustered intervals have never been
-    computed on v6's rows, the gates' proofs are fields of the frozen instrument's artifacts, and
-    the tally is pinned by two tests. Lesson (the same one §9.31 teaches about generated tables):
-    a verdict is a claim about an artifact, so it moves when the artifact does and not when a
-    prettier number arrives. SPEC §9.68 (vi) names the three levers and who pulls them.
+    both verdicts read `not met` when this was first written: the floor and the row-clustered
+    intervals had never been computed on v6's rows, the gates' proofs are fields of the frozen
+    instrument's artifacts, and the tally is pinned by two tests. Lesson (the same one §9.31
+    teaches about generated tables): a verdict is a claim about an artifact, so it moves when the
+    artifact does and not when a prettier number arrives. SPEC §9.68 (vi) names the three levers
+    and who pulls them — and §9.69 is the tick where they were pulled: `myna.report` was run
+    unchanged on 1,176 v6 rows re-scored here, `bench/significance.py` computed the floor and the
+    paired intervals on those same rows, and `bench/gates.py`'s G1 and G5 proofs now read those
+    two artifacts. Both verdicts are `met`; the two that remain are G4 and G6, and v6 cannot be
+    put through either — see §9.69.
 
 ## Benchmarks
 

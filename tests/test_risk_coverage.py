@@ -27,7 +27,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from bench.risk_coverage import (COVERAGE_RUNGS, at_or_above, collect,  # noqa: E402
                                  committed_probability, curve, engine_questions, g5_verdict,
-                                 is_correct, verify_floor)
+                                 is_correct, load_split, select_sources, verify_floor)
 from myna.data import Example, Question  # noqa: E402
 from myna.engine import abstain_check  # noqa: E402
 
@@ -294,3 +294,27 @@ def test_the_run_rungs_cover_the_gates_own_floor():
     """0.6 coverage is in G5's wording, so the table has to contain that rung —
     otherwise `best coverage at target` is measured against a rung that never ran."""
     assert 0.6 in COVERAGE_RUNGS and 1.0 in COVERAGE_RUNGS
+
+
+def test_the_pool_filter_keeps_exactly_the_named_sources():
+    """G5's verdict now rests on a curve pooled over its three named sources, so the
+    filter that produces it is part of the gate, not a convenience: a name the split does
+    not carry has to be refused rather than silently dropped — dropping it would shrink the
+    denominator without saying so — and the keys that survive have to be the named ones."""
+    groups = load_split(Path(__file__).resolve().parents[1]
+                        / "data/decision-v2-pilot/calibration.jsonl")
+    named = sorted({k.split("#", 1)[0] for k in groups})[:1]
+    pooled = select_sources(groups, named, "calibration.jsonl")
+    assert {k.split("#", 1)[0] for k in pooled} == set(named), sorted(pooled)[:3]
+    assert len(pooled) < len(groups), "a one-source pool must drop the other sources' sets"
+
+    # The positive control: with nothing named the whole split comes back, so the
+    # assertion above is the filter firing rather than an empty intersection.
+    assert select_sources(groups, [], "calibration.jsonl") == groups
+
+    with pytest.raises(SystemExit) as caught:
+        select_sources(groups, ["no_such_source"], "calibration.jsonl")
+    msg = str(caught.value)
+    assert "no_such_source" in msg and "calibration.jsonl" in msg, msg
+    for source in named:
+        assert source in msg, f"the refusal must print what the split does carry: {msg}"

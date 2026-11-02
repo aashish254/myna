@@ -280,6 +280,7 @@ class MynaV6:
                 f"{root} has no {' or '.join(CKPT_NAMES)}. Name a campaign directory that "
                 "holds the checkpoint, or a Hugging Face repo id that carries it.")
         ck = torch.load(ckpt_path, map_location="cpu", weights_only=False)
+        self.ckpt_path = ckpt_path
 
         self.model_label = ck.get("model_label", "myna-v6")
         self.config = dict(ck["config"])

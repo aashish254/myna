@@ -37,6 +37,7 @@ import math
 import sys
 import traceback
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 import torch
@@ -46,6 +47,7 @@ from myna.v6_engine import (CKPT_NAMES, MASK_FILL, CoralOrdinalScoreHead, GraphM
                            is_v6_source)
 
 REPO = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(REPO))
 CAMPAIGN_DIR = Path("myna-v5-prototype 2")
 
 
@@ -424,3 +426,153 @@ def test_the_engine_re_encodes_the_state_on_every_ask():
     grown = obs.append("efgh")
     assert grown.text == "abcd\nefgh"
     assert grown.ids == list(range(len("abcd\nefgh"))), "the state is not a retained activation"
+
+
+# ---------------------------------------------------------------------- the two G1 dumps
+#
+# `bench/v6_audit.py`'s own macro is one number in one witness, and a gate cannot rest on
+# it: G1 is decided by `myna.report` (which derives both floors from the split, not from the
+# run) and `bench/significance.py` (which needs the row, not the cell mean). So the audit
+# writes two extra files in schemas that are *not* its own, and the tests below check them
+# the only way that means anything — by reading them with the two tools that have to accept
+# them. The engine is a stub that always answers its first option, so every figure is a
+# property of the split rather than of 1.7 GB of weights, and the whole calibration file is
+# scored in seconds.
+
+
+class FirstOptionEngine:
+    """A `MynaV6` double: same `predict` shape, always commits to option 0, never abstains."""
+
+    model_label = "stub-v6 (answers the first option)"
+    temperatures = {"choice": 1.0, "score": 1.0, "noul": 1.0}
+    n_params = 1234
+    max_length = 512
+    ckpt_path = None
+
+    def __init__(self, source, device="cpu", abstain_below=None):
+        self.source = source
+
+    def predict(self, state, questions):
+        answers = {}
+        for name, spec in questions.items():
+            crit = spec.get("criteria")
+            if spec["type"] == "noul":
+                opts = ["no", "yes"]
+            elif isinstance(crit, dict):
+                opts = list(crit)
+            else:
+                opts = list(crit)
+            probs = {o: (1.0 if i == 0 else 0.0) for i, o in enumerate(opts)}
+            answers[name] = {"probabilities": probs, "abstain": False,
+                             "confidence": max(probs.values())}
+        return {"answers": answers}
+
+
+@pytest.fixture()
+def stub_audit(tmp_path, monkeypatch):
+    """Run the audit's calibration pass with the stub engine and return its three outputs."""
+    import bench.v6_audit as audit
+    monkeypatch.setattr("myna.v6_engine.MynaV6", FirstOptionEngine)
+    # The row dump hashes the checkpoint file it scored, so the double needs one too.
+    (tmp_path / "stub.pt").write_bytes(b"not a model, a fixture")
+    monkeypatch.setattr(FirstOptionEngine, "ckpt_path", tmp_path / "stub.pt")
+    witness = tmp_path / "audit.json"
+    metrics = tmp_path / "v6.metrics.json"
+    rowout = tmp_path / "v6.rowoutcomes.json"
+    rc = audit.run(["--ckpt", "stub-dir", "--split", "calibration", "--every", "1",
+                    "--out", str(witness), "--metrics", str(metrics),
+                    "--rowout", str(rowout)])
+    assert rc == 0, f"the stub audit returned {rc}"
+    return SimpleNamespace(audit=audit, witness=json.loads(witness.read_text()),
+                           metrics=json.loads(metrics.read_text()),
+                           metrics_path=metrics,
+                           rowout=json.loads(rowout.read_text()), tmp=tmp_path)
+
+
+def test_the_row_dump_prices_the_same_cells_the_audit_summed(stub_audit):
+    """Two paths out of one loop: the per-cell counts the witness prints, and the same counts
+    recomputed from the row records alone. `bench/significance.py` bootstraps from the rows
+    and the README quotes the cells, so the two must be one measurement."""
+    audit = stub_audit.audit
+    rows = stub_audit.rowout["rows"]
+    assert len(rows) == stub_audit.witness["bundles_scored"]
+    repriced = audit.reprice_from_rows(rows)
+    assert audit.guard_against_cells(stub_audit.witness["per_cell"], repriced) == []
+
+    # the dump's group fields must be the very keys the metrics block reports on
+    sets = {f"{rec['group']}/{name}" for rec in rows for name in rec["questions"]}
+    assert sets == set(stub_audit.metrics["calibration"]), "the set keys parted company"
+
+
+def test_a_row_dump_that_disagrees_is_refused_by_number(stub_audit):
+    """The guard has to be able to fire. One flipped `ok` in one record is a one-question
+    move; if that passes, the guard is decoration and the dump is unguarded."""
+    audit, per_cell = stub_audit.audit, stub_audit.witness["per_cell"]
+    rows = json.loads(json.dumps(stub_audit.rowout["rows"]))
+    src, name = rows[0]["meta"]["source"], sorted(rows[0]["questions"])[0]
+    rows[0]["questions"][name]["ok"] ^= 1
+    complaints = audit.guard_against_cells(per_cell, audit.reprice_from_rows(rows))
+    assert len(complaints) == 1, complaints
+    assert complaints[0].startswith(f"{src}/{name}: witness "), complaints[0]
+
+    # and it reads both directions: a cell only one side has is named, not absorbed
+    assert audit.guard_against_cells({"agnews/topic": {"correct": 3, "n": 4}},
+                                     {"nobody/asks": [1, 2]}) == [
+        "agnews/topic: in the witness, absent from the row dump",
+        "nobody/asks: (1, 2) in the row dump, absent from the witness"]
+
+
+def test_the_frozen_report_reads_the_dump_and_finds_no_unmatched_sets(stub_audit):
+    """The seam: `python -m myna.report` accepts the audit's metrics block on the split it
+    claims, matches every question-set to a group of its own, and prints a G1 verdict."""
+    from myna import report as frozen
+
+    out = stub_audit.tmp / "v6.report.json"
+    rc = frozen.main(["--suite", str(REPO / "data" / "decision-v2-pilot"),
+                      "--split", "calibration", "--metrics", str(stub_audit.metrics_path),
+                      "--out", str(out)])
+    assert rc == 0
+    rep = json.loads(out.read_text())
+    assert rep["unmatched_sets"] == [], "the dump's set keys are not the report's groups"
+    assert rep["g1"]["target"] == 0.70 and rep["g1"]["margin"] == 0.15
+    assert isinstance(rep["g1"]["pass"], bool)
+    scored = [c for c in rep["cells"] if c["acc"] is not None]
+    assert scored, "the report priced no cell from this dump"
+    for c in scored:
+        assert c["n_scored"] == c["n"], f"{c['source']}/{c['question']} scored fewer rows " \
+                                       "than the cell has"
+        assert 0.0 <= c["acc"] <= 1.0
+        assert c["majority"] > 0.0 and c["uniform"] > 0.0, "floors come from the split"
+
+
+def test_the_row_dump_answers_every_key_the_bootstrap_reads(stub_audit):
+    """`bench/significance.py` reads the myna slot's provenance out of this file by key, and
+    it does it *after* the 20,000 replicates — so a missing field costs the whole re-score.
+    The v6 dump lost a run exactly that way on `model.model_sha256`; the keys the consumer
+    names are pinned here, not left to be discovered by a crash at the end of a long job.
+    """
+    d = stub_audit.rowout
+    for key in ("engine", "run_dir", "suite", "split", "file", "n_rows", "min_rows",
+                "cluster_key", "rows"):
+        assert key in d, key
+    assert d["suite"] == "data/decision-v2-pilot", \
+        "an absolute path in a committed witness is a machine, not a repository"
+    model = d["model"]
+    for key in ("temperature", "model_sha256", "params"):
+        assert key in model, key
+    assert len(model["model_sha256"]) == 64, model["model_sha256"]
+    assert set(model["temperature"]) == {"choice", "score", "noul"}, \
+        "v6 fits one temperature per type; the field is that mapping, not a scalar"
+
+
+def test_a_subsample_is_refused_as_a_dump_source(tmp_path, monkeypatch, capsys):
+    """`--every 2` and `--source banking77` would dump a subset under a frozen split's name,
+    and `bench/significance.py` would bootstrap an interval around the wrong sample."""
+    import bench.v6_audit as audit
+    monkeypatch.setattr("myna.v6_engine.MynaV6", FirstOptionEngine)
+    for extra in (["--every", "2"], ["--source", "banking77"]):
+        with pytest.raises(SystemExit) as exc:
+            audit.run(["--ckpt", "stub-dir", "--split", "calibration", *extra,
+                       "--out", str(tmp_path / "w.json"),
+                       "--metrics", str(tmp_path / "m.json")])
+        assert "whole frozen split" in str(exc.value.args[0])

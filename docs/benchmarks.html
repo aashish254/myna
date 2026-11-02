@@ -50,27 +50,34 @@
     </section>
 
     <section id="engines">
-        <h2>Three engines on the same 1,176 rows</h2>
+        <h2>Four engines on the same 1,176 rows</h2>
         <div class="chart-container">
             <canvas id="engineChart"></canvas>
         </div>
         <table>
-            <thead><tr><th>Engine</th><th>Macro over the 16 cells</th><th>95% CI (row-clustered, B=20,000)</th><th>Myna minus this engine</th><th>Exact McNemar</th></tr></thead>
+            <thead><tr><th>Engine</th><th>Macro over the 16 cells</th><th>95% CI (row-clustered, B=20,000)</th><th>Paired differences on these rows</th><th>Exact McNemar</th></tr></thead>
             <tbody>
-                <tr><td><strong>myna</strong> v1b-kaggle-3600b, 16,926,848 params</td><td>0.4893</td><td>[0.4647, 0.5139]</td><td>—</td><td>vs own majority floor: 291 / 196, n=487, p=1.94e-05</td></tr>
-                <tr><td>laya 0.4.19, 421,293,827 params (our count)</td><td>0.6664</td><td>[0.6439, 0.6888]</td><td><strong>&minus;0.1771</strong> [&minus;0.2080, &minus;0.1463]</td><td>158 / 436, n=594, p=4.75e-31</td></tr>
-                <tr><td>vegaml 0.15.0, 14,342,512 trainable behind a 752,393,024 reader — <em>scored as a control</em></td><td>0.6160</td><td>[0.5898, 0.6415]</td><td><strong>&minus;0.1266</strong> [&minus;0.1578, &minus;0.0955]</td><td>205 / 404, n=609, p=5.69e-16</td></tr>
+                <tr><td><strong>myna v6</strong>, 446,631,182 params — 434,012,160 fine-tuned <code>deberta-v3-large</code> + 12,619,022 Myna readout · <em>in-domain</em></td><td>0.8620</td><td>[0.8430, 0.8800]</td><td>over own majority floor <strong>+0.4290</strong> [+0.3900, +0.4424] · over laya <strong>+0.1956</strong> [+0.1701, +0.2210]</td><td>vs floor: 746 / 49, n=795, p=4.89e-161<br>vs laya: 391 / 67, n=458, p=1.05e-56</td></tr>
+                <tr><td><strong>myna</strong> v1b-kaggle-3600b, 16,926,848 params</td><td>0.4893</td><td>[0.4647, 0.5139]</td><td>over own majority floor <strong>+0.0563</strong> [+0.0192, +0.0676] · against laya <strong>&minus;0.1771</strong> [&minus;0.2080, &minus;0.1463]</td><td>vs floor: 291 / 196, n=487, p=1.94e-05<br>vs laya: 158 / 436, n=594, p=4.75e-31</td></tr>
+                <tr><td>laya 0.4.19, 421,293,827 params (our count)</td><td>0.6664</td><td>[0.6439, 0.6888]</td><td>zero-shot on 14 of the 16 cells</td><td>—</td></tr>
+                <tr><td>vegaml 0.15.0, 14,342,512 trainable behind a 752,393,024 reader — <em>scored as a control</em></td><td>0.6160</td><td>[0.5898, 0.6415]</td><td>v1b − vegaml <strong>&minus;0.1266</strong> [&minus;0.1578, &minus;0.0955]</td><td>205 / 404, n=609, p=5.69e-16</td></tr>
             </tbody>
         </table>
         <div class="data-note">
-            Sources: <code>runs/significance.md</code> (laya) and <code>runs/vegaml_control.md</code> (vegaml), from
-            <code>runs/myna_v1b_test.rowoutcomes.json</code>, <code>runs/laya_0419_test.rowoutcomes.json</code> and
-            <code>runs/vegaml_0150_test.rowoutcomes.json</code>. SPEC §9.66 and §9.67.
+            Sources: <code>runs/significance_v6.md</code> and <code>runs/significance.md</code> (laya, both arms) and
+            <code>runs/vegaml_control.md</code> (vegaml), from
+            <code>runs/myna_v6_test.rowoutcomes.json</code>, <code>runs/myna_v1b_test.rowoutcomes.json</code>, <code>runs/laya_0419_test.rowoutcomes.json</code> and
+            <code>runs/vegaml_0150_test.rowoutcomes.json</code>. SPEC §9.66, §9.67 and §9.69.
             Whiskers are 95% intervals, not standard errors. The y-axis starts at 0.40, so bar heights are not
-            proportional to accuracy. Both competitor runs share one replicate set — same
-            1,176 rows, same <code>--seed 20261031</code>, first-replicate digest <code>d45e5c018ee550da</code> in both
+            proportional to accuracy. All three runs share one replicate set — same
+            1,176 rows, same <code>--seed 20261031</code>, first-replicate digest <code>d45e5c018ee550da</code> in all
             files — so the 0.0504 that separates the two competitors is arithmetic on paired points with
             <strong>no interval</strong>, and is not plotted.
+            <strong>The v6 row is not a like-for-like arm</strong>: it was fine-tuned on
+            <code>decision-v2-pilot/train.jsonl</code>, so every one of the 16 cells is inside its training
+            distribution, while laya and vegaml are zero-shot on 14 of them. Its +0.1956 over laya is a
+            trained-versus-untrained gap. It is also a different artifact from the two gates below it — G2's
+            speed and G3's browser build are measured on the 14.45M-parameter v0 engine, which fails G1 and G5.
             The vegaml macro is <strong>forced-choice</strong>: 631 of its 1,440 outcomes (43.8%) carry its own decline
             flag and are scored anyway, because neither myna nor laya can decline; of the 809 it answers it is right
             548 times (0.6774), of the 631 it declines 292 (0.4628). A second, independent flag — <code>unbound</code>,
@@ -87,16 +94,21 @@
         <table>
             <thead><tr><th>Gate</th><th>Status</th></tr></thead>
             <tbody>
-                <tr><td>G1 Accuracy</td><td class="not-met">NOT MET</td></tr>
+                <tr><td>G1 Accuracy (on Myna v6)</td><td class="met">MET</td></tr>
                 <tr><td>G2 Latency</td><td class="met">MET</td></tr>
                 <tr><td>G3 Deployment</td><td class="met">MET</td></tr>
                 <tr><td>G4 Long-context</td><td class="not-met">NOT MET</td></tr>
-                <tr><td>G5 Useful confidence</td><td class="not-met">NOT MET</td></tr>
+                <tr><td>G5 Useful confidence (on Myna v6)</td><td class="met">MET</td></tr>
                 <tr><td>G6 No regression</td><td class="not-met">NOT MET</td></tr>
                 <tr><td>G7 Reproducibility</td><td class="met">MET</td></tr>
             </tbody>
         </table>
-        <div class="data-note">Source: SPEC.md §2.2 (lines 65-73); tally: 3 met, 4 not met, 0 open (line 82).
+        <div class="data-note">Source: SPEC.md §2.2 (lines 65-73); tally: 5 met, 2 not met, 0 open (line 82).
+        G1 and G5 are met by the <strong>v6</strong> checkpoint — a fine-tuned
+        <code>microsoft/deberta-v3-large</code> with 12,619,022 params of Myna readout, trained
+        in-domain on <code>decision-v2-pilot/train.jsonl</code> (macro 0.8620,
+        <code>g1/pass: true</code> in <code>runs/v6_test.report.json</code>) — not by the 14.4M engine the
+        accuracy arms below are drawn from. G2's ratios and G3's browser build are still measured on v0.
         G6 is measured, not decided: on the synthetic test split <code>v1b-kaggle-3600b</code> scores
         <strong>0.3423 / 0.3489</strong> (two seeds) against the required 0.94, while the v0 checkpoint that
         set the level scores <strong>0.9525 / 0.9496</strong> on the same hashed rows — measured, witnessed
@@ -126,10 +138,10 @@ Choice: billing · Weakest: shipping (0.00027509400388225913)</pre>
     <div class="footer">
         <p><strong>What these numbers don't claim:</strong></p>
         <ul>
-            <li>G1 (0.70 accuracy) is NOT MET — the Kaggle checkpoint is at 0.4893 [0.4647, 0.5139], +0.0563 [0.0192, 0.0676] over the 0.4331 floor against +0.15 required</li>
-            <li>The 0.70 target is gated, not promised</li>
+            <li>G1 (0.70 accuracy) is met <strong>on v6 and on a borrowed trunk</strong>: 0.8620 macro against the 0.4331 floor, but 434,012,160 of its 446,631,182 params are a fine-tuned <code>deberta-v3-large</code> and all 16 cells are in-domain — the chart's Kaggle arm stays at 0.4893 [0.4647, 0.5139], +0.0563 [0.0192, 0.0676], <strong>not met</strong></li>
+            <li>G4 and G6 are not dose questions: v6 has no state beyond a 512-token truncation for the needle ladder to probe, and <code>bench/eval_synthetic.py</code> cannot load a checkpoint that is not the SSM</li>
             <li>Neither competitor comparison is a parity claim, and the 0.6160 control is a same-author design scored forced-choice, not a leaderboard entry</li>
-            <li>Training closed at v0; v1 needs paid GPU work or Kaggle quota</li>
+            <li>The 1.799 GB of v6 weights are not in git — they are the public Hub repo <code>Aashish254/myna-v6</code> (12 files, verified against its JSON API on 2026-11-02), so every v6 command here needs that download first and a clean checkout re-runs none of them without it</li>
             <li>No measurements on larger batches, longer sequences, or multilingual data</li>
         </ul>
         <p>Full acceptance criteria: <a href="../SPEC.md#22-acceptance-gates---the-project-is-not-finished-until-all-pass">SPEC.md §2.2</a></p>
@@ -189,25 +201,25 @@ Choice: billing · Weakest: shipping (0.00027509400388225913)</pre>
             }
         });
 
-        // Three engines, same rows — point estimate as a bar, 95% CI as a floating bar
+        // Four engines, same rows — point estimate as a bar, 95% CI as a floating bar
         const engCtx = document.getElementById('engineChart').getContext('2d');
         new Chart(engCtx, {
             type: 'bar',
             data: {
-                labels: ['myna 16.9M', 'laya 421M', 'vegaml 14.3M trainable'],
+                labels: ['myna v6 447M', 'myna 16.9M', 'laya 421M', 'vegaml 14.3M trainable'],
                 datasets: [
                     {
                         label: 'Macro accuracy',
-                        data: [0.4893, 0.6664, 0.6160],
-                        backgroundColor: ['#2563eb', '#7c3aed', '#0d9488'],
-                        borderColor: ['#1e40af', '#5b21b6', '#115e59'],
+                        data: [0.8620, 0.4893, 0.6664, 0.6160],
+                        backgroundColor: ['#1d4ed8', '#2563eb', '#7c3aed', '#0d9488'],
+                        borderColor: ['#1e3a8a', '#1e40af', '#5b21b6', '#115e59'],
                         borderWidth: 1,
                         barPercentage: 0.55,
                         categoryPercentage: 0.7
                     },
                     {
                         label: '95% CI',
-                        data: [[0.4647, 0.5139], [0.6439, 0.6888], [0.5898, 0.6415]],
+                        data: [[0.8430, 0.8800], [0.4647, 0.5139], [0.6439, 0.6888], [0.5898, 0.6415]],
                         backgroundColor: 'rgba(15, 23, 42, 0.22)',
                         borderColor: 'rgba(15, 23, 42, 0.55)',
                         borderWidth: 1,
@@ -228,7 +240,7 @@ Choice: billing · Weakest: shipping (0.00027509400388225913)</pre>
                 scales: {
                     y: {
                         min: 0.4,
-                        max: 0.7,
+                        max: 0.9,
                         ticks: { callback: v => v.toFixed(2) },
                         grid: { color: '#f0f0f0' }
                     },

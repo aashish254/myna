@@ -758,6 +758,147 @@ ROWS = [
         "`runs/witness-hybrid-v3.json` (the card-routed arm, 0.8502) — are witnesses here "
         "because the README names them beside those macros; neither is produced by this row's "
         "command, and `witness-hybrid-v3.json` is that arm under its earlier name."),
+
+    row("risk-coverage-v6", "SPEC §2.2 G5 · README abstention table (v6, all pooled sources)",
+        'uv run python -m bench.risk_coverage --ckpt "myna-v5-prototype 2" '
+        '--split calibration --out runs/risk_coverage_v6.md',
+        HERE,
+        ["runs/risk_coverage_v6.md", "runs/risk_coverage_v6.json"],
+        [("runs/risk_coverage_v6.md",
+          "calibration: 448 rows / 568 questions over 168 question-sets"),
+         ("runs/risk_coverage_v6.md",
+          "G5 (§2.2): accuracy >= 0.95 at coverage >= 0.60: PASS"),
+         ("runs/risk_coverage_v6.json", '"accuracy": 0.967741935483871'),
+         ("runs/risk_coverage_v6.json", '"engine_abstained": 227')],
+        "The whole-split reading of the same gate: 0.968 at 60% coverage on 568 questions "
+        "and 11 sources, and the 0.884 floor that earns it abstains on 227 of them on the "
+        "engine. Quoted beside the trio row because the pooled-curve pass does not depend on "
+        "which sources G5 names."),
+
+    row("risk-coverage-v6-trio", "SPEC §2.2 G5 · README abstention table (G5's three named sources)",
+        'uv run python -m bench.risk_coverage --ckpt "myna-v5-prototype 2" '
+        '--split calibration --source banking77,dbpedia14,trec '
+        '--out runs/risk_coverage_v6_g5trio.md',
+        HERE,
+        ["runs/risk_coverage_v6_g5trio.md", "runs/risk_coverage_v6_g5trio.json"],
+        [("runs/risk_coverage_v6_g5trio.md",
+          "calibration: 120 rows / 120 questions over 42 question-sets "
+          "— pooled over banking77,dbpedia14,trec only"),
+         ("runs/risk_coverage_v6_g5trio.md",
+          "G5 (§2.2): accuracy >= 0.95 at coverage >= 0.60: PASS "
+          "— best coverage at target: 0.8"),
+         ("runs/risk_coverage_v6_g5trio.md",
+          "floor 0.852 re-run on the engine: it abstained on 24 of 120 questions, "
+          "the curve puts 24 below that floor (coverage 0.800)"),
+         ("runs/risk_coverage_v6_g5trio.json", '"accuracy": 0.96875')],
+        "This is the row G5's own wording asks for — banking77 + dbpedia14 + trec pooled, on "
+        "`calibration.jsonl` — measured rather than relabelled from the eleven-source curve. "
+        "`--source` exists because the alternative was quoting the wider pool as if it were "
+        "the trio. The witness also carries the per-source verdicts, where banking77 is the "
+        "one that does not clear 0.95 at 60% on its own (0.909 at 55%)."),
+
+    row("risk-coverage-v6-trio-test", "SPEC §2.2 G5 · README v6 abstention table (the same trio "
+        "curve out-of-sample, on `test.jsonl`)",
+        'uv run python -m bench.risk_coverage --ckpt "myna-v5-prototype 2" '
+        '--split test --source banking77,dbpedia14,trec '
+        '--out runs/risk_coverage_v6_g5trio_test.md',
+        HERE,
+        ["runs/risk_coverage_v6_g5trio_test.md", "runs/risk_coverage_v6_g5trio_test.json"],
+        [("runs/risk_coverage_v6_g5trio_test.md",
+          "test: 348 rows / 348 questions over 190 question-sets "
+          "— pooled over banking77,dbpedia14,trec only"),
+         ("runs/risk_coverage_v6_g5trio_test.md",
+          "G5 (§2.2): accuracy >= 0.95 at coverage >= 0.60: PASS "
+          "— best coverage at target: 0.701"),
+         ("runs/risk_coverage_v6_g5trio_test.md",
+          "floor 0.903 re-run on the engine: it abstained on 104 of 348 questions, "
+          "the curve puts 104 below that floor (coverage 0.701)"),
+         ("runs/risk_coverage_v6_g5trio_test.json", '"accuracy": 0.9754098360655737')],
+        "G5's pass is claimed on `calibration.jsonl`, the split §2.2 names — but v6's "
+        "temperatures and conformal quantiles were fitted on a separate CAL split, so that curve "
+        "is in-sample for the confidence mechanism. This is the same trio curve re-run on "
+        "`test.jsonl`, where 348 questions instead of 120 are ranked and the pass still holds at "
+        "**0.975 on 70.1% coverage** with the 0.9034 floor abstaining on 104 of 348 exactly where "
+        "the curve withholds 104. `banking77` is the weak source on both splits: 0.921 on 32.8% "
+        "coverage here, against dbpedia14's 0.981 on 91.4% and trec's 0.990 on 86.2%."),
+
+    row("v6-test-metrics", "SPEC §2.2 G1 · README v6 gate paragraph (the dumps the frozen "
+        "instrument reads)",
+        'uv run python -m bench.v6_audit --ckpt "myna-v5-prototype 2" --split test '
+        '--every 1 --out runs/v6_g1_test.json --md runs/v6_g1_test.md '
+        '--metrics runs/v6_test.metrics.json --rowout runs/myna_v6_test.rowoutcomes.json',
+        HERE,
+        ["runs/v6_test.metrics.json", "runs/myna_v6_test.rowoutcomes.json",
+         "runs/v6_g1_test.json", "runs/v6_g1_test.md"],
+        [("runs/v6_test.metrics.json", '"bundles_scored": 1176'),
+         ("runs/v6_test.metrics.json", '"n_questions": 1440'),
+         ("runs/myna_v6_test.rowoutcomes.json", '"n_rows": 1176'),
+         ("runs/myna_v6_test.rowoutcomes.json", '"cluster_key": "meta.id"'),
+         ("runs/myna_v6_test.rowoutcomes.json", '"macro_acc": 0.8620375366903147'),
+         ("runs/myna_v6_test.rowoutcomes.json", '"params": 446631182')],
+        "One pass over all 1,176 test bundles, written twice: `--metrics` in the key shape "
+        "`myna.train.evaluate` writes — `<set id>/<question>` per question-set, which is the only "
+        "shape `myna.report` will read — and `--rowout` in the per-row shape "
+        "`bench/significance.py` bootstraps, clustered on `meta.id`. The row exists because G1's "
+        "verdict is now read out of the first and its interval out of the second, and a dump in "
+        "either shape alone would leave the other instrument quoting numbers it never touched."),
+
+    row("v6-g1-report", "SPEC §2.2 G1 · README v6 gate paragraph (the frozen report's own "
+        "verdict on v6's rows)",
+        'uv run python -m myna.report --metrics runs/v6_test.metrics.json --split test '
+        '--out runs/v6_test.report.json',
+        HERE,
+        ["runs/v6_test.report.json"],
+        [("runs/v6_test.report.json", '"pass": true'),
+         ("runs/v6_test.report.json", '"meets_target": true'),
+         ("runs/v6_test.report.json", '"meets_margin": true'),
+         ("runs/v6_test.report.json", '"macro_acc": 0.8620375366903147'),
+         ("runs/v6_test.report.json", '"macro_majority": 0.4330647953941198'),
+         ("runs/v6_test.report.json", '"margin_observed": 0.4289727412961949'),
+         ("runs/v6_test.report.json", '"cells_kept": 16'),
+         ("runs/v6_test.report.json", '"unmatched_sets": []')],
+        "This is the row G1's verdict reads: no gate arithmetic lives here, only `report.g1_verdict` "
+        "over the dump the row above wrote, with the per-source strata table printed beside it. "
+        "16 of 16 cells kept at n ≥ 30, `dropped_cells` and `unmatched_sets` both empty, and "
+        "`below_majority_floor` empty too. It is run *without* `--laya`: the competitor "
+        "comparison is the paired row below, which joins on the rows themselves rather than on a "
+        "summary column this artifact would have to inherit."),
+
+    row("v6-significance-paired", "SPEC §2.2 G1 · README v6 gate paragraph · benchmarks.html "
+        "engines table (G1's number with its own sampling error)",
+        'uv run python bench/significance.py '
+        '--myna runs/myna_v6_test.rowoutcomes.json '
+        '--laya runs/laya_0419_test.rowoutcomes.json '
+        '--report runs/v6_test.report.json --B 20000 --seed 20261031 '
+        '--out runs/significance_v6.json --md runs/significance_v6.md',
+        HERE,
+        ["runs/significance_v6.md", "runs/significance_v6.json"],
+        [("runs/significance_v6.md",
+          "| `myna_macro` | 0.8620 | [0.8430, 0.8800] |"),
+         ("runs/significance_v6.md",
+          "| `margin_over_floor` | 0.4290 | [0.3900, 0.4424] |"),
+         ("runs/significance_v6.md",
+          "| `gap_myna_minus_laya` | 0.1956 | [0.1701, 0.2210] |"),
+         ("runs/significance_v6.md",
+          "pooled over 458 pairs: myna right and laya wrong 391, the reverse 67, "
+          "exact two-sided p = 1.05e-56"),
+         ("runs/significance_v6.md",
+          "over 1176 rows / 1440 paired question instances, 20,000 row-clustered replicates, "
+          "seed 20261031 (first replicate digest `d45e5c018ee550da`)"),
+         ("runs/significance_v6.json", '"first_replicate_digest": "d45e5c018ee550da"'),
+         ("runs/significance_v6.json", '"B": 20000'),
+         ("runs/significance_v6.json", '"p": 1.0478628673927744e-56')],
+        "The row G1's interval reads, and the reason the verdict can say *beats the witness* "
+        "rather than *prints a higher number*: G1's target, its +0.15 margin and the competitor "
+        "gap are each tested with their own row-clustered interval over 20,000 replicates, so "
+        "**0.8620 [0.8430, 0.8800]** clears 0.70 on its lower bound, **+0.4290 [0.3900, 0.4424]** "
+        "clears +0.15 there, and the paired **+0.1956 [0.1701, 0.2210]** over laya 0.4.19 excludes "
+        "zero without a resample at all (McNemar 391/67 over 458 discordant pairs, p = 1.05e-56). "
+        "The digest is the point: `d45e5c018ee550da` is the *same* first-replicate digest as the "
+        "laya and vegaml runs, so all three intervals come from one replicate set over one row "
+        "order, not from a harness re-seeded per engine. It resamples outcomes dumped by "
+        "`bench/row_outcomes.py`; it re-runs no inference, and it refuses to print if the dump's "
+        "macro disagrees with `runs/v6_test.report.json` above 1e-9."),
 ]
 
 STATUSES = (HERE, LAYA, VEGAML, CHROME, KAGGLE, RETRAIN)

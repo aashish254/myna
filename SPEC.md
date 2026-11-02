@@ -64,13 +64,13 @@ Quote the ratio, never the millisecond figure.
 
 | # | gate | pass condition | status |
 |---|---|---|---|
-| **G1** | Accuracy beats the witness | macro decision-v2 test ≥ 0.70 on the frozen split, per-source table published, ≥ 0.4331 majority floor by ≥ +0.15 | **not met, measured** — it was open on a missing *artifact*, not a missing *run*: `v1b-kaggle-3600b` trained 3,600 updates on Kaggle and its `metrics.json`, report roll-up and `train.log` are now committed (`runs/v1b_kaggle_3600b.*`), so the verdict comes from the artifact rather than from a transcript. Over the 16 cells both harnesses score, per-cell unweighted: **myna 0.4893 · floor 0.4331**, which is +0.0563 over the floor against the +0.15 required and 0.211 short of 0.70 — the report's own line reads `target 0.7 → not met`. `bench/significance.py` puts a row-clustered 95% CI on both halves (**margin [0.0192, 0.0676] · macro [0.4647, 0.5139]**), so neither shortfall is a sampling artefact (§9.66). The competitor on those same 1,176 rows is laya 0.4.19 at **0.6664** [0.6439, 0.6888]; the report's `0.6668` is a 546-question subsample and was never paired. `bench/vegaml_control.py` puts a *second* competitor in that same frozen slot, on the same rows and the same seed: vegaml 0.15.0 measures **0.6160** [0.5898, 0.6415], so myna sits **0.1266** below it [−0.1578, −0.0955] with 43.8% of the control's outcomes abstained and scored forced-choice (§9.67). `bench/reproduce.py`'s `v1b-kaggle-macro` row re-derives the point estimates, `significance-paired` re-derives laya's intervals and `vegaml-control-paired` the control's. Still in the row for contrast: the untrained control (**0.346 / 0.351**, `runs/scratch_decision_v2_test.md`) and the void pre-`385e06c` checkpoint (**0.338**). The tail slope of that run's own dev curve is why *dose* is not the answer (§9.38) |
-| **G2** | Latency claim survives equal-footing re-measurement | same box, same window, same question count, direct `Agent` call not `Router`; published ratio recomputed from that or withdrawn | **met** (4a/4c): one M5 process, both fp32, `Agent.system_one`, ladder capped inside laya's 1024 window — **3.04×/3.21×/4.12×/3.60×** at 1/5/10/50 questions end-to-end and **6.78×/4.67×/4.75×/3.65×** on the ask-only path, each the minimum of two committed runs, `runs/latency_matched*.md`. G1 is *not* implied: v0's accuracy still fails (§4.2) |
-| **G3** | Deployment works for real | ONNX browser build answers a live page's decisions; bytes + p50 + cold-load measured in Chrome | **met, as a mechanics gate only.** `browser/index.html` runs the exported artifact in real Chrome 153 and answers three typed decisions with the same probabilities the torch engine prints (6/6 parity checks, both isolation modes, desktop and mobile widths, `runs/browser_g3.json`); bytes, cold-load and p50 are measured there with the box's load average recorded beside them. What this does **not** say: the artifact it deploys is v0, which still fails G1 and G5, the ≤ 20 MB int8 route is open at the byte level and closed at the agreement level (§9.28), and the Apple-silicon int8 route closes for the opposite reason — 17.40 MiB at 9.24e-03 and **no** latency win at all, so fp32 is the artifact on both paths (§9.29) |
-| **G4** | Long-context is *correct*, not just cheap | needle-style typed decision ≥ 0.90 at 4k and ≥ 0.85 at 16k state | **not met — measured on a completed dose, and no longer gated on hardware.** v0's needle curve (`runs/needle_myna-v0.md`) reads 0.188 at 128 tokens against a 0.167 floor — at chance on the shortest rung — so the longer rows are decay of nothing, and the harness says so itself rather than printing a table (§9.25). The 4k needle run then executed *on this box* (§6 prices it at 2.4 GiB retained, 1c measured 2.0194742679595947 s/update), was aborted at 425 of 1200 updates by 7b's own Stage A rule with the 128-rung at 0.1667 = the floor (§9.62), and was then resumed on the owner's order to the **full approved 1200-update dose**. Its n=60 ladder (`runs/needle_lc1_stageC_final.json`) reads **0.1833 at 4096 against G4's ≥ 0.90 — short by 0.7167 — and 0.150 at 16384 against ≥ 0.85, short by 0.700**, the first time either threshold has been measured on a 4k-trained checkpoint; the 128-rung is 0.150, so the harness still prints `readable: false` — not a decay curve, a flat line at chance (§9.63). Step 799 and step 1199 agree exactly on all three shared rungs (9, 13, 11 of 60), so the limiter is the mechanism, not the dose. The 16k *state* remains measured and cheap (§9.22) |
-| **G5** | Useful confidence, with abstention | risk/coverage curve on `calibration.jsonl`; ≥ 0.95 accuracy at ≥ 60% coverage on banking77 + dbpedia14 + trec | **not met on the level, met on the machinery.** Abstention ships: `Myna(ckpt, abstain_below=t)` withholds the commitment and prints the measured reason, the fallback seam labels every answer with the engine that committed, and the curve is a committed artifact (`runs/risk_coverage.md`, 448 rows / 568 questions). Accuracy on v0 climbs **0.349 → 0.535** as coverage falls 1.00 → 0.20 — the confidence ranks the answers, on a checkpoint that cannot do the task — and setting the 0.693 floor on the engine abstains on **227** questions where the curve withheld **227**. But **no rung reaches 0.95** (max 0.596, at 10% coverage) and G5's own three sources sit at 0.000 / 0.025 / 0.150, so the pass needs the `KAGGLE` checkpoint (§9.24) |
-| **G6** | No regression on what already worked | synthetic v0 test ≥ 0.94 | **not met — measured on the checkpoint the gate was written against, and the pairing is the artifact.** v0 scores **0.9525 / 0.9496** on the synthetic test split and `v1b-kaggle-3600b` — the checkpoint every G1 figure here is scored on — scores **0.3423 / 0.3489** on rows hashed to the same digest per seed (`998d7375…`, `fc9cbe3b…`), so the two arms differ by weights alone (§9.65). 0.3423 is **0.5977 short of 0.94**, and the floors the same witness prints (uniform **0.3370**, majority **0.3546 / 0.3463**) place it +0.0053 above chance and *below* the modal-label floor: 4 of 9 cells under chance on seed 0, so this is not an uninformative head either. What the verdict does **not** say is that v1 lost something v0 had: `v1b-kaggle-3600b` trained on the real `decision-v2` suite and never saw a synthetic row, so the number is zero-shot retention of the task family, and the transfer failure is the finding (§9.65). The logged **0.9523** of `runs/train-v0.log` stays out of the binding — §9.30 disqualifies its nine rows as a set this box can regenerate — and a draft of this row once cited "0.951", which no artifact printed |
-| **G7** | Reproducibility | one command per result, seeds pinned, witness JSONs committed, `pytest` green | **met, as a binding rather than a rebuild.** `bench/reproduce.py` holds 42 registry rows, each binding one published table cell to one command and one committed witness, and `make repro` re-reads the 173 quoted figures out of those artifacts rather than out of the prose; the python commands among those rows are checked against the tool behind them — its `--help` must still print every flag the row publishes (§9.43); the seeds live inside the printed commands (`--seed 0`, `--seeds 0 1`, `--seed 20261031`), not in sentences about them. What this does **not** say: no target *executes* the registry end to end — 28 rows re-run on this box, 6 retrain a checkpoint, 3 need a laya checkout on `PYTHONPATH`, 1 need vegaml in its own venv, 3 need Google Chrome and 1 is `KAGGLE` — which is why TODO 8b stays unticked and why G7 is discipline rather than a one-command rebuild. Every count in this cell is now read back against `ROWS` by `bench/gates.py`, so this row — the table's one hand-copied cell — goes red rather than quietly stale (§9.44) |
+| **G1** | Accuracy beats the witness | macro decision-v2 test ≥ 0.70 on the frozen split, per-source table published, ≥ 0.4331 majority floor by ≥ +0.15 | **met, on the v6 checkpoint scored through this repository's own frozen instrument.** `bench/v6_audit.py` re-scores all 1,176 `test.jsonl` bundles and writes a metrics dump, and the unchanged `myna.report` arithmetic accepts it: **macro 0.8620375366903147** against the **0.70** target and the **0.4330647953941198** majority floor — `margin_observed` **+0.4290** where **+0.15** is required, `g1/pass: true`, and `bench/significance.py` puts a row-clustered 95% interval on each half of that sentence over the same 1,176 rows at `--B 20000 --seed 20261031`: macro **0.8620 [0.8430, 0.8800]** and margin **+0.4290 [0.3900, 0.4424]**, so neither half of the pass depends on a draw that happened to go well (`runs/significance_v6.md`), with 16 of 16 cells kept at n ≥ 30, `dropped_cells: []`, `unmatched_sets: []`, `below_majority_floor: []` and the per-source table printed in `runs/v6_test.report.json`. The published column beside it is 0.8583 — the 4-dp read of `test_audit/macro_acc`, **0.8582510184910809**, in `runs/witness-v6-master-paper.json` — and the local re-score is the *higher* of the two (+5 of 1,440 questions, 8 of 16 cells exact to the question), so the gate is not being cleared by the flattering arm. What the verdict does **not** claim, in priority order. (i) **The trunk is borrowed.** v6 is a fine-tuned `microsoft/deberta-v3-large` — 434,012,160 of its 446,631,182 params, 1.736 GB of `model.safetensors` — with 12,619,022 params of Myna readout on top; §2.3 makes that a headline condition, not a footnote, and the contribution this gate certifies is the readout and the routing, not the encoder. (ii) **The arm is in-domain.** v6 was fine-tuned on `decision-v2-pilot/train.jsonl`, so all 16 cells are inside its training distribution, while laya 0.4.19 (**0.6664** [0.6439, 0.6888]) and vegaml 0.15.0 (**0.6160** [0.5898, 0.6415]) are zero-shot on 14 of the 16 cells; the gap over laya is **+0.1956 [0.1701, 0.2210]** — a paired difference whose lower bound excludes zero, cross-checked without a resample at McNemar 391 against 67 over 458 discordant pairs, p = 1.05e-56 — and it is a trained-versus-untrained gap, not a like-for-like one. (iii) **It is not the artifact the rest of the table describes.** G2's 3–4× ratio and G3's browser build are measured on `runs/myna-v0` (14.45M params); v6 has no ONNX export at all, so the speed and deployment gates and the accuracy gate are met by different weights (§9.69). (iv) The 0.6724 `banking77/intent` cell carries the one figure this box cannot stand behind — `none_absent` 0/12 against the campaign's 7/12, because the open-set gate is reconstructed from tensor shapes (§9.68). (v) **The checkpoint is not in git** — `runs/` carries the witnesses, while the 1.799 GB these commands load is the public Hub repo `Aashish254/myna-v6` (§9.68(ix)), so a clean checkout re-runs none of them without that download. For contrast, the row stays in the registry: `v1b-kaggle-3600b` is **0.4893** · floor **0.4331** · **+0.0563** [0.0192, 0.0676] — `not met`, and that is the arm this gate sat on for every earlier tick. `bench/reproduce.py`'s `v6-g1-report`, `v6-test-metrics` and `v6-significance-paired` rows re-derive the numbers above from committed artifacts |
+| **G2** | Latency claim survives equal-footing re-measurement | same box, same window, same question count, direct `Agent` call not `Router`; published ratio recomputed from that or withdrawn | **met** (4a/4c): one M5 process, both fp32, `Agent.system_one`, ladder capped inside laya's 1024 window — **3.04×/3.21×/4.12×/3.60×** at 1/5/10/50 questions end-to-end and **6.78×/4.67×/4.75×/3.65×** on the ask-only path, each the minimum of two committed runs, `runs/latency_matched*.md`. G1 is *not* implied, and now claims no verdict either: this ratio is `runs/myna-v0` at 14,449,280 params — the checkpoint that fails G1 and G5 — against laya's 421,293,827, while G1 and G5 are met by v6's 446,631,182, which is 31× heavier and was never on this ladder (§4.2, §9.69) |
+| **G3** | Deployment works for real | ONNX browser build answers a live page's decisions; bytes + p50 + cold-load measured in Chrome | **met, as a mechanics gate only.** `browser/index.html` runs the exported artifact in real Chrome 153 and answers three typed decisions with the same probabilities the torch engine prints (6/6 parity checks, both isolation modes, desktop and mobile widths, `runs/browser_g3.json`); bytes, cold-load and p50 are measured there with the box's load average recorded beside them. What this does **not** say: the artifact it deploys is v0 — `src/myna/onnx_export.py` exports that SSM trunk and nothing else, so v6's G1 and G5 passes have no browser build behind them and the deployment gate and the level are met by different weights (§9.69) — the ≤ 20 MB int8 route is open at the byte level and closed at the agreement level (§9.28), and the Apple-silicon int8 route closes for the opposite reason — 17.40 MiB at 9.24e-03 and **no** latency win at all, so fp32 is the artifact on both paths (§9.29) |
+| **G4** | Long-context is *correct*, not just cheap | needle-style typed decision ≥ 0.90 at 4k and ≥ 0.85 at 16k state | **not met — measured on a completed dose, and no longer gated on hardware.** v0's needle curve (`runs/needle_myna-v0.md`) reads 0.188 at 128 tokens against a 0.167 floor — at chance on the shortest rung — so the longer rows are decay of nothing, and the harness says so itself rather than printing a table (§9.25). The 4k needle run then executed *on this box* (§6 prices it at 2.4 GiB retained, 1c measured 2.0194742679595947 s/update), was aborted at 425 of 1200 updates by 7b's own Stage A rule with the 128-rung at 0.1667 = the floor (§9.62), and was then resumed on the owner's order to the **full approved 1200-update dose**. Its n=60 ladder (`runs/needle_lc1_stageC_final.json`) reads **0.1833 at 4096 against G4's ≥ 0.90 — short by 0.7167 — and 0.150 at 16384 against ≥ 0.85, short by 0.700**, the first time either threshold has been measured on a 4k-trained checkpoint; the 128-rung is 0.150, so the harness still prints `readable: false` — not a decay curve, a flat line at chance (§9.63). Step 799 and step 1199 agree exactly on all three shared rungs (9, 13, 11 of 60), so the limiter is the mechanism, not the dose. **v6 cannot be scored by this harness, and the two reasons are different.** Offered to `bench/eval_needle.py` on this box it stopped inside needle *construction* — `src/myna/longctx.py:69` asks `encode_text`, and `src/myna/tokenizer.py:45` returns `tok.encode(text, add_special_tokens=False).ids`, an attribute the HF tokenizer `MynaV6` carries does not have (`runs/needle_v6.log`: `AttributeError: 'list' object has no attribute 'ids'`, 4.35 s, no rung printed). That is the harness's assumption failing, not a measurement, and no number is being claimed from it. Behind it sits the architecture: `MynaV6` takes `max_length: int = 512` and truncates the packed sequence to it (`src/myna/v6_engine.py:410`), and its backbone declares `max_position_embeddings: 512` — so a 4k *state* has no representation for this engine. Wiring a tokenizer shim would print a truncated-at-512 number against a 4k threshold, which is not G4's question (§9.69). The 16k *state* remains measured and cheap (§9.22) |
+| **G5** | Useful confidence, with abstention | risk/coverage curve on `calibration.jsonl`; ≥ 0.95 accuracy at ≥ 60% coverage on banking77 + dbpedia14 + trec | **met, on v6 — and on the gate's own three sources, pooled.** Abstention was already machinery, not a hope: `Myna(ckpt, abstain_below=t)` withholds the commitment with a measured reason, the fallback seam labels which engine committed, and the curve is a committed artifact. The level arrives with the v6 checkpoint: over its **three** named sources on the split the gate names (120 rows / 120 questions / 42 sets), accuracy is **0.883 at full coverage → 0.969 at 80% → 0.986 at 60%** and `g5.pass` prints **true**, with **best coverage at the 0.95 target = 0.8** (96 questions, 0.96875) at a machine-readable floor of **0.8517** — a floor that is *settable*, not just quotable: the engine abstained on **24 of 120** questions and the curve withholds **24** below it, and the harness exits 1 if those disagree (§9.69). It is not a three-source slice either: the same curve over all 11 pooled sources and 568 questions also passes (**0.968 at 60%**, floor 0.884, 227 against 227). Three caveats ride with the verdict, not under it. (i) The gate was written against **v0**, and v0 still does not reach it — `runs/risk_coverage.json` prints `g5.pass: false`, max 0.596 at 10% coverage, with those three sources at 0.000 / 0.025 / 0.150 (§9.24); nothing about that artifact changed. (ii) **banking77 does not clear the level alone**: at the pooled 0.8517 floor it is 0.909 on 55% coverage against dbpedia14's 1.000 on 97.5% and trec's 0.971 on 87.5% — the pooled wording of the gate is what passes, and the per-source verdicts in the same witness read `true / true / false`. (iii) v6's temperatures and conformal quantiles were fitted on a separate CAL split, so a curve on `calibration.jsonl` is **in-sample for the confidence mechanism** even though that is the split §2.2 names; the control is the same trio curve re-run on `test.jsonl` (`risk-coverage-v6-trio-test`, **0.950 at 80% and 0.975 at 70.1% coverage**, `g5.pass: true`, floor 0.903 with 104 abstentions matching 104), and it also passes — banking77 again the weak source at 0.921 on 32.8% coverage |
+| **G6** | No regression on what already worked | synthetic v0 test ≥ 0.94 | **not met — measured on the checkpoint the gate was written against, and the pairing is the artifact.** v0 scores **0.9525 / 0.9496** on the synthetic test split and `v1b-kaggle-3600b` — the checkpoint every G1 figure here is scored on — scores **0.3423 / 0.3489** on rows hashed to the same digest per seed (`998d7375…`, `fc9cbe3b…`), so the two arms differ by weights alone (§9.65). 0.3423 is **0.5977 short of 0.94**, and the floors the same witness prints (uniform **0.3370**, majority **0.3546 / 0.3463**) place it +0.0053 above chance and *below* the modal-label floor: 4 of 9 cells under chance on seed 0, so this is not an uninformative head either. What the verdict does **not** say is that v1 lost something v0 had: `v1b-kaggle-3600b` trained on the real `decision-v2` suite and never saw a synthetic row, so the number is zero-shot retention of the task family, and the transfer failure is the finding (§9.65). **v6 cannot be put through this gate at all**, which is not the same claim: `bench/eval_synthetic.py` loads `model.pt` beside `tokenizer.json` into an `MynaModel` and exits if the embedding count disagrees with that tokenizer, while a v6 campaign directory carries `myna-v6-unified.pt` plus `deberta-v5-finetuned/` — an HF `DebertaV2Model` with a 128,100-token sentencepiece vocab and neither of the two files the harness asks for (§9.69). The logged **0.9523** of `runs/train-v0.log` stays out of the binding — §9.30 disqualifies its nine rows as a set this box can regenerate — and a draft of this row once cited "0.951", which no artifact printed |
+| **G7** | Reproducibility | one command per result, seeds pinned, witness JSONs committed, `pytest` green | **met, as a binding rather than a rebuild.** `bench/reproduce.py` holds 48 registry rows, each binding one published table cell to one command and one committed witness, and `make repro` re-reads the 207 quoted figures out of those artifacts rather than out of the prose; the python commands among those rows are checked against the tool behind them — its `--help` must still print every flag the row publishes (§9.43); the seeds live inside the printed commands (`--seed 0`, `--seeds 0 1`, `--seed 20261031`), not in sentences about them. What this does **not** say: no target *executes* the registry end to end — 34 rows re-run on this box, 6 retrain a checkpoint, 3 need a laya checkout on `PYTHONPATH`, 1 need vegaml in its own venv, 3 need Google Chrome and 1 is `KAGGLE` — which is why TODO 8b stays unticked and why G7 is discipline rather than a one-command rebuild. Every count in this cell is now read back against `ROWS` by `bench/gates.py`, so this row — the table's one hand-copied cell — goes red rather than quietly stale (§9.44) |
 
 **This column is not a claim.** `make gates` (`bench/gates.py --check`) re-reads each cell's
 leading verdict word, the registry row that gate cites, and the named field inside a committed
@@ -78,10 +78,14 @@ artifact — and a `met` verdict is refused if the field it rests on prints `fal
 `open` verdict is refused unless the gate names a run this box cannot do. It also reads G7's
 counts back out of this table and compares them with `ROWS`, because §2.2 is the one place a
 gate row is typed by hand rather than generated — a stale number here now goes red instead of
-riding along (§9.44). As of P8 8d the tally
-is **3 met, 4 not met, 0 open** — the last `open` verdict closed under a measurement rather than a
-decision: G6 is now scored against `v1b-kaggle-3600b` on the synthetic split and fails its level
-(§9.65) — so the release gate is not clear; README's copy of that table is generated from the same
+riding along (§9.44). As of §9.69 the tally
+is **5 met, 2 not met, 0 open** — G1 and G5 moved together, both on the v6 artifact and each with
+its witness re-derived by this repository's own frozen instrument rather than quoted from the
+campaign's notebook — and the two that remain `not met` are the two v6 cannot be scored on at all:
+G4's engine truncates its state into a 512-token budget, so there is no 4k/16k ladder to read, and
+G6's harness builds the SSM `MynaModel` from `model.pt` + `tokenizer.json`, neither of which a v6
+campaign directory carries (§9.69). Neither is a dose question and neither is `open`; G6 remains as
+§9.65 measured it against `v1b-kaggle-3600b` — so the release gate is not clear; README's copy of that table is generated from the same
 file and is therefore *not* evidence (§9.31).
 
 ### 2.3 Non-goals (deliberate exclusions)
@@ -1057,19 +1061,27 @@ are counted, and if nothing is left the run refuses. See §9.14.
       in by, so the two witnesses have to agree to the printed digit — and §9.32 is the
       competitor-side bug that join found on the way.
 - [ ] Public release gate: P0 push + G1–G7 all pass or all explicitly marked not met.
-      The verdict half is done — P8 8d — and it says **no**. `bench/gates.py` binds each of
+      The verdict half is done — P8 8d, and moved again at §9.69 — and it still says **no**.
+      `bench/gates.py` binds each of
       G1–G7 to a registry row *and* to a named field read out of a committed artifact, so no
-      verdict can be greener than the witness behind it: **3 met** (G2 on the matched ratios,
-      G3 on the in-Chrome parity, G7 on the checker itself), **4 not met** (G1, on the trained
-      run's own committed report rather than on the untrained control that used to be the only
-      architecture number here; G4, whose own harness prints `readable: false`; G5, whose curve
-      prints `g5.pass: false`; and G6, which sat at `open` until §9.65 scored `v1b-kaggle-3600b`
+      verdict can be greener than the witness behind it: **5 met** (G2 on the matched ratios,
+      G3 on the in-Chrome parity, G7 on the checker itself, and **G1 and G5 both on the v6
+      artifact** — G1 through `myna.report`'s own arithmetic on a dump this box re-scored
+      (`runs/v6_test.report.json` prints `g1/pass: true`), G5 through the trio curve on the split
+      the gate names (`runs/risk_coverage_v6_g5trio.json` prints `g5/pass: true` with its floor
+      re-run on the engine), each disclosed in §2.2 as borrowed-trunk and in-domain rather than
+      presented as the from-scratch engine's number), **2 not met** (G4, whose own harness prints
+      `readable: false`; and G6, which sat at `open` until §9.65 scored `v1b-kaggle-3600b`
       on the synthetic split it was written against — **0.3423 / 0.3489 against the 0.94 the gate
       asks for, on rows whose sha256 the same harness prints for the 0.9525 / 0.9496 baseline**).
+      Both remaining verdicts are gates the **v6 checkpoint cannot be put through at all** — its
+      engine truncates the state into a 512-token budget, so there is no 4k/16k ladder to read, and
+      the synthetic harness builds the SSM `MynaModel` from `model.pt` + `tokenizer.json`, neither
+      of which a v6 directory carries (§9.69) — which is why closing them is an architecture
+      decision and not another run.
       `make gates` is the
       check and SPEC §2.2 is the prose it reads. What keeps this line unticked is the release
-      itself: G1 is measured and short by 0.211, raising it is a GPU decision whose price §9.38
-      writes down, G4 is measured and short — the 4k needle run executes on the M5, ran the full
+      itself: G4 is measured and short — the 4k needle run executes on the M5, ran the full
       1200-update dose, and prints 0.1833 at 4k against the 0.90 the gate asks for (§9.62, §9.63) — and
       P0's push is user-gated.
 
@@ -4939,7 +4951,8 @@ Kept permanently, because the value of this project's claims is that they surviv
     transcript is not a witness. Closing it means the notebook, not a re-derivation — the graph module
     itself is here (13 tensors, `strict=True`) and its gate is read above.
 
-    **(vi) Both gates v6 clears stay `not met`, deliberately.** G1's condition is macro ≥ 0.70 on the
+    **(vi) Both gates v6 clears stay `not met`, deliberately.** [reversed 2026-11-03 by §9.69; the
+    three levers below are what §9.69 pulled] G1's condition is macro ≥ 0.70 on the
     frozen split with a per-source table and ≥ +0.15 over the published 0.4331 majority floor; 0.8583
     satisfies it, +0.4252 over that floor. G5's condition is ≥ 0.95 accuracy at ≥ 60% coverage on
     `banking77` + `dbpedia14` + `trec`; the witness prints **0.9904**. Three reasons the verdicts did
@@ -4963,6 +4976,19 @@ Kept permanently, because the value of this project's claims is that they surviv
     What *is* closed by this entry is G7 in the only sense G7 is ever closed: the four campaign
     witnesses are committed, and one registry row binds the reproduction to a command that re-runs
     here. §2.2's tally — generated from the verdicts — still reads **3 of 7 met, 4 not met, 0 open**.
+
+    *Superseded on the tally and on its third bullet, 2026-11-03 (§9.69).* All three levers named
+    above were pulled the next tick and G1 and G5 both read `met`, so the tally is **5 / 2 / 0**.
+    The third reason in particular is no longer true as written: `bench/significance.py` has now
+    been run against a v6 row dump — `runs/myna_v6_test.rowoutcomes.json`, the same 1,176 rows,
+    `--B 20000 --seed 20261031` — and prints macro **0.8620 [0.8430, 0.8800]**, margin **+0.4290
+    [0.3900, 0.4424]** and the paired gap **+0.1956 [0.1701, 0.2210]** from v6's own outcomes
+    rather than an interval inherited from the SSM arms (`runs/significance_v6.md`). The first
+    reason is also gone: the two tally-pinning tests were not left asserting 3/4, they were
+    updated to assert 5/2 as part of the same change that moved the verdicts, which is the only
+    order in which a flip is verifiable rather than decorative. What did *not* change is the
+    second reason's substance — G1's proof now reads a committed v6 artifact this box re-scored,
+    and the disclosure that its trunk is borrowed stays in the verdict text, not under it.
 
     **(vii) v6 does not "never re-read", and that is the architecture claim.** `MynaV6`'s
     `Observation` holds text and token ids, and every `ask` re-encodes the whole state through the
@@ -5087,3 +5113,164 @@ Kept permanently, because the value of this project's claims is that they surviv
     comparing the whole generated string. README was restored from a copy taken before the
     mutation, and a duplicated marker is therefore a second reason not to hand-edit inside
     `<!-- gates:release:* -->`.
+
+9.69. **Two verdicts moved on one checkpoint, and the two that did not move are not dose
+    questions.** The block read **3 met / 4 not met / 0 open** for every tick since §9.65, and
+    §9.68 left it there on purpose: item (vi) of that entry named the three levers that would
+    move G1 and G5 — a floor and an interval computed on v6's own rows, proofs that read a
+    committed v6 artifact, and the two tests that pin the tally — and said plainly that a
+    prettier number in a campaign notebook was not one of them. This tick pulls the levers and
+    the tally is **5 met / 2 not met / 0 open**. What follows is what each instrument printed,
+    because a verdict that moved is exactly the verdict that owes its arithmetic.
+
+    **(i) G1 is met on `runs/v6_test.report.json`, which no gate logic wrote.** Three commands,
+    in this order, each now a registry row:
+
+    ```bash
+    uv run python -m bench.v6_audit --ckpt "myna-v5-prototype 2" --split test --every 1 --out runs/v6_g1_test.json --md runs/v6_g1_test.md --metrics runs/v6_test.metrics.json --rowout runs/myna_v6_test.rowoutcomes.json
+    uv run python -m myna.report --metrics runs/v6_test.metrics.json --split test --out runs/v6_test.report.json
+    uv run python bench/significance.py --myna runs/myna_v6_test.rowoutcomes.json --laya runs/laya_0419_test.rowoutcomes.json --report runs/v6_test.report.json --B 20000 --seed 20261031 --out runs/significance_v6.json --md runs/significance_v6.md
+    ```
+
+    The audit is one pass over all 1,176 `test.jsonl` bundles (1,440 questions) and it writes
+    the dump twice, because the two instruments read two different shapes: `--metrics` in the
+    `<set id>/<question>` key shape `myna.train.evaluate` writes, which is the only shape
+    `myna.report` will open, and `--rowout` in the per-row shape the bootstrap clusters on
+    `meta.id`. `myna.report` is untouched code — `src/myna/report.py::g1_verdict`, the same
+    arithmetic that printed `false` for `v1b-kaggle-3600b` — and it prints `macro_acc`
+    **0.8620375366903147**, `macro_majority` **0.4330647953941198**, `margin_observed`
+    **0.4289727412961949** against the **+0.15** it requires, `g1/pass: true`,
+    `meets_target: true`, `meets_margin: true`, 16 of 16 cells kept at n ≥ 30, `dropped_cells:
+    []`, `unmatched_sets: []`, `below_majority_floor: []`. The three fields G1's proofs read are
+    those three `true`s.
+
+    The local re-score is **higher** than the published column, not lower: `test_audit/macro_acc`
+    in `runs/witness-v6-master-paper.json` is **0.8582510184910809** — published as **0.8583**,
+    which is that number rounded, not a literal the file prints — for the same checkpoint, and the
+    two agree on 8 of 16 cells to the exact
+    question and differ by +5 correct of 1,440 overall. Clearing the gate on the arm that is
+    *not* the flattering one is the point of re-scoring rather than transcribing.
+
+    **(ii) G1's second half now has an interval, and the interval does not rescue anything.**
+    `bench/significance.py` refuses to print unless the dump's macro agrees with the report to
+    1e-9 (it does: `0.8620375366903146` against `0.8620375366903147`), then resamples rows — not
+    questions — 20,000 times at `--seed 20261031`. What it prints:
+    macro **0.8620 [0.8430, 0.8800]**, majority floor **0.4331 [0.4270, 0.4647]**, margin
+    **+0.4290 [0.3900, 0.4424]**, laya **0.6664 [0.6439, 0.6888]**, paired gap **+0.1956 [0.1701,
+    0.2210]**. Its own adjudication section re-runs the three rules that were fixed before the
+    intervals existed — target, margin, above-floor — and all three `stand`; the one claim that
+    `does not stand` is "laya's macro is above myna's", which is now false on these rows and is
+    gone from every doc this tick touched. McNemar cross-checks both halves without a resample:
+    **391 against 67 over 458 discordant pairs, p = 1.05e-56** versus laya, and **746 against 49
+    over 795, p = 4.89e-161** versus each cell's majority label.
+    The digest matters more than any of those numbers: `first_replicate_digest` is
+    `d45e5c018ee550da` — the same string the laya and vegaml runs record — so all three
+    intervals are built from one replicate set over one row order, and the comparison between
+    them is arithmetic rather than a re-seeded harness.
+
+    **(iii) The disclosures ride inside the verdict, not under it.** §2.2's G1 cell now leads
+    with them, and they are not symmetric. (a) **The trunk is borrowed.** v6 is 446,631,182
+    parameters of which **434,012,160** are a fine-tuned `microsoft/deberta-v3-large` (measured
+    from the `model.safetensors` header: 1,736,094,384 B of F32) and **12,619,022** are the four
+    Myna readout heads — so what G1 certifies is the readout and the cardinality routing, and
+    §2.3 already makes "from scratch" a headline condition, not a footnote. (b) **The arm is
+    in-domain**: v6 was fine-tuned on `decision-v2-pilot/train.jsonl`, so all 16 cells sit inside
+    its training distribution while laya 0.4.19 and vegaml 0.15.0 are zero-shot on 14 of 16.
+    +0.1956 is a trained-versus-untrained gap. (c) **It is not the artifact the rest of the table
+    describes** — see (vi). (d) `banking77/intent`'s 0.6724 carries `none_absent` 0/12 against the
+    campaign's 7/12 (§9.68), the one cell whose mechanism this box cannot reproduce. (e) **The
+    checkpoint is not in git.** `runs/` carries every witness quoted above; the 1.799 GB the
+    commands load is the public Hub repo `Aashish254/myna-v6` (§9.68(ix)), so a clean checkout
+    re-runs none of it without that download.
+
+    **(iv) G5 is met on the gate's own wording — three named sources, pooled, on the split §2.2
+    names — and the floor turns out to be settable.** `bench/risk_coverage.py` grew `--source`
+    precisely so this row could be measured instead of relabelled from the 11-source curve:
+
+    ```bash
+    uv run python -m bench.risk_coverage --ckpt "myna-v5-prototype 2" --split calibration --source banking77,dbpedia14,trec --out runs/risk_coverage_v6_g5trio.md
+    uv run python -m bench.risk_coverage --ckpt "myna-v5-prototype 2" --split test --source banking77,dbpedia14,trec --out runs/risk_coverage_v6_g5trio_test.md
+    ```
+
+    On `calibration.jsonl` — 120 rows / 120 questions over 42 question-sets — accuracy runs
+    0.883 at full coverage, **0.969 at 80%**, 0.976 at 70%, **0.986 at 60%** and 1.000 from 50%
+    down; `g5.pass: true` with best coverage at the 0.95 target = **0.8** (96 questions, 0.96875)
+    at a floor of **0.8517** (`"threshold": 0.8516725301742554` in the json, printed as 0.852 in
+    the md). That floor is not just quotable: the harness re-runs the engine with `abstain_below`
+    set to it and requires the two abstention counts to agree, and
+    they do — **the engine abstained on 24 of 120 and the curve withholds 24**, at realized
+    coverage 0.8. It exits 1 if they disagree, so this half of the witness is a cross-check
+    rather than a caption.
+
+    Three things this does not say. (a) **The gate was written against v0 and v0 still fails
+    it**: `runs/risk_coverage.json` prints `g5.pass: false`, max 0.596 at 10% coverage (§9.24).
+    (b) **`banking77` does not reach the level alone** — `g5_per_source` reads
+    `dbpedia14: true / trec: true / banking77: false`, and at the pooled 0.8517 floor banking77 is
+    **0.909 on 55% coverage** against dbpedia14's 1.000 on 97.5% and trec's 0.971 on 87.5%. The
+    *pooled* wording of the gate is what passes, and the cell says so. (c) v6's temperatures and
+    conformal quantiles were fitted on a separate CAL split, so a curve on `calibration.jsonl` is
+    **in-sample for the confidence mechanism** even though `calibration.jsonl` is the split §2.2
+    names. The control is the same trio curve on `test.jsonl` — 348 questions instead of 120 — and
+    it also passes: **0.950 at 80% coverage and 0.975 at 70.1%** (244 questions, `g5.pass: true`)
+    at a floor of **0.9034** where the engine abstains on **104** questions and the curve puts
+    **104** below it. banking77 is again the weak source, 0.921 on 32.8% coverage. A third split
+    answers the same question — `--split development`, the same 348 questions and 190 sets, which
+    is a *harder* curve (0.845 at full coverage, 0.939 at 80%) and still passes at
+    **0.955 on 70.1%** (floor 0.894, 103 abstentions against 103) — so the pass is not an
+    artefact of the one split the gate happens to name. And the wider
+    curve is not a three-source slice any more either: all 11 pooled sources, 568 questions,
+    **0.968 at 60%**, floor 0.884, 227 against 227.
+
+    **(v) G4 cannot be closed by this checkpoint, and there are two independent reasons.** The
+    first is the harness's assumption, not a measurement: offered to `bench/eval_needle.py` on
+    this box it stopped inside needle *construction* —
+
+    ```bash
+    uv run python bench/eval_needle.py --ckpt "myna-v5-prototype 2" --device cpu --n 16 --seed 0 --lengths 128 1024 4096 8192 16384 --out runs/needle_v6.md
+    ```
+
+    → `bench/eval_needle.py:73` → `src/myna/longctx.py:105` → `src/myna/longctx.py:69` →
+    `src/myna/tokenizer.py:45`, where `encode_text` asks for
+    `tok.encode(text, add_special_tokens=False).ids` and the HF tokenizer `MynaV6` carries returns
+    a plain list: `AttributeError: 'list' object has no attribute 'ids'`, rc=1 in **4.35 s**, no
+    rung printed (`runs/needle_v6.log`). No number is being claimed from that. The second reason
+    is the architecture, and it is the one that would still apply after a shim: `MynaV6` takes
+    `max_length: int = 512` and truncates the packed sequence into it
+    (`src/myna/v6_engine.py:410`), and its backbone declares `max_position_embeddings: 512`, so a
+    4k *state* has no representation to be scored on. Wiring the tokenizer shim would print a
+    truncated-at-512 number against a 4k threshold, which is not G4's question. So G4 stays
+    `not met` as §9.63 measured it — 0.1833 at 4096 and 0.150 at 16384 on the completed 1,200-update
+    dose — and it is not `open`, because nothing about it is waiting on a run this box could do.
+
+    **(vi) The five `met` verdicts do not belong to one model, and that is now stated in the
+    table rather than inferred from it.** G1 and G5 are met by v6 at 446,631,182 params. G2's
+    3.04–4.12× ratio and G3's browser build are met by `runs/myna-v0` at **14,449,280** params —
+    31× lighter, the checkpoint that fails G1 and G5 — and `src/myna/onnx_export.py` exports that
+    SSM trunk and nothing else, so v6 has no browser artifact behind it at all. G7 is a property
+    of the harness. A reader who takes "5 of 7 met" as a statement about one shippable engine has
+    read something the artifacts do not say, which is why G2's, G3's and G6's cells now name their
+    checkpoint and §2.2's tally sentence names the split.
+
+    **(vii) G6 cannot be reached either, and the reason is the opposite kind.** `bench/eval_synthetic.py`
+    does not score a checkpoint, it rebuilds one: it requires `model.pt` beside `tokenizer.json`
+    and raises `SystemExit` before it loads if either is missing (`bench/eval_synthetic.py:126-132`),
+    then refuses the model if `model.cfg.vocab` disagrees with that tokenizer (line 138). A v6
+    campaign directory carries `myna-v6-unified.pt` plus `deberta-v5-finetuned/` — an HF
+    `DebertaV2Model` over a 128,100-token sentencepiece vocab — so it has neither file and no SSM
+    `MynaModel` to build. "Cannot be put through this gate" is not the same claim as "fails it":
+    §9.65's **0.3423 / 0.3489** versus v0's **0.9525 / 0.9496** on rows hashed to the same digest
+    stands as the measurement, and the transfer failure it describes is the finding.
+
+    **(viii) What this tick made stale, because a dated entry is only true on the day it was
+    written.** §9.68(ix) records **730 passed, 1 skipped** and "18 of the added tests are
+    `tests/test_v6_engine.py`"; five tests have landed in that file since (the dump-shape guard,
+    the refuse-by-number guard, the report round-trip, the bootstrap key surface and the
+    subsample refusal), so it is **23** on this tree and the 730 figure describes `d8d408e`, not
+    this commit. §9.68(ix) also records **42 rows / 173 figures**, which is now
+    **48 / 207** with the four v6 rows and the trio-test control. PLAN.md's item 14 said "both
+    verdicts still read `not met`"; it now says what moved them. `docs/paper-draft.md` carries
+    four places where a tally was written as a present-tense claim about the repository — its
+    abstract, §1's "the gate table and this paper agree", §8's "no gate verdict moved" and §9's
+    audit counts — and each is now marked with the tick it was measured at plus the one sentence
+    of what changed, because none of the four numbers that make the paper's negative result
+    (0.4893, 0.1833/0.150, 0.596 at 10.04%, 0.3423/0.3489) is a v6 figure and none of them moved.

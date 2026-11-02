@@ -12,6 +12,17 @@ the end under "References", beside the reason each entry is there. Two of the ci
 artifact — no laya paper exists) and the browser runtime in §7 (npm registry and two W3C specifications). No
 `[REF NEEDED]` marker remains anywhere in the text.
 
+**Gate-status note, 2026-11-03.** SPEC §9.69 moved two verdicts: `make gates` now prints
+**5 met / 2 not met / 0 open**, because Myna v6 clears G1 and G5 on `test.jsonl` rows this box
+re-scored through the frozen instrument. Every figure in this draft is measured on the two
+engines the draft is *about* — the 14.45M/16.9M v0 and the Kaggle `v1b-kaggle-3600b` — and none
+of them moves: on those weights G1 and G5 remain `not met`, and that is the arm this paper
+studies. v6 is a 446,631,182-parameter fine-tuned `deberta-v3-large` trunk with 12,619,022
+params of Myna readout, scored in-domain, and it is not the artifact whose size, latency or
+attribution behaviour is reported here. What the draft's own gate sentences state about *those*
+numbers is left exactly as measured; where one reads as a claim about the repository's current
+tally it is marked with the tick it was written at.
+
 ---
 
 ## 1. Abstract
@@ -20,7 +31,10 @@ We report Myna, a 16,926,848-parameter typed-decision engine (total parameters, 
 counted as `sum(p.numel() for p in model.parameters())`) that reads an observation, emits a typed decision
 over a fixed option set, and ships as a file small enough to run inside a browser tab. Our contribution is
 diagnostic, not a state-of-the-art claim: we pre-registered seven release gates against a frozen
-decision suite and ran them, and **four of the seven fail on the measured artifacts — G1 is not met (macro
+decision suite and ran them, and **four of the seven fail on the artifacts measured here — the v0
+engine and the Kaggle `v1b-kaggle-3600b` arm (SPEC §9.69 has since moved G1 and G5 to `met` on
+Myna v6, a different and much larger checkpoint; none of the four numbers below is that arm) —
+G1 is not met (macro
 0.4893, 95% CI [0.4647, 0.5139], against a 0.70 target, +0.0563 over a 0.4331 majority
 floor where +0.15 is required — and that margin's own row-clustered CI, [0.0192, 0.0676], keeps the whole
 deficit), G4 is not met (0.1833 at 4,096 state tokens against a required 0.90,
@@ -33,7 +47,8 @@ a 59.32 MiB artifact that loads in 253.9–394.4 ms and answers in a fixed 589,8
 state; a matched-condition throughput advantage over a competitor **we measure at 421,293,827
 parameters** (our count at their pinned snapshot, not a figure they publish) on the same inputs
 (33.083 ms against 100.691 ms at one question); a release-gate registry in which 7/7 verdicts and
-41/41 rows re-derive from committed witnesses; and a paired row-clustered bootstrap that puts a 95% interval
+41/41 rows re-derive from committed witnesses — those are the §9.67 tree's counts, and the §9.69 tree
+prints **48/48 rows** and the same 7/7 with the two flipped verdicts; and a paired row-clustered bootstrap that puts a 95% interval
 on every headline accuracy in §5 and **refuses to write the file at all** unless macro, both floors and the
 gate's own margin agree with the committed report to 1e-9 — the instrument that, on its first run, rewrote
 two of the four sentences it was asked about. We report the failures as the primary result, because the
@@ -51,8 +66,9 @@ it.
 
 Five things are on the table, and only four are strengths: size, latency, deployment and reproducibility.
 The fifth is the accuracy of the decisions themselves, and it is the one that fails, at every gate that
-governs it. No section of this draft states or implies that G1, G4, G5 or G6 is met; §2 of the spec, the
-gate table and this paper agree that four gates are not met, none is left open, and the release is therefore
+governs it *on the engines measured here*. No section of this draft states or implies that G1, G4, G5 or G6
+is met on v0 or on `v1b-kaggle-3600b`; §2 of the spec, the gate table and this paper agree that those four
+verdicts are `not met` for those weights, none is left open, and the release is therefore
 not clear. A reader who wants a benchmark-topping model should stop here; a reader who wants to know what
 16.9M parameters do on a frozen suite, and how a project catches itself, should continue.
 
@@ -277,7 +293,8 @@ same rows (158 myna-only against 436 laya-only over `n = 594`, **p = 4.75e-31**)
 more sentences through the same rule and both stand: myna and vegaml differ on the shared rows (gap CI
 excludes 0), and vegaml's macro is above myna's on the same rows (CI excludes 0 on the negative side) —
 cross-checked without a resample at 205 myna-only against 404 the reverse over `n = 609`, **p = 5.69e-16**.
-**No gate verdict moved:**
+**No gate verdict moved** *(at this tick; SPEC §9.69 has since moved G1 and G5 on the v6
+checkpoint, and none of the numbers below is that arm)*:
 G1 was already `not met` on the point estimate, so `make gates` still prints 3 met / 4 not met / 0 open.
 What did change is that a claim of the form "the margin is +0.0563" is now four numbers — point, two bounds
 and the floor's own sampling error — and the sentence that read laya's 0.6668 as paired with myna's macro
@@ -428,7 +445,9 @@ recorded under a deliberate CPU throttle in two of its three stages, appears now
 ## 9. Reproducibility
 
 The mechanical claim is that every published figure re-derives from a committed artifact, and the audit
-passes: `bench/gates.py --check` → **7/7 verdicts hold** (3 met, 4 not met, 0 open; the release gate is
+passes — the counts in this paragraph are the §9.67 tree's, quoted from `runs/suite_post_967d.log` and
+its sidecars, and the §9.69 tick's own outputs are printed at the end of SPEC §9.69:
+`bench/gates.py --check` → **7/7 verdicts hold** (3 met, 4 not met, 0 open; the release gate is
 NOT clear); `bench/reproduce.py --check` → **41/41 rows hold, 159 figures tied to a committed witness, 1
 gated with no witness**; the two suites that read these documents (`tests/test_gates.py`,
 `tests/test_reproduce.py`) → **67 passed**, and the whole suite → **710 passed, 1 skipped** in 616.22 s
@@ -633,7 +652,8 @@ We described Myna, a 16,926,848-parameter typed-decision engine whose shipped ar
 in a browser tab in 253.9–394.4 ms, holds state in a fixed 576 KiB, and answers 10 questions in
 120.753 ms against 506.277 ms from a competitor **we measure at 421,293,827 parameters** — our count at
 their pinned snapshot, not a figure they publish — on the same inputs and the same box. We also
-report that it does not pass its own release gates: **G1 is not met** at 0.4893 macro [0.4647, 0.5139]
+report that it does not pass its own release gates — on the two engines measured here, the v0 trunk and
+the Kaggle `v1b-kaggle-3600b` arm: **G1 is not met** at 0.4893 macro [0.4647, 0.5139]
 against a 0.70 level and a +0.15 margin over a 0.4331 floor — the margin is +0.0563 with its own CI
 [0.0192, 0.0676], so neither half of the failure is a sampling artefact — with no scope choice rescuing it;
 **G4 is not met** at 0.1833 at

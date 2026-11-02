@@ -26,6 +26,7 @@ dependency turns into a red build on main.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import sys
 import time
@@ -33,6 +34,15 @@ from collections import defaultdict
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
+
+
+def _sha256(path: Path) -> str:
+    """The checkpoint's own digest, for the provenance block a witness has to carry."""
+    h = hashlib.sha256()
+    with open(path, "rb") as fh:
+        for chunk in iter(lambda: fh.read(1 << 20), b""):
+            h.update(chunk)
+    return h.hexdigest()
 
 # The 16 (source, question-name) cells the benchmark's test and dev splits carry. A split
 # with a cell missing from this list is a schema change, and the harness prints the extras
@@ -44,6 +54,35 @@ def load_rows(split: str, every: int) -> list[dict]:
     path = REPO / "data" / "decision-v2-pilot" / f"{split}.jsonl"
     rows = [json.loads(line) for line in path.read_text().splitlines() if line.strip()]
     return rows[::every] if every > 1 else rows
+
+
+def reprice_from_rows(dumped: list[dict]) -> dict[str, list[int]]:
+    """`{"source/question": [correct, n]}`, read out of the row records alone."""
+    cells: dict[str, list[int]] = {}
+    for rec in dumped:
+        source = rec["meta"]["source"]
+        for name, q in rec["questions"].items():
+            bucket = cells.setdefault(f"{source}/{name}", [0, 0])
+            bucket[0] += q["ok"]
+            bucket[1] += 1
+    return cells
+
+
+def guard_against_cells(per_cell: dict, repriced: dict) -> list[str]:
+    """Complaints, in the cell names a reader would quote. An empty list means the dump and
+    the witness are the same measurement; a non-empty one means the dump is a different one."""
+    bad = []
+    for name in sorted(set(per_cell) | set(repriced)):
+        if name not in per_cell:
+            bad.append(f"{name}: {tuple(repriced[name])} in the row dump, absent from "
+                       "the witness")
+        elif name not in repriced:
+            bad.append(f"{name}: in the witness, absent from the row dump")
+        else:
+            w, r = per_cell[name], repriced[name]
+            if (w["correct"], w["n"]) != (r[0], r[1]):
+                bad.append(f"{name}: witness {w['correct']}/{w['n']}, rows {r[0]}/{r[1]}")
+    return bad
 
 
 def run(argv: list[str] | None = None) -> int:
@@ -66,11 +105,32 @@ def run(argv: list[str] | None = None) -> int:
                     help="witness JSON to write; the printed command goes in its first field")
     ap.add_argument("--md", default=None, metavar="PATH",
                     help="also write a markdown table of the same figures")
+    ap.add_argument("--metrics", default=None, metavar="PATH",
+                    help="also write the per-question-set accuracies in "
+                         "`myna.train.evaluate`'s metrics.json schema, so `python -m "
+                         "myna.report` prices this run's macro, both floors and its G1 "
+                         "verdict with the frozen report code rather than a copy of it")
+    ap.add_argument("--rowout", default=None, metavar="PATH",
+                    help="also write one record per (row, question) in the schema "
+                         "`bench/significance.py` bootstraps, so a row-clustered interval "
+                         "can be put on this run's macro. Both dumps need the whole split: "
+                         "they refuse --every above 1 and --source.")
     ap.add_argument("--device", default="cpu")
     args = ap.parse_args(argv)
 
-    from myna.real_data import parse_questions
+    if (args.metrics or args.rowout) and (args.source or args.every != 1):
+        # The two dumps exist to be read by tools that compute the published macro over the
+        # frozen split from the rows. A subsample would still print a plausible number; it
+        # would just be a different measurement than the one the gate is written against.
+        raise SystemExit("--metrics/--rowout score the whole frozen split, so they refuse "
+                        f"--every {args.every}"
+                        + (f" and --source {args.source}" if args.source else ""))
+
+    from myna.real_data import _signature, parse_questions
+    from myna.report import MIN_CELL_ROWS
     from myna.v6_engine import MynaV6
+    sys.path.insert(0, str(REPO / "bench"))
+    from row_outcomes import META_FIELDS
 
     engine = MynaV6(args.ckpt, device=args.device)
     rows = load_rows(args.split, args.every)
@@ -78,26 +138,40 @@ def run(argv: list[str] | None = None) -> int:
 
     cells: dict[tuple[str, str], list[int]] = defaultdict(lambda: [0, 0, 0])
     variants: dict[str, list[int]] = defaultdict(lambda: [0, 0])
+    set_hits: dict[str, int] = defaultdict(int)
+    set_n: dict[str, int] = defaultdict(int)
+    group_ix: dict[str, int] = defaultdict(int)
+    rows_by_group: dict[str, list[dict]] = defaultdict(list)
     t0 = time.perf_counter()
     done = 0
     for row in rows:
         source = row["_meta"].get("source", "?")
         variant = row["_meta"].get("variant")
         try:
-            _, golds = parse_questions(row)
+            questions, golds = parse_questions(row)
         except ValueError:
             continue
         names = list(row["questions"])
         if args.source and source != args.source:
             continue
         answers = engine.predict(row["state"], row["questions"])["answers"]
+        group_key = None
+        qrec: dict[str, dict] = {}
+        if args.metrics or args.rowout:
+            # The same two calls `load_split` makes, so a dumped row lands in the question-set
+            # the frozen report reads it in — and `myna.report.accuracy_cells` refuses a set
+            # key that is not in its own grouping rather than dropping its weight silently.
+            group_key = f"{source}#{_signature({
+                qid: {k: v for k, v in q.items() if k != 'label'}
+                for qid, q in row["questions"].items()})}"
         for i, qname in enumerate(names):
             if i >= len(golds) or qname not in answers:
                 continue
             spec = row["questions"][qname]
             a = answers[qname]
             ranked = list(a["probabilities"])
-            top = ranked[max(range(len(ranked)), key=lambda k: a["probabilities"][ranked[k]])]
+            pi = max(range(len(ranked)), key=lambda k: a["probabilities"][ranked[k]])
+            top = ranked[pi]
             hit = (top == "yes") == bool(golds[i]) if spec["type"] == "noul" else top == ranked[golds[i]]
             bucket = cells[(source, qname)]
             bucket[0] += int(hit)
@@ -106,19 +180,53 @@ def run(argv: list[str] | None = None) -> int:
             if source == "banking77" and variant:
                 variants[str(variant)][0] += int(hit)
                 variants[str(variant)][1] += 1
+            if group_key is not None:
+                set_hits[f"{group_key}/{qname}"] += int(hit)
+                set_n[f"{group_key}/{qname}"] += 1
+                if args.rowout:
+                    q = questions[i]
+                    qrec[qname] = {"type": q.type, "pred": pi, "gold": int(golds[i]),
+                                   "k": len(q.options), "ok": int(hit),
+                                   "conf": round(float(a["probabilities"][ranked[pi]]), 6)}
+        if group_key is not None and args.rowout:
+            rows_by_group[group_key].append(
+                {"meta": {k: row["_meta"].get(k) for k in META_FIELDS},
+                 "group": group_key, "idx": group_ix[group_key], "questions": qrec})
+            group_ix[group_key] += 1
         done += 1
         if done % 100 == 0:
             print(f"  {done} bundles, {time.perf_counter() - t0:.0f}s", flush=True)
+    if args.rowout:
+        # `myna.real_data.load_split` appends every row of a group in file order, so the
+        # per-group lists are already in the order the report reads them; flattening group
+        # by group keeps `idx` meaning "position within the question-set".
+        dumped_rows = [rec for key in sorted(rows_by_group) for rec in rows_by_group[key]]
 
     per_cell = {f"{s}/{q}": {"correct": c, "n": n, "abstain": ab, "acc": c / n}
                 for (s, q), (c, n, ab) in sorted(cells.items())}
     macro = sum(v["acc"] for v in per_cell.values()) / len(per_cell) if per_cell else 0.0
     total_c = sum(v["correct"] for v in per_cell.values())
     total_n = sum(v["n"] for v in per_cell.values())
+    if args.rowout:
+        # The row dump is read back on its own here: per-cell totals recomputed from the
+        # records must equal the counts the loop accumulated, or the dump describes a
+        # different scoring pass than the witness — which is `bench/row_outcomes.py:236`'s
+        # rule applied to this harness's two independent paths.
+        complaints = guard_against_cells(per_cell, reprice_from_rows(dumped_rows))
+        if complaints:
+            print(f"GUARD FAIL: {len(complaints)} cell(s) in the row dump do not re-price "
+                  f"the witness:", file=sys.stderr)
+            for line in complaints[:5]:
+                print(f"  {line}", file=sys.stderr)
+            return 3
+    cmd_bits = ["uv run python -m bench.v6_audit", f'--ckpt "{args.ckpt}"',
+                f"--split {args.split}", f"--every {args.every}", f"--out {args.out}"]
+    for flag in ("--md", "--metrics", "--rowout"):
+        val = getattr(args, flag.lstrip("-").replace("-", "_"))
+        if val:
+            cmd_bits.append(f"{flag} {val}")
     witness = {
-        "cmd": " ".join(["uv run python -m bench.v6_audit", f'--ckpt "{args.ckpt}"',
-                         f"--split {args.split}", f"--every {args.every}",
-                         f"--out {args.out}"]),
+        "cmd": " ".join(cmd_bits),
         "engine": engine.model_label,
         "ckpt": str(args.ckpt),
         "split": args.split,
@@ -146,6 +254,41 @@ def run(argv: list[str] | None = None) -> int:
     if args.md:
         Path(args.md).write_text(table(witness))
         print(f"wrote {args.md}")
+    if args.metrics:
+        # `myna.report` reads the split block by name, so the key here is the one *it*
+        # looks up, not the one the file is named after: `--split development` becomes
+        # "dev", which is what `myna/train.evaluate` writes.
+        mkey = {"test": "test", "development": "dev", "calibration": "calibration"}[args.split]
+        payload = {"cmd": witness["cmd"], "engine": engine.model_label,
+                   "ckpt": str(args.ckpt), "split": args.split,
+                   "bundles_scored": done, "n_questions": total_n, "n_sets": len(set_n),
+                   mkey: {k: set_hits[k] / set_n[k] for k in sorted(set_n)}}
+        Path(args.metrics).parent.mkdir(parents=True, exist_ok=True)
+        Path(args.metrics).write_text(json.dumps(payload, indent=1) + "\n")
+        print(f"wrote {args.metrics} ({len(payload[mkey])} question-sets)")
+    if args.rowout:
+        # `bench/significance.py` reads the myna slot's provenance out of this file —
+        # `model.temperature`, `model.model_sha256`, `run_dir`, `min_rows`, `n_rows`,
+        # `suite`, `split` — so the dump has to answer the same keys the v1b dump does.
+        # v6's one genuine difference is `temperature`: this engine fits a value per
+        # question type, so the field is that mapping rather than a scalar, and the
+        # bootstrap never reads it as a number.
+        payload = {"cmd": witness["cmd"], "engine": "myna-v6", "run_dir": str(args.ckpt),
+                   "model": {"temperature": dict(engine.temperatures),
+                             "params": engine.n_params,
+                             "max_length": engine.max_length,
+                             "model_sha256": _sha256(engine.ckpt_path)},
+                   "suite": str((REPO / "data" / "decision-v2-pilot").relative_to(REPO)),
+                   "split": args.split,
+                   "file": f"{args.split}.jsonl", "rows_in_file": len(rows),
+                   "rows_skipped": len(rows) - done, "n_rows": len(dumped_rows),
+                   "n_questions": total_n, "n_sets": len(set_n), "min_rows": MIN_CELL_ROWS,
+                   "unmatched_sets": [], "cluster_key": "meta.id",
+                   "scoring": witness["scoring"], "macro_acc": macro,
+                   "wall_clock_s": witness["wall_clock_s"], "rows": dumped_rows}
+        Path(args.rowout).parent.mkdir(parents=True, exist_ok=True)
+        Path(args.rowout).write_text(json.dumps(payload, indent=1) + "\n")
+        print(f"wrote {args.rowout} ({len(dumped_rows)} rows / {total_n} question outcomes)")
     return 0
 
 

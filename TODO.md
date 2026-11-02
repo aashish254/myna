@@ -448,6 +448,14 @@ So every "train" item below is split into *prepare/verify the path locally* (thi
       one-target-runs-everything gap (Kaggle-side), and the release itself still waits on P0's
       push, on G1/G4's checkpoints and on any trained artifact for G6.
       Suite at this tick: **383 passed, 1 skipped**.
+      **Superseded on its tally, not on its work (2026-11-03, §9.69):** the verdict counts above
+      are the 2026-10-05 tree's — **3 met / 2 not met / 2 open** — and `make gates` now prints
+      **5 met / 2 not met / 0 open**, because G1 and G5 are `met` on Myna v6's own re-scored
+      witnesses. That moves one of the three things this item said the release waits on: G1 has a
+      checkpoint whose artifact this box re-derived, so what still holds the §5 release line
+      unticked is P0's push, G4 (which v6 cannot be scored on at all) and G6. The binding, not the
+      tally, remains the work — and the four refusal rules quoted above are what made the two
+      flips take a tick of their own instead of a sentence.
 - [x] **8e** `--check` asks the tool, not just the file: a row's command must still accept the
       flags it publishes. *(this tick — the falsifiable half of 8b, which stays open)*
       8b's remaining gap is that one `make` target cannot *run* all 27 rows, and that stays a
