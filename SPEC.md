@@ -4993,13 +4993,16 @@ Kept permanently, because the value of this project's claims is that they surviv
     so the Hub gets the checkpoint the paper scores and nothing else.
 
     **(ix) What the verification run on this box printed.** Nothing in §9.68 was accepted by
-    inspection; each line below is an instrument's own output on 2026-11-02, after the eight
-    witnesses, the engine, the audit harness and the uploader were staged.
+    inspection; each line below is an instrument's own output on 2026-11-02, after the seven new
+    `runs/` witnesses, the engine, the audit harness and the uploader were staged.
 
-    - `uv run pytest -q -rs` → **730 passed, 1 skipped** in 581.85 s (the skip is
+    - `uv run pytest -q -rs` → **730 passed, 1 skipped** in 586.17 s (the skip is
       `tests/test_upstream.py:131`, which needs `KEV_ROOT` and `datasets`). 18 of the added
       tests are `tests/test_v6_engine.py` and 2 are the `--help` rows for the two new
-      harnesses.
+      harnesses. The duration is the re-run on the tree that was pushed as `d8d408e`, with
+      `git status` clean against it; the first pass (581.85 s, same 730/1 counts) ran while
+      `src/myna/v6_engine.py` was still unstaged, so it described this box rather than the
+      commit, and it is the earlier figure this line used to carry.
     - `uv run python -m bench.reproduce --check` → **42/42 rows hold; 173 figures tied to a
       committed witness, 1 gated with no witness**, and the new row answers the flag question:
       `bench/v6_audit.py --help` prints `--split`, `--every`, `--out` and the rest of the
@@ -5011,6 +5014,24 @@ Kept permanently, because the value of this project's claims is that they surviv
       25 unreachable blobs remain in this clone's local object store. That debt is this box's
       own history — the earlier commit this unit replaced, plus the staging and re-amending the
       verification did while writing these very lines — and none of it is in what gets pushed.
+      Both denominators belong to `d8d408e` specifically: the scanner counts the object database
+      of this clone, not the commit, so every later commit adds a blob and moves the number.
+    - GitHub Actions run 37 on the pushed `d8d408e` (job `tests`: **success**) is the
+      clean-checkout witness: its `uv run pytest -q -rs` prints **712 passed, 10 skipped** in
+      942.24 s. The two denominators reconcile exactly and the gap is not v6's. The runner
+      syncs `--extra browser` only (`.github/workflows/ci.yml` line 23), so the module-level
+      `pytest.skip(..., allow_module_level=True)` at `tests/test_mlx_int8.py:31` and
+      `tests/test_mlx_parity.py:39` drops the 11 tests this box collects from those two files
+      and adds 2 module-level skips: 731 − 11 + 2 = 722. The 10
+      skips are those 2, two `test_cli_help.py:62` cases that need MLX to have a `--help` to
+      render, three `test_report.py` cases for the v1-rich/laya artifact, one
+      `test_upstream.py:131` for `KEV_ROOT`, and two that name this campaign:
+      `tests/test_v6_engine.py:359` and `:387` skip with `myna-v5-prototype 2 … is not in git`,
+      which is §9.68(viii) working as designed. The other 16 `test_v6_engine.py` tests run on
+      the runner, and they are the witness that the engine module is really in git: the file
+      imports `myna.v6_engine` at module scope, `src/myna/v6_engine.py` first entered a commit
+      at `d8d408e`, and the earlier local pass at the same 730/1 counts ran with that file still
+      untracked.
     - `git status` with everything staged lists **no** `.pt`, `.pth`, `.bin`, `.safetensors`,
       `.zip`, `.onnx` or `.pdf`, and no path under `myna-v5-prototype*/`; the largest file in
       the repository is the pre-existing `data/decision-v2-pilot/train.jsonl` at 79 MiB, so the
