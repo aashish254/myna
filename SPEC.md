@@ -5046,18 +5046,37 @@ Kept permanently, because the value of this project's claims is that they surviv
       arithmetic behind README's weights paragraph. The same block, run as the README prints it,
       is committed as `runs/v6_live_smoke.json`.
     - `uv run python scripts/upload_to_hf.py --ckpt-dir "myna-v5-prototype 2" --repo-id
-      aashish254/myna-v6 --dry-run` → **10 files, 1,799,177,588 B = 1.799 GB**, card 4,692
+      Aashish254/myna-v6 --dry-run` → **10 files, 1,799,177,588 B = 1.799 GB**, card 4,810
       chars, nothing uploaded.
+    - The same command **without** `--dry-run` completed at 23:00:41 local on 2026-11-02, so the
+      route §9.68(viii) describes is now a live repo rather than a prepared one. Process start was
+      read back from `ps` elapsed
+      time (2:18 at 22:55:48 → 22:53:30), so the wall clock for 1,799,177,588 B is **431 s**, an
+      effective **4.17 MB/s** including the SHA-256 pass and the commit — and that is the number
+      to price against the ISP allowance, not the 6 MB/s a 40 s `nettop` window showed, because
+      `nettop`'s per-process byte column aggregates *currently open* connections and falls back
+      when one of the three S3 sockets finishes. Verification is the Hub's own tree API: all 10
+      paths present, each size equal to the manifest line, summing to **1,799,177,588 B**, beside
+      `README.md` (4,810 characters, 4,822 bytes — the card contains multi-byte `—` and `≤`) and
+      `.gitattributes`, 12 files in commit `ff38c0b2`. Repo `Aashish254/myna-v6`, `private: false`.
 
-    Running the uploader is what found its four defects, and each is fixed rather than noted:
+    Running the uploader is what found its five defects, and each is fixed rather than noted:
     `relative_to()` raised on the committed witnesses because they live outside the campaign
     directory; `upload_folder(..., multi_commits=True)` and `upload_files(...)` are both gone
     from the huggingface_hub 1.33 client this box resolves, so the real upload would have died
     *after* authorisation; a folder upload would have skipped the witnesses it had just printed;
-    and `COMPETITORS` named `VegaML (0.8B reader)` where the witness key is
+    `COMPETITORS` named `VegaML (0.8B reader)` where the witness key is
     `VegaML (vega-U 0.8B)`, which the card generator would have rendered as an empty column that
-    reads as a zero score. `test_the_upload_command_dry_runs_and_adds_up` now pins the manifest
-    arithmetic and refuses a missing arm key.
+    reads as a zero score; and the repo id itself was wrong in a way only an authorised call can
+    show — the first `create_repo` returned **`403 Forbidden: You don't have the rights to create
+    a model under the namespace "aashish254"`**, because the Hub namespace is the Hugging Face
+    username `Aashish254`, capitalised, while `aashish254` is only the GitHub handle the brief
+    quoted. `--dry-run` cannot catch that: it never touches the API. The same run also exposed
+    the card's `datasets: - aashish254/decision-v2-pilot` frontmatter as a citation to a Hub
+    dataset that answers 401 under *both* spellings — the frozen suite is `data/decision-v2-pilot/`
+    committed in the source repository, so the key is gone and the provenance is body text now.
+    `test_the_upload_command_dry_runs_and_adds_up` pins the manifest arithmetic and refuses a
+    missing arm key.
 
     One class of defect this run adds to §9.44's list rather than to the record's credit: the
     README block was re-spliced with a script that appended the end marker a second time. The

@@ -1,0 +1,22 @@
+source    : myna-v5-prototype 2
+repo      : Aashish254/myna-v6
+files     : 10  (6 in the campaign directory, 4 committed copies from runs/)
+   1,736,094,384 B  deberta-v5-finetuned/model.safetensors
+      50,499,775 B  myna-v6-unified.pt
+       8,339,876 B  deberta-v5-finetuned/tokenizer.json
+       4,226,511 B  myna-v5-unified.pt
+           7,271 B  runs/witness-competitor-head-to-head-1440.json  [committed copy]
+           3,580 B  runs/witness-v6-master-paper.json  [committed copy]
+           2,513 B  runs/witness-v5-master-paper.json  [committed copy]
+           2,233 B  runs/witness-hybrid-v3.json  [committed copy]
+             907 B  deberta-v5-finetuned/config.json
+             538 B  deberta-v5-finetuned/tokenizer_config.json
+total     : 1,799,177,588 B = 1.799 GB
+card      : 4,810 chars of README.md
+          written to myna-v5-prototype 2/README.md
+
+creating Aashish254/myna-v6 if absent ...
+uploading 1,799,177,588 B ...
+
+https://huggingface.co/Aashish254/myna-v6
+load it with: MynaV6("Aashish254/myna-v6")

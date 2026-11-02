@@ -7,7 +7,7 @@
 100 MiB per blob and this repository's rule (SPEC §7.1, and the G7 promise behind it) is that
 weights live outside git while figures live inside it. So the campaign directory stays
 gitignored — `.gitignore` carries `myna-v5-prototype*/`, `local_checkpoints/`, `*.pt`,
-`*.safetensors` — and the Hub copy is what `MynaV6("aashish254/myna-v6")` resolves.
+`*.safetensors` — and the Hub copy is what `MynaV6("Aashish254/myna-v6")` resolves.
 
 Nothing here touches git. No `git add`, no commit, no LFS pointer files: the script only
 reads the checkpoint directory, writes one model card into it, and calls `upload_folder`.
@@ -97,8 +97,7 @@ def model_card(root: Path) -> str:
     fm = ["---", "license: apache-2.0", "library_name: transformers",
           "base_model: microsoft/deberta-v3-large", "base_model_size: model_size",
           "tags:", "- text-classification", "- zero-shot", "- decision-making", "- agent",
-          "- conformal-prediction", "- calibrated", "model_name: myna-v6-unified",
-          "datasets:", "- aashish254/decision-v2-pilot", "---"]
+          "- conformal-prediction", "- calibrated", "model_name: myna-v6-unified", "---"]
 
     lines = fm + ["", "# Myna v6 Unified", "",
                   "A fine-tuned `microsoft/deberta-v3-large` encoder with a "
@@ -171,7 +170,7 @@ def model_card(root: Path) -> str:
               "```bash", "pip install \"myna[v6]\" @ git+https://github.com/aashish254/myna",
               "```", "", "```python",
               "from myna import MynaV6", "",
-              "myna = MynaV6(\"aashish254/myna-v6\")", "state = (",
+              "myna = MynaV6(\"Aashish254/myna-v6\")", "state = (",
               "    \"Customer: my card was declined twice at the ATM and I still \"",
               "    \"have cash in the account.\", "
               ")\"", "",
@@ -191,7 +190,9 @@ def model_card(root: Path) -> str:
               "- `myna-v6-unified.pt` — the readout heads, `config`, and the dev/test/calibration "
               "audit blocks the published tables quote",
               "- `myna-v5-unified.pt` — the v5 checkpoint, before the set-aware head",
-              "- `witness-*.json` — the artifacts behind every number above", "",
+              "- `witness-*.json` — the artifacts behind every number above",
+              "- the frozen suite every cell is scored on is `data/decision-v2-pilot/` in the "
+              "`myna` source repository; it is committed there, not published as a Hub dataset", "",
               "The training code and the Colab notebooks are not in this weight repo; they "
               "live in the `myna` source repository, and the campaign ran on a Tesla T4.", ""]
     return "\n".join(lines)
@@ -203,8 +204,8 @@ def main(argv: list[str] | None = None) -> int:
         description="Upload the Myna v6 weights and witnesses to the Hugging Face Hub. "
                     "This never stages or commits anything: git keeps the JSON figures, the "
                     "Hub keeps the >100 MB weights.")
-    ap.add_argument("--repo-id", default="aashish254/myna-v6", metavar="ID",
-                    help="Hub model repo to create or update (default aashish254/myna-v6)")
+    ap.add_argument("--repo-id", default="Aashish254/myna-v6", metavar="ID",
+                    help="Hub model repo to create or update (default Aashish254/myna-v6)")
     ap.add_argument("--ckpt-dir", default=None, metavar="DIR",
                     help=f"campaign directory; default tries {' then '.join(CKPT_CANDIDATES)}")
     ap.add_argument("--token", default=None,

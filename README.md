@@ -140,7 +140,7 @@ uv sync --extra v6      # transformers + safetensors + huggingface_hub
 ```python
 from myna import MynaV6
 myna = MynaV6("myna-v5-prototype 2")     # a local campaign directory — or:
-myna = MynaV6("aashish254/myna-v6")      # the Hugging Face Hub repo id
+myna = MynaV6("Aashish254/myna-v6")      # the Hugging Face Hub repo id
 out = myna.predict("Your card was declined at 3am and I have already travelled twice today.", {
     "refund": {"type": "noul", "instructions": "Is this a refund request?"},
     "severity": {"type": "score", "instructions": "How severe is it?",
@@ -172,13 +172,23 @@ header — and the four heads on top of it are another 50,499,775 bytes in `myna
 `scripts/upload_to_hf.py` puts both on the Hub in one command:
 
 ```bash
-uv run python scripts/upload_to_hf.py --ckpt-dir "myna-v5-prototype 2" --repo-id aashish254/myna-v6 --dry-run
+uv run python scripts/upload_to_hf.py --ckpt-dir "myna-v5-prototype 2" --repo-id Aashish254/myna-v6 --dry-run
 ```
 
 That command prints **10 files / 1,799,177,588 B = 1.799 GB** and uploads nothing; §9.68(ix)
 carries the whole verification battery this section rests on — suite, registry, gate checker,
 secret scan, live engine and the uploader's own dry run — with each figure as its instrument
 printed it.
+
+**It has now run for real.** [huggingface.co/Aashish254/myna-v6](https://huggingface.co/Aashish254/myna-v6)
+is public, and the Hub's own per-file sizes sum to **1,799,177,588 B** — every one of the 10 manifest
+files matches byte for byte, next to the generated card. Two things only the real run could show: the
+namespace is the Hugging Face username **`Aashish254`**, capitalised, and `create_repo` answers
+`403 … rights to create a model under the namespace "aashish254"` for the GitHub handle the brief
+quoted; and the card's `datasets:` frontmatter cited a Hub dataset that answers 401 under either
+spelling, because the frozen suite is `data/decision-v2-pilot/` committed in this repository. Both are
+fixed in the script, so `MynaV6("Aashish254/myna-v6")` is the documented load path and the card it
+ships names a source that exists.
 
 ## Quickstart: install, fetch the weights, ask one question
 
