@@ -223,7 +223,7 @@ def main() -> None:
 \\usepackage{{amsmath,amssymb,graphicx,booktabs,multirow,url}}
 \\title{{{title}}}
 \\author{{Aashish Kumar Mahato\\\\Independent Researcher, Kathmandu, Nepal\\\\[4pt]
-Prakrist Dhakal\\\\Guilford Technical Community College, Jamestown, NC, USA\\\\[4pt]
+Prakrist Dhakal\\\\Independent Researcher, North Carolina, USA\\\\[4pt]
 \\small A. K. Mahato (ORCID 0009-0007-8952-6357) and P. Dhakal (ORCID 0009-0000-9463-0094).
 \\small A. K. Mahato is a graduate of Vellore Institute of Technology (VIT), Vellore, India; this work was conducted independently after graduation.}}
 \\begin{{document}}
