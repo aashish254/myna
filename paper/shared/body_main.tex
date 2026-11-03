@@ -60,6 +60,8 @@ target and 86.39\% at 95\%; refitted on the corrected target they reach 87.78\% 
 the paper reports the fit as the cause and the residual 2.2-point gap as the remaining limit. The audit also exposes a failure the aggregate hides: the
 \texttt{score} primitive is at chance (0.1750 over 240 five-way questions, against a 0.20
 uniform floor) while the \texttt{choice} and \texttt{noul} primitives reach 0.8908 and 0.9385.
+Evaluating the disabled ordinal head under the corrected convention (0.1667) locates that failure
+in the features rather than in the decoder.
 \item \textbf{A systems study of the streaming arm and a measurement correction.} On one Apple
 M5, \stream{} answers in 33--870 ms with a state that does not grow, ports to MLX at
 1.76--2.40$\times$ over PyTorch MPS, and runs in Chrome/WebAssembly at $1.03\times10^{-6}$
@@ -634,65 +636,21 @@ lc1-4k, 16k state & needle & 0.1500 & readable:false \\
 \section{A Measurement Correction}
 \label{sec:correction}
 
-The revision of this paper uncovered a scoring error in the evaluation harness, and the corrected
-numbers replace every earlier figure. The error is reported here rather than silently repaired,
-because its signature is instructive and because the headline aggregates depend on it.
+The harness that produced the campaign figures compared the suite's 1-based ordinal label with the
+0-based option vector, so a prediction was credited when it named the level above gold. Corrected,
+the accuracy arm scores 0.7777 macro rather than 0.8620, 0.7882 overall rather than 0.8632, and
+0.7509 joint bundle exact rather than 0.8393; the ordinal primitive falls from 0.6250 to 0.1750,
+and ECE rises from 0.0190 to 0.0637. The competitor columns are unaffected, because Laya and VegaML
+store prediction and gold in the same space. The corrected harness stores the 1-based level, and
+the aggregation script refuses any record whose correctness flag disagrees with its own prediction
+and gold; the pre-correction witness reproduces 0.7777 under the corrected code, so the difference
+is arithmetic rather than a re-run artifact. The full record, with the per-quantity table and the
+effect on the calibration fit, is \texttt{paper/MEASUREMENT-CORRECTION.md} and
+Appendix~\ref{app:extra}.
 
-\textbf{The error.}
-The suite stores an ordinal answer as a 1-based star level, while the option vector the model
-scores is 0-based. The harness compared the two directly, \texttt{hit = top == ranked[gold]}, so a
-prediction was recorded as correct when it named the level above gold. The prediction was correct;
-the bookkeeping was not.
-
-\textbf{The signature.}
-On the 240 \texttt{score} questions the pre-correction rate was 0.6250. Under the corrected
-comparison it is 0.1750, which is the uniform floor for five options. The pre-correction rate was
-exactly the frequency with which the predicted index equalled the gold level, which is the
-signature of the off-by-one rather than of a working ordinal head. A direct inspection of one row
-confirms the reading: on \texttt{yelp/test/2720}, with a gold label of three stars, the engine's
-argmax is the ``3 stars: average'' option at $p=0.574$, and the pre-correction record marks the
-answer wrong.
-
-\textbf{The effect.}
-Table~\ref{tab:correction} lists the quantities that change. Macro falls from 0.8620 to 0.7777,
-overall accuracy from 0.8632 to 0.7882, and joint bundle exact from 0.8393 to 0.7509. ECE rises
-from 0.0190 to 0.0637 and Brier from 0.0434 to 0.1187, because a model that is confidently wrong
-on 240 questions is less well calibrated than the old number suggested. Selective accuracy at 60\%
-coverage falls from 0.9873 to 0.9653. The ranking of systems is unchanged: \vsix{} still leads the
-supervised TF-IDF baseline at 0.7111 and the best Laya configuration at 0.7050.
-
-\begin{table}[t]
-\centering
-\footnotesize
-\caption{Quantities affected by the ordinal scoring correction. The competitor columns are
-unaffected: Laya and VegaML store prediction and gold in the same space, and their correctness
-flags agree with their own records on all 240 score questions.}
-\label{tab:correction}
-\begin{tabular}{lrr}
-\toprule
-Quantity & before & corrected \\
-\midrule
-16-cell macro & 0.8620 & 0.7777 \\
-overall accuracy & 0.8632 & 0.7882 \\
-joint bundle exact & 0.8393 & 0.7509 \\
-ECE (10 bins) & 0.0190 & 0.0637 \\
-Brier (top-1) & 0.0434 & 0.1187 \\
-selective accuracy @ 60\% & 0.9873 & 0.9653 \\
-score primitive & 0.6250 & 0.1750 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\textbf{The repair and its guard.}
-The harness now subtracts one for the ordinal cell and stores the 1-based level, so
-\texttt{pred == gold} is correct without a second convention. The aggregation script recomputes
-every aggregate from per-question records and refuses a record whose correctness flag disagrees
-with its own prediction and gold, which is the check that would have caught the error on the first
-run. The pre-correction witness is kept under a \texttt{predates-fix} suffix, and the corrected
-script reproduces 0.7777 from it, which shows that the difference is arithmetic rather than a
-re-run artifact. The same shifted target also reached the calibration stage: refitting the ordinal
-temperature on the rebuilt CAL split reproduces the stored 0.9 under the notebook's gold and gives
-3.0 under the corrected one (Section~\ref{sec:calibration}). The full record is \texttt{paper/MEASUREMENT-CORRECTION.md}.
+The correction is reported because every number in this paper depends on it and because its
+signature is reproducible, not because it is a result about decision engines. A reader interested
+in the engine can take the rest of the paper without it; a reader checking a number needs it.
 
 \section{Discussion and Limitations}
 \label{sec:limitations}
@@ -708,18 +666,19 @@ three measurements that would most strengthen the claims, and none is in this dr
 
 \textbf{The ordinal primitive.}
 The most important negative result is that the \texttt{score} primitive is at chance while the
-other two primitives are strong. The paper does not establish the cause. Candidate explanations
-are the ordinal head that the released configuration disables, the packed layout that puts five
-near-identical option strings in one sequence, and the training objective, which treats the
-ordinal cell as a five-way choice. A supervised TF-IDF classifier reaches 0.525 on amazon/stars,
-so the information is present in the text and the failure is in the model or its head. The
-released v6 notebook did train an ordinal head (cross-entropy plus a cumulative-link term and an
-earth-mover term) and gated it on development accuracy against the packed head's 0.6542; it did
-not clear the gate, which is why the checkpoint disables it. That comparison was made under the
-pre-correction score convention, so it explains the campaign's decision rather than settling
-which head is better: under the corrected gold the packed head sits at 0.175, and 0.6542 is not a
-meaningful bar. Re-running the gate under the corrected convention is the experiment that would
-settle the cause, and it is not reported here.
+other two primitives are strong, and the paper now locates the failure. The checkpoint stores an
+ordinal head that the released configuration disables, trained with cross-entropy plus a
+cumulative-link term and an earth-mover term and gated on development accuracy against the packed
+head's 0.6542; it did not clear the gate. That gate was measured under the pre-correction score
+convention, so it cannot say which head is better under the corrected one. We therefore evaluated
+the stored head directly, decoding it with the notebook's own forward pass
+(\texttt{bench/coral\_eval.py}). Under the corrected gold it scores 0.1667 on the three ordinal
+cells against 0.1708 for the packed head; the two agree on 38 of 240 questions, with 2 questions
+won by the ordinal head alone and 3 by the packed head. The decoder is therefore not the cause.
+Both heads read the same hidden states and both sit at the five-way floor, which places the
+failure in the features or in the training signal for the ordinal cells rather than in the readout.
+A supervised TF-IDF classifier reaches 0.525 on amazon/stars, so the information is present in the
+text; what is missing is a representation that orders it, not a way to decode it.
 
 \textbf{What could not be verified.}
 The campaign notebooks are released (\texttt{release/notebooks/}): the v5 training loop, the
