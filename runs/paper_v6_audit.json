@@ -1,0 +1,121 @@
+{
+ "cmd": "uv run python -m bench.v6_audit --ckpt \"myna-v5-prototype 2\" --split test --every 1 --out runs/paper_v6_audit.json --md runs/paper_v6_audit.md --metrics runs/paper_v6_test.metrics.json --rowout runs/paper_myna_v6_test.rowoutcomes.json",
+ "engine": "myna-v6-unified (DeBERTa-v3-large + SetAwareBankingHead + CORAL Ordinal + Conformal G5)",
+ "ckpt": "myna-v5-prototype 2",
+ "split": "test",
+ "every": 1,
+ "source_filter": null,
+ "bundles_scored": 1176,
+ "n_questions": 1440,
+ "n_cells": 16,
+ "expected_cells": 16,
+ "macro_acc": 0.7776625366903147,
+ "overall_acc": 0.7881944444444444,
+ "abstained": 119,
+ "scoring": "argmax over the calibrated option vector; abstentions still ranked",
+ "wall_clock_s": 972.5,
+ "per_cell": {
+  "agnews/is_business": {
+   "correct": 41,
+   "n": 43,
+   "abstain": 11,
+   "acc": 0.9534883720930233
+  },
+  "agnews/is_scitech": {
+   "correct": 45,
+   "n": 49,
+   "abstain": 4,
+   "acc": 0.9183673469387755
+  },
+  "agnews/is_sports": {
+   "correct": 46,
+   "n": 47,
+   "abstain": 1,
+   "acc": 0.9787234042553191
+  },
+  "agnews/is_world": {
+   "correct": 45,
+   "n": 45,
+   "abstain": 6,
+   "acc": 1.0
+  },
+  "agnews/topic": {
+   "correct": 105,
+   "n": 116,
+   "abstain": 1,
+   "acc": 0.9051724137931034
+  },
+  "amazon/stars": {
+   "correct": 14,
+   "n": 80,
+   "abstain": 0,
+   "acc": 0.175
+  },
+  "banking77/intent": {
+   "correct": 78,
+   "n": 116,
+   "abstain": 26,
+   "acc": 0.6724137931034483
+  },
+  "boolq/answer": {
+   "correct": 68,
+   "n": 80,
+   "abstain": 30,
+   "acc": 0.85
+  },
+  "contrastive/decision": {
+   "correct": 193,
+   "n": 196,
+   "abstain": 11,
+   "acc": 0.9846938775510204
+  },
+  "dbpedia14/category": {
+   "correct": 111,
+   "n": 116,
+   "abstain": 0,
+   "acc": 0.9568965517241379
+  },
+  "imdb/positive": {
+   "correct": 77,
+   "n": 80,
+   "abstain": 8,
+   "acc": 0.9625
+  },
+  "mnli/relation": {
+   "correct": 100,
+   "n": 116,
+   "abstain": 1,
+   "acc": 0.8620689655172413
+  },
+  "sst5/sentiment": {
+   "correct": 12,
+   "n": 80,
+   "abstain": 0,
+   "acc": 0.15
+  },
+  "trec/answer_type": {
+   "correct": 110,
+   "n": 116,
+   "abstain": 0,
+   "acc": 0.9482758620689655
+  },
+  "yelp/rating": {
+   "correct": 16,
+   "n": 80,
+   "abstain": 0,
+   "acc": 0.2
+  },
+  "yelp/recommend": {
+   "correct": 74,
+   "n": 80,
+   "abstain": 20,
+   "acc": 0.925
+  }
+ },
+ "banking77_variants": {
+  "clean": "60/80",
+  "none_absent": "0/12",
+  "none_present": "9/12",
+  "permuted": "9/12"
+ }
+}

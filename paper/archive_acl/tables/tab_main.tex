@@ -1,0 +1,42 @@
+\begin{table*}[t]
+\centering
+\small
+\setlength{\tabcolsep}{4.5pt}
+\caption{The 16-cell head-to-head on the frozen test split (1{,}176 bundles,
+1{,}440 questions). All five columns are the campaign's scored runs on the same
+rows. \textbf{Myna v5/v6 are fine-tuned in-domain on all 16 cells; Laya and
+VegaML are zero-shot on 14 of 16} (the five agnews cells and boolq are in their
+training mixture). The comparison is therefore trained-versus-untrained on most
+cells, not a like-for-like budget comparison. Best per row in bold.}
+\label{tab:main}
+\begin{tabular}{lrrrrr}
+\toprule
+Cell & Laya & VegaML & v5 Packed & v5 Unified & v6 \\
+\midrule
+agnews/is\_business & 0.8837 & 0.3023 & \textbf{0.9535} & \textbf{0.9535} & \textbf{0.9535} \\
+agnews/is\_scitech & \textbf{0.9184} & 0.3469 & \textbf{0.9184} & \textbf{0.9184} & \textbf{0.9184} \\
+agnews/is\_sports & \textbf{0.9787} & 0.1915 & \textbf{0.9787} & \textbf{0.9787} & \textbf{0.9787} \\
+agnews/is\_world & 0.8889 & 0.2222 & \textbf{0.9778} & \textbf{0.9778} & \textbf{0.9778} \\
+agnews/topic & \textbf{0.9052} & 0.8879 & \textbf{0.9052} & \textbf{0.9052} & \textbf{0.9052} \\
+amazon/stars & 0.3250 & 0.5250 & \textbf{0.6375} & \textbf{0.6375} & \textbf{0.6375} \\
+banking77/intent & 0.5862 & 0.3707 & 0.0086 & 0.5345 & \textbf{0.6638} \\
+boolq/answer & 0.7875 & 0.5375 & \textbf{0.8250} & \textbf{0.8250} & \textbf{0.8250} \\
+contrastive/decision & 0.5969 & 0.4490 & \textbf{0.9847} & \textbf{0.9847} & \textbf{0.9847} \\
+dbpedia14/category & 0.7328 & 0.7759 & \textbf{0.9569} & \textbf{0.9569} & \textbf{0.9569} \\
+imdb/positive & 0.4625 & 0.5375 & \textbf{0.9500} & \textbf{0.9500} & \textbf{0.9500} \\
+mnli/relation & 0.5948 & 0.5603 & \textbf{0.8362} & \textbf{0.8362} & \textbf{0.8362} \\
+sst5/sentiment & 0.4875 & 0.4250 & \textbf{0.6000} & \textbf{0.6000} & \textbf{0.6000} \\
+trec/answer\_type & 0.8190 & 0.3017 & \textbf{0.9569} & \textbf{0.9569} & \textbf{0.9569} \\
+yelp/rating & 0.5250 & 0.5250 & \textbf{0.6625} & \textbf{0.6625} & \textbf{0.6625} \\
+yelp/recommend & 0.7875 & 0.4625 & \textbf{0.9250} & \textbf{0.9250} & \textbf{0.9250} \\
+\midrule
+16-cell macro & 0.7050 & 0.4638 & 0.8173 & 0.8502 & \textbf{0.8583} \\
+overall accuracy & 0.6792 & 0.4958 & 0.8069 & 0.8493 & \textbf{0.8597} \\
+joint bundle exact & 0.6182 & 0.4498 & 0.7730 & 0.8248 & \textbf{0.8376} \\
+\midrule
+primitive: choice & 0.6882 & 0.5517 & 0.7773 & 0.8649 & \textbf{0.8865} \\
+primitive: score & 0.4458 & 0.4917 & \textbf{0.6333} & \textbf{0.6333} & \textbf{0.6333} \\
+primitive: noul & 0.7778 & 0.4206 & \textbf{0.9306} & \textbf{0.9306} & \textbf{0.9306} \\
+\bottomrule
+\end{tabular}
+\end{table*}

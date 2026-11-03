@@ -1,0 +1,24 @@
+{
+ "bundles": 1176,
+ "questions": 1440,
+ "multi_bundles": 172,
+ "multi_by_n": {
+  "3": 92,
+  "2": 80
+ },
+ "bundle_exact": 0.839286,
+ "multi_exact": 130,
+ "contradictions_loose": 1,
+ "contradictions_strict": 51,
+ "examples": [
+  [
+   "yelp/test/17802",
+   [
+    [
+     "high_rating_not_recommended",
+     3
+    ]
+   ]
+  ]
+ ]
+}

@@ -1,0 +1,29 @@
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{2pt}
+\caption{Systems measurements on one Apple M5. Latency is p50, 10 reps,
+3 warm-ups, same process, same inputs; Laya is \texttt{Agent.system\_one} at
+421.29M parameters. The MLX and browser rows are the 14.45M streaming arm,
+not v6.}
+\label{tab:systems}
+\resizebox{\columnwidth}{!}{\begin{tabular}{lrrr}
+\toprule
+ & Myna-Stream & Laya & ratio \\
+\midrule
+parameters & 14{,}449{,}280 & 421{,}293{,}827 & 0.034$\times$ \\
+retained state & 576 KiB & none (re-encode) & -- \\
+\midrule
+1 question & 33.08 ms & 100.69 ms & 3.04$\times$ \\
+5 questions & 74.87 ms & 271.99 ms & 3.63$\times$ \\
+10 questions & 120.75 ms & 506.28 ms & 4.19$\times$ \\
+50 questions & 869.95 ms & 3{,}589.50 ms & 4.13$\times$ \\
+ask-only, 1 q & 14.86 ms & 100.69 ms & 6.78$\times$ \\
+\midrule
+MLX fp32 vs MPS & 1.76--2.22$\times$ & -- & 55.13 MiB \\
+MLX int8 vs MPS & 1.79--2.41$\times$ & 17.40 MiB & 9.24e-3 drift \\
+ONNX browser & 435.8 ms p50 & 59.32 MiB & 1.03e-6 drift \\
+ONNX int8 & 18.56 MiB & 6.48e-2 drift & RED (5 checks) \\
+\bottomrule
+\end{tabular}}
+\end{table}

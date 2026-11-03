@@ -1,5 +1,18 @@
 # Myna
 
+> **Measurement correction (2026-11-04).** An off-by-one in the ordinal (`score`) cell of
+> `bench/v6_audit.py` credited a prediction when it named the level *above* gold. Corrected,
+> Myna v6 scores **0.7777** macro (not 0.8620), **0.7882** overall (not 0.8632), **0.7509**
+> joint bundle exact (not 0.8393), ECE **0.0637** (not 0.0190), and the `score` primitive is
+> at chance (**0.1750**). The competitor columns are unaffected. Every table below that quotes
+> a v6 figure predates the fix; the corrected table is in `paper/` and the full record is
+> [paper/MEASUREMENT-CORRECTION.md](paper/MEASUREMENT-CORRECTION.md). Pre-correction witnesses
+> are kept as `runs/*.predates-fix.*`. The corrected re-score is reproduced by:
+>
+> ```
+> uv run python -m bench.v6_audit --ckpt "myna-v5-prototype 2" --split test --every 1 --out runs/paper_v6_audit.json --md runs/paper_v6_audit.md --metrics runs/paper_v6_test.metrics.json --rowout runs/paper_myna_v6_test.rowoutcomes.json
+> ```
+
 **The decision engine that never re-reads.** Typed `choice` / `score` / `noul`
 decisions over growing observations — tickets, threads, page states,
 documents — where the observation is scanned **once** and every later request

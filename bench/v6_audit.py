@@ -116,6 +116,11 @@ def run(argv: list[str] | None = None) -> int:
                          "can be put on this run's macro. Both dumps need the whole split: "
                          "they refuse --every above 1 and --source.")
     ap.add_argument("--device", default="cpu")
+    ap.add_argument("--max-packed", type=int, default=None, metavar="K",
+                    help="override the checkpoint's packed/decoupled cap for this run. "
+                         "`--max-packed 1000` forces the packed scorer on every cell, which "
+                         "is how the 'packed everywhere' arm is reproduced on the same "
+                         "weights; the default keeps the checkpoint's own routing.")
     args = ap.parse_args(argv)
 
     if (args.metrics or args.rowout) and (args.source or args.every != 1):
@@ -133,6 +138,8 @@ def run(argv: list[str] | None = None) -> int:
     from row_outcomes import META_FIELDS
 
     engine = MynaV6(args.ckpt, device=args.device)
+    if args.max_packed is not None:
+        engine.max_packed_options = int(args.max_packed)
     rows = load_rows(args.split, args.every)
     print(f"{len(rows)} bundles from {args.split} | engine {engine.model_label}", flush=True)
 
@@ -172,7 +179,19 @@ def run(argv: list[str] | None = None) -> int:
             ranked = list(a["probabilities"])
             pi = max(range(len(ranked)), key=lambda k: a["probabilities"][ranked[k]])
             top = ranked[pi]
-            hit = (top == "yes") == bool(golds[i]) if spec["type"] == "noul" else top == ranked[golds[i]]
+            # `golds` carries the suite's label: a boolean for `noul`, the 1-based star
+            # level for `score`, and a 0-based index into the criteria dict for `choice`.
+            # `ranked` is a 0-based option vector in all three cases, so the score branch
+            # subtracts one. Comparing at `golds[i]` scored a prediction correct when it
+            # named the level *above* gold; that off-by-one inflated every `score` cell
+            # (0.64 reported on a 5-way ordinal question that is at chance under the fix).
+            # See paper/MEASUREMENT-CORRECTION.md.
+            if spec["type"] == "noul":
+                hit = (top == "yes") == bool(golds[i])
+            elif spec["type"] == "score":
+                hit = top == ranked[int(golds[i]) - 1]
+            else:
+                hit = top == ranked[golds[i]]
             bucket = cells[(source, qname)]
             bucket[0] += int(hit)
             bucket[1] += 1
@@ -185,7 +204,10 @@ def run(argv: list[str] | None = None) -> int:
                 set_n[f"{group_key}/{qname}"] += 1
                 if args.rowout:
                     q = questions[i]
-                    qrec[qname] = {"type": q.type, "pred": pi, "gold": int(golds[i]),
+                    # `pred` is stored in the label's own space: the 1-based level for
+                    # `score`, so `pred == gold` means correct without a second convention.
+                    pred = pi + 1 if spec["type"] == "score" else pi
+                    qrec[qname] = {"type": q.type, "pred": pred, "gold": int(golds[i]),
                                    "k": len(q.options), "ok": int(hit),
                                    "conf": round(float(a["probabilities"][ranked[pi]]), 6)}
         if group_key is not None and args.rowout:

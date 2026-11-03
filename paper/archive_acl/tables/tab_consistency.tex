@@ -1,0 +1,23 @@
+\begin{table*}[t]
+\centering
+\small
+\caption{Bundle consistency on the 172 multi-question bundles (92 agnews,
+80 yelp). The top block is the campaign's head-to-head, whose contradiction
+predicate is not in the repository. The bottom block is our recomputation on
+the same rows with the explicit predicate of \S\ref{sec:consistency}; the three
+runs in that block are the only ones with released per-row outcomes.}
+\label{tab:consistency}
+\begin{tabular}{llrrr}
+\toprule
+ & Run & exact & contra. & macro \\
+\midrule
+\multirow{3}{*}{campaign} & v6 & 0.8376 & 0/172 & 0.8583 \\
+ & Laya (typed) & 0.6182 & 0/172 & 0.7050 \\
+ & VegaML & 0.4498 & 0/172 & 0.4638 \\
+\midrule
+\multirow{3}{*}{same rows} & v6 & 0.8393 & 3/172 & 0.8620 \\
+ & Laya 0.4.19 & 0.5663 & 31/172 & 0.6664 \\
+ & VegaML 0.15.0 & 0.5119 & 29/172 & 0.6160 \\
+\bottomrule
+\end{tabular}
+\end{table*}

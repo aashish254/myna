@@ -1,0 +1,1139 @@
+{
+ "arms": {
+  "myna_v6": {
+   "n_questions": 1440,
+   "n_rows": 1176,
+   "macro": 0.777662,
+   "overall": 0.788194,
+   "bundle_exact": 0.75085,
+   "cells": {
+    "agnews/is_business": {
+     "n": 43,
+     "acc": 0.953488
+    },
+    "agnews/is_scitech": {
+     "n": 49,
+     "acc": 0.918367
+    },
+    "agnews/is_sports": {
+     "n": 47,
+     "acc": 0.978723
+    },
+    "agnews/is_world": {
+     "n": 45,
+     "acc": 1.0
+    },
+    "agnews/topic": {
+     "n": 116,
+     "acc": 0.905172
+    },
+    "amazon/stars": {
+     "n": 80,
+     "acc": 0.175
+    },
+    "banking77/intent": {
+     "n": 116,
+     "acc": 0.672414
+    },
+    "boolq/answer": {
+     "n": 80,
+     "acc": 0.85
+    },
+    "contrastive/decision": {
+     "n": 196,
+     "acc": 0.984694
+    },
+    "dbpedia14/category": {
+     "n": 116,
+     "acc": 0.956897
+    },
+    "imdb/positive": {
+     "n": 80,
+     "acc": 0.9625
+    },
+    "mnli/relation": {
+     "n": 116,
+     "acc": 0.862069
+    },
+    "sst5/sentiment": {
+     "n": 80,
+     "acc": 0.15
+    },
+    "trec/answer_type": {
+     "n": 116,
+     "acc": 0.948276
+    },
+    "yelp/rating": {
+     "n": 80,
+     "acc": 0.2
+    },
+    "yelp/recommend": {
+     "n": 80,
+     "acc": 0.925
+    }
+   },
+   "primitives": {
+    "choice": {
+     "n": 696,
+     "acc": 0.890805
+    },
+    "noul": {
+     "n": 504,
+     "acc": 0.938492
+    },
+    "score": {
+     "n": 240,
+     "acc": 0.175
+    }
+   },
+   "calibration": {
+    "ece": 0.063728,
+    "brier": 0.118652,
+    "bins": [
+     {
+      "lo": 0.1,
+      "hi": 0.2,
+      "n": 6,
+      "conf": 0.144211,
+      "acc": 0.0
+     },
+     {
+      "lo": 0.2,
+      "hi": 0.3,
+      "n": 5,
+      "conf": 0.259292,
+      "acc": 0.0
+     },
+     {
+      "lo": 0.3,
+      "hi": 0.4,
+      "n": 13,
+      "conf": 0.362605,
+      "acc": 0.461538
+     },
+     {
+      "lo": 0.4,
+      "hi": 0.5,
+      "n": 54,
+      "conf": 0.461517,
+      "acc": 0.37037
+     },
+     {
+      "lo": 0.5,
+      "hi": 0.6,
+      "n": 139,
+      "conf": 0.551628,
+      "acc": 0.438849
+     },
+     {
+      "lo": 0.6,
+      "hi": 0.7,
+      "n": 116,
+      "conf": 0.646973,
+      "acc": 0.431034
+     },
+     {
+      "lo": 0.7,
+      "hi": 0.8,
+      "n": 119,
+      "conf": 0.754928,
+      "acc": 0.605042
+     },
+     {
+      "lo": 0.8,
+      "hi": 0.9,
+      "n": 141,
+      "conf": 0.853877,
+      "acc": 0.751773
+     },
+     {
+      "lo": 0.9,
+      "hi": 1.0,
+      "n": 847,
+      "conf": 0.980448,
+      "acc": 0.968123
+     }
+    ]
+   },
+   "selective": {
+    "0.5": {
+     "k": 720,
+     "coverage": 0.5,
+     "acc": 0.975
+    },
+    "0.6": {
+     "k": 864,
+     "coverage": 0.6,
+     "acc": 0.965278
+    },
+    "0.7": {
+     "k": 1008,
+     "coverage": 0.7,
+     "acc": 0.934524
+    },
+    "0.8": {
+     "k": 1152,
+     "coverage": 0.8,
+     "acc": 0.883681
+    },
+    "0.9": {
+     "k": 1296,
+     "coverage": 0.9,
+     "acc": 0.83179
+    }
+   }
+  },
+  "myna_v6_prefix": {
+   "n_questions": 1440,
+   "n_rows": 1176,
+   "macro": 0.777662,
+   "overall": 0.788194,
+   "bundle_exact": 0.75085,
+   "cells": {
+    "agnews/is_business": {
+     "n": 43,
+     "acc": 0.953488
+    },
+    "agnews/is_scitech": {
+     "n": 49,
+     "acc": 0.918367
+    },
+    "agnews/is_sports": {
+     "n": 47,
+     "acc": 0.978723
+    },
+    "agnews/is_world": {
+     "n": 45,
+     "acc": 1.0
+    },
+    "agnews/topic": {
+     "n": 116,
+     "acc": 0.905172
+    },
+    "amazon/stars": {
+     "n": 80,
+     "acc": 0.175
+    },
+    "banking77/intent": {
+     "n": 116,
+     "acc": 0.672414
+    },
+    "boolq/answer": {
+     "n": 80,
+     "acc": 0.85
+    },
+    "contrastive/decision": {
+     "n": 196,
+     "acc": 0.984694
+    },
+    "dbpedia14/category": {
+     "n": 116,
+     "acc": 0.956897
+    },
+    "imdb/positive": {
+     "n": 80,
+     "acc": 0.9625
+    },
+    "mnli/relation": {
+     "n": 116,
+     "acc": 0.862069
+    },
+    "sst5/sentiment": {
+     "n": 80,
+     "acc": 0.15
+    },
+    "trec/answer_type": {
+     "n": 116,
+     "acc": 0.948276
+    },
+    "yelp/rating": {
+     "n": 80,
+     "acc": 0.2
+    },
+    "yelp/recommend": {
+     "n": 80,
+     "acc": 0.925
+    }
+   },
+   "primitives": {
+    "choice": {
+     "n": 696,
+     "acc": 0.890805
+    },
+    "noul": {
+     "n": 504,
+     "acc": 0.938492
+    },
+    "score": {
+     "n": 240,
+     "acc": 0.175
+    }
+   },
+   "calibration": {
+    "ece": 0.063728,
+    "brier": 0.118652,
+    "bins": [
+     {
+      "lo": 0.1,
+      "hi": 0.2,
+      "n": 6,
+      "conf": 0.144211,
+      "acc": 0.0
+     },
+     {
+      "lo": 0.2,
+      "hi": 0.3,
+      "n": 5,
+      "conf": 0.259292,
+      "acc": 0.0
+     },
+     {
+      "lo": 0.3,
+      "hi": 0.4,
+      "n": 13,
+      "conf": 0.362605,
+      "acc": 0.461538
+     },
+     {
+      "lo": 0.4,
+      "hi": 0.5,
+      "n": 54,
+      "conf": 0.461517,
+      "acc": 0.37037
+     },
+     {
+      "lo": 0.5,
+      "hi": 0.6,
+      "n": 139,
+      "conf": 0.551628,
+      "acc": 0.438849
+     },
+     {
+      "lo": 0.6,
+      "hi": 0.7,
+      "n": 116,
+      "conf": 0.646973,
+      "acc": 0.431034
+     },
+     {
+      "lo": 0.7,
+      "hi": 0.8,
+      "n": 119,
+      "conf": 0.754928,
+      "acc": 0.605042
+     },
+     {
+      "lo": 0.8,
+      "hi": 0.9,
+      "n": 141,
+      "conf": 0.853877,
+      "acc": 0.751773
+     },
+     {
+      "lo": 0.9,
+      "hi": 1.0,
+      "n": 847,
+      "conf": 0.980448,
+      "acc": 0.968123
+     }
+    ]
+   },
+   "selective": {
+    "0.5": {
+     "k": 720,
+     "coverage": 0.5,
+     "acc": 0.975
+    },
+    "0.6": {
+     "k": 864,
+     "coverage": 0.6,
+     "acc": 0.965278
+    },
+    "0.7": {
+     "k": 1008,
+     "coverage": 0.7,
+     "acc": 0.934524
+    },
+    "0.8": {
+     "k": 1152,
+     "coverage": 0.8,
+     "acc": 0.883681
+    },
+    "0.9": {
+     "k": 1296,
+     "coverage": 0.9,
+     "acc": 0.83179
+    }
+   }
+  },
+  "myna_v6_packed_forced": {
+   "n_questions": 1440,
+   "n_rows": 1176,
+   "macro": 0.737792,
+   "overall": 0.736806,
+   "bundle_exact": 0.687925,
+   "cells": {
+    "agnews/is_business": {
+     "n": 43,
+     "acc": 0.953488
+    },
+    "agnews/is_scitech": {
+     "n": 49,
+     "acc": 0.918367
+    },
+    "agnews/is_sports": {
+     "n": 47,
+     "acc": 0.978723
+    },
+    "agnews/is_world": {
+     "n": 45,
+     "acc": 1.0
+    },
+    "agnews/topic": {
+     "n": 116,
+     "acc": 0.905172
+    },
+    "amazon/stars": {
+     "n": 80,
+     "acc": 0.175
+    },
+    "banking77/intent": {
+     "n": 116,
+     "acc": 0.034483
+    },
+    "boolq/answer": {
+     "n": 80,
+     "acc": 0.85
+    },
+    "contrastive/decision": {
+     "n": 196,
+     "acc": 0.984694
+    },
+    "dbpedia14/category": {
+     "n": 116,
+     "acc": 0.956897
+    },
+    "imdb/positive": {
+     "n": 80,
+     "acc": 0.9625
+    },
+    "mnli/relation": {
+     "n": 116,
+     "acc": 0.862069
+    },
+    "sst5/sentiment": {
+     "n": 80,
+     "acc": 0.15
+    },
+    "trec/answer_type": {
+     "n": 116,
+     "acc": 0.948276
+    },
+    "yelp/rating": {
+     "n": 80,
+     "acc": 0.2
+    },
+    "yelp/recommend": {
+     "n": 80,
+     "acc": 0.925
+    }
+   },
+   "primitives": {
+    "choice": {
+     "n": 696,
+     "acc": 0.784483
+    },
+    "noul": {
+     "n": 504,
+     "acc": 0.938492
+    },
+    "score": {
+     "n": 240,
+     "acc": 0.175
+    }
+   },
+   "calibration": {
+    "ece": 0.063053,
+    "brier": 0.108435,
+    "bins": [
+     {
+      "lo": 0.0,
+      "hi": 0.1,
+      "n": 116,
+      "conf": 0.01297,
+      "acc": 0.034483
+     },
+     {
+      "lo": 0.3,
+      "hi": 0.4,
+      "n": 6,
+      "conf": 0.367392,
+      "acc": 0.5
+     },
+     {
+      "lo": 0.4,
+      "hi": 0.5,
+      "n": 38,
+      "conf": 0.463453,
+      "acc": 0.315789
+     },
+     {
+      "lo": 0.5,
+      "hi": 0.6,
+      "n": 128,
+      "conf": 0.551342,
+      "acc": 0.414062
+     },
+     {
+      "lo": 0.6,
+      "hi": 0.7,
+      "n": 106,
+      "conf": 0.647114,
+      "acc": 0.396226
+     },
+     {
+      "lo": 0.7,
+      "hi": 0.8,
+      "n": 112,
+      "conf": 0.754696,
+      "acc": 0.607143
+     },
+     {
+      "lo": 0.8,
+      "hi": 0.9,
+      "n": 126,
+      "conf": 0.853235,
+      "acc": 0.753968
+     },
+     {
+      "lo": 0.9,
+      "hi": 1.0,
+      "n": 808,
+      "conf": 0.981057,
+      "acc": 0.970297
+     }
+    ]
+   },
+   "selective": {
+    "0.5": {
+     "k": 720,
+     "coverage": 0.5,
+     "acc": 0.977778
+    },
+    "0.6": {
+     "k": 864,
+     "coverage": 0.6,
+     "acc": 0.961806
+    },
+    "0.7": {
+     "k": 1008,
+     "coverage": 0.7,
+     "acc": 0.918651
+    },
+    "0.8": {
+     "k": 1152,
+     "coverage": 0.8,
+     "acc": 0.858507
+    },
+    "0.9": {
+     "k": 1296,
+     "coverage": 0.9,
+     "acc": 0.805556
+    }
+   }
+  },
+  "laya_0419": {
+   "n_questions": 1440,
+   "n_rows": 1176,
+   "macro": 0.666399,
+   "overall": 0.638194,
+   "bundle_exact": 0.566327,
+   "cells": {
+    "agnews/is_business": {
+     "n": 43,
+     "acc": 0.883721
+    },
+    "agnews/is_scitech": {
+     "n": 49,
+     "acc": 0.938776
+    },
+    "agnews/is_sports": {
+     "n": 47,
+     "acc": 0.978723
+    },
+    "agnews/is_world": {
+     "n": 45,
+     "acc": 0.8
+    },
+    "agnews/topic": {
+     "n": 116,
+     "acc": 0.913793
+    },
+    "amazon/stars": {
+     "n": 80,
+     "acc": 0.3
+    },
+    "banking77/intent": {
+     "n": 116,
+     "acc": 0.275862
+    },
+    "boolq/answer": {
+     "n": 80,
+     "acc": 0.7
+    },
+    "contrastive/decision": {
+     "n": 196,
+     "acc": 0.596939
+    },
+    "dbpedia14/category": {
+     "n": 116,
+     "acc": 0.767241
+    },
+    "imdb/positive": {
+     "n": 80,
+     "acc": 0.4625
+    },
+    "mnli/relation": {
+     "n": 116,
+     "acc": 0.594828
+    },
+    "sst5/sentiment": {
+     "n": 80,
+     "acc": 0.3875
+    },
+    "trec/answer_type": {
+     "n": 116,
+     "acc": 0.75
+    },
+    "yelp/rating": {
+     "n": 80,
+     "acc": 0.525
+    },
+    "yelp/recommend": {
+     "n": 80,
+     "acc": 0.7875
+    }
+   },
+   "primitives": {
+    "choice": {
+     "n": 696,
+     "acc": 0.635057
+    },
+    "noul": {
+     "n": 504,
+     "acc": 0.753968
+    },
+    "score": {
+     "n": 240,
+     "acc": 0.404167
+    }
+   },
+   "calibration": {
+    "ece": 0.169959,
+    "brier": 0.247337,
+    "bins": [
+     {
+      "lo": 0.0,
+      "hi": 0.1,
+      "n": 2,
+      "conf": 0.08725,
+      "acc": 0.0
+     },
+     {
+      "lo": 0.1,
+      "hi": 0.2,
+      "n": 2,
+      "conf": 0.13205,
+      "acc": 0.0
+     },
+     {
+      "lo": 0.2,
+      "hi": 0.3,
+      "n": 3,
+      "conf": 0.258667,
+      "acc": 0.0
+     },
+     {
+      "lo": 0.3,
+      "hi": 0.4,
+      "n": 28,
+      "conf": 0.361268,
+      "acc": 0.428571
+     },
+     {
+      "lo": 0.4,
+      "hi": 0.5,
+      "n": 102,
+      "conf": 0.455114,
+      "acc": 0.480392
+     },
+     {
+      "lo": 0.5,
+      "hi": 0.6,
+      "n": 164,
+      "conf": 0.552523,
+      "acc": 0.432927
+     },
+     {
+      "lo": 0.6,
+      "hi": 0.7,
+      "n": 146,
+      "conf": 0.650677,
+      "acc": 0.527397
+     },
+     {
+      "lo": 0.7,
+      "hi": 0.8,
+      "n": 153,
+      "conf": 0.74928,
+      "acc": 0.601307
+     },
+     {
+      "lo": 0.8,
+      "hi": 0.9,
+      "n": 204,
+      "conf": 0.855538,
+      "acc": 0.681373
+     },
+     {
+      "lo": 0.9,
+      "hi": 1.0,
+      "n": 636,
+      "conf": 0.978431,
+      "acc": 0.753145
+     }
+    ]
+   },
+   "selective": {
+    "0.5": {
+     "k": 720,
+     "coverage": 0.5,
+     "acc": 0.741667
+    },
+    "0.6": {
+     "k": 864,
+     "coverage": 0.6,
+     "acc": 0.731481
+    },
+    "0.7": {
+     "k": 1008,
+     "coverage": 0.7,
+     "acc": 0.71627
+    },
+    "0.8": {
+     "k": 1152,
+     "coverage": 0.8,
+     "acc": 0.689236
+    },
+    "0.9": {
+     "k": 1296,
+     "coverage": 0.9,
+     "acc": 0.661265
+    }
+   }
+  },
+  "vegaml_0150": {
+   "n_questions": 1440,
+   "n_rows": 1176,
+   "macro": 0.61597,
+   "overall": 0.583333,
+   "bundle_exact": 0.511905,
+   "cells": {
+    "agnews/is_business": {
+     "n": 43,
+     "acc": 0.511628
+    },
+    "agnews/is_scitech": {
+     "n": 49,
+     "acc": 0.77551
+    },
+    "agnews/is_sports": {
+     "n": 47,
+     "acc": 0.93617
+    },
+    "agnews/is_world": {
+     "n": 45,
+     "acc": 0.644444
+    },
+    "agnews/topic": {
+     "n": 116,
+     "acc": 0.887931
+    },
+    "amazon/stars": {
+     "n": 80,
+     "acc": 0.55
+    },
+    "banking77/intent": {
+     "n": 116,
+     "acc": 0.301724
+    },
+    "boolq/answer": {
+     "n": 80,
+     "acc": 0.675
+    },
+    "contrastive/decision": {
+     "n": 196,
+     "acc": 0.44898
+    },
+    "dbpedia14/category": {
+     "n": 116,
+     "acc": 0.646552
+    },
+    "imdb/positive": {
+     "n": 80,
+     "acc": 0.875
+    },
+    "mnli/relation": {
+     "n": 116,
+     "acc": 0.525862
+    },
+    "sst5/sentiment": {
+     "n": 80,
+     "acc": 0.425
+    },
+    "trec/answer_type": {
+     "n": 116,
+     "acc": 0.301724
+    },
+    "yelp/rating": {
+     "n": 80,
+     "acc": 0.5375
+    },
+    "yelp/recommend": {
+     "n": 80,
+     "acc": 0.8125
+    }
+   },
+   "primitives": {
+    "choice": {
+     "n": 696,
+     "acc": 0.512931
+    },
+    "noul": {
+     "n": 504,
+     "acc": 0.718254
+    },
+    "score": {
+     "n": 240,
+     "acc": 0.504167
+    }
+   },
+   "calibration": {
+    "ece": 0.158349,
+    "brier": 0.253452,
+    "bins": [
+     {
+      "lo": 0.0,
+      "hi": 0.1,
+      "n": 85,
+      "conf": 0.057793,
+      "acc": 0.176471
+     },
+     {
+      "lo": 0.1,
+      "hi": 0.2,
+      "n": 52,
+      "conf": 0.160588,
+      "acc": 0.5
+     },
+     {
+      "lo": 0.2,
+      "hi": 0.3,
+      "n": 63,
+      "conf": 0.250275,
+      "acc": 0.634921
+     },
+     {
+      "lo": 0.3,
+      "hi": 0.4,
+      "n": 103,
+      "conf": 0.358368,
+      "acc": 0.524272
+     },
+     {
+      "lo": 0.4,
+      "hi": 0.5,
+      "n": 165,
+      "conf": 0.446912,
+      "acc": 0.466667
+     },
+     {
+      "lo": 0.5,
+      "hi": 0.6,
+      "n": 172,
+      "conf": 0.54768,
+      "acc": 0.494186
+     },
+     {
+      "lo": 0.6,
+      "hi": 0.7,
+      "n": 100,
+      "conf": 0.646178,
+      "acc": 0.56
+     },
+     {
+      "lo": 0.7,
+      "hi": 0.8,
+      "n": 127,
+      "conf": 0.753402,
+      "acc": 0.606299
+     },
+     {
+      "lo": 0.8,
+      "hi": 0.9,
+      "n": 209,
+      "conf": 0.857429,
+      "acc": 0.593301
+     },
+     {
+      "lo": 0.9,
+      "hi": 1.0,
+      "n": 364,
+      "conf": 0.961542,
+      "acc": 0.785714
+     }
+    ]
+   },
+   "selective": {
+    "0.5": {
+     "k": 720,
+     "coverage": 0.5,
+     "acc": 0.697222
+    },
+    "0.6": {
+     "k": 864,
+     "coverage": 0.6,
+     "acc": 0.664352
+    },
+    "0.7": {
+     "k": 1008,
+     "coverage": 0.7,
+     "acc": 0.635913
+    },
+    "0.8": {
+     "k": 1152,
+     "coverage": 0.8,
+     "acc": 0.617188
+    },
+    "0.9": {
+     "k": 1296,
+     "coverage": 0.9,
+     "acc": 0.614198
+    }
+   }
+  },
+  "majority": {
+   "macro": 0.372585,
+   "overall": 0.296528,
+   "bundle_exact": 0.204082,
+   "cells": {
+    "agnews/is_business": {
+     "n": 43,
+     "acc": 0.697674
+    },
+    "agnews/is_scitech": {
+     "n": 49,
+     "acc": 0.653061
+    },
+    "agnews/is_sports": {
+     "n": 47,
+     "acc": 0.808511
+    },
+    "agnews/is_world": {
+     "n": 45,
+     "acc": 0.777778
+    },
+    "agnews/topic": {
+     "n": 116,
+     "acc": 0.172414
+    },
+    "amazon/stars": {
+     "n": 80,
+     "acc": 0.1625
+    },
+    "banking77/intent": {
+     "n": 116,
+     "acc": 0.0
+    },
+    "boolq/answer": {
+     "n": 80,
+     "acc": 0.5375
+    },
+    "contrastive/decision": {
+     "n": 196,
+     "acc": 0.204082
+    },
+    "dbpedia14/category": {
+     "n": 116,
+     "acc": 0.060345
+    },
+    "imdb/positive": {
+     "n": 80,
+     "acc": 0.4625
+    },
+    "mnli/relation": {
+     "n": 116,
+     "acc": 0.344828
+    },
+    "sst5/sentiment": {
+     "n": 80,
+     "acc": 0.225
+    },
+    "trec/answer_type": {
+     "n": 116,
+     "acc": 0.155172
+    },
+    "yelp/rating": {
+     "n": 80,
+     "acc": 0.1625
+    },
+    "yelp/recommend": {
+     "n": 80,
+     "acc": 0.5375
+    }
+   }
+  },
+  "tfidf": {
+   "macro": 0.711115,
+   "overall": 0.684028,
+   "bundle_exact": 0.629252,
+   "cells": {
+    "agnews/is_business": {
+     "n": 43,
+     "acc": 0.837209
+    },
+    "agnews/is_scitech": {
+     "n": 49,
+     "acc": 0.857143
+    },
+    "agnews/is_sports": {
+     "n": 47,
+     "acc": 0.93617
+    },
+    "agnews/is_world": {
+     "n": 45,
+     "acc": 0.955556
+    },
+    "agnews/topic": {
+     "n": 116,
+     "acc": 0.793103
+    },
+    "amazon/stars": {
+     "n": 80,
+     "acc": 0.525
+    },
+    "banking77/intent": {
+     "n": 116,
+     "acc": 0.818966
+    },
+    "boolq/answer": {
+     "n": 80,
+     "acc": 0.6125
+    },
+    "contrastive/decision": {
+     "n": 196,
+     "acc": 0.566327
+    },
+    "dbpedia14/category": {
+     "n": 116,
+     "acc": 0.844828
+    },
+    "imdb/positive": {
+     "n": 80,
+     "acc": 0.85
+    },
+    "mnli/relation": {
+     "n": 116,
+     "acc": 0.405172
+    },
+    "sst5/sentiment": {
+     "n": 80,
+     "acc": 0.375
+    },
+    "trec/answer_type": {
+     "n": 116,
+     "acc": 0.775862
+    },
+    "yelp/rating": {
+     "n": 80,
+     "acc": 0.4375
+    },
+    "yelp/recommend": {
+     "n": 80,
+     "acc": 0.7875
+    }
+   }
+  },
+  "nli": {
+   "macro": 0.327764,
+   "overall": 0.346528,
+   "bundle_exact": 0.302721,
+   "cells": {
+    "agnews/is_business": {
+     "n": 43,
+     "acc": 0.255814
+    },
+    "agnews/is_scitech": {
+     "n": 49,
+     "acc": 0.346939
+    },
+    "agnews/is_sports": {
+     "n": 47,
+     "acc": 0.212766
+    },
+    "agnews/is_world": {
+     "n": 45,
+     "acc": 0.2
+    },
+    "agnews/topic": {
+     "n": 116,
+     "acc": 0.37931
+    },
+    "amazon/stars": {
+     "n": 80,
+     "acc": 0.0
+    },
+    "banking77/intent": {
+     "n": 116,
+     "acc": 0.293103
+    },
+    "boolq/answer": {
+     "n": 80,
+     "acc": 0.65
+    },
+    "contrastive/decision": {
+     "n": 196,
+     "acc": 0.418367
+    },
+    "dbpedia14/category": {
+     "n": 116,
+     "acc": 0.396552
+    },
+    "imdb/positive": {
+     "n": 80,
+     "acc": 0.6375
+    },
+    "mnli/relation": {
+     "n": 116,
+     "acc": 0.327586
+    },
+    "sst5/sentiment": {
+     "n": 80,
+     "acc": 0.0
+    },
+    "trec/answer_type": {
+     "n": 116,
+     "acc": 0.413793
+    },
+    "yelp/rating": {
+     "n": 80,
+     "acc": 0.0
+    },
+    "yelp/recommend": {
+     "n": 80,
+     "acc": 0.7125
+    }
+   }
+  }
+ }
+}

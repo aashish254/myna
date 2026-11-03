@@ -1,0 +1,83 @@
+
+\appendix
+
+\section{Reproduction and Artifact Map}
+\label{app:extra}
+
+Every number in this paper is read from a committed JSON artifact or recomputed by a script in the repository. The main commands are:
+
+{\footnotesize
+\begin{verbatim}
+python -m bench.v6_audit --ckpt "myna-v5-prototype 2" \
+  --split test --every 1 --out runs/paper_v6_audit.json \
+  --metrics runs/paper_v6_test.metrics.json \
+  --rowout runs/paper_myna_v6_test.rowoutcomes.json
+python bench/significance.py --myna runs/paper_myna_v6_test.rowoutcomes.json \
+  --report runs/v6_test.report.json --B 20000 --seed 20261031
+python -m bench.risk_coverage --ckpt "myna-v5-prototype 2" \
+  --split test --source banking77,dbpedia14,trec
+python paper/make_figures.py
+python paper/make_tables.py
+\end{verbatim}
+}
+
+The audit scored all 1{,}176 bundles in 806 s on CPU and reproduced all 1{,}440 question outcomes bit-for-bit against the committed row outcomes, with macro 0.8620 and overall 0.8632. The witnesses are the \texttt{runs/witness-*.json} files, \texttt{runs/v6\_test.report.json}, \texttt{runs/significance\_v6.json}, \texttt{runs/risk\_coverage\_v6*.json}, \texttt{runs/latency\_matched.json}, \texttt{runs/bench\_mlx\_int8.json}, \texttt{runs/browser\_g3.json}, and the diagnostics under \texttt{runs/g6\_*} and \texttt{runs/needle\_*}.
+
+\paragraph{Discrepancies with the campaign record.}
+The campaign records 0/172 contradictions; the explicit predicate gives 3/172, and Table~\ref{tab:consistency} keeps the two blocks apart. The campaign reports a 2{,}000-bundle calibration split; the committed calibration split has 448 rows and 568 questions, and the calibration quantiles are used as shipped. The banking77 \texttt{none\_absent} decomposition is 0/12 here against the campaign's 7/12, while the cell aggregate matches at 78/116 against 77/116. The v6 training code is not released.
+
+\section{Per-Cell Results}
+\label{app:cells}
+
+\begin{widetable}
+\centering
+\footnotesize
+\caption{Per-cell local re-score with row-clustered 95\% intervals (20{,}000 replicates, seed 20261031). The interval is on the cell accuracy; the unit resampled is the row, not the question.}
+\label{tab:cells}
+\begin{tabular}{lrrr}
+\toprule
+Cell & $n$ & Myna & 95\% CI \\
+\midrule
+agnews/is\_business & 43 & 0.9535 & [0.8810, 1.0000] \\
+agnews/is\_scitech & 49 & 0.9184 & [0.8333, 0.9818] \\
+agnews/is\_sports & 47 & 0.9787 & [0.9286, 1.0000] \\
+agnews/is\_world & 45 & 1.0000 & [1.0000, 1.0000] \\
+agnews/topic & 116 & 0.9052 & [0.8475, 0.9554] \\
+amazon/stars & 80 & 0.6375 & [0.5294, 0.7407] \\
+banking77/intent & 116 & 0.6724 & [0.5872, 0.7568] \\
+boolq/answer & 80 & 0.8500 & [0.7671, 0.9250] \\
+contrastive/decision & 196 & 0.9847 & [0.9653, 1.0000] \\
+dbpedia14/category & 116 & 0.9569 & [0.9174, 0.9909] \\
+imdb/positive & 80 & 0.9625 & [0.9157, 1.0000] \\
+mnli/relation & 116 & 0.8621 & [0.7966, 0.9231] \\
+sst5/sentiment & 80 & 0.6125 & [0.5050, 0.7183] \\
+trec/answer\_type & 116 & 0.9483 & [0.9048, 0.9835] \\
+yelp/rating & 80 & 0.6250 & [0.5147, 0.7312] \\
+yelp/recommend & 80 & 0.9250 & [0.8625, 0.9762] \\
+\bottomrule
+\end{tabular}
+\end{widetable}
+
+\section{Contradiction Predicate and Examples}
+\label{app:predicate}
+
+For an agnews bundle, let $c$ be the predicted topic label and let $b_c$ be the boolean question for $c$ if it is present. A contradiction is $b_c=\text{no}$. For a yelp bundle, let $r$ be the predicted rating in $\{1,\dots,5\}$ and $y$ the predicted recommendation. A contradiction is $(r\ge4 \land \neg y)$ or $(r\le2 \land y)$; $r=3$ is unconstrained. The gold labels satisfy the predicate on every bundle. The three v6 contradictions are \texttt{agnews/test/7326} (topic business, \texttt{is\_business}=no), \texttt{agnews/test/1106} (topic world, \texttt{is\_world}=no), and \texttt{yelp/test/17802} (4 stars, recommend=no). The predicate is narrow on purpose: it checks only the entailments the suite's gold labels satisfy, not every possible semantic relation.
+
+\section{Decision Sequence and Ablation}
+\label{app:sequence}
+
+Figure~\ref{fig:sequence} gives the call sequence for one bundle. The readout is per question; consistency is measured after the fact, not enforced by the sequence. Figure~\ref{fig:ablation} gives the two one-cell repairs and their per-cell deltas.
+
+\begin{widefigure}
+\centering
+\includegraphics[width=0.72\linewidth]{fig7_sequence.png}
+\caption{The \myna{} decision sequence for one bundle. The router chooses packed scoring for $K\le16$ and decoupled scoring for $K>16$; the conformal gate attaches a 90\% set and an abstention flag.}
+\label{fig:sequence}
+\end{widefigure}
+
+\begin{widefigure}
+\centering
+\includegraphics[width=0.92\linewidth]{fig3_ablation.pdf}
+\caption{(a) The two routing steps: v5 Packed 0.8173, v5 Unified 0.8502, v6 0.8583, and the local re-score 0.8620. (b) Per-cell accuracy change for each step. Every non-banking77 cell is 0.0000 in both steps; the aggregate gains are the 77-way cell divided by 16.}
+\label{fig:ablation}
+\end{widefigure}

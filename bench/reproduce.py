@@ -721,43 +721,39 @@ ROWS = [
         "guard against the committed report runs before any resample, and both claims — the "
         "difference and its direction — stand on their intervals."),
 
-    row("v6-rescore-test", "README v6 table · SPEC §9.68 (Myna v6 Unified's test audit, re-scored here)",
+    row("v6-rescore-test", "README v6 table · the corrected re-score (paper §X, MEASUREMENT-CORRECTION.md)",
         'uv run python -m bench.v6_audit --ckpt "myna-v5-prototype 2" --split test '
-        '--every 1 --out runs/v6_rescore_test.json',
+        '--every 1 --out runs/paper_v6_audit.json --md runs/paper_v6_audit.md '
+        '--metrics runs/paper_v6_test.metrics.json '
+        '--rowout runs/paper_myna_v6_test.rowoutcomes.json',
         HERE,
-        ["runs/v6_rescore_test.json", "runs/witness-v6-master-paper.json",
-         "runs/witness-competitor-head-to-head-1440.json",
-         "runs/witness-v5-master-paper.json", "runs/witness-hybrid-v3.json"],
-        [("runs/v6_rescore_test.json", '"macro_acc": 0.8620375366903147'),
-         ("runs/v6_rescore_test.json", '"overall_acc": 0.8631944444444445'),
-         ("runs/v6_rescore_test.json", '"none_absent": "0/12"'),
-         ("runs/witness-v6-master-paper.json", '"macro_acc": 0.8582510184910809'),
-         ("runs/witness-v6-master-paper.json", '"overall_acc": 0.8597222222222223'),
-         ("runs/witness-v6-master-paper.json", '"bundle_exact_acc": 0.8375850340136054'),
-         ("runs/witness-v6-master-paper.json", '"banking77/intent": 0.6637931034482759'),
-         ("runs/witness-v6-master-paper.json", '"ece": 0.0189072495792061'),
-         ("runs/witness-v6-master-paper.json", '"g5_acc_60pct_slice": 0.9903846153846154'),
-         ("runs/witness-competitor-head-to-head-1440.json", '"macro_acc": 0.8501691219393568'),
-         ("runs/witness-competitor-head-to-head-1440.json", '"macro_acc": 0.7049731487692815'),
-         ("runs/witness-competitor-head-to-head-1440.json", '"macro_acc": 0.4638129535502855'),
-         ("runs/witness-v5-master-paper.json", '"macro_acc": 0.817302742629012'),
-         ("runs/witness-hybrid-v3.json", '"macro_acc": 0.8501691219393568')],
+        ["runs/paper_v6_audit.json", "runs/paper_myna_v6_test.rowoutcomes.json",
+         "runs/paper_myna_v6_test.predates-fix.rowoutcomes.json",
+         "runs/v6_packed_forced.json", "runs/paper_numbers.json"],
+        [("runs/paper_v6_audit.json", '"macro_acc": 0.7776625366903147'),
+         ("runs/paper_v6_audit.json", '"overall_acc": 0.7881944444444444'),
+         ("runs/paper_v6_audit.json", '"none_absent": "0/12"'),
+         ("runs/v6_packed_forced.json", '"macro_acc": 0.7377918470351422'),
+         ("runs/paper_numbers.json", '"macro": 0.777662'),
+         ("runs/paper_numbers.json", '"macro": 0.737792'),
+         ("runs/paper_numbers.json", '"bundle_exact": 0.75085')],
         "The v6 arm is the Colab campaign's own artifact, so this row is the reproduction rather "
         "than the origin: the command re-scores all 1,176 test bundles through `src/myna/"
-        "v6_engine.py` on this box and prints macro 0.8620 against the committed 0.8583 — 8 of 16 "
-        "cells exact to the question, a net +5 of 1,440 questions, 775.5 s wall on CPU. Two "
-        "things this row does NOT cover, said here because the README prints them: the Phase-5 "
-        "calibration, conformal and G5 figures come from the same committed witness but the code "
-        "that fitted them is in the notebook and not in this tree, so no local command re-derives "
-        "them; and the 5-arm graph ablation appears in no witness at all, so it is prose-labelled "
-        "and not a table. The quoted `none_absent` figure is the one this row prints that "
-        "*contradicts* its witness — the campaign's witness says 7/12, this box gets 0/12 — and it "
-        "is quoted because that is the reconstructed open-set rejection gate failing, not a "
-        "rounding gap. The two `Myna v5` columns' per-arm origins — "
-        "`runs/witness-v5-master-paper.json` (Packed, macro 0.8173) and "
-        "`runs/witness-hybrid-v3.json` (the card-routed arm, 0.8502) — are witnesses here "
-        "because the README names them beside those macros; neither is produced by this row's "
-        "command, and `witness-hybrid-v3.json` is that arm under its earlier name."),
+        "v6_engine.py` on this box and prints macro 0.7777, not the 0.8620 this row quoted before "
+        "2026-11-04. The difference is a scoring bug, not a re-run: `bench/v6_audit.py` compared "
+        "the suite's 1-based star label against the 0-based option vector, so a prediction was "
+        "credited when it named the level above gold. The corrected harness stores the 1-based "
+        "level and `bench/paper_numbers.py` refuses a record whose `ok` disagrees with "
+        "`pred == gold`. `runs/paper_myna_v6_test.predates-fix.rowoutcomes.json` keeps the old "
+        "file; the corrected aggregation script reproduces 0.7777 from it, which is the "
+        "regression test that the change is arithmetic. The competitor columns are unaffected: "
+        "Laya and VegaML store prediction and gold in one space. The packed-forced arm "
+        "(`--max-packed 1000`) is the routing ablation: 0.7378 macro, with banking77 at 0.0345 "
+        "against 0.6724 routed and every other cell identical. The quoted `none_absent` figure "
+        "is the one this row prints that *contradicts* its witness — the campaign's witness says "
+        "7/12, this box gets 0/12 — and it is quoted because that is the reconstructed open-set "
+        "rejection gate failing, not a rounding gap. Full record: "
+        "`paper/MEASUREMENT-CORRECTION.md`."),
 
     row("risk-coverage-v6", "SPEC §2.2 G5 · README abstention table (v6, all pooled sources)",
         'uv run python -m bench.risk_coverage --ckpt "myna-v5-prototype 2" '
@@ -821,6 +817,34 @@ ROWS = [
         "**0.975 on 70.1% coverage** with the 0.9034 floor abstaining on 104 of 348 exactly where "
         "the curve withholds 104. `banking77` is the weak source on both splits: 0.921 on 32.8% "
         "coverage here, against dbpedia14's 0.981 on 91.4% and trec's 0.990 on 86.2%."),
+
+    row("risk-coverage-v6-trio-dev", "SPEC §2.2 G5 · SPEC §9.69(iv) (the same trio curve on a "
+        "third split, where it is harder and still passes)",
+        'uv run python -m bench.risk_coverage --ckpt "myna-v5-prototype 2" '
+        '--split development --source banking77,dbpedia14,trec '
+        '--out runs/risk_coverage_v6_g5trio_dev.md',
+        HERE,
+        ["runs/risk_coverage_v6_g5trio_dev.md", "runs/risk_coverage_v6_g5trio_dev.json"],
+        [("runs/risk_coverage_v6_g5trio_dev.md",
+          "development: 348 rows / 348 questions over 190 question-sets "
+          "— pooled over banking77,dbpedia14,trec only"),
+         ("runs/risk_coverage_v6_g5trio_dev.md",
+          "G5 (§2.2): accuracy >= 0.95 at coverage >= 0.60: PASS "
+          "— best coverage at target: 0.701"),
+         ("runs/risk_coverage_v6_g5trio_dev.md",
+          "floor 0.894 re-run on the engine: it abstained on 103 of 348 questions, "
+          "the curve puts 103 below that floor (coverage 0.704)"),
+         ("runs/risk_coverage_v6_g5trio_dev.json", '"accuracy": 0.9549180327868853'),
+         ("runs/risk_coverage_v6_g5trio_dev.json", '"engine_abstained": 103')],
+        "Two splits cannot settle whether G5's pass is the split's or the checkpoint's, so this is "
+        "the third: `--split development`, the same 348 questions over the same 190 sets, on a "
+        "*harder* curve (0.845 at full coverage against the test split's 0.859) that still reaches "
+        "**0.955 on 70.1% coverage** at a floor of **0.8944** where the engine abstains on 103 and "
+        "the curve withholds 103. It also re-cuts the per-source story: at that pooled floor `trec` "
+        "is the only source below 0.95 (0.947) while `banking77` is the highest (0.978), yet "
+        "`g5_per_source` still reads `banking77: false` — its own best coverage at the 0.95 target "
+        "is 0.50, under the gate's 0.60 minimum, on this split as on the other two (0.10 and 0.198). "
+        "banking77 fails G5 per source on **coverage**, not on accuracy."),
 
     row("v6-test-metrics", "SPEC §2.2 G1 · README v6 gate paragraph (the dumps the frozen "
         "instrument reads)",

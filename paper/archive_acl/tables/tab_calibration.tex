@@ -1,0 +1,28 @@
+\begin{table}[t]
+\centering
+\footnotesize
+\caption{Calibration, conformal coverage, and selective prediction. The
+"reported" column is the checkpoint's audit block; "recomputed" is our
+10-bin reliability calculation and top-probability ranking on the released
+1{,}440 outcomes. Conformal coverage is below nominal at both levels; we report
+that undercoverage rather than a coverage guarantee.}
+\label{tab:calibration}
+\resizebox{\columnwidth}{!}{\begin{tabular}{lrr}
+\toprule
+ & reported & recomputed \\
+\midrule
+ECE (10 bins) & 0.0189 & 0.0190 \\
+mean Brier & 0.0434 & -- \\
+conformal 90\% empirical & 0.8549 & -- \\
+conformal 95\% empirical & 0.9368 & -- \\
+selective acc @ 60\% & 0.9873 & 0.9815 \\
+coverage @ $\le$5\% risk & 0.7861 & -- \\
+G5 trio @ 60\% & 0.9904 & 0.9900$^{\dagger}$ \\
+\midrule
+\multicolumn{3}{l}{v0, same suite: max accuracy 0.596 at 10.0\% coverage} \\
+\bottomrule
+\end{tabular}}
+\\[2pt]
+{\footnotesize $^{\dagger}$209-question test trio; the 103/104 figure in the
+audit block is the gate's own slice.}
+\end{table}

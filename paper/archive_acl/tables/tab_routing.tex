@@ -1,0 +1,25 @@
+\begin{table*}[t]
+\centering
+\small
+\setlength{\tabcolsep}{2.5pt}
+\caption{The routing ablation. The macro column is the 16-cell unweighted
+mean; "other 15" is the macro over every cell except banking77. The last three
+rows are the token budget measured on the suite: option spans alone, tokens per
+option, and rows whose packed sequence overflows 512 tokens.}
+\label{tab:routing}
+\begin{tabular}{lrrrr}
+\toprule
+Arm & macro & $\Delta$ & banking77 & other 15 \\
+\midrule
+v5 Packed & 0.8173 & -- & 0.0086 & 0.8712 \\
+v5 Unified & 0.8502 & +0.0329 & 0.5345 & 0.8712 \\
+v6 & 0.8583 & +0.0081 & 0.6638 & 0.8712 \\
+v6 local & 0.8620 & +0.0037 & 0.6724 & 0.8747 \\
+\midrule
+$K$ (banking77) & \multicolumn{4}{l}{77--78 options} \\
+ & \multicolumn{4}{l}{490.3 option-span tokens; 6.36 tokens/option} \\
+overflow & \multicolumn{4}{l}{50/116 rows; context collapses to 1 token} \\
+ & \multicolumn{4}{l}{max 6 options dropped} \\
+\bottomrule
+\end{tabular}
+\end{table*}

@@ -1,0 +1,19 @@
+\begin{table}[t]
+\centering
+\footnotesize
+\caption{The frozen \textsc{decision-v2-pilot} suite (11 public sources). Cells are the 16
+$(\text{source},\text{question})$ pairs; $K$ is the number of options per
+question. The calibration split is the one the repository commits, not the
+campaign's 2{,}000-bundle fitting split (see \S\ref{sec:limitations}).}
+\label{tab:dataset}
+\begin{tabular}{lrrrr}
+\toprule
+Split & Rows & Questions & Cells & $K$ \\
+\midrule
+Train & 57,904 & 73,804 & 16 & 2--77 \\
+Development & 1,176 & 1,440 & 16 & 2--78 \\
+Calibration & 448 & 568 & 16 & 2--77 \\
+Test & 1,176 & 1,440 & 16 & 2--78 \\
+\bottomrule
+\end{tabular}
+\end{table}

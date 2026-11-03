@@ -1,0 +1,141 @@
+{
+ "tfidf": {
+  "macro": 0.7111147183053097,
+  "overall": 0.6840277777777778,
+  "bundle_exact": 0.6292517006802721,
+  "n": 1440,
+  "cells": {
+   "agnews/is_business": {
+    "n": 43,
+    "acc": 0.8372093023255814
+   },
+   "agnews/is_scitech": {
+    "n": 49,
+    "acc": 0.8571428571428571
+   },
+   "agnews/is_sports": {
+    "n": 47,
+    "acc": 0.9361702127659575
+   },
+   "agnews/is_world": {
+    "n": 45,
+    "acc": 0.9555555555555556
+   },
+   "agnews/topic": {
+    "n": 116,
+    "acc": 0.7931034482758621
+   },
+   "amazon/stars": {
+    "n": 80,
+    "acc": 0.525
+   },
+   "banking77/intent": {
+    "n": 116,
+    "acc": 0.8189655172413793
+   },
+   "boolq/answer": {
+    "n": 80,
+    "acc": 0.6125
+   },
+   "contrastive/decision": {
+    "n": 196,
+    "acc": 0.5663265306122449
+   },
+   "dbpedia14/category": {
+    "n": 116,
+    "acc": 0.8448275862068966
+   },
+   "imdb/positive": {
+    "n": 80,
+    "acc": 0.85
+   },
+   "mnli/relation": {
+    "n": 116,
+    "acc": 0.4051724137931034
+   },
+   "sst5/sentiment": {
+    "n": 80,
+    "acc": 0.375
+   },
+   "trec/answer_type": {
+    "n": 116,
+    "acc": 0.7758620689655172
+   },
+   "yelp/rating": {
+    "n": 80,
+    "acc": 0.4375
+   },
+   "yelp/recommend": {
+    "n": 80,
+    "acc": 0.7875
+   }
+  },
+  "method": "tfidf",
+  "per_cell": {
+   "agnews/is_business": {
+    "n": 43,
+    "acc": 0.8372093023255814
+   },
+   "agnews/is_scitech": {
+    "n": 49,
+    "acc": 0.8571428571428571
+   },
+   "agnews/is_sports": {
+    "n": 47,
+    "acc": 0.9361702127659575
+   },
+   "agnews/is_world": {
+    "n": 45,
+    "acc": 0.9555555555555556
+   },
+   "agnews/topic": {
+    "n": 116,
+    "acc": 0.7931034482758621
+   },
+   "amazon/stars": {
+    "n": 80,
+    "acc": 0.525
+   },
+   "banking77/intent": {
+    "n": 116,
+    "acc": 0.8189655172413793
+   },
+   "boolq/answer": {
+    "n": 80,
+    "acc": 0.6125
+   },
+   "contrastive/decision": {
+    "n": 196,
+    "acc": 0.5663265306122449
+   },
+   "dbpedia14/category": {
+    "n": 116,
+    "acc": 0.8448275862068966
+   },
+   "imdb/positive": {
+    "n": 80,
+    "acc": 0.85
+   },
+   "mnli/relation": {
+    "n": 116,
+    "acc": 0.4051724137931034
+   },
+   "sst5/sentiment": {
+    "n": 80,
+    "acc": 0.375
+   },
+   "trec/answer_type": {
+    "n": 116,
+    "acc": 0.7758620689655172
+   },
+   "yelp/rating": {
+    "n": 80,
+    "acc": 0.4375
+   },
+   "yelp/recommend": {
+    "n": 80,
+    "acc": 0.7875
+   }
+  }
+ }
+}

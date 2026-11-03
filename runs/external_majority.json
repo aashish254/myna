@@ -1,0 +1,74 @@
+{
+ "majority": {
+  "macro": 0.37258526953205084,
+  "overall": 0.2965277777777778,
+  "bundle_exact": 0.20408163265306123,
+  "n": 1440,
+  "cells": {
+   "agnews/is_business": {
+    "n": 43,
+    "acc": 0.6976744186046512
+   },
+   "agnews/is_scitech": {
+    "n": 49,
+    "acc": 0.6530612244897959
+   },
+   "agnews/is_sports": {
+    "n": 47,
+    "acc": 0.8085106382978723
+   },
+   "agnews/is_world": {
+    "n": 45,
+    "acc": 0.7777777777777778
+   },
+   "agnews/topic": {
+    "n": 116,
+    "acc": 0.1724137931034483
+   },
+   "amazon/stars": {
+    "n": 80,
+    "acc": 0.1625
+   },
+   "banking77/intent": {
+    "n": 116,
+    "acc": 0.0
+   },
+   "boolq/answer": {
+    "n": 80,
+    "acc": 0.5375
+   },
+   "contrastive/decision": {
+    "n": 196,
+    "acc": 0.20408163265306123
+   },
+   "dbpedia14/category": {
+    "n": 116,
+    "acc": 0.0603448275862069
+   },
+   "imdb/positive": {
+    "n": 80,
+    "acc": 0.4625
+   },
+   "mnli/relation": {
+    "n": 116,
+    "acc": 0.3448275862068966
+   },
+   "sst5/sentiment": {
+    "n": 80,
+    "acc": 0.225
+   },
+   "trec/answer_type": {
+    "n": 116,
+    "acc": 0.15517241379310345
+   },
+   "yelp/rating": {
+    "n": 80,
+    "acc": 0.1625
+   },
+   "yelp/recommend": {
+    "n": 80,
+    "acc": 0.5375
+   }
+  }
+ }
+}

@@ -1,0 +1,185 @@
+
+\section{Bundle Consistency}
+\label{sec:consistency}
+
+\subsection{Bundles and the entailment predicate}
+A bundle can ask several questions about one state. The suite has 172 such bundles: 92 agnews bundles with a topic question and two of the four \texttt{is\_*} booleans, and 80 yelp bundles with a rating and a recommendation. The gold labels are logically consistent: an article's topic entails its own boolean and excludes the others, and a 4--5 star rating entails recommendation while a 1--2 star rating entails non-recommendation. We define an answer as a \emph{contradiction} iff the predicted topic is $c$, the bundle asks \texttt{is\_$c$}, and the predicted boolean is “no”; or the predicted rating is 4--5 and recommendation is “no”, or 1--2 and recommendation is “yes”. The predicate is deliberately narrow: it checks only the entailments the suite's own gold labels satisfy, not every possible semantic relation.
+
+\subsection{The recorded number and the reproducible number}
+The checkpoint's audit block records 0/172 contradictions on test and 1/172 on dev. We could not reproduce the test number, because the campaign's predicate is not in the repository. Under the predicate above, on the released per-row outcomes, \vsix{} has 3/172 contradictions: two agnews bundles and one yelp bundle. The two earlier arms record 0/172 in their own audit blocks; we did not recompute them because their per-row dumps are not released in the same form. Joint bundle exact match is 77.30\% for v5 Packed, 82.48\% for v5 Unified, 83.76\% for v6, and 83.93\% for the local re-score of v6. Those are four measurements of our own arms, not a comparison to an external system.
+
+The discrepancy between 0/172 and 3/172 is itself a result. A number that cannot be reproduced from the released artifacts is not evidence of zero contradictions, even when it is in the model card. We report the reproducible number and the recorded one side by side, and we do not use either as a training objective claim.
+
+\subsection{The mechanism is the encoder, not the graph}
+The checkpoint carries a cross-question graph module, but inference never calls it: \texttt{\_ask} scores each question independently, and the module's gate is $\sigma(-2.3757)=0.0850$, trained down from its initialization rather than up. The CORAL ordinal head is disabled by the shipped config, so the \texttt{score} primitive is a packed argmax over the five level options. There is no consistency loss in the checkpoint config and no training code in the repository, so we make no claim about one. What we can say is narrower and more useful: the measured consistency is a property of the shared fine-tuned encoder and the state, not of an explicit constraint. The graph module is present but inert, and that is a negative mechanism result.
+
+\begin{widetable}
+\centering
+\footnotesize
+\caption{Bundle consistency on the 172 multi-question bundles (92 agnews, 80 yelp). “Recorded” is the checkpoint's audit block; “recomputed” is the explicit predicate of this section. The three contradictions are two agnews and one yelp.}
+\label{tab:consistency}
+\begin{tabular}{lrrr}
+\toprule
+Arm & bundle exact & recorded & recomputed \\
+\midrule
+v5 Packed & 0.7730 & 0/172 & -- \\
+v5 Unified & 0.8248 & 0/172 & -- \\
+v6 test & 0.8376 & 0/172 & 3/172 \\
+v6 local & 0.8393 & -- & 3/172 \\
+\bottomrule
+\end{tabular}
+\end{widetable}
+
+\begin{widefigure}
+\centering
+\includegraphics[width=0.94\linewidth]{fig3_consistency_ours.pdf}
+\caption{(a) Joint bundle exact match for the four arms measured in the paper. (b) The three recomputed contradictions of the v6 arm by source; the checkpoint records 0/172, and the two numbers are kept apart. All bars are our own measurements.}
+\label{fig:consistency}
+\end{widefigure}
+
+\section{Calibration and Conformal Abstention}
+\label{sec:calibration}
+
+\subsection{Temperature scaling}
+Temperatures are fit per primitive on a held-out calibration split: 0.9 for \texttt{choice}, 0.9 for \texttt{score}, 0.85 for \texttt{noul}. They produce zero argmax flips between dev and test, so the calibration step changes probabilities but not decisions. On the 1{,}440 test questions, the reported ECE is 0.0189 and the mean Brier score is 0.0434; our 10-bin recomputation from the released outcomes gives ECE 0.0190, which matches. Figure~\ref{fig:calibration}a is the reliability diagram; the largest bin (847 questions at confidence 0.98) is accurate to within 0.3 points.
+
+\subsection{Risk--coverage}
+Selective prediction is a curve, not a point. Figure~\ref{fig:calibration}b shows four curves: all 11 calibration sources (568 questions), the G5 trio on test (348), the G5 trio on dev (348), and the G5 trio on calibration (120). At 60\% coverage the accuracies are 0.968, 0.990, 0.971, and 0.986 respectively. The G5 trio slice reports 0.9904 (103/104) at 60\% coverage; that is a 104-question slice and its interval is wide. The reported all-question selective accuracy at 60\% is 0.9873 (853/864); re-ranking the released outcomes by top probability gives 0.9815 (848/864). We report both and do not treat the 0.58-point difference as resolved, because the selective routine that produced the first number is not released.
+
+The v0 streaming arm, on the same calibration split, reaches a maximum of 0.596 at 10.0\% coverage and fails the same target. The confidence mechanism is therefore a property of the v6 arm, not of the architecture family.
+
+\subsection{Conformal sets and undercoverage}
+The 90\% split-conformal sets are fit per primitive on the calibration split. On test, their empirical coverage is 85.49\% (1{,}231/1{,}440), and the 95\% sets cover 93.68\% (1{,}349/1{,}440). Both are below nominal. This is not a rounding error: the gap is 4.5 points at the 90\% level. Exchangeability is the assumption that licenses marginal coverage, and it is questionable here: the calibration and test splits differ in source mix, the questions inside a bundle share a state, and the option cardinality ranges from 2 to 78. We therefore report the sets as a ranking signal and an abstention seam, not as a coverage certificate. The engine's conformal set is empty on 119 of 1{,}440 test answers even with no explicit floor; those answers are ranked in every table, so the comparison is on one definition.
+
+\begin{widetable}
+\centering
+\footnotesize
+\caption{Calibration, conformal coverage, and selective prediction. “Reported” is the checkpoint's audit block; “recomputed” is our 10-bin reliability calculation and top-probability ranking on the released 1{,}440 outcomes. Conformal coverage is below nominal at both levels.}
+\label{tab:calibration}
+\begin{tabular}{lrr}
+\toprule
+ & reported & recomputed \\
+\midrule
+ECE (10 bins) & 0.0189 & 0.0190 \\
+mean Brier & 0.0434 & -- \\
+conformal 90\% empirical & 0.8549 & -- \\
+conformal 95\% empirical & 0.9368 & -- \\
+selective acc @ 60\% & 0.9873 & 0.9815 \\
+coverage @ $\le$5\% risk & 0.7861 & -- \\
+G5 trio @ 60\% & 0.9904 & 0.9900$^{\dagger}$ \\
+\midrule
+\multicolumn{3}{l}{v0, same suite: max accuracy 0.596 at 10.0\% coverage} \\
+\bottomrule
+\end{tabular}
+\\[2pt]
+{\footnotesize $^{\dagger}$209-question test trio; the 103/104 figure is the G5 slice.}
+\end{widetable}
+
+\begin{widefigure}
+\centering
+\includegraphics[width=0.94\linewidth]{fig4_calibration.pdf}
+\caption{(a) Reliability on the 1{,}440 test questions, 10 bins; marker area is bin count. (b) Risk--coverage for all-source calibration and the G5 trio on calibration, test, and dev; dotted lines mark 0.95 accuracy at 0.60 coverage. (c) Nominal versus empirical conformal coverage: 85.49\% at 90\% and 93.68\% at 95\%.}
+\label{fig:calibration}
+\end{widefigure}
+
+\section{Systems: Constant State and Deployment}
+\label{sec:systems}
+
+\subsection{Latency with a constant state}
+On one Apple M5, in one process, with the same state and question dict, \stream{} answers 33.08 ms at one question, 74.87 ms at five, 120.75 ms at ten, and 869.95 ms at fifty end-to-end. With the state already cached, the ask-only path is 14.86 ms at one question, 55.45 ms at five, 98.22 ms at ten, and 787.12 ms at fifty. Ask is 10.1 ms fixed plus 9.6 ms per question with a state slope of $-10.3$ $\mu$s/token, the fixed-size state measured; observe is 360 $\mu$s/token. The ratios are the minimum of two committed runs, and the cached range is 3.65--6.78$\times$ relative to the re-encode path of the same engine, not to an external model.
+
+\subsection{MLX and the browser}
+The same 14.45M checkpoint ports to MLX over identical weights, with no conversion step. MLX fp32 is 1.76--2.22$\times$ faster than PyTorch MPS from 128 to 16{,}384 state tokens; MLX int8 is 1.79--2.41$\times$ and 17.40 MiB on disk against 55.13 MiB. The ONNX export runs in Chrome 153 under WebAssembly at 59.32 MiB artifact, 73.09 MiB on the wire, a 394.4 ms cold load, and a 435.8 ms p50 for a three-decision session; six of six parity checks pass, and the maximum probability drift against the torch engine is $1.03\times10^{-6}$. The export's own parity check is $8.94\times10^{-8}$ on the decision output.
+
+\subsection{Why int8 does not ship}
+int8 is 3.17$\times$ smaller and not faster. Five of the six linear shapes this model uses are slower quantized (0.43--1.06$\times$ fp32/int8) even though int8 reads 3.6$\times$ fewer weight bytes, because the quantized pass gets 10--37 GB/s of weight read against fp32's 55--257 GB/s on the same box. It is also not faithful: on 20 real questions the MLX int8 port moves option probabilities by 9.24e-3 and flips one argmax on a question whose top two options were 0.0008 apart; the ONNX int8 artifact drifts 6.48e-2 and fails five browser checks. fp32 ships on both paths, and the int8 artifacts stay in the tree for byte-constrained uses, not for speed.
+
+\subsection{Two engines, one API}
+The systems numbers are \stream{}'s, not \vsix{}'s. \vsix{} has no ONNX export and no browser build, and it re-encodes the state, so a latency number for it would be a different experiment. The shared API is what makes the split usable: an application can run \stream{} for high-frequency decisions and defer to \vsix{} (or any System-2 model) on abstention, with the committing engine logged. We do not claim an end-to-end cascade accuracy, because no joint deferral policy was trained.
+
+\begin{widetable}
+\centering
+\footnotesize
+\caption{Systems measurements on one Apple M5. Latency is p50, 10 reps, 3 warm-ups, same process, same inputs. MLX and browser rows are the 14.45M streaming arm, not v6. “Cached” is the ask-only path of the same engine.}
+\label{tab:systems}
+\begin{tabular}{ll}
+\toprule
+Metric & Value \\
+\midrule
+parameters & 14{,}449{,}280 \\
+retained state & 576 KiB (589{,}824 B) at every length \\
+end-to-end latency & 33.08 / 74.87 / 120.75 / 869.95 ms at 1 / 5 / 10 / 50 questions \\
+ask-only latency & 14.86 / 55.45 / 98.22 / 787.12 ms at 1 / 5 / 10 / 50 questions \\
+MLX fp32 vs MPS & 1.76--2.22$\times$; artifact 55.13 MiB \\
+MLX int8 vs MPS & 1.79--2.41$\times$; artifact 17.40 MiB; 9.24e-3 drift, 1 argmax flip \\
+ONNX browser & 59.32 MiB artifact, 394.4 ms cold, 435.8 ms p50, 1.03e-6 drift \\
+ONNX int8 & 18.56 MiB; 6.48e-2 drift; 5 browser checks fail \\
+\bottomrule
+\end{tabular}
+\end{widetable}
+
+\begin{widefigure}
+\centering
+\includegraphics[width=0.94\linewidth]{fig5_systems_ours.pdf}
+\caption{(a) p50 latency against the number of questions per request, same box and inputs; the cached curve is the ask-only path of the same engine. (b) MLX fp32 and int8 against PyTorch MPS over state lengths. (c) Artifact size; int8 is smaller but not faster and not faithful.}
+\label{fig:systems}
+\end{widefigure}
+
+\section{What the Small Engine Does Not Do}
+\label{sec:diagnostics}
+
+The streaming arm is a deployment result, not an accuracy result. Three measurements make that concrete.
+
+\paragraph{Synthetic success does not transfer.}
+The v0 checkpoint scores 0.9525 on the synthetic typed-decision test split (the gate's threshold is 0.94). The v1b checkpoint, trained on the real suite, scores 0.3423 on the same synthetic rows, which is below the 0.3546 majority floor; on the real suite it scores 0.4893 (majority floor 0.4331), and the data-path variant scores 0.5339. The synthetic task is solved; the real 16-cell task is not.
+
+\paragraph{Removing the shortcut does not add the ability.}
+A dose-matched anti-prior arm removes the majority-label shortcut: constant-emitter cells go from 4 to 0, blank-instruction accuracy rises from 0.3341 to 0.4315 (+0.0974), and blank-options from 0.2669 to 0.3674. The same change drops test macro from 0.5339 to 0.4785 ($-0.0554$). The mechanism moved exactly as designed and the accuracy moved down, which is what a shortcut-removal result should look like. The comparison has two caveats we keep attached: the \emph{off} arm stopped at step 3{,}314 of 3{,}600 and its harness prints VOID, and the \emph{on} arm is a continuation, not an uninterrupted run. We use the pair as a mechanism check, not as a clean causal estimate.
+
+\paragraph{Long context is flat at chance.}
+The 4k truncated-backprop arm scores 0.1833 at 4{,}096 state tokens and 0.150 at 16{,}384; the 128-token rung is also 0.150, against a 0.167 uniform floor. The harness prints \texttt{readable: false} because the shortest rung is at chance: this is not a decay curve, it is a model that never learned the task at any length. Step 799 and step 1199 agree exactly on all three shared rungs (9, 13, and 11 of 60), so the limiter is the mechanism, not the dose. We report it as a mechanism finding and do not extrapolate a scaling claim.
+
+\begin{widetable}
+\centering
+\footnotesize
+\caption{The small-engine diagnostics. Synthetic and real columns are different suites: 0.9525 is the synthetic test split; 0.4893--0.5339 are the real 16-cell suite. The anti-prior \emph{off} arm stopped at step 3{,}314 of 3{,}600 and its harness prints VOID.}
+\label{tab:diagnostics}
+\begin{tabular}{llrr}
+\toprule
+Arm & Data & macro & note \\
+\midrule
+v0 & synthetic & 0.9525 & gate 0.94 \\
+v1b & synthetic & 0.3423 & below chance \\
+v1b & real suite & 0.4893 & floor 0.4331 \\
+anti-prior off & real suite & 0.5339 & 4 emitters; VOID \\
+anti-prior on & real suite & 0.4785 & 0 emitters \\
+v6 & real suite & 0.8583 & in-domain \\
+lc1-4k, 4k state & needle & 0.1833 & readable:false \\
+lc1-4k, 16k state & needle & 0.1500 & readable:false \\
+\bottomrule
+\end{tabular}
+\end{widetable}
+
+\begin{widefigure}
+\centering
+\includegraphics[width=0.94\linewidth]{fig6_diagnostics.pdf}
+\caption{(a) Synthetic versus real-suite macro for the small engine. The anti-prior arm removes four constant emitters and loses 0.0554 macro; the off arm is VOID. (b) Needle accuracy against state length for the 4k-trained arm: flat at the 0.167 floor, with the G4 thresholds (0.90 at 4k, 0.85 at 16k) for scale.}
+\label{fig:diagnostics}
+\end{widefigure}
+
+\section{Discussion and Limitations}
+\label{sec:limitations}
+
+\paragraph{Scope.}
+This is a single-system study on one frozen suite. The reported intervals are sampling error over the 1{,}176 rows of this split, not a population over checkpoints or datasets. The v6 arm is fine-tuned on the suite's train split, so all 16 cells are in-domain; the paper does not claim out-of-domain generalization. A second training seed and an out-of-domain evaluation are the two measurements that would most strengthen the claims, and neither is in this draft.
+
+\paragraph{What we could not verify.}
+The campaign's contradiction predicate, its reported 2{,}000-bundle calibration split, the banking77 \texttt{none\_absent} decomposition, and the v6 training objective are not in the repository. The appendix records each discrepancy: 3/172 instead of 0/172, the committed 448-row calibration split, and 0/12 on the one decomposition that does not reproduce while the cell aggregate matches. \vsix{}'s 512-token maximum also puts the long-context question out of its reach.
+
+\paragraph{Ethics.}
+Typed decisions are used in routing, moderation, and triage. Abstention is not a safety guarantee: the conformal sets undercover, the suite is English and public, and the labels carry their sources' biases. A deployment should log the committing engine and keep a human in the loop for high-stakes cells. We measured latency and bytes, not energy.
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+We studied a typed decision engine on a frozen 16-cell suite and separated three failure modes usually reported as one accuracy number. Cardinality is a budget: routing repairs the 77-way cell and only that cell, and the other 15 cells stay at 0.8712 macro. Consistency is measurable: the checkpoint records 0/172, the explicit predicate gives 3/172, and the graph module is inert. Calibration is good (ECE 0.0189); conformal coverage is not (85.49\% at 90\%). The streaming arm is 33--870 ms with a 576 KiB state, runs in a browser at $10^{-6}$ drift, and is not the accuracy arm. The contribution is a measurement protocol that keeps those statements apart.

@@ -1,0 +1,39 @@
+@startuml
+!pragma layout smetana
+skinparam backgroundColor white
+skinparam defaultFontName Helvetica
+skinparam shadowing false
+skinparam roundCorner 8
+skinparam linetype ortho
+skinparam nodesep 24
+skinparam ranksep 30
+skinparam dpi 220
+skinparam arrow {
+  Color #555555
+  Thickness 1.1
+}
+skinparam rectangle {
+  BorderColor #555555
+  BorderThickness 1
+  FontSize 12
+}
+
+rectangle "Observation\n(growing state: ticket, thread, page)" as OBS #FFFFFF
+rectangle "Typed bundle\nchoice · score · noul" as Q #FFFFFF
+
+rectangle "Myna-Stream  ·  14.45M params\nGated linear attention trunk, 6 layers × 384\nretained state S = [H × dk × dv] = 576 KiB\nobserve() · append() · ask()" as S #E8F1FA
+rectangle "Myna-v6  ·  446.63M params\nDeBERTa-v3-large encoder, 24 layers, 512 tokens\nrouter: K ≤ 16 packed · K > 16 decoupled\n4 heads · per-primitive T · conformal set" as V #E8F5EC
+
+rectangle "Decision record (per question)\nanswer · confidence · 90% conformal set\nabstain flag · routing mode" as OUT #F2F2F2
+rectangle "System-2 fallback\ncommits only on abstention; engine logged" as FB #FBEFE4
+
+OBS --> S
+OBS --> V
+Q --> S
+Q --> V
+S --> OUT
+V --> OUT
+OUT --> FB : low confidence
+
+S -[hidden]right- V
+@enduml

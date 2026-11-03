@@ -1,0 +1,139 @@
+{
+ "Myna v6": {
+  "bundle_exact": 0.839286,
+  "bundle_exact_n": 987,
+  "multi_exact": 130,
+  "agnews_contradictions": 2,
+  "yelp_contradictions": 1,
+  "total": 3,
+  "multi": 172,
+  "ag_examples": [
+   [
+    "agnews/test/7326",
+    "business",
+    "is_business",
+    2,
+    0
+   ],
+   [
+    "agnews/test/1106",
+    "world",
+    "is_world",
+    0,
+    0
+   ]
+  ],
+  "yelp_examples": [
+   [
+    "yelp/test/17802",
+    4,
+    false,
+    3
+   ]
+  ]
+ },
+ "Laya 0.4.19": {
+  "bundle_exact": 0.566327,
+  "bundle_exact_n": 666,
+  "multi_exact": 105,
+  "agnews_contradictions": 5,
+  "yelp_contradictions": 26,
+  "total": 31,
+  "multi": 172,
+  "ag_examples": [
+   [
+    "agnews/test/234",
+    "business",
+    "is_business",
+    "business",
+    false
+   ],
+   [
+    "agnews/test/136",
+    "world",
+    "is_world",
+    "world",
+    false
+   ],
+   [
+    "agnews/test/4534",
+    "world",
+    "is_world",
+    "world",
+    false
+   ]
+  ],
+  "yelp_examples": [
+   [
+    "yelp/test/42012",
+    0,
+    true,
+    "0"
+   ],
+   [
+    "yelp/test/40235",
+    2,
+    true,
+    "2"
+   ],
+   [
+    "yelp/test/2720",
+    2,
+    true,
+    "2"
+   ]
+  ]
+ },
+ "VegaML 0.15.0": {
+  "bundle_exact": 0.511905,
+  "bundle_exact_n": 602,
+  "multi_exact": 84,
+  "agnews_contradictions": 26,
+  "yelp_contradictions": 3,
+  "total": 29,
+  "multi": 172,
+  "ag_examples": [
+   [
+    "agnews/test/234",
+    "business",
+    "is_business",
+    "business",
+    false
+   ],
+   [
+    "agnews/test/2203",
+    "world",
+    "is_world",
+    "world",
+    false
+   ],
+   [
+    "agnews/test/2085",
+    "scitech",
+    "is_scitech",
+    "scitech",
+    false
+   ]
+  ],
+  "yelp_examples": [
+   [
+    "yelp/test/34807",
+    4,
+    false,
+    3
+   ],
+   [
+    "yelp/test/21060",
+    4,
+    false,
+    3
+   ],
+   [
+    "yelp/test/30223",
+    4,
+    false,
+    3
+   ]
+  ]
+ }
+}

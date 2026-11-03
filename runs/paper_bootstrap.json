@@ -1,0 +1,22 @@
+{
+ "input": "runs/paper_myna_v6_test.rowoutcomes.json",
+ "unit": "row (cluster)",
+ "B": 20000,
+ "seed": 20261104,
+ "n_rows": 1176,
+ "n_questions": 1440,
+ "macro": {
+  "point": 0.777663,
+  "ci95": [
+   0.76007,
+   0.794571
+  ]
+ },
+ "bundle_exact": {
+  "point": 0.75085,
+  "ci95": [
+   0.731836,
+   0.76964
+  ]
+ }
+}

@@ -1,0 +1,32 @@
+\begin{table*}[t]
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\caption{Per-cell local re-score with row-clustered 95\% intervals
+(20{,}000 replicates, seed 20261031). The interval is on the cell accuracy;
+the last two columns are Laya 0.4.19's accuracy and the paired McNemar count
+(Myna-only / Laya-only).}
+\label{tab:appendix_cells}
+\begin{tabular}{lrrrrr}
+\toprule
+Cell & $n$ & Myna & 95\% CI & Laya & McNemar \\
+\midrule
+agnews/is\_business & 43 & 0.9535 & [0.8810, 1.0000] & 0.8837 & 4:1 \\
+agnews/is\_scitech & 49 & 0.9184 & [0.8333, 0.9818] & 0.9388 & 1:2 \\
+agnews/is\_sports & 47 & 0.9787 & [0.9286, 1.0000] & 0.9787 & 0:0 \\
+agnews/is\_world & 45 & 1.0000 & [1.0000, 1.0000] & 0.8000 & 9:0 \\
+agnews/topic & 116 & 0.9052 & [0.8475, 0.9554] & 0.9138 & 6:7 \\
+amazon/stars & 80 & 0.6375 & [0.5294, 0.7407] & 0.3000 & 32:5 \\
+banking77/intent & 116 & 0.6724 & [0.5872, 0.7568] & 0.2759 & 51:5 \\
+boolq/answer & 80 & 0.8500 & [0.7671, 0.9250] & 0.7000 & 17:5 \\
+contrastive/decision & 196 & 0.9847 & [0.9653, 1.0000] & 0.5969 & 77:1 \\
+dbpedia14/category & 116 & 0.9569 & [0.9174, 0.9909] & 0.7672 & 27:5 \\
+imdb/positive & 80 & 0.9625 & [0.9157, 1.0000] & 0.4625 & 43:3 \\
+mnli/relation & 116 & 0.8621 & [0.7966, 0.9231] & 0.5948 & 38:7 \\
+sst5/sentiment & 80 & 0.6125 & [0.5050, 0.7183] & 0.3875 & 30:12 \\
+trec/answer\_type & 116 & 0.9483 & [0.9048, 0.9835] & 0.7500 & 27:4 \\
+yelp/rating & 80 & 0.6250 & [0.5147, 0.7312] & 0.5250 & 18:10 \\
+yelp/recommend & 80 & 0.9250 & [0.8625, 0.9762] & 0.7875 & 11:0 \\
+\bottomrule
+\end{tabular}
+\end{table*}

@@ -1,0 +1,28 @@
+{
+ "cell": "banking77/intent",
+ "k": 77,
+ "rows": [
+  "banking77/test/196",
+  "banking77/test/2557",
+  "banking77/test/357",
+  "banking77/test/1328",
+  "banking77/test/2736",
+  "banking77/test/463"
+ ],
+ "packed": {
+  "n": 6,
+  "median_s": 0.429,
+  "mean_s": 0.469,
+  "min_s": 0.002,
+  "max_s": 0.985
+ },
+ "routed": {
+  "n": 6,
+  "median_s": 4.902,
+  "mean_s": 4.659,
+  "min_s": 3.949,
+  "max_s": 5.229
+ },
+ "ratio_median": 11.43,
+ "note": "one predict() call per row, warm model, same process; the routed arm is the 77-option decoupled path"
+}

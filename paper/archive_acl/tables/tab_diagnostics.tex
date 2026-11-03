@@ -1,0 +1,25 @@
+\begin{table*}[t]
+\centering
+\small
+\caption{The small-engine diagnostics. Synthetic and real columns are
+different suites: 0.9525 is the synthetic test split; 0.4893--0.5339 are the
+real 16-cell suite. The anti-prior \emph{off} arm stopped at step 3{,}314 of
+3{,}600 and its own harness prints VOID; the numbers are reported with that
+sentence attached.}
+\label{tab:diagnostics}
+\begin{tabular}{llrr}
+\toprule
+Arm & Data & macro & note \\
+\midrule
+v0 & synthetic & 0.9525 & G6 gate 0.94 \\
+v1b & synthetic & 0.3423 & below chance floor \\
+v1b & real suite & 0.4893 & majority floor 0.4331 \\
+anti-prior off & real suite & 0.5339 & 4 emitters; VOID \\
+anti-prior on & real suite & 0.4785 & 0 emitters \\
+v6 & real suite & 0.8583 & in-domain \\
+\midrule
+lc1-4k, 4k state & needle & 0.1833 & readable:false \\
+lc1-4k, 16k state & needle & 0.1500 & readable:false \\
+\bottomrule
+\end{tabular}
+\end{table*}

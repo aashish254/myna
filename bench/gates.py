@@ -266,13 +266,16 @@ GATES = [
          "banking77 + dbpedia14 + trec",
          MET,
          ["risk-coverage", "risk-coverage-v6", "risk-coverage-v6-trio",
-          "risk-coverage-v6-trio-test"],
+          "risk-coverage-v6-trio-test", "risk-coverage-v6-trio-dev"],
          [proof("runs/risk_coverage_v6_g5trio.json", "g5/pass", True,
                 "the trio-pooled curve — G5's own three named sources, on the split the "
                 "gate names — prints the verdict for this gate as true"),
           proof("runs/risk_coverage_v6_g5trio.json", "floor_rerun/agree", True,
                 "the threshold that earns the pass is settable on the engine, and the "
                 "engine abstains on exactly the questions the curve withheld"),
+          proof("runs/risk_coverage_v6_g5trio_dev.json", "g5/pass", True,
+                "the same trio curve on a third split the gate does not name, where the "
+                "curve is harder, still prints true"),
           proof("runs/risk_coverage_v6.json", "g5/pass", True,
                 "and it is not a three-source slice: the same curve over all 11 sources "
                 "and 568 questions also passes")],
@@ -302,7 +305,14 @@ GATES = [
          "floor of **0.9034** that abstains on **104 of 348** exactly where the curve withholds "
          "104 — and it is a registry row here (`risk-coverage-v6-trio-test`) rather than a "
          "reassurance, with `banking77` again the source that does not reach the level alone "
-         "(0.921 on 32.8% coverage). What "
+         "(0.921 on 32.8% coverage); a **third** split, `--split development` over the same "
+         "348 questions and 190 sets on a harder curve (0.845 at full coverage), also passes at "
+         "**0.955 on 70.1% coverage** (floor **0.8944**, engine abstains on 103, curve withholds "
+         "103) as the `risk-coverage-v6-trio-dev` row. That third witness re-cuts the per-source "
+         "story: at its pooled floor `trec` is the only source under 0.95 (0.947) and "
+         "`banking77` the highest (0.978), yet `g5_per_source` still reads `banking77: false` "
+         "because its own best coverage at the target is 0.50 against the gate's 0.60 minimum — "
+         "banking77 fails G5 per source on **coverage**, not on accuracy. What "
          "did not change is the machinery, which was already met: `Myna(abstain_below=t)` "
          "withholds the commitment with a measured reason and the fallback seam labels which "
          "engine committed (§9.24, §9.69)."),

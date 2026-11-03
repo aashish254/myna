@@ -1,0 +1,25 @@
+@startuml
+hide footbox
+
+skinparam backgroundColor white
+skinparam defaultFontName Helvetica
+skinparam shadowing false
+skinparam dpi 200
+skinparam sequenceMessageAlign left
+skinparam maxMessageSize 100
+
+actor "Agent" as A
+participant "Myna" as M
+participant "Router" as R
+participant "Readout" as H
+participant "Conformal" as C
+
+A -> M : observe(state)
+M -> M : Stream: scan once into S\nv6: encode text (512 max)
+A -> M : ask(bundle)
+M -> R : K options for each question
+R -> H : K <= 16: packed sequence\nK > 16: decoupled options
+H -> C : p = softmax(logits / T_primitive)
+C --> M : answer, 90% set, abstain
+M --> A : decision record per question\n(answer, confidence, set, abstain, routing)
+@enduml
