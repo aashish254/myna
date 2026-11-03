@@ -1,0 +1,84 @@
+{
+ "cal_questions": 2548,
+ "n_test": 1440,
+ "shipped": {
+  "temperatures": {
+   "choice": 0.9,
+   "score": 0.9,
+   "noul": 0.85
+  },
+  "q90": {
+   "choice": 0.5424,
+   "score": 0.7885,
+   "noul": 0.195
+  },
+  "q95": {
+   "choice": 0.8766,
+   "score": 0.8732,
+   "noul": 0.4576
+  }
+ },
+ "fitted_corrected": {
+  "temperatures": {
+   "choice": 1.05,
+   "score": 3.0,
+   "noul": 0.65
+  },
+  "q90": {
+   "choice": 0.5562,
+   "score": 0.964,
+   "noul": 0.2449
+  },
+  "q95": {
+   "choice": 0.8791,
+   "score": 0.971,
+   "noul": 0.5151
+  }
+ },
+ "test_under_fitted": {
+  "n": 1440,
+  "ece": 0.0326,
+  "brier": 0.0871,
+  "acc": 0.7882,
+  "flips_vs_argmax": null,
+  "coverage_90": {
+   "all": 0.8778,
+   "by_type": {
+    "choice": 0.8736,
+    "noul": 0.871,
+    "score": 0.9042
+   }
+  },
+  "coverage_95": {
+   "all": 0.9451,
+   "by_type": {
+    "choice": 0.944,
+    "noul": 0.9385,
+    "score": 0.9625
+   }
+  }
+ },
+ "test_under_shipped": {
+  "n": 1440,
+  "ece": 0.0637,
+  "brier": 0.1187,
+  "acc": 0.7882,
+  "flips_vs_argmax": null,
+  "coverage_90": {
+   "all": 0.7715,
+   "by_type": {
+    "choice": 0.8807,
+    "noul": 0.8056,
+    "score": 0.3833
+   }
+  },
+  "coverage_95": {
+   "all": 0.8639,
+   "by_type": {
+    "choice": 0.9411,
+    "noul": 0.9226,
+    "score": 0.5167
+   }
+  }
+ }
+}

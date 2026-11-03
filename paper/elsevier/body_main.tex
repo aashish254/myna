@@ -55,8 +55,9 @@ ablation, so consistency is a property of the fine-tuned encoder rather than an 
 constraint, and no architectural claim is attached to it.
 \item \textbf{A calibration and conformal audit, and an ordinal failure.} Temperature scaling
 gives ECE 0.0637 and Brier 0.1187 on the 1{,}440 test questions, with selective accuracy 0.9653
-at 60\% coverage. Split-conformal sets reach 85.49\% coverage at a 90\% target and 93.68\% at
-95\%. The sets are reported as a negative result and are not used for abstention. The audit also exposes a failure the aggregate hides: the
+at 60\% coverage. With the shipped quantiles, split-conformal sets cover 77.15\% at a 90\%
+target and 86.39\% at 95\%; refitted on the corrected target they reach 87.78\% and 94.51\%, so
+the paper reports the fit as the cause and the residual 2.2-point gap as the remaining limit. The audit also exposes a failure the aggregate hides: the
 \texttt{score} primitive is at chance (0.1750 over 240 five-way questions, against a 0.20
 uniform floor) while the \texttt{choice} and \texttt{noul} primitives reach 0.8908 and 0.9385.
 \item \textbf{A systems study of the streaming arm and a measurement correction.} On one Apple
@@ -449,24 +450,29 @@ least confident questions buys accuracy at every operating point measured. The v
 on the same calibration split, reaches a maximum of 0.596 at 10.0\% coverage and fails the same
 target; the confidence mechanism is a property of the \vsix{} arm, not of the architecture family.
 
-\subsection{Conformal prediction: a negative result}
-A split-conformal variant was fitted per primitive on the same CAL split, by the released cell. On test, its 90\% sets
-cover 85.49\% of questions (1{,}231/1{,}440) and its 95\% sets cover 93.68\% (1{,}349/1{,}440).
-Both are below nominal, and the 90\% shortfall is 4.5 points.
+\subsection{Conformal prediction: the fit, not exchangeability}
+A split-conformal variant was fitted per primitive on the same CAL split by the released cell. On
+test, the checkpoint's 90\% sets were recorded at 85.49\% coverage. Evaluated under the corrected
+gold and the released engine, the same shipped quantiles cover 77.15\% at the 90\% target
+(1{,}111/1{,}440) and 86.39\% at 95\% (1{,}244/1{,}440). The campaign's 85.49\% was itself computed
+against the shifted ordinal target, which is why it is higher.
 
-Marginal coverage is licensed by exchangeability, and exchangeability is questionable here on
-three counts. The calibration and test splits differ in source mix; the questions of a bundle
-share a state and are therefore dependent; and the option cardinality ranges from 2 to 78 within
-the same primitive. A single marginal number cannot locate the violation, and the paper does not
-claim to; what it can say is that the nominal guarantee does not hold on this split, and that the
-shortfall is large enough to matter for an abstention policy.
+The per-primitive split locates the loss. With the shipped quantiles, the ordinal cell covers
+38.3\% at the 90\% target, against 88.1\% on \texttt{choice} and 80.6\% on \texttt{noul}: the
+ordinal quantile was fitted on targets one level off, and it under-covers accordingly. Refitting
+both the temperatures and the quantiles on the rebuilt CAL split under the corrected gold — the
+released cell with one line changed — restores the ordinal cell to 90.4\% and lifts overall
+coverage to 87.78\% at 90\% and 94.51\% at 95\%, with ECE falling from 0.0637 to 0.0326 and Brier
+from 0.1187 to 0.0871.
 
-The paper therefore does not use conformal sets as a coverage guarantee or as the abstention
-method. The selective results above use temperature-scaled confidence and the risk--coverage
-curve, which is the standard instrument for this setting. The engine still exposes a 90\% set for
-callers that want a ranking signal, but no coverage claim is attached to it, and a deployment that
-needs a calibrated abstention threshold should fit it on its own traffic rather than inherit this
-one.
+What remains is a 2.2-point shortfall at the 90\% level, concentrated in \texttt{choice} (87.4\%)
+and \texttt{noul} (87.1\%). That residual is consistent with the exchangeability argument: the
+calibration and test splits differ in source mix, the questions of a bundle share a state, and the
+option cardinality ranges from 2 to 78 within a primitive. It is small enough that the refitted
+sets are usable as a ranking and triage signal, and large enough that the paper does not report
+them as a coverage certificate. The engine still ships the original quantiles, so the sets it
+exposes are the ones measured at 77.15\%; a deployment that wants the 87.8\% version must refit on
+its own CAL split, which the released code makes a one-line change.
 
 \begin{widetable}
 \centering
@@ -486,8 +492,10 @@ selective accuracy @ 60\% coverage & 0.9653 \\
 selective accuracy @ 70\% coverage & 0.9345 \\
 selective accuracy @ 80\% coverage & 0.8837 \\
 selective accuracy @ 90\% coverage & 0.8318 \\
-conformal 90\% empirical coverage & 0.8549 \\
-conformal 95\% empirical coverage & 0.9368 \\
+conformal 90\%, shipped quantiles & 0.7715 \\
+conformal 95\%, shipped quantiles & 0.8639 \\
+conformal 90\%, refitted & 0.8778 \\
+conformal 95\%, refitted & 0.9451 \\
 \bottomrule
 \end{tabular}
 \end{widetable}
@@ -496,8 +504,9 @@ conformal 95\% empirical coverage & 0.9368 \\
 \centering
 \includegraphics[width=0.94\linewidth]{fig4_calibration.pdf}
 \caption{(a) Reliability on the 1{,}440 test questions, 10 bins; marker area is bin count. (b)
-Risk--coverage on the same ranking. (c) Nominal versus empirical conformal coverage: 85.49\% at
-90\% and 93.68\% at 95\%.}
+Risk--coverage on the same ranking. (c) Nominal versus empirical conformal coverage, shipped
+quantiles (77.15\% at 90\%, 86.39\% at 95\%) and refitted on the corrected target (87.78\% and
+94.51\%).}
 \label{fig:calibration}
 \end{widefigure}
 
@@ -738,6 +747,15 @@ guarantee: the confidence scores are not certified, the suite is English and pub
 carry their sources' biases. A deployment should log the committing engine and keep a human in the
 loop for high-stakes cells. This study measured latency and bytes, not energy.
 
+\textbf{Funding.} This research received no external funding.
+
+\textbf{Competing interests.} The authors declare no competing interests.
+
+\textbf{Author contributions.} Aashish Kumar Mahato: conceptualization, methodology, software,
+validation, formal analysis, investigation, data curation, writing---original draft, and
+visualization. Prakrist Dhakal: software (the paired-bootstrap harness and the VegaML control
+run), validation, and writing---review and editing.
+
 \section{Conclusion}
 \label{sec:conclusion}
 
@@ -752,8 +770,9 @@ Three further results are negative. Cardinality routing is a budget repair worth
 exactly one cell, and it multiplies the encoder passes on that cell by the option count.
 Cross-question consistency is an observed property of the encoder (3/172 against 31/172 and 32/172
 for the external engines), not an enforced constraint; the graph head that would enforce it is not
-called. Split-conformal sets cover 85.49\% at a 90\% target, so the paper reports calibration error
-and risk--coverage instead.
+called. Split-conformal sets cover 77.15\% at a 90\% target with the shipped quantiles; refitting
+on the corrected target lifts them to 87.78\% and leaves a 2.2-point gap, which the paper reports
+rather than hiding behind a guarantee.
 
 The revision also corrected a scoring error that had inflated the macro from 0.7777 to 0.8620. The
 corrected numbers replace every earlier figure, and the harness now refuses a record whose

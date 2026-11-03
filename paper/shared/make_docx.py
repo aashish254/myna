@@ -222,9 +222,9 @@ def main() -> None:
     tex = f"""\\documentclass[11pt]{{article}}
 \\usepackage{{amsmath,amssymb,graphicx,booktabs,multirow,url}}
 \\title{{{title}}}
-\\author{{Aashish Kumar Mahato\\\\Independent Researcher, Kathmandu, Nepal\\\\
-\\small Graduate of Vellore Institute of Technology (VIT), Vellore, India. This work was conducted
-independently after graduation.}}
+\\author{{Aashish Kumar Mahato and Prakrist Dhakal\\\\Independent Researchers, Kathmandu, Nepal\\\\
+\\small A. K. Mahato (ORCID 0009-0007-8952-6357) is a graduate of Vellore Institute of Technology
+(VIT), Vellore, India. This work was conducted independently after graduation.}}
 \\date{{November 2026}}
 \\begin{{document}}
 \\maketitle

@@ -170,15 +170,24 @@ def fig4():
 
     ax = axes[2]
     nominal = [90, 95]
-    empirical = [0.8549 * 100, 0.9368 * 100]
-    ax.plot([85, 97], [85, 97], color=C["grey"], lw=0.8, ls="--")
-    ax.scatter(nominal, empirical, color=C["red"], zorder=3)
-    for x, yv in zip(nominal, empirical):
-        ax.annotate(f"{yv:.1f}%", (x, yv), textcoords="offset points", xytext=(-18, 4), fontsize=6.5)
+    shipped = [0.7715 * 100, 0.8639 * 100]
+    refit = [0.8778 * 100, 0.9451 * 100]
+    ax.plot([74, 97], [74, 97], color=C["grey"], lw=0.8, ls="--")
+    ax.scatter(nominal, shipped, color=C["red"], zorder=3, label="shipped")
+    ax.scatter(nominal, refit, color=C["blue"], marker="s", zorder=3, label="refitted")
+    ax.plot(nominal, shipped, color=C["red"], lw=0.7, alpha=0.5)
+    ax.plot(nominal, refit, color=C["blue"], lw=0.7, alpha=0.5)
+    for x, yv in zip(nominal, shipped):
+        ax.annotate(f"{yv:.1f}%", (x, yv), textcoords="offset points", xytext=(6, -10), fontsize=6.2,
+                    color=C["red"])
+    for x, yv in zip(nominal, refit):
+        ax.annotate(f"{yv:.1f}%", (x, yv), textcoords="offset points", xytext=(-24, 5), fontsize=6.2,
+                    color=C["blue"])
     ax.set_xlabel("nominal coverage (%)")
     ax.set_ylabel("empirical coverage (%)")
-    ax.set_title("(c) Conformal: target missed")
-    ax.set_xlim(85, 97); ax.set_ylim(85, 97)
+    ax.set_title("(c) Conformal: shipped vs refitted")
+    ax.legend(frameon=False, loc="upper left", fontsize=6.2)
+    ax.set_xlim(74, 97); ax.set_ylim(74, 97)
     fig.tight_layout()
     save(fig, "fig4_calibration")
 

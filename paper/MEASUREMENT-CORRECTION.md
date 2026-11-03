@@ -45,12 +45,21 @@ Two facts fix the interpretation:
 | ECE (10 bins) | 0.0190 | 0.0637 |
 | Brier (top-1) | 0.0434 | 0.1187 |
 | selective accuracy @ 60% | 0.9873 | 0.9653 |
+| conformal 90% coverage (shipped quantiles) | 0.8549 | 0.7715 |
+| conformal 90% coverage (refitted on corrected gold) | — | 0.8778 |
 
 The relative ordering of the systems does not change (Myna v6 0.7777 still leads the
 supervised TF-IDF baseline at 0.7111 and the best Laya configuration at 0.7050), but the
 margin shrinks and the absolute claims change. The `score` primitive is now reported as
 **at chance** — a finding in its own right, since a TF-IDF classifier reaches 0.525 on
 amazon/stars where the fine-tuned model reaches 0.175.
+
+The same target reached the calibration stage. The v6 notebook fitted the temperatures and the
+conformal quantiles on a CAL split drawn from the training pool, and its score loader carries the
+same 1-based/0-based mismatch. Refitting on that split (`bench/cal_refit.py`) reproduces the stored
+ordinal temperature exactly under the notebook's gold (0.9) and moves it to the grid ceiling (3.0)
+under the corrected gold; refitting the quantiles lifts ordinal coverage from 38.3% to 90.4% and
+overall 90% coverage from 77.15% to 87.78%, with ECE 0.0637 to 0.0326 (`bench/refit_coverage.py`).
 
 ## Why the competitor columns are unaffected
 
