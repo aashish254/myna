@@ -10,9 +10,9 @@ reported as a footing-qualified comparison rather than a leaderboard claim. Thre
 negative. Cardinality routing is a budget repair worth 0.0399 macro on exactly one cell, and the
 isolated ablation on one checkpoint shows the other 15 cells identical. Cross-question
 consistency is an observed property of the encoder, not an enforced constraint (3/172
-contradictions against 31/172 and 32/172 for the external engines). Split-conformal sets cover 77.15% at a 90% target
+contradictions against 31/172 and 32/172 for the external engines). Split-conformal sets cover 77.15\% at a 90\% target
 with the shipped quantiles, which were fitted on the same shifted target; refitted on the
-corrected target they reach 87.78%, and the residual gap is reported rather than a guarantee
+corrected target they reach 87.78\%, and the residual gap is reported rather than a guarantee
 (calibration error falls from 0.0637 to 0.0326). The audit also exposes that the ordinal primitive is at
 chance (0.1750 over 240 five-way questions) while the choice and boolean primitives reach 0.8908
 and 0.9385. The revision documents and corrects a scoring error that had inflated the macro from
