@@ -43,7 +43,7 @@ def main() -> None:
     ap.add_argument("--md", default="runs/consistency_audit.md")
     args = ap.parse_args()
 
-    from myna.consistency import contradictions
+    from myna.consistency import campaign_contradictions, contradictions
 
     specs = load_specs()
     out: dict[str, dict] = {"predicate": "myna.consistency.is_contradiction",
@@ -54,12 +54,15 @@ def main() -> None:
             out["engines"][name] = {"error": f"missing {rel}"}
             continue
         rows = json.loads(path.read_text())["rows"]
-        out["engines"][name] = contradictions(rows, specs)
-        print(name, out["engines"][name]["contradictions"], "/", out["engines"][name]["bundles"])
+        rec = contradictions(rows, specs)
+        rec["campaign"] = campaign_contradictions(rows, specs)
+        out["engines"][name] = rec
+        print(name, "released", rec["contradictions"], "/", rec["bundles"],
+              "| campaign", rec["campaign"]["contradictions"], "/", rec["campaign"]["bundles"])
 
     (REPO / args.out).write_text(json.dumps(out, indent=1))
-    lines = ["# Bundle consistency under the released predicate", "",
-             "| engine | bundles | contradictions | rate | agnews | yelp |",
+    lines = ["# Bundle consistency: released predicate and the recovered campaign rule", "",
+             "| engine | bundles | released | campaign | agnews | yelp |",
              "|---|---:|---:|---:|---:|---:|"]
     for name, rec in out["engines"].items():
         if "error" in rec:
@@ -67,7 +70,8 @@ def main() -> None:
         a = rec["by_source"].get("agnews", {"contradictions": 0})
         y = rec["by_source"].get("yelp", {"contradictions": 0})
         lines.append(f"| {name} | {rec['bundles']} | {rec['contradictions']} | "
-                     f"{rec['rate']:.4f} | {a['contradictions']} | {y['contradictions']} |")
+                     f"{rec['campaign']['contradictions']} | {a['contradictions']} | "
+                     f"{y['contradictions']} |")
     lines += ["", "Predicate: `src/myna/consistency.py`; recompute with "
                   "`python -m bench.consistency_audit`.", ""]
     (REPO / args.md).write_text("\n".join(lines))

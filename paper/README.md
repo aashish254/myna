@@ -48,6 +48,12 @@ zero-shot on most cells).
 - **Conformal sets are a negative result.** 85.49% coverage at a 90% target, 93.68% at 95%; the
   paper uses ECE, Brier, and risk–coverage instead and states that the sets are not an abstention
   mechanism on this suite.
+- **The campaign notebooks are released.** `release/notebooks/` holds the three copies of the v5
+  run with their digests and cell ranges. They settle four claims the earlier draft made by
+  assertion: the training loss is per-question cross-entropy with an unused consistency constant,
+  the graph gate is zero and the graph ablation is identical on/off, the temperatures were fitted
+  on development (and produce the v5 values, not the v6 ones), and the 0/172 record comes from a
+  narrow choice--boolean rule that cannot see the yelp case.
 - **A reference trainer is released.** `release/train_v6.py` trains the packed-readout arm through
   the engine's own renderer (parity tested), fits temperatures and conformal quantiles on the
   calibration split, and writes a checkpoint whose heads load with `strict=True`.

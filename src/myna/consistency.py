@@ -135,3 +135,70 @@ def contradictions(rows: Iterable[Mapping[str, Any]],
                         "answers": "; ".join(f"{k}={v}" for k, v in sorted(answers.items()))})
     return {"bundles": n, "contradictions": len(bad), "rate": len(bad) / n if n else 0.0,
             "by_source": by_source, "cases": bad}
+
+
+# --------------------------------------------------------------------------------------
+# The campaign predicate, recovered from the released notebook
+# --------------------------------------------------------------------------------------
+# `release/notebooks/01-v5-campaign-full.ipynb` (cell "GRAPH ABLATION") counts a
+# contradiction only when a bundle carries both a `choice` and a `noul` question, the
+# predicted option text for the choice appears inside the boolean question's instruction,
+# and the boolean is answered "no". It therefore cannot see a yelp rating/recommendation
+# contradiction (rating is a `score`, not a `choice`), and it misses any contradiction
+# whose option text is not a substring of the question. The published 0/172 record came
+# from this rule; the released predicate above is broader. Both are reported.
+
+def _choice_options(spec: dict) -> list[str]:
+    from .real_data import _option_text, _state_text
+
+    crit = spec["criteria"]
+    if isinstance(crit, dict):
+        return [_option_text(k, v) for k, v in crit.items()]
+    return [_state_text(c) for c in crit]
+
+
+def campaign_contradiction(row: Mapping[str, Any], spec: Mapping[str, Any]) -> bool:
+    """The 2026 campaign's contradiction rule, as recovered from the notebook.
+
+    ``row`` is a row-outcome record and ``spec`` the bundle's question spec. Choice
+    predictions are accepted as either an index or a label, so the Myna, Laya, and VegaML
+    record shapes all work.
+    """
+    choice = None
+    noul = None
+    for qname, rec in row["questions"].items():
+        s = spec[qname]
+        if s["type"] == "choice":
+            opts = _choice_options(s)
+            pred = rec["pred"]
+            idx = int(pred) if isinstance(pred, int) else (
+                opts.index(pred) if str(pred) in opts else -1)
+            if 0 <= idx < len(opts):
+                choice = (opts[idx], str(s.get("instructions", "")))
+        elif s["type"] == "noul":
+            pred = rec["pred"]
+            answered_no = (pred is False) or (pred == 0) or (str(pred).lower() == "no")
+            noul = (answered_no, str(s.get("instructions", "")))
+    if not choice or not noul:
+        return False
+    option_text, _ = choice
+    answered_no, instr = noul
+    return bool(answered_no and option_text.lower() in instr.lower())
+
+
+def campaign_contradictions(rows, specs) -> dict[str, Any]:
+    """Count contradictions under the campaign's rule, on the same eligible bundles."""
+    n = 0
+    bad = 0
+    for row in rows:
+        if row["meta"]["source"] not in ("agnews", "yelp"):
+            continue
+        if len(row["questions"]) < 2:
+            continue
+        spec = specs.get(row["meta"]["id"])
+        if spec is None:
+            continue
+        n += 1
+        bad += int(campaign_contradiction(row, spec))
+    return {"bundles": n, "contradictions": bad,
+            "rate": bad / n if n else 0.0}

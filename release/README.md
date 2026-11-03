@@ -16,6 +16,7 @@ authors' machines. Everything below is a command plus the output it should print
 | Per-question records | `runs/*.rowoutcomes.json` | Myna, Laya, VegaML on the same 1,176 bundles |
 | External baselines | `runs/external_{majority,tfidf,nli}.json`, `paper/shared/external_baselines.py` | the three classical references |
 | Correction record | `paper/MEASUREMENT-CORRECTION.md` | the ordinal off-by-one, its signature, before/after |
+| Campaign notebooks | `release/notebooks/` | the v5 training loop, dev temperature fit, per-option head, graph ablation, and the 0/172 predicate |
 
 ## Verify in this order
 
@@ -54,16 +55,32 @@ authors' machines. Everything below is a command plus the output it should print
 
 ## What is not released, and why
 
-- **The Colab notebook that produced the shipped weights.** It is not in the archive. The
-  reference trainer implements the same recipe and is verified to render and serve through the
-  same code path, but it does not reproduce the shipped trajectory, and the paper does not
-  claim it does.
+- **The v6 assembly cell.** The three notebooks are copies of the v5 campaign and end at
+  `myna-v5-unified.pt` (cell 27 of the full copy). The cell that merged the v6 heads into
+  `myna-v6-unified.pt` is not among them. `release/train_v6.py` writes the same checkpoint schema
+  from scratch, which is what makes the architecture reproducible even though the merge cell is not.
+- **The fit that produced the v6 temperatures.** The released notebook fits a temperature grid on
+  the **development** split and produces the v5 values (1.25, 1.0, 1.0). The v6 checkpoint stores
+  0.9, 0.9, 0.85, and no released cell produces those three numbers, so the paper reports them as
+  stored rather than as reproduced.
+- **The conformal-quantile fit.** No notebook cell mentions conformal sets or quantiles; the
+  checkpoint stores `conformal_q90`/`q95`, and the paper treats the sets as a negative result.
 - **The 2,000-bundle calibration split** named in the model card. Only the 448-row split in
   `data/decision-v2-pilot/calibration.jsonl` is committed, and every number in the paper is
   computed from that one.
-- **The original contradiction predicate.** It was never shipped; the released predicate in
-  `src/myna/consistency.py` replaces it, and the paper reports the two numbers side by side
-  (0/172 as recorded, 3/172 as measured) rather than adopting the record.
+
+The original contradiction predicate is no longer in this list: it is recoverable from the notebook's
+graph-ablation cell and is implemented as `campaign_contradiction` in `src/myna/consistency.py`. It
+reproduces the published 0/172 record.
+
+## What the notebooks settle
+
+| Question the paper used to answer by assertion | What the released cells show |
+|---|---|
+| Was a consistency loss trained? | No. The config defines `CONSISTENCY_WEIGHT = 1.0`, but no cell reads it; the loss is per-question cross-entropy (cell 9). |
+| Is the graph head doing anything? | No. `graph_gate` is 0.0, and the ablation prints graph-on and graph-off with identical predictions on dev and test (cell 25). |
+| Where were the temperatures fitted? | On the development split, by NLL over a 51-point grid 0.5--3.0 (cells 14--15). |
+| Where does 0/172 come from? | From a rule that only inspects choice--boolean pairs whose option text appears in the question; it cannot see yelp, whose rating is a `score` (cell 25). |
 
 ## The one thing to read first
 

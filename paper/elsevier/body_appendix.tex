@@ -49,9 +49,12 @@ Section~\ref{sec:correction} is arithmetic and not a re-run artifact. The full r
 before-and-after per-cell table, is \texttt{paper/MEASUREMENT-CORRECTION.md}.
 
 \paragraph{Known gaps.}
-The campaign notebook that produced the shipped weights is not in the archive. The calibration split
-committed here has 448 rows and 568 questions; the 2{,}000-bundle split in the model card is not
-committed and is not used for any number in this paper. The banking77 \texttt{none\_absent}
+The campaign notebooks are in \texttt{release/notebooks/} with their digests and the cell ranges
+that differ between the three copies. They cover the v5 training loop, the development-split
+temperature fit, the per-option banking77 head, and the v5 checkpoint merge; they do not contain
+the v6 assembly cell, the fit that produced the v6 temperatures, or the 2{,}000-bundle calibration
+split. The calibration split committed here has 448 rows and 568 questions, and the 2{,}000-bundle
+split in the model card is not committed and is not used for any number in this paper. The banking77 \texttt{none\_absent}
 decomposition is 0/12 here against 7/12 in the training record while the cell aggregate matches at
 78/116. These gaps are reported rather than reconstructed.
 

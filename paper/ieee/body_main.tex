@@ -45,13 +45,14 @@ consumes 490 option-span tokens (6.36 per option), and collapses. Forcing the pa
 every cell, with the weights held fixed, scores 0.0345 on that cell and 0.7378 macro; enabling
 the router on the same weights scores 0.6724 and 0.7777. No other cell changes. Routing is a
 budget repair for one cell, worth $+0.0399$ macro, and the paper presents it as such.
-\item \textbf{Bundle consistency as a measured property, with a released predicate.} The
-checkpoint records 0/172 contradictions, but the predicate that produced that number was never
-released. The paper releases an explicit predicate (\texttt{src/myna/consistency.py}) and reports
-what it measures: 3/172 for \vsix{}, 31/172 for Laya, and 32/172 for VegaML. The cross-question
-graph head stored in the checkpoint is not called at inference, so consistency is a property of
-the fine-tuned encoder rather than an enforced constraint. No architectural claim is attached to
-it.
+\item \textbf{Bundle consistency as a measured property, with both predicates released.} The
+checkpoint records 0/172 contradictions. That record is reproduced by the campaign's own rule,
+recovered from the released notebook (0/172 for \vsix{}, 1/172 for Laya, 2/172 for VegaML), but
+the rule only inspects choice--boolean pairs and cannot see the yelp rating/recommendation case. A
+broader released predicate (\texttt{src/myna/consistency.py}) gives 3/172, 31/172, and 32/172. The
+cross-question graph head is never called at inference and its gate is zero in the released
+ablation, so consistency is a property of the fine-tuned encoder rather than an enforced
+constraint, and no architectural claim is attached to it.
 \item \textbf{A calibration and conformal audit, and an ordinal failure.} Temperature scaling
 gives ECE 0.0637 and Brier 0.1187 on the 1{,}440 test questions, with selective accuracy 0.9653
 at 60\% coverage. Split-conformal sets reach 85.49\% coverage at a 90\% target and 93.68\% at
@@ -360,35 +361,49 @@ this article about sports?'' is ``no''. The suite contains 172 bundles that ask 
 92 agnews bundles with a topic question and two of the four class booleans, and 80 yelp bundles
 with a star rating and a recommendation question.
 
-The checkpoint's summary records 0/172 contradictions. That number is not reproducible, because
-the predicate that produced it was never released. This paper therefore releases a predicate and
-reports what it measures (\texttt{src/myna/consistency.py}; recomputed by
-\texttt{bench/consistency\_audit.py}). A bundle is a contradiction iff the predicted topic is
-class $c$, the bundle asks \texttt{is}$\_c$, and the answer is ``no''; or the predicted rating is
-4--5 while \texttt{recommend} is ``no'', or 1--2 while \texttt{recommend} is ``yes''.
+The checkpoint's summary records 0/172 contradictions. That record is reproducible: the rule that
+produced it is in the campaign notebook's graph-ablation cell (\texttt{release/notebooks/}), and
+re-implemented as code it gives 0/172 for \vsix{}, 1/172 for Laya, and 2/172 for VegaML. The rule
+is narrow. It counts a bundle only when the bundle carries both a \texttt{choice} and a
+\texttt{noul} question, the predicted option text appears inside the boolean question, and the
+boolean is answered ``no''. It cannot see a yelp rating/recommendation contradiction, because the
+rating is a \texttt{score} question, and it misses any pair whose option text is not a substring
+of the question.
 
-Under that predicate, \vsix{} has 3 contradictions in 172 bundles, Laya has 31, and VegaML has 32
+This paper therefore reports two numbers: the campaign rule, and a broader predicate that covers
+both sources (\texttt{src/myna/consistency.py}; recomputed by
+\texttt{bench/consistency\_audit.py}). A bundle is a contradiction under the broader predicate iff
+the predicted topic is class $c$, the bundle asks \texttt{is}$\_c$, and the answer is ``no''; or
+the predicted rating is 4--5 while \texttt{recommend} is ``no'', or 1--2 while \texttt{recommend}
+is ``yes''. Under it, \vsix{} has 3 contradictions in 172 bundles, Laya has 31, and VegaML has 32
 (Table~\ref{tab:consistency}). The \vsix{} rate is 1.7\%, and the three errors are two agnews
-bundles and one yelp bundle. This is a property of the fine-tuned encoder: the checkpoint stores a
-cross-question graph head, but the inference path never calls it, and no consistency term was
-trained. The paper therefore makes no claim that the architecture enforces consistency, and it
-does not present the measurement as a methodological contribution. It is a descriptive statistic
+bundles and one yelp bundle.
+
+This is a property of the fine-tuned encoder, not of the architecture. The checkpoint stores a
+cross-question graph head whose gate is exactly zero in the v5 ablation (graph-on and graph-off
+return identical predictions on both splits), the inference path never calls it, and no consistency
+term was trained: the campaign config defines a consistency weight that no cell reads, and the
+training loop minimizes per-question cross-entropy (\texttt{release/notebooks/}, cell 9). The paper
+therefore makes no claim that the architecture enforces consistency, and it does not present the
+measurement as a methodological contribution. It is a descriptive statistic
 that a deployment can monitor, and it is the statistic on which \vsix{} has its largest margin
 over the two external engines.
 
 \begin{table}[t]
 \centering
 \footnotesize
-\caption{Bundle consistency under the released predicate, same 172 bundles. The predicate is
-released as code; the campaign's 0/172 record is not reproducible and is not used.}
+\caption{Bundle consistency, same 172 bundles, under the campaign's recovered rule and under the
+broader released predicate. The campaign column re-implements the notebook rule and reproduces the
+published 0/172 for Myna; the released column also counts the yelp rating/recommendation pair that
+the campaign rule cannot see.}
 \label{tab:consistency}
-\begin{tabular}{lrrr}
+\begin{tabular}{lrrrr}
 \toprule
-Engine & contradictions & agnews & yelp \\
+Engine & campaign rule & released predicate & agnews & yelp \\
 \midrule
-Myna v6 & 3/172 & 2 & 1 \\
-Laya 0.4.19 & 31/172 & 5 & 26 \\
-VegaML 0.15.0 & 32/172 & 26 & 6 \\
+Myna v6 & 0/172 & 3/172 & 2 & 1 \\
+Laya 0.4.19 & 1/172 & 31/172 & 5 & 26 \\
+VegaML 0.15.0 & 2/172 & 32/172 & 26 & 6 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -397,9 +412,13 @@ VegaML 0.15.0 & 32/172 & 26 & 6 \\
 \label{sec:calibration}
 
 \subsection{Temperature scaling and calibration error}
-Temperatures are fitted per primitive on the calibration split: 0.9 for \texttt{choice}, 0.9 for
-\texttt{score}, and 0.85 for \texttt{noul}. They produce zero argmax flips between development and
-test, so the calibration step changes probabilities but not decisions. On the 1{,}440 test
+The checkpoint stores three temperatures, 0.9 for \texttt{choice}, 0.9 for \texttt{score}, and
+0.85 for \texttt{noul}, fitted per primitive by minimizing negative log-likelihood over a
+temperature grid. They produce zero argmax flips between development and test, so the calibration
+step changes probabilities but not decisions. The released notebook fits such a grid on the
+development split and produces the v5 values (1.25, 1.0, 1.0); the cell that produced the v6
+values is not among the released notebooks, so they are reported as stored in the checkpoint
+rather than as reproduced. On the 1{,}440 test
 questions the 10-bin expected calibration error is 0.0637 and the top-1 Brier score is 0.1187.
 Figure~\ref{fig:calibration}a is the reliability diagram. The largest bin holds 847 questions at
 mean confidence 0.980 and accuracy 0.968; the mid-confidence bins are sharply overconfident, with
@@ -674,17 +693,20 @@ so the information is present in the text and the failure is in the model or its
 which is a single experiment with the CORAL head enabled, and it is left open.
 
 \textbf{What could not be verified.}
-The original training notebook is not in the released archive, and the 2{,}000-bundle calibration
-split reported by the campaign is not committed; the committed calibration split has 448 rows and
-568 questions. The banking77 \texttt{none\_absent} decomposition is 0/12 here against 7/12 in the
+The campaign notebooks are released (\texttt{release/notebooks/}): they contain the bundle loader,
+the example builder, the graph head, the training loop, the evaluation, the development-split
+temperature fit, and the per-option banking77 head training. They end at the v5 unified checkpoint.
+The cell that assembled the v6 checkpoint, the cell that fitted its three temperatures, and the
+2{,}000-bundle calibration split are not among them; the committed calibration split has 448 rows
+and 568 questions. The banking77 \texttt{none\_absent} decomposition is 0/12 here against 7/12 in the
 training record, while the cell aggregate matches at 78/116 against the recorded 77/116.
 \vsix{}'s 512-token maximum also puts the long-context question out of its reach. These gaps are
 reported rather than reconstructed.
 
 \textbf{Data and code availability.}
-The frozen suite, the checkpoint, the per-question records for every \myna{} arm, the consistency
-predicate, the reference training implementation, the calibration-split builder, and every table
-and figure generator are released with the paper. The reference trainer reproduces the architecture
+The frozen suite, the checkpoint, the per-question records for every \myna{} arm, both consistency
+predicates, the campaign notebooks, the reference training implementation, and every table and
+figure generator are released with the paper. The reference trainer reproduces the architecture
 and objective and writes a checkpoint the engine loads; the campaign notebook that produced the released checkpoint remains unavailable, and the paper does not claim to reproduce its exact
 trajectory.
 
