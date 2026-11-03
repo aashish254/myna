@@ -16,7 +16,8 @@ authors' machines. Everything below is a command plus the output it should print
 | Per-question records | `runs/*.rowoutcomes.json` | Myna, Laya, VegaML on the same 1,176 bundles |
 | External baselines | `runs/external_{majority,tfidf,nli}.json`, `paper/shared/external_baselines.py` | the three classical references |
 | Correction record | `paper/MEASUREMENT-CORRECTION.md` | the ordinal off-by-one, its signature, before/after |
-| Campaign notebooks | `release/notebooks/` | the v5 training loop, dev temperature fit, per-option head, graph ablation, and the 0/172 predicate |
+| Campaign notebooks | `release/notebooks/` | the v5 training loop and the v6 campaign: CAL split, temperature/conformal fit, v6 checkpoint assembly |
+| CAL split builder | `release/build_cal_split.py` | the 1,999-bundle split the v6 temperatures were fitted on |
 
 ## Verify in this order
 
@@ -45,42 +46,43 @@ authors' machines. Everything below is a command plus the output it should print
 .venv/bin/python -m bench.routing_cost --n 6 --out runs/routing_cost.json
 #    expects about 4.9 s routed vs 0.43 s packed on banking77 (ratio ~11).
 
-# 5. The reference trainer, end to end on a CPU-sized smoke run.
+# 5. The CAL split and the calibration refit.
+.venv/bin/python release/build_cal_split.py --check
+#    expects 1,999 bundles / 2,548 questions, ids digest 692648492dfd3846c04e12fa84c7cbeabaa6822c686e975f10ccf8eec574dc67.
+.venv/bin/python -m bench.cal_refit --reuse-rows
+#    expects the ordinal temperature at 0.9 under the notebook's (mis-indexed) gold and at the
+#    3.0 grid ceiling under the corrected gold; the full inference run takes ~45 min and writes
+#    runs/v6_cal_raw.jsonl, which is committed so the refit itself is instant.
+
+# 6. The reference trainer, end to end on a CPU-sized smoke run.
 .venv/bin/python release/train_v6.py --steps 2 --limit 4 --out /tmp/v6_smoke --no-encoder
 #    expects "packed_scorer reloads with strict=True".
 
-# 6. The renderer-parity test: training and serving tokenize identically.
+# 7. The renderer-parity test: training and serving tokenize identically.
 .venv/bin/python -m pytest -q tests/test_reference_trainer.py
 ```
 
 ## What is not released, and why
 
-- **The v6 assembly cell.** The three notebooks are copies of the v5 campaign and end at
-  `myna-v5-unified.pt` (cell 27 of the full copy). The cell that merged the v6 heads into
-  `myna-v6-unified.pt` is not among them. `release/train_v6.py` writes the same checkpoint schema
-  from scratch, which is what makes the architecture reproducible even though the merge cell is not.
-- **The fit that produced the v6 temperatures.** The released notebook fits a temperature grid on
-  the **development** split and produces the v5 values (1.25, 1.0, 1.0). The v6 checkpoint stores
-  0.9, 0.9, 0.85, and no released cell produces those three numbers, so the paper reports them as
-  stored rather than as reproduced.
-- **The conformal-quantile fit.** No notebook cell mentions conformal sets or quantiles; the
-  checkpoint stores `conformal_q90`/`q95`, and the paper treats the sets as a negative result.
-- **The 2,000-bundle calibration split** named in the model card. Only the 448-row split in
-  `data/decision-v2-pilot/calibration.jsonl` is committed, and every number in the paper is
-  computed from that one.
-
-The original contradiction predicate is no longer in this list: it is recoverable from the notebook's
-graph-ablation cell and is implemented as `campaign_contradiction` in `src/myna/consistency.py`. It
-reproduces the published 0/172 record.
+- **The original 1,999-row CAL file.** The split is *drawn*, not curated, and the draw is
+  deterministic: `release/build_cal_split.py` groups the train pool by source, shuffles each
+  group with `random.Random(42)`, and takes `max(20, round(2000 * n_source / n_train))` from
+  each. That returns 1,999 bundles (the model card's "2,000" is the rounding target), 2,548
+  questions. The file itself was never committed, so the builder is a definition-level
+  reproduction: same ids, same composition, same digest, not a hash of the lost file.
+- **Nothing else.** The v6 assembly cell is `04-v6-campaign.ipynb` (it writes
+  `myna-v6-unified.pt` with the config, heads and audits), and the temperature/conformal fit
+  is cell 5 of the same notebook, fitted on the CAL split above.
 
 ## What the notebooks settle
 
 | Question the paper used to answer by assertion | What the released cells show |
 |---|---|
-| Was a consistency loss trained? | No. The config defines `CONSISTENCY_WEIGHT = 1.0`, but no cell reads it; the loss is per-question cross-entropy (cell 9). |
-| Is the graph head doing anything? | No. `graph_gate` is 0.0, and the ablation prints graph-on and graph-off with identical predictions on dev and test (cell 25). |
-| Where were the temperatures fitted? | On the development split, by NLL over a 51-point grid 0.5--3.0 (cells 14--15). |
-| Where does 0/172 come from? | From a rule that only inspects choice--boolean pairs whose option text appears in the question; it cannot see yelp, whose rating is a `score` (cell 25). |
+| Was a consistency loss trained? | No. The v5 config defines `CONSISTENCY_WEIGHT = 1.0`, but no cell reads it; the loss is per-question cross-entropy (v5 notebook, cell 9). |
+| Is the graph head doing anything? | No. `graph_gate` is 0.0 and the ablation prints identical predictions on/off (v5 notebook, cell 25); the v6 notebook runs the same 4-arm ablation. |
+| Where were the v6 temperatures fitted? | On the CAL split drawn from train, by NLL over a 51-point grid 0.5--3.0, per primitive (v6 notebook, cell 5). The ordinal temperature reproduces at 0.9 under the notebook's gold and 3.0 under the corrected gold. |
+| Where does 0/172 come from? | From a rule that only inspects choice--boolean pairs whose option text appears in the question; it cannot see yelp, whose rating is a `score` (v5 notebook, cell 25). |
+| Why is the CORAL ordinal head disabled? | It was trained and gated on development accuracy against the packed head's 0.6542; it did not clear the gate (v6 notebook, cell 4). Both numbers were measured under the pre-correction score convention. |
 
 ## The one thing to read first
 

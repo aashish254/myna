@@ -380,12 +380,14 @@ is ``yes''. Under it, \vsix{} has 3 contradictions in 172 bundles, Laya has 31, 
 bundles and one yelp bundle.
 
 This is a property of the fine-tuned encoder, not of the architecture. The checkpoint stores a
-cross-question graph head whose gate is exactly zero in the v5 ablation (graph-on and graph-off
-return identical predictions on both splits), the inference path never calls it, and no consistency
-term was trained: the campaign config defines a consistency weight that no cell reads, and the
-training loop minimizes per-question cross-entropy (\texttt{release/notebooks/}, cell 9). The paper
-therefore makes no claim that the architecture enforces consistency, and it does not present the
-measurement as a methodological contribution. It is a descriptive statistic
+cross-question graph head, but it changes nothing: the released notebook's five-arm ablation
+(scorer-only, graph-full, gate-zero, shuffled, and exact factor-graph decoding) returns the same
+accuracy, 0.8899, and the same 1/172 contradictions for every arm on its 172 multi-question
+development bundles, and the test arms differ by one question in 436. The inference path never calls the module, and no consistency term
+was trained: the campaign config defines a consistency weight that no cell reads, and the training
+loop minimizes per-question cross-entropy (\texttt{release/notebooks/}). The paper therefore makes
+no claim that the architecture enforces consistency, and it does not present the measurement as a
+methodological contribution. It is a descriptive statistic
 that a deployment can monitor, and it is the statistic on which \vsix{} has its largest margin
 over the two external engines.
 
@@ -413,12 +415,22 @@ VegaML 0.15.0 & 2/172 & 32/172 & 26 & 6 \\
 
 \subsection{Temperature scaling and calibration error}
 The checkpoint stores three temperatures, 0.9 for \texttt{choice}, 0.9 for \texttt{score}, and
-0.85 for \texttt{noul}, fitted per primitive by minimizing negative log-likelihood over a
-temperature grid. They produce zero argmax flips between development and test, so the calibration
-step changes probabilities but not decisions. The released notebook fits such a grid on the
-development split and produces the v5 values (1.25, 1.0, 1.0); the cell that produced the v6
-values is not among the released notebooks, so they are reported as stored in the checkpoint
-rather than as reproduced. On the 1{,}440 test
+0.85 for \texttt{noul}, and two conformal quantile sets. The released v6 notebook fits them on a
+CAL split drawn from the training pool: seed 42, proportional per source, 1{,}999 bundles and
+2{,}548 questions, rebuilt by \texttt{release/build\_cal\_split.py}. They produce zero argmax
+flips between development and test, so the calibration step changes probabilities but not
+decisions. One property of that fit matters for reading the numbers below: the notebook's loader
+builds the five ordinal options as indices 0..4 and reads the suite's 1..5 label as the gold index,
+so the score temperature and the score quantile were fitted against targets shifted by one level,
+the same off-by-one corrected in Section~\ref{sec:correction}. The stored values are used unchanged
+below, but a refit on the rebuilt split through the released engine is reported because it
+separates the two conventions. The ordinal temperature reproduces exactly under the notebook's
+gold (0.9, the stored value) and moves to the grid ceiling of 3.0 under the corrected gold; the
+ordinal q90 is 0.789 stored, 0.801 under the notebook's gold, and 0.964 under the corrected one.
+The other two primitives do not reproduce exactly (choice 1.05 against 0.9, noul 0.65 against
+0.85), and the noul gap has a rendering cause: the notebook builds the boolean options as
+false/true while the released engine renders them as no/yes. The ordinal component is the one the
+correction touches, and it is the one that moves when the target moves. On the 1{,}440 test
 questions the 10-bin expected calibration error is 0.0637 and the top-1 Brier score is 0.1187.
 Figure~\ref{fig:calibration}a is the reliability diagram. The largest bin holds 847 questions at
 mean confidence 0.980 and accuracy 0.968; the mid-confidence bins are sharply overconfident, with
@@ -438,7 +450,7 @@ on the same calibration split, reaches a maximum of 0.596 at 10.0\% coverage and
 target; the confidence mechanism is a property of the \vsix{} arm, not of the architecture family.
 
 \subsection{Conformal prediction: a negative result}
-A split-conformal variant was fitted per primitive on the calibration split. On test, its 90\% sets
+A split-conformal variant was fitted per primitive on the same CAL split, by the released cell. On test, its 90\% sets
 cover 85.49\% of questions (1{,}231/1{,}440) and its 95\% sets cover 93.68\% (1{,}349/1{,}440).
 Both are below nominal, and the 90\% shortfall is 4.5 points.
 
@@ -669,7 +681,9 @@ every aggregate from per-question records and refuses a record whose correctness
 with its own prediction and gold, which is the check that would have caught the error on the first
 run. The pre-correction witness is kept under a \texttt{predates-fix} suffix, and the corrected
 script reproduces 0.7777 from it, which shows that the difference is arithmetic rather than a
-re-run artifact. The full record is \texttt{paper/MEASUREMENT-CORRECTION.md}.
+re-run artifact. The same shifted target also reached the calibration stage: refitting the ordinal
+temperature on the rebuilt CAL split reproduces the stored 0.9 under the notebook's gold and gives
+3.0 under the corrected one (Section~\ref{sec:calibration}). The full record is \texttt{paper/MEASUREMENT-CORRECTION.md}.
 
 \section{Discussion and Limitations}
 \label{sec:limitations}
@@ -689,24 +703,32 @@ other two primitives are strong. The paper does not establish the cause. Candida
 are the ordinal head that the released configuration disables, the packed layout that puts five
 near-identical option strings in one sequence, and the training objective, which treats the
 ordinal cell as a five-way choice. A supervised TF-IDF classifier reaches 0.525 on amazon/stars,
-so the information is present in the text and the failure is in the model or its head. Isolating
-which is a single experiment with the CORAL head enabled, and it is left open.
+so the information is present in the text and the failure is in the model or its head. The
+released v6 notebook did train an ordinal head (cross-entropy plus a cumulative-link term and an
+earth-mover term) and gated it on development accuracy against the packed head's 0.6542; it did
+not clear the gate, which is why the checkpoint disables it. That comparison was made under the
+pre-correction score convention, so it explains the campaign's decision rather than settling
+which head is better: under the corrected gold the packed head sits at 0.175, and 0.6542 is not a
+meaningful bar. Re-running the gate under the corrected convention is the experiment that would
+settle the cause, and it is not reported here.
 
 \textbf{What could not be verified.}
-The campaign notebooks are released (\texttt{release/notebooks/}): they contain the bundle loader,
-the example builder, the graph head, the training loop, the evaluation, the development-split
-temperature fit, and the per-option banking77 head training. They end at the v5 unified checkpoint.
-The cell that assembled the v6 checkpoint, the cell that fitted its three temperatures, and the
-2{,}000-bundle calibration split are not among them; the committed calibration split has 448 rows
-and 568 questions. The banking77 \texttt{none\_absent} decomposition is 0/12 here against 7/12 in the
+The campaign notebooks are released (\texttt{release/notebooks/}): the v5 training loop, the
+development-split temperature fit, the per-option banking77 head, and the v6 campaign with its CAL
+split, its CAL temperature and conformal fit, the CORAL gate, and the cell that writes
+\texttt{myna-v6-unified.pt}. The CAL file itself was not committed. It is redrawn by
+\texttt{release/build\_cal\_split.py} (seed 42, proportional per source), which yields 1{,}999
+bundles and 2{,}548 questions; the model card's 2{,}000 is the rounding target, and the rebuild is
+a definition-level reproduction rather than a hash of the lost file. The suite's committed
+calibration split has 448 rows and 568 questions and is a different, earlier split. The banking77 \texttt{none\_absent} decomposition is 0/12 here against 7/12 in the
 training record, while the cell aggregate matches at 78/116 against the recorded 77/116.
 \vsix{}'s 512-token maximum also puts the long-context question out of its reach. These gaps are
 reported rather than reconstructed.
 
 \textbf{Data and code availability.}
 The frozen suite, the checkpoint, the per-question records for every \myna{} arm, both consistency
-predicates, the campaign notebooks, the reference training implementation, and every table and
-figure generator are released with the paper. The reference trainer reproduces the architecture
+predicates, the four campaign notebooks, the CAL-split builder, the reference training
+implementation, and every table and figure generator are released with the paper. The reference trainer reproduces the architecture
 and objective and writes a checkpoint the engine loads; the campaign notebook that produced the released checkpoint remains unavailable, and the paper does not claim to reproduce its exact
 trajectory.
 

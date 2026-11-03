@@ -49,12 +49,13 @@ Section~\ref{sec:correction} is arithmetic and not a re-run artifact. The full r
 before-and-after per-cell table, is \texttt{paper/MEASUREMENT-CORRECTION.md}.
 
 \paragraph{Known gaps.}
-The campaign notebooks are in \texttt{release/notebooks/} with their digests and the cell ranges
-that differ between the three copies. They cover the v5 training loop, the development-split
-temperature fit, the per-option banking77 head, and the v5 checkpoint merge; they do not contain
-the v6 assembly cell, the fit that produced the v6 temperatures, or the 2{,}000-bundle calibration
-split. The calibration split committed here has 448 rows and 568 questions, and the 2{,}000-bundle
-split in the model card is not committed and is not used for any number in this paper. The banking77 \texttt{none\_absent}
+Four campaign notebooks are in \texttt{release/notebooks/} with their digests: three copies of the
+v5 run (training loop, development-split temperature fit, per-option banking77 head, checkpoint
+merge) and the v6 campaign (CAL split, CAL temperature and conformal fit, CORAL gate, checkpoint
+assembly). The CAL file itself was not committed; \texttt{release/build\_cal\_split.py} redraws
+it deterministically at 1{,}999 bundles and 2{,}548 questions. The suite's committed calibration
+split has 448 rows and 568 questions and is a different, earlier split; no number in this paper is
+computed from it. The banking77 \texttt{none\_absent}
 decomposition is 0/12 here against 7/12 in the training record while the cell aggregate matches at
 78/116. These gaps are reported rather than reconstructed.
 

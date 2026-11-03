@@ -1,5 +1,5 @@
 {
- "description": "Campaign notebooks released 2026-11-04. All three are copies of the same v5 run; none contains a v6 assembly cell, a conformal-quantile fit, or the 2,000-bundle split.",
+ "description": "Campaign notebooks released 2026-11-04: three v5 copies and the v6 campaign. The v6 notebook contains the CAL split, the temperature/conformal fit, and the checkpoint assembly.",
  "notebooks": [
   {
    "file": "01-v5-campaign-full.ipynb",
@@ -21,6 +21,13 @@
    "sha256": "ccb07b573fc4e978de4580198eb3b94a234ff5196985382213f5b8ba2e6e5d05",
    "cells": 12,
    "note": "First twelve cells of the full copy, ending at the backbone export; a truncated copy, no unique cell."
+  },
+  {
+   "file": "04-v6-campaign.ipynb",
+   "original_name": "Untitled0 (2).ipynb",
+   "sha256": "023f3c51d7a1477d57c3f0e62a6150fb739b0fccce35012fa162d3155831a9a9",
+   "cells": 7,
+   "note": "The v6 campaign: dedup + stratified train/CAL/dev/test split (CAL drawn from train, seed 42), set-context head and none gate for banking77, CORAL/EMD ordinal head with a dev gate, the 4-arm graph ablation, the CAL-split temperature and conformal fit, and the cell that writes myna-v6-unified.pt."
   }
  ]
 }
