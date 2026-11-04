@@ -92,6 +92,12 @@ class CellDataset(Dataset):
             text = state_text(row["state"])
             for qname, spec in row["questions"].items():
                 cell = f"{row['_meta']['source']}/{qname}"
+                # The question is part of the input: for mnli the hypothesis and for boolq the
+                # query live in `instructions`, so a state-only classifier cannot answer those
+                # cells at all. Myna's packed scorer sees the question too, so this is the fair
+                # analogue rather than a favour to the baseline.
+                question = str(spec.get("instructions", "")).strip()
+                text = state_text(row["state"]) + ("\n" + question if question else "")
                 self.by_cell[cell].append({"row_id": rid, "cell": cell, "qname": qname,
                                            "text": text, "gold": gold_index(spec),
                                            "n": n_options(spec)})
