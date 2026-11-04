@@ -1,0 +1,229 @@
+{
+ "cells": {},
+ "alphas": {
+  "90": {
+   "stored": {
+    "coverage": 0.8368
+   },
+   "pooled": {
+    "q": 0.632086,
+    "coverage": 0.8917
+   },
+   "mondrian": {
+    "cells": {
+     "agnews/is_business": {
+      "n_cal": 97,
+      "q": 0.36145,
+      "n_test": 43,
+      "coverage": 0.907
+     },
+     "agnews/is_scitech": {
+      "n_cal": 88,
+      "q": 0.295592,
+      "n_test": 49,
+      "coverage": 0.9184
+     },
+     "agnews/is_sports": {
+      "n_cal": 97,
+      "q": 0.054437,
+      "n_test": 47,
+      "coverage": 0.9149
+     },
+     "agnews/is_world": {
+      "n_cal": 84,
+      "q": 0.202007,
+      "n_test": 45,
+      "coverage": 0.8667
+     },
+     "agnews/topic": {
+      "n_cal": 183,
+      "q": 0.330045,
+      "n_test": 116,
+      "coverage": 0.8017
+     },
+     "amazon/stars": {
+      "n_cal": 183,
+      "q": 0.798748,
+      "n_test": 80,
+      "coverage": 0.875
+     },
+     "banking77/intent": {
+      "n_cal": 183,
+      "q": 0.985759,
+      "n_test": 116,
+      "coverage": 0.8448
+     },
+     "boolq/answer": {
+      "n_cal": 183,
+      "q": 0.423604,
+      "n_test": 80,
+      "coverage": 0.775
+     },
+     "contrastive/decision": {
+      "n_cal": 169,
+      "q": 0.142308,
+      "n_test": 196,
+      "coverage": 0.8469
+     },
+     "dbpedia14/category": {
+      "n_cal": 183,
+      "q": 0.004316,
+      "n_test": 116,
+      "coverage": 0.6897
+     },
+     "imdb/positive": {
+      "n_cal": 183,
+      "q": 0.357745,
+      "n_test": 80,
+      "coverage": 0.9125
+     },
+     "mnli/relation": {
+      "n_cal": 183,
+      "q": 0.485136,
+      "n_test": 116,
+      "coverage": 0.819
+     },
+     "sst5/sentiment": {
+      "n_cal": 183,
+      "q": 0.788301,
+      "n_test": 80,
+      "coverage": 0.8875
+     },
+     "trec/answer_type": {
+      "n_cal": 183,
+      "q": 0.157979,
+      "n_test": 116,
+      "coverage": 0.8707
+     },
+     "yelp/rating": {
+      "n_cal": 183,
+      "q": 0.762356,
+      "n_test": 80,
+      "coverage": 0.8125
+     },
+     "yelp/recommend": {
+      "n_cal": 183,
+      "q": 0.414387,
+      "n_test": 80,
+      "coverage": 0.8625
+     }
+    },
+    "skipped": {},
+    "macro_cell_coverage": 0.8503,
+    "question_weighted_coverage": 0.8396
+   }
+  },
+  "95": {
+   "stored": {
+    "coverage": 0.9333
+   },
+   "pooled": {
+    "q": 0.804933,
+    "coverage": 0.9437
+   },
+   "mondrian": {
+    "cells": {
+     "agnews/is_business": {
+      "n_cal": 97,
+      "q": 0.607307,
+      "n_test": 43,
+      "coverage": 0.9767
+     },
+     "agnews/is_scitech": {
+      "n_cal": 88,
+      "q": 0.509712,
+      "n_test": 49,
+      "coverage": 0.9184
+     },
+     "agnews/is_sports": {
+      "n_cal": 97,
+      "q": 0.072147,
+      "n_test": 47,
+      "coverage": 0.9362
+     },
+     "agnews/is_world": {
+      "n_cal": 84,
+      "q": 0.754427,
+      "n_test": 45,
+      "coverage": 1.0
+     },
+     "agnews/topic": {
+      "n_cal": 183,
+      "q": 0.812647,
+      "n_test": 116,
+      "coverage": 0.9655
+     },
+     "amazon/stars": {
+      "n_cal": 183,
+      "q": 0.889001,
+      "n_test": 80,
+      "coverage": 0.9125
+     },
+     "banking77/intent": {
+      "n_cal": 183,
+      "q": 0.99538,
+      "n_test": 116,
+      "coverage": 0.8966
+     },
+     "boolq/answer": {
+      "n_cal": 183,
+      "q": 0.580832,
+      "n_test": 80,
+      "coverage": 0.9
+     },
+     "contrastive/decision": {
+      "n_cal": 169,
+      "q": 0.269571,
+      "n_test": 196,
+      "coverage": 0.9235
+     },
+     "dbpedia14/category": {
+      "n_cal": 183,
+      "q": 0.011111,
+      "n_test": 116,
+      "coverage": 0.7845
+     },
+     "imdb/positive": {
+      "n_cal": 183,
+      "q": 0.576217,
+      "n_test": 80,
+      "coverage": 0.9625
+     },
+     "mnli/relation": {
+      "n_cal": 183,
+      "q": 0.723436,
+      "n_test": 116,
+      "coverage": 0.931
+     },
+     "sst5/sentiment": {
+      "n_cal": 183,
+      "q": 0.86993,
+      "n_test": 80,
+      "coverage": 0.95
+     },
+     "trec/answer_type": {
+      "n_cal": 183,
+      "q": 0.343039,
+      "n_test": 116,
+      "coverage": 0.9224
+     },
+     "yelp/rating": {
+      "n_cal": 183,
+      "q": 0.845502,
+      "n_test": 80,
+      "coverage": 0.9125
+     },
+     "yelp/recommend": {
+      "n_cal": 183,
+      "q": 0.666068,
+      "n_test": 80,
+      "coverage": 0.9625
+     }
+    },
+    "skipped": {},
+    "macro_cell_coverage": 0.9284,
+    "question_weighted_coverage": 0.9215
+   }
+  }
+ }
+}

@@ -139,14 +139,92 @@ and an expected score; a \texttt{noul} returns $p(\text{yes})$. Every answer car
 vector, a confidence, a 90\% conformal set, an abstention flag, and the routing mode that produced
 it. The contract is the same for both engines; only the scorer behind it changes.
 
+\subsection{Formal description}
+\label{sec:formal}
+
+\emph{Notation.} A bundle is a token sequence $x=(x_1,\dots,x_T)$ and questions
+$Q=\{q_1,\dots,q_m\}$. Question $q$ has type $\tau\in\{\textsc{choice},\textsc{score},
+\textsc{noul}\}$ and an ordered option set $O_q=(o_1,\dots,o_K)$. \textsc{choice} selects an
+option, \textsc{score} selects a level on an ordinal scale, and \textsc{noul} is a two-option
+question over $\{\text{no},\text{yes}\}$; we write boolean (\,\texttt{noul}\,) on first use, and the
+name is the API's, not a statistical claim. A session answers $q$ from $(x,O_q)$ and returns a
+distribution $p$ over $O_q$ with confidence $\max_i p_i$.
+
+\emph{Gated linear attention.} \stream{} stacks $L_s$ layers of $H$ heads with key and value
+widths $d_k,d_v$. With input $u_t$ at step $t$,
+\begin{align}
+a_t &= \sigma(W_a u_t)\in(0,1)^{d_k},\quad k_t=W_k u_t,\quad v_t=W_v u_t, \label{eq:gates}\\
+S_t &= \operatorname{diag}(a_t)\,S_{t-1} + k_t v_t^{\top},\quad S_0=0, \label{eq:state}\\
+o_t &= q_t^{\top} S_t,\quad q_t=W_q u_t, \label{eq:read}
+\end{align}
+per layer and head, with the layer and head indices suppressed. The recurrent form is exact, not an
+approximation of quadratic attention: its equivalence to the chunked training form is pinned by a
+numerical test in the repository. The state in Eq.~\eqref{eq:state} is independent of $T$; at
+production width $L_s=6$, $H=6$, $d_k=d_v=64$ it holds $147{,}456$ scalars, i.e.\ $589{,}824$ bytes
+at 32-bit precision (576\,KiB). \texttt{observe} runs Eqs.~\eqref{eq:gates}--\eqref{eq:read} over
+$x$ and returns $S_T$; \texttt{append} resumes from $S_T$ on a suffix; \texttt{ask} runs a question
+branch initialised at $S_T$.
+
+\emph{Typed readout.} Let $h_q$ be the question branch's final hidden state and $h_i$ the branch's
+hidden state at the last token of option $i$. Both engines use
+\begin{equation}
+z_i = w_\tau^{\top} h_i + b_\tau, \label{eq:readout}
+\end{equation}
+with $p_i=\operatorname{softmax}(z/T_\tau)_i$ and $T_\tau>0$ fitted per type on a calibration split
+(Section~\ref{sec:calibration}). The engines
+differ only in how $h_i$ is produced.
+
+\emph{Packed scorer} ($K_q\le16$). One sequence is built,
+\begin{equation}
+\big[\,P_\tau\;|\;x\;|\;o_1\,[M]\;o_2\,[M]\;\cdots\;o_K\,[M]\,\big], \label{eq:packed}
+\end{equation}
+with task prefix $P_\tau$ and mask token $[M]$; $h_i$ is the encoder state at the $i$-th $[M]$.
+Truncation shortens the state before any option span, because a lost context span degrades one
+shared read whereas a lost option deletes a candidate; if the option spans alone exceed
+$L_{\max}=512$, tail options are cut.
+
+\emph{Set-aware scorer} ($K_q>16$). A 77-option question cannot fit in 512 tokens, so each option
+is encoded against the state separately,
+\begin{align}
+h_i &= \operatorname{Enc}(x,o_i)_{\textsc{[CLS]}}, &
+\bar h &= \tfrac{1}{K_q}\textstyle\sum_{j=1}^{K_q} h_j, \label{eq:seth}\\
+d_i &= \operatorname{LN}(h_i)-\operatorname{LN}(\bar h). & &
+\label{eq:dev}
+\end{align}
+\begin{multline}
+z_i = f_b\big(\operatorname{LN}(h_i)\big)
+ + \tanh(\gamma)\, f_c\big([\operatorname{LN}(h_i);\,d_i]\big) \\
+ + \beta\,\mathbf{1}[o_i=\textsc{none}], \label{eq:setscore}
+\end{multline}
+where $f_b,f_c$ are two-layer MLPs of width 512, $\gamma$ is a scalar, $\operatorname{LN}$ is layer
+normalisation, and the last term gates the injected \textsc{none}-of-these option. The deviation
+term $d_i$ is the mechanism: an option is scored against the bundle's own competition, so the scale
+of $z$ is set by the other candidates rather than by a global bias.
+
+\emph{Objective.} For gold answers $y_q$,
+\begin{multline}
+\mathcal{L} = \sum_{q\in Q} -\log p_{y_q}
+ + \lambda_s \!\!\sum_{q:\tau_q=\textsc{score}}\!\! \big(\mathcal{L}_{\text{coral}}(q)
+ + \mathcal{L}_{\text{em}}(q)\big), \label{eq:loss}
+\end{multline}
+where $\mathcal{L}_{\text{coral}}$ is the cumulative-link loss over the $K_q-1$ ordinal thresholds
+and $\mathcal{L}_{\text{em}}$ an earth-mover term; the shipped configuration sets $\lambda_s=0$, so
+Eq.~\eqref{eq:loss} is per-question cross-entropy. Training is one epoch of AdamW with encoder
+learning rate $2\times10^{-5}$ and head learning rate $10^{-3}$.
+
+\emph{Conformal sets.} With nonconformity $s_i=1-p_{y_i}$,
+\begin{equation}
+\hat q = \operatorname*{Quantile}_{\lceil (n+1)(1-\alpha)\rceil/n}\big(s_1,\dots,s_n\big),
+\label{eq:conformal}
+\end{equation}
+on $n$ calibration questions, with prediction set $C(x)=\{y:1-p_y\le\hat q\}$. Section~\ref{sec:calibration} reports
+Eq.~\eqref{eq:conformal} pooled and conditioned on the cell.
+
 \subsection{\stream{}: constant state}
-\stream{} is a six-layer gated-linear-attention trunk with $d_{\text{model}}=384$ and
-14{,}449{,}280 parameters. An observation is scanned once into a per-layer state
-$S\in\mathbb{R}^{H\times d_k\times d_v}$; at production width this is 589{,}824 bytes (576 KiB),
-independent of the observation length. \texttt{observe()} scans, \texttt{append()} scans only the
-new segment, and \texttt{ask()} reads the question against $S$ with a pointer head. There is no
-vocabulary head and no language-model trunk. Each observation is scanned once and subsequent
-questions reuse the retained state.
+\stream{} instantiates Eqs.~\eqref{eq:gates}--\eqref{eq:read} at $d_{\text{model}}=384$ with
+14{,}449{,}280 parameters. It has no vocabulary head and no language-model trunk: the typed heads of
+Eq.~\eqref{eq:readout} are pointer probes over question-branch states, and each observation is
+scanned once.
 
 \subsection{\vsix{}: cardinality-routed cross-encoder}
 \vsix{} is a fine-tuned \texttt{microsoft/deberta-v3-large} (434{,}012{,}160 parameters, 24
@@ -154,14 +232,9 @@ layers, 512-token maximum) with 12{,}619{,}022 parameters of readout, for 446{,}
 total. Two readout heads are used at inference: a packed scorer for $K\le16$ and a set-aware
 scorer for $K>16$. The checkpoint also stores a disabled ordinal head and an unused
 cross-question graph head; neither participates in the inference path, and the paper makes no
-claim about them beyond Section~\ref{sec:consistency}. For $K\le16$ the engine builds one packed
-sequence: a task prefix, the state, then each option followed by its own \texttt{[MASK]} token;
-the scorer reads the hidden state at each mask. For $K>16$ it encodes each option against the
-state separately and scores it against the competition in its bundle. The state is truncated
-before the options are, because dropping context degrades one shared span while dropping an
-option deletes a candidate; when the option spans themselves overflow, the tail is cut. The
-engine re-encodes the whole state on every question; it has no fixed-size state and no streaming
-property.
+claim about them beyond Section~\ref{sec:consistency}. It realises Eqs.~\eqref{eq:packed} and \eqref{eq:seth}--\eqref{eq:setscore}: packed scoring for
+$K\le16$, set-aware scoring for $K>16$. The engine re-encodes the whole state on every question; it
+has no fixed-size state and no streaming property.
 
 \subsection{What is shared, and what is not}
 Both engines implement the same \texttt{observe}/\texttt{append}/\texttt{ask} surface, the same
@@ -439,25 +512,49 @@ The v0 streaming arm, on the same calibration split, reaches a maximum of 0.596 
 and fails the same target; the confidence mechanism is a property of the \vsix{} arm, not of the
 architecture family.
 
-\subsection{Conformal prediction: a negative result}
-A split-conformal variant was fitted per primitive on the CAL split by the released cell. On test,
-its 90\% sets cover 83.68\% of questions (1{,}205/1{,}440) and its 95\% sets cover 93.33\%
-(1{,}344/1{,}440). The campaign recorded 85.49\% and 93.68\% from a different rendering of the
-boolean options; both readings are below nominal, and the 90\% shortfall is 6.3 points on the
-released engine.
+\subsection{Conformal prediction: what fails, and why}
+\label{sec:conformal}
 
-Marginal coverage is licensed by exchangeability, and exchangeability is questionable here on three
-counts. The calibration and test splits differ in source mix; the questions of a bundle share a
-state and are therefore dependent; and the option cardinality ranges from 2 to 78 within the same
-primitive. A single marginal number cannot locate the violation, and the paper does not claim to;
-what it can say is that the nominal guarantee does not hold on this split, and that the shortfall is
-large enough to matter for an abstention policy.
+We report three calibrations of the same nonconformity score, Eq.~\eqref{eq:conformal}, on the same
+test questions. \emph{Released}: the per-primitive quantiles stored in the checkpoint, fitted on the
+campaign's 568-question CAL split. \emph{Refit}: one pooled quantile fitted on the rebuilt
+2{,}548-question CAL split (\texttt{release/build\_cal\_split.py}). \emph{Mondrian}: one quantile per
+cell on the same rebuilt split, the cell-conditional calibration a reviewer would ask for when
+exchangeability across heterogeneous questions is in doubt.
 
-The paper therefore does not use conformal sets as a coverage guarantee or as the abstention method.
-The selective results above use temperature-scaled confidence and the risk--coverage curve, which is
-the standard instrument for this setting. The engine still exposes a 90\% set for callers that want
-a ranking signal, but no coverage claim is attached to it, and a deployment that needs a calibrated
-abstention threshold should fit it on its own traffic rather than inherit this one.
+\begin{center}
+\footnotesize
+\begin{tabular}{lrrr}
+\toprule
+ & 90\% target & 95\% target & calibration \\
+\midrule
+released (per primitive, 568 questions) & 0.8368 & 0.9333 & 568 \\
+refit pooled (2{,}548 questions) & 0.8917 & 0.9437 & 2{,}548 \\
+Mondrian per cell (2{,}548 questions) & 0.8396 & 0.9215 & 2{,}548 \\
+\midrule
+nominal & 0.90 & 0.95 & \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Two things follow, and neither is the story the earlier draft told. First, most of the 90\% shortfall
+is calibration-sample size, not a violated guarantee: refitting the same score on 2{,}548 questions
+moves coverage from 83.68\% to 89.17\%, within a point of nominal. Second, cell-conditional
+calibration does not help — it is worse than pooled refitting at both levels (83.96\% and 92.15\%),
+because the per-cell calibration sets are ten times smaller and the residual violation is
+\emph{within} a cell, not between cells: dbpedia14 covers 68.97\% at the 90\% target while
+agnews/is\_business covers 90.70\%, and both are conditioned on their own cell. Stratifying by the
+cell therefore does not restore exchangeability; it only shrinks the sample each quantile is fitted
+on.
+
+The honest conclusion is narrower than ``conformal fails'' and more useful. A marginal guarantee is
+not available on this suite for two independent reasons — calibration and test differ in source mix,
+and questions within a bundle share a state and are dependent — and a cell-conditional fit does not
+repair either, because the dependence is inside the cell's own distribution. The paper therefore
+does not use conformal sets as a coverage guarantee or as the abstention method; the selective
+results above use temperature-scaled confidence and the risk--coverage curve. The engine still
+exposes a 90\% set as a ranking signal, with no coverage claim attached; a deployment that needs a
+calibrated threshold should fit it on its own traffic.
 
 \begin{widetable}
 \centering
@@ -477,8 +574,12 @@ selective accuracy @ 60\% coverage & 0.9815 \\
 selective accuracy @ 70\% coverage & 0.9633 \\
 selective accuracy @ 80\% coverage & 0.9358 \\
 selective accuracy @ 90\% coverage & 0.9035 \\
-conformal 90\% empirical coverage & 0.8368 \\
-conformal 95\% empirical coverage & 0.9333 \\
+conformal 90\%, released quantiles & 0.8368 \\
+conformal 95\%, released quantiles & 0.9333 \\
+conformal 90\%, refit on 2{,}548 & 0.8917 \\
+conformal 95\%, refit on 2{,}548 & 0.9437 \\
+conformal 90\%, Mondrian per cell & 0.8396 \\
+conformal 95\%, Mondrian per cell & 0.9215 \\
 \bottomrule
 \end{tabular}
 \end{widetable}

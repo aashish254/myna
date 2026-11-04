@@ -20,6 +20,7 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import shlex
 import sys
 import time
 from pathlib import Path
@@ -104,7 +105,10 @@ def main() -> None:
     def finish(recs: list[dict], stored: dict) -> None:
         # The score label is the 0-based class index, so `gold_legacy` (the label as stored)
         # is the correct target; `gold_corrected` was built on the retracted off-by-one.
-        result = {"split": {"n_bundles": len({r["row_id"] for r in recs}),
+        # §9.30: flags only, so the line is pasteable however a checkout invoked it.
+        cmd = shlex.join(["python", "-m", "bench.cal_refit", *sys.argv[1:]])
+        result = {"cmd": cmd,
+                  "split": {"n_bundles": len({r["row_id"] for r in recs}),
                             "n_questions": len(recs)},
                   "stored": stored,
                   "refit": fit(recs, "gold_legacy")}
