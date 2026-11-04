@@ -166,7 +166,7 @@ def evaluate(model, ds: CellDataset, tok, device, max_len, batch_size=8):
 def train(rows: list[dict], seed: int, epochs: int, batch: int, accum: int, lr_enc: float,
           lr_head: float, max_len: int, device: str, limit: int = 0,
           grad_checkpoint: bool = True,
-          size_rows: list[dict] | None = None) -> tuple[MultiCellBaseline, object]:
+          size_rows: list[dict] | None = None, amp: bool = True) -> tuple[MultiCellBaseline, object]:
     from transformers import DebertaV2Tokenizer
 
     random.seed(seed); np.random.seed(seed); torch.manual_seed(seed)
@@ -196,6 +196,8 @@ def train(rows: list[dict], seed: int, epochs: int, batch: int, accum: int, lr_e
     sched = torch.optim.lr_scheduler.LambdaLR(
         optim, lambda s: min(1.0, (s + 1) / max(1, int(0.05 * total))) *
         max(0.0, 1 - s / max(1, total)))
+    amp_device = "cuda" if device == "cuda" else ("mps" if device == "mps" else "cpu")
+    use_amp = amp and device in ("cuda", "mps")
     try:
         scaler = torch.amp.GradScaler("cuda", enabled=(device == "cuda"))
     except (AttributeError, TypeError):
@@ -214,7 +216,7 @@ def train(rows: list[dict], seed: int, epochs: int, batch: int, accum: int, lr_e
             for start in range(0, len(idx) - batch + 1, batch):
                 chunk = [items[i] for i in idx[start:start + batch]]
                 ids, attn, gold = collate(chunk, tok, max_len)
-                with torch.autocast("cuda", dtype=torch.float16, enabled=(device == "cuda")):
+                with torch.autocast(amp_device, dtype=torch.float16, enabled=use_amp):
                     logits = model(cell, ids.to(device), attn.to(device))
                     loss = F.cross_entropy(logits, gold.to(device)) / accum
                 scaler.scale(loss).backward()
@@ -247,8 +249,11 @@ def main() -> None:
     ap.add_argument("--only-ood", action="store_true", help="skip the seed runs")
     ap.add_argument("--data-dir", default="data/decision-v2-pilot")
     ap.add_argument("--force", action="store_true", help="re-run seeds already on disk")
+    ap.add_argument("--amp", action="store_true", default=True, help="fp16 autocast on cuda/mps")
+    ap.add_argument("--no-amp", dest="amp", action="store_false")
     ap.add_argument("--out", default="runs/colab_baselines")
-    ap.add_argument("--grad-checkpoint", action="store_true", default=True)
+    ap.add_argument("--grad-checkpoint", dest="grad_checkpoint", action="store_true", default=True)
+    ap.add_argument("--no-grad-checkpoint", dest="grad_checkpoint", action="store_false")
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     args = ap.parse_args()
 
@@ -271,7 +276,7 @@ def main() -> None:
         print(f"=== in-domain baseline, seed {seed} ===", flush=True)
         model, tok = train(train_rows, seed, args.epochs, args.batch, args.accum,
                            args.lr_enc, args.lr_head, args.max_len, args.device, args.limit,
-                           args.grad_checkpoint, size_rows=train_rows + test_rows)
+                           args.grad_checkpoint, size_rows=train_rows + test_rows, amp=args.amp)
         res = evaluate(model, test_ds, tok, args.device, args.max_len)
         res.update({"seed": seed, "epochs": args.epochs, "batch": args.batch, "accum": args.accum,
                     "lr_enc": args.lr_enc, "lr_head": args.lr_head, "max_len": args.max_len,
@@ -290,7 +295,7 @@ def main() -> None:
               f"test on {len(held)} ===", flush=True)
         model, tok = train(kept, args.seeds[0], args.epochs, args.batch, args.accum,
                            args.lr_enc, args.lr_head, args.max_len, args.device, args.limit,
-                           args.grad_checkpoint, size_rows=train_rows + test_rows)
+                           args.grad_checkpoint, size_rows=train_rows + test_rows, amp=args.amp)
         res = evaluate(model, CellDataset(held), tok, args.device, args.max_len)
         res.update({"seed": args.seeds[0], "held_out_source": src, "kind": "leave_one_source_out",
                     "train_rows": len(kept)})
