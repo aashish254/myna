@@ -88,12 +88,18 @@ def fig3():
     order = [("myna_v6", "Myna v6, routed", C["blue"]),
              ("myna_v6_packed_forced", "Myna v6, packed", C["lightgrey"]),
              ("tfidf", "TF-IDF + logreg", C["green"]),
+             ("deberta_baseline", "DeBERTa-v3-large (in-domain)", "#56B4E9"),
              ("laya_best", "Laya (typed best)", C["orange"]),
              ("laya_raised", "Laya (raised)", C["orange"]),
              ("laya_english", "Laya (English)", C["orange"]),
              ("vegaml_0150", "VegaML 0.15.0", C["purple"]),
              ("majority", "Majority prior", C["grey"]),
              ("nli", "Zero-shot NLI", C["grey"])]
+    import statistics
+    seeds = [load(f"runs/kaggle/results/baseline_seed{s}.json") for s in (42, 7)]
+    arms["deberta_baseline"] = {
+        "macro": statistics.fmean(x["macro"] for x in seeds),
+        "bundle_exact": statistics.fmean(x["bundle_exact"] for x in seeds)}
     comp = load("runs/witness-competitor-head-to-head-1440.json")
     extra = {
         "laya_best": (comp["Laya (Typed-Decisions Best)"]["macro_acc"],

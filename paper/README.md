@@ -22,6 +22,7 @@ zero-shot on most cells).
 | Myna v6, routed | **0.8620** | 0.8632 | 0.8393 |
 | Myna v6, packed everywhere | 0.8222 | 0.8118 | 0.7764 |
 | TF-IDF + logistic regression | 0.7111 | 0.6840 | 0.6293 |
+| DeBERTa-v3-large, per-cell (in-domain, 2 seeds) | 0.7126 | 0.6799 | 0.6165 |
 | Laya 0.4.19 (typed-decisions best) | 0.7050 | 0.6792 | 0.6182 |
 | Laya 0.4.19 (raised + tournament) | 0.6829 | 0.6597 | 0.5918 |
 | Laya 0.4.19 (English default) | 0.6624 | 0.6333 | 0.5595 |
@@ -35,6 +36,9 @@ zero-shot on most cells).
   ordinal cell of `bench/v6_audit.py`. It was wrong: the suite stores the score label as a 0-based
   class index (0..4), and the original comparison was correct. The numbers stand at 0.8620 macro and
   ~0.63 on the ordinal cells; the retraction is `paper/MEASUREMENT-CORRECTION.md`.
+- **An in-domain baseline, same backbone and split.** DeBERTa-v3-large with one linear head per
+  cell, question-conditioned, two seeds: 0.7170 and 0.7082 macro (0.7126 mean), 14.9 points behind
+  Myna. The gap concentrates on multi-class choice cells (banking77 0.17 vs 0.67).
 - **External engine baselines restored.** Laya and VegaML are back, evaluated on the same rows by
   their own released harnesses, with the footing stated beside each number.
 - **An isolated routing ablation.** The packed scorer is forced on the v6 checkpoint

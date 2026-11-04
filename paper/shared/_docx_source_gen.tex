@@ -301,12 +301,20 @@ The row-clustered 95\% interval on the Myna-v6{} macro is [0.8432, 0.8799]; the 
 bundle exact is [0.8180, 0.8597]. The baselines' per-question records are not released in a form
 that supports a paired interval, so their columns are point estimates.
 
-Two cells keep the comparison honest. Myna-v6{} leads the supervised TF-IDF classifier on 15 of the
-16 cells and loses \texttt{banking77/intent}, 0.6724 against 0.8190: a bag-of-words classifier that
-sees the whole option list beats the routed set-aware head on the 77-way question. Against the best
-Laya configuration Myna-v6{} is at or above it on every cell, with equality on three agnews cells.
-That pattern is what in-domain fine-tuning buys, and it is why
-Section~5 treats the footing as part of every number rather than as a footnote.
+The in-domain reference that matters is not TF-IDF but the same backbone. We fine-tuned
+\texttt{microsoft/deberta-v3-large} on the same train split with a conventional readout: one linear
+classifier per cell over the \texttt{[CLS]} of \texttt{state + question}. Two seeds reach 0.7170 and
+0.7082 macro (0.7126 mean), 14.9 points below Myna-v6{}, and the gap is not uniform. It is largest on
+multi-class choice cells — banking77 0.17 against 0.67, dbpedia14 0.64 against 0.96, trec 0.71
+against 0.95, agnews/topic 0.67 against 0.91 — where the classifier must separate many classes from
+one pooled vector, and smallest on boolean cells and on yelp/recommend, where the two are within a
+point. That pattern is the readout's contribution rather than a training-budget artefact, although
+the baseline is trained for one epoch and is visibly underfitted on the 77-way cell; a longer
+schedule would narrow that one gap and is the obvious next control.
+
+Myna-v6{} also leads the supervised TF-IDF classifier on 15 of the 16 cells and loses
+\texttt{banking77/intent}, 0.6724 against 0.8190: a bag-of-words classifier that sees the whole
+option list beats the routed set-aware head on the 77-way question.
 
 \begin{table}
 \centering
@@ -322,6 +330,7 @@ Arm & macro & overall & bundle & footing \\
 Myna v6, routed & \textbf{0.8620} & 0.8632 & 0.8393 & in-domain \\
 Myna v6, packed everywhere & 0.8222 & 0.8118 & 0.7764 & in-domain \\
 TF-IDF + logistic regression & 0.7111 & 0.6840 & 0.6293 & in-domain, text only \\
+DeBERTa-v3-large, per-cell classifier & 0.7126 & 0.6799 & 0.6165 & in-domain, same backbone \\
 Laya 0.4.19 (typed-decisions best) & 0.7050 & 0.6792 & 0.6182 & 6/16 in-domain \\
 Laya 0.4.19 (raised + tournament) & 0.6829 & 0.6597 & 0.5918 & 6/16 in-domain \\
 Laya 0.4.19 (English default) & 0.6624 & 0.6333 & 0.5595 & 6/16 in-domain \\
@@ -335,7 +344,7 @@ Zero-shot NLI & 0.3278 & 0.3465 & 0.3027 & zero-shot \\
 \begin{figure}
 \centering
 \includegraphics[width=0.9\linewidth]{paper/figures/fig3_external.pdf}
-\caption{All nine arms on the same 1{,}176 test bundles. Bars are 16-cell macro; diamonds are
+\caption{All ten arms on the same 1{,}176 test bundles. Bars are 16-cell macro; diamonds are
 joint bundle exact. The ordering is stable under both aggregates. The Myna row is in-domain and
 the two decision engines are out-of-domain or zero-shot on most cells, so the figure ranks
 performance on this suite, not model quality in general.}
@@ -656,9 +665,10 @@ change any answer. Split-conformal sets cover 83.68\% at a 90\% target, so the p
 calibration error and risk--coverage instead of a coverage guarantee.
 
 What remains is scope. The suite is one frozen split, the accuracy arm is in-domain, and the
-external engines are not. A second seed, an out-of-domain cell set, and a same-backbone in-domain
-baseline are the measurements that would extend these claims, and the paper says so rather than
-implying otherwise.
+external engines are not. The in-domain baseline is one epoch and visibly underfits the 77-way
+cell, so its 14.9-point gap is an upper bound on the readout's advantage. An out-of-domain cell set
+and a longer baseline schedule are the measurements that would extend these claims, and the paper
+says so rather than implying otherwise.
 
 
 
