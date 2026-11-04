@@ -45,7 +45,7 @@ every cell, with the weights held fixed, scores 0.0345 on that cell and 0.8222 m
 the router on the same weights scores 0.6724 and 0.8620. No other cell changes. Routing is a
 budget repair for one cell, worth $+0.0399$ macro, and the paper presents it as such.
 \item \textbf{Bundle consistency as a measured property, with both predicates released.} The
-checkpoint records 0/172 contradictions. That record is reproduced by the campaign's own rule,
+checkpoint records 0/172 contradictions. That record is reproduced by the released notebook's rule,
 recovered from the released notebook (0/172 for \vsix{}, 1/172 for Laya, 2/172 for VegaML), but
 the rule only inspects choice--boolean pairs and cannot see the yelp rating/recommendation case. A
 broader released predicate gives 3/172, 10/172, and 29/172. The
@@ -331,7 +331,7 @@ The router sends $K\le16$ to the packed scorer and $K>16$ to the set-aware head.
 a design cap, not a measured optimum: every cell at or below 15 options fits with zero drops, and
 the only cell above the cap is the 77-way one. Sixteen leaves one option of headroom.
 
-Because the earlier campaign changed both the router and the model between arms, the routing
+Because the router and the model changed between the two ablation arms, the routing
 effect was re-measured on one checkpoint. The packed scorer was forced on every cell with
 \texttt{-{}-max-packed 1000}, and the same weights were then scored with the router enabled.
 Table~\ref{tab:routing} reports the result. Forcing the packed path scores 0.0345 on banking77
@@ -496,7 +496,7 @@ boolean is answered ``no''. It cannot see a yelp rating/recommendation contradic
 rating is a \texttt{score} question, and it misses any pair whose option text is not a substring
 of the question.
 
-This paper therefore reports two numbers: the campaign rule, and a broader predicate that covers
+This paper therefore reports two numbers: the notebook rule, and a broader predicate that covers
 both sources. A bundle is a contradiction under the broader predicate iff
 the predicted topic is class $c$, the bundle asks \texttt{is}$\_c$, and the answer is ``no''; or
 the predicted rating is 4--5 while \texttt{recommend} is ``no'', or 1--2 while \texttt{recommend}
@@ -513,7 +513,7 @@ cross-question graph head, but it changes nothing: the released notebook's five-
 (scorer-only, graph-full, gate-zero, shuffled, and exact factor-graph decoding) returns the same
 accuracy, 0.8899, and the same 1/172 contradictions for every arm on its 172 multi-question
 development bundles, and the test arms differ by one question in 436. The inference path never calls the module, and no consistency term
-was trained: the campaign config defines a consistency weight that no cell reads, and the training
+was trained: the training config defines a consistency weight that no cell reads, and the training
 loop minimizes per-question cross-entropy. The paper therefore makes
 no claim that the architecture enforces consistency, and it does not present the measurement as a
 methodological contribution. It is a descriptive statistic
@@ -523,14 +523,14 @@ over the two external engines.
 \begin{table}[t]
 \centering
 \footnotesize
-\caption{Bundle consistency, same 172 bundles, under the campaign's recovered rule and under the
-broader released predicate. The campaign column re-implements the notebook rule and reproduces the
+\caption{Bundle consistency, same 172 bundles, under the notebook's recovered rule and under the
+broader released predicate. The notebook column re-implements that rule and reproduces the
 published 0/172 for Myna; the released column also counts the yelp rating/recommendation pair that
-the campaign rule cannot see.}
+the notebook rule cannot see.}
 \label{tab:consistency}
 \begin{tabular}{lrrrr}
 \toprule
-Engine & campaign rule & released predicate & agnews & yelp \\
+Engine & notebook rule & released predicate & agnews & yelp \\
 \midrule
 Myna v6 & 0/172 & 3/172 & 2 & 1 \\
 Laya 0.4.19 & 1/172 & 10/172 & 5 & 5 \\
@@ -547,13 +547,13 @@ The checkpoint stores three temperatures, 0.9 for \texttt{choice}, 0.9 for \text
 0.85 for \texttt{noul}, fitted per primitive by minimizing negative log-likelihood on the CAL split
 that the released notebook draws from the training pool. The rebuilt split is committed
 with the paper (\texttt{runs/cal\_split.jsonl}; 1{,}999 bundles, 2{,}548 questions,
-SHA-256 \texttt{918ddbf2\ldots0202a}); the campaign's original file is not recoverable, so
+SHA-256 \texttt{918ddbf2\ldots0202a}); the original file is not recoverable, so
 this is a definition-level reproduction, not a byte match of the lost file. They produce zero argmax flips between
 development and test, so the calibration step changes probabilities but not decisions. On the
 1{,}440 test questions the 10-bin expected calibration error is 0.0190 and the multiclass Brier
 score is 0.0449. The ECE is stable in the bin count --- 0.0184 at 5 bins, 0.0190 at 10, 0.0213 at
 15, 0.0223 at 20, 0.0276 at 30 --- and equal-frequency (adaptive) bins give 0.0162 at 10 bins, so
-the headline value is not an artefact of one binning; the campaign recorded 0.0189 and 0.0434, and the small gap is the rendering
+the headline value is not an artefact of one binning; the original run recorded 0.0189 and 0.0434, and the small gap is the rendering
 difference between its pipeline and the released engine. Figure~\ref{fig:calibration}a is the
 reliability diagram. The largest bin holds 847 questions at mean confidence 0.980 and accuracy
 0.983; the mid-confidence bins track the diagonal closely, with the 0.6--0.7 bin at mean
@@ -563,9 +563,9 @@ confidence 0.647 and accuracy 0.681.
 Selective prediction is a curve, not a point. Ranking the 1{,}440 test questions by top probability
 gives accuracies of 0.9889 at 50\% coverage, 0.9815 at 60\%, 0.9633 at 70\%, 0.9358 at 80\%, and
 0.9035 at 90\%. The curve is monotone in the required direction: abstaining on the least confident
-questions buys accuracy at every operating point measured. The campaign reported 0.9873 at 60\%
+questions buys accuracy at every operating point measured. The original run reported 0.9873 at 60\%
 coverage; our top-probability re-ranking of the same released outcomes gives 0.9815, and the
-0.58-point difference is not resolved, because the campaign's selective routine is not released.
+0.58-point difference is not resolved, because the original selective routine is not released.
 The v0 streaming arm, on the same calibration split, reaches a maximum of 0.596 at 10.0\% coverage
 and fails the same target; the confidence mechanism is a property of the \vsix{} arm, not of the
 architecture family.
@@ -575,7 +575,7 @@ architecture family.
 
 We report three calibrations of the same nonconformity score, Eq.~\eqref{eq:conformal}, on the same
 test questions. \emph{Released}: the per-primitive quantiles stored in the checkpoint, fitted on the
-campaign's 568-question CAL split. \emph{Refit}: one pooled quantile fitted on the rebuilt
+the 568-question calibration split. \emph{Refit}: one pooled quantile fitted on the rebuilt
 2{,}548-question CAL split. \emph{Mondrian}: one quantile per
 cell on the same rebuilt split, the cell-conditional calibration of Vovk \cite{vovk2012conditional}, which is the standard answer when
 exchangeability across heterogeneous questions is in doubt.
@@ -803,12 +803,12 @@ an earth-mover term, and gated on development accuracy against the packed head's
 the stored head with the notebook's own forward pass and scored it on the same 240 questions
 (released with the paper): it reaches 0.6333 on the three cells against 0.6292 for the packed
 head, with 7 questions won and 6 lost on a paired comparison. The head is a wash, which is
-consistent with the campaign's decision to leave it off, and the ordinal cells are simply harder
+consistent with the decision to leave it off, and the ordinal cells are simply harder
 than the boolean cells rather than broken.
 
 \textbf{What could not be verified.}
-The campaign notebooks are released (\texttt{release/notebooks/}): the v5 training loop, the
-development-split temperature fit, the per-option banking77 head, and the v6 campaign with its CAL
+The training notebooks are released (\texttt{release/notebooks/}): the v5 loop, the
+development-split temperature fit, the per-option banking77 head, and the v6 run with its CAL
 split, its CAL temperature and conformal fit, the CORAL gate, and the cell that writes
 \texttt{myna-v6-unified.pt}. The CAL file itself was not committed. It is redrawn by
 \texttt{release/build\_cal\_split.py} (seed 42, proportional per source), which yields 1{,}999
@@ -821,11 +821,11 @@ reported rather than reconstructed.
 
 \textbf{Data and code availability.}
 The frozen suite, the checkpoint, the per-question records for every \myna{} arm, both consistency
-predicates, the four campaign notebooks, the CAL-split builder, the reference training
+predicates, the four training notebooks, the CAL-split builder, the reference training
 implementation, and every table and figure generator are released with the paper. The four
 training notebooks are in \texttt{release/notebooks/} with digests; the reference trainer
 reproduces the architecture and objective, loads into the engine, and matches it token-for-token.
-Bit-exact reproduction of the campaign's optimisation trajectory is not claimed, because the run
+Bit-exact reproduction of the original optimisation trajectory is not claimed, because the run
 depends on hardware and library versions that the notebooks record but do not pin.
 
 \textbf{Ethics.}
