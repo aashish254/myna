@@ -629,9 +629,11 @@ reported rather than reconstructed.
 \textbf{Data and code availability.}
 The frozen suite, the checkpoint, the per-question records for every Myna{} arm, both consistency
 predicates, the four campaign notebooks, the CAL-split builder, the reference training
-implementation, and every table and figure generator are released with the paper. The reference trainer reproduces the architecture
-and objective and writes a checkpoint the engine loads; the campaign notebook that produced the released checkpoint remains unavailable, and the paper does not claim to reproduce its exact
-trajectory.
+implementation, and every table and figure generator are released with the paper. The four
+training notebooks are in \texttt{release/notebooks/} with digests; the reference trainer
+reproduces the architecture and objective, loads into the engine, and matches it token-for-token.
+Bit-exact reproduction of the campaign's optimisation trajectory is not claimed, because the run
+depends on hardware and library versions that the notebooks record but do not pin.
 
 \textbf{Ethics.}
 Typed decisions are used in routing, moderation, and triage. An abstention flag is not a safety
