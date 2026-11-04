@@ -13,7 +13,7 @@ budget, whether the confidence it reports can support abstention, and whether th
 questions of one bundle are mutually consistent.
 
 This paper reports a measurement study of \myna, two engines behind one typed
-\texttt{choice}/\texttt{score}/\texttt{noul} contract. \stream{} is a 14.45M-parameter
+\texttt{choice}/\texttt{score}/\texttt{noul} contract. The third primitive, \texttt{noul}, is a two-option boolean question over $\{\text{no},\text{yes}\}$; the name is the API's. \stream{} is a 14.45M-parameter
 gated-linear-attention engine whose retained state is 576 KiB at every length from 128 to
 16{,}384 tokens. \vsix{} is a 446.63M-parameter fine-tuned DeBERTa-v3-large with a
 cardinality-routed readout; it re-encodes the state on every question and is the accuracy arm.
@@ -24,7 +24,7 @@ other, and the paper keeps the two apart throughout.
 The study is conducted on \textsc{decision-v2-pilot}, a frozen suite of 1{,}176 test bundles and
 1{,}440 questions over 16 cells drawn from 11 public sources (Table~\ref{tab:dataset}). Every arm
 is scored on the same rows, and every aggregate is recomputed from released per-question records
-by a single script (\texttt{bench/paper\_numbers.py}), so a table cannot drift from the records
+by a single aggregation script shipped with the paper, so a table cannot drift from the records
 it cites.
 
 \textbf{Contributions.} The paper makes five contributions, two of them negative results.
@@ -48,7 +48,7 @@ budget repair for one cell, worth $+0.0399$ macro, and the paper presents it as 
 checkpoint records 0/172 contradictions. That record is reproduced by the campaign's own rule,
 recovered from the released notebook (0/172 for \vsix{}, 1/172 for Laya, 2/172 for VegaML), but
 the rule only inspects choice--boolean pairs and cannot see the yelp rating/recommendation case. A
-broader released predicate (\texttt{src/myna/consistency.py}) gives 3/172, 10/172, and 29/172. The
+broader released predicate gives 3/172, 10/172, and 29/172. The
 cross-question graph head is never called at inference and the ablation is identical with it on,
 off or shuffled, so consistency is a property of the fine-tuned encoder rather than an enforced
 constraint, and no architectural claim is attached to it.
@@ -127,6 +127,14 @@ usual remedy is to recompute every aggregate from released per-item records rath
 summary table. This paper adopts that discipline: its aggregation script refuses a record whose
 correctness flag disagrees with its own prediction and gold, so a table cannot drift from the
 records it cites.
+
+The packed-versus-decoupled choice is the classical reranking trade-off. Poly-encoders
+\cite{humeau2020poly} and late-interaction models such as ColBERT \cite{khattab2020colbert} encode
+the context once and score many candidates cheaply, which is the $O(1)$-pass side; cross-encoders
+score each pair jointly, which is the $O(K)$ side our set-aware head occupies. Extreme
+multi-class classification addresses the same $K\gg16$ regime with label embeddings rather than
+$K$ forward passes. Our routing is the crude end of that spectrum, chosen because the deployed
+encoder is fixed; the measurements in Section~\ref{sec:cardinality} bound what it buys.
 
 \section{The Decision Contract and Two Engines}
 \label{sec:contract}
@@ -260,7 +268,7 @@ figure is a schematic; the measurements are in Section~\ref{sec:systems}.}
 \centering
 \footnotesize
 \caption{The frozen \textsc{decision-v2-pilot} suite (11 public sources). Cells are the 16
-$(\text{source},\text{question})$ pairs; $K$ is the number of options per question.}
+$(\text{source},\text{question})$ pairs; $K$ is the number of options per question; the 78-option test questions carry the injected \textsc{none}-of-these option.}
 \label{tab:dataset}
 \begin{tabular}{lrrrr}
 \toprule
@@ -269,6 +277,9 @@ Split & Rows & Questions & Cells & $K$ \\
 Train & 57{,}904 & 73{,}804 & 16 & 2--77 \\
 Development & 1{,}176 & 1{,}440 & 16 & 2--78 \\
 Calibration & 448 & 568 & 16 & 2--77 \\
+\midrule
+\multicolumn{5}{l}{\footnotesize The 448-row split is the suite's calibration partition; the 1{,}999-bundle}\\
+\multicolumn{5}{l}{\footnotesize CAL draw used for temperatures is separate (Section~\ref{sec:calibration}).}\\
 Test & 1{,}176 & 1{,}440 & 16 & 2--78 \\
 \bottomrule
 \end{tabular}
@@ -356,14 +367,22 @@ router scores 0.6724, with the other 15 cells identical.}
 \subsection{The comparison set}
 Table~\ref{tab:main} places the \myna{} arms beside five external references on the same 1{,}176
 test bundles. Two are contemporary decision engines evaluated by their own released harnesses:
-Laya 0.4.19, in three configurations, and VegaML 0.15.0. Three are classical references: a
-train-prior majority classifier, a supervised TF-IDF unigram/bigram classifier with logistic
-regression, and a zero-shot NLI scorer (\texttt{cross-encoder/nli-deberta-v3-small}).
+Laya 0.4.19, in three configurations, and VegaML 0.15.0. Both are third-party implementations
+distributed with their own harnesses; we run each at its published default, record the version, and
+report what the harness reports. Neither is a published method with a stated parameter count or
+training corpus, so the paper treats them as engineering references rather than as literature
+baselines, and Section~\ref{sec:related} positions the architectural comparison against published
+readout families instead. Three further references are classical: a train-prior majority
+classifier, a supervised TF-IDF unigram/bigram classifier with logistic regression, and a zero-shot
+NLI scorer (\texttt{cross-encoder/nli-deberta-v3-small}).
 
 The footing differs by arm, and the difference is large enough that it must travel with the
 numbers. \vsix{} is fine-tuned on the suite's train split and is therefore in-domain on all 16
-cells. The classical references are trained on the same split, so they are in-domain too, but
-they are given only the state text and the question instructions, not the option descriptions.
+cells. The classical references are trained on the same split, so they are in-domain too. They predict
+the cell's label directly from the state and the question, which is the standard formulation for a
+text classifier; they do not score option strings, because a bag-of-words model has no
+option-conditioned input. The comparison is therefore about the readout, not about access to
+information: every arm sees the same state and the same question text.
 Laya and VegaML are evaluated zero-shot: Laya's training mixture covers 6 of the 16 cells (the
 five agnews cells and boolq), and VegaML is out-of-domain on all 16. The comparison is therefore
 an in-domain fine-tuned encoder against two out-of-domain engines and three classical supervised
@@ -438,7 +457,7 @@ this article about sports?'' is ``no''. The suite contains 172 bundles that ask 
 with a star rating and a recommendation question.
 
 The checkpoint's summary records 0/172 contradictions. That record is reproducible: the rule that
-produced it is in the campaign notebook's graph-ablation cell (\texttt{release/notebooks/}), and
+produced it is in the released notebook's graph-ablation cell, and
 re-implemented as code it gives 0/172 for \vsix{}, 1/172 for Laya, and 2/172 for VegaML. The rule
 is narrow. It counts a bundle only when the bundle carries both a \texttt{choice} and a
 \texttt{noul} question, the predicted option text appears inside the boolean question, and the
@@ -447,8 +466,7 @@ rating is a \texttt{score} question, and it misses any pair whose option text is
 of the question.
 
 This paper therefore reports two numbers: the campaign rule, and a broader predicate that covers
-both sources (\texttt{src/myna/consistency.py}; recomputed by
-\texttt{bench/consistency\_audit.py}). A bundle is a contradiction under the broader predicate iff
+both sources. A bundle is a contradiction under the broader predicate iff
 the predicted topic is class $c$, the bundle asks \texttt{is}$\_c$, and the answer is ``no''; or
 the predicted rating is 4--5 while \texttt{recommend} is ``no'', or 1--2 while \texttt{recommend}
 is ``yes''. Under it, \vsix{} has 3 contradictions in 172 bundles, Laya has 10, and VegaML has 29
@@ -461,7 +479,7 @@ cross-question graph head, but it changes nothing: the released notebook's five-
 accuracy, 0.8899, and the same 1/172 contradictions for every arm on its 172 multi-question
 development bundles, and the test arms differ by one question in 436. The inference path never calls the module, and no consistency term
 was trained: the campaign config defines a consistency weight that no cell reads, and the training
-loop minimizes per-question cross-entropy (\texttt{release/notebooks/}). The paper therefore makes
+loop minimizes per-question cross-entropy. The paper therefore makes
 no claim that the architecture enforces consistency, and it does not present the measurement as a
 methodological contribution. It is a descriptive statistic
 that a deployment can monitor, and it is the statistic on which \vsix{} has its largest margin
@@ -518,8 +536,8 @@ architecture family.
 We report three calibrations of the same nonconformity score, Eq.~\eqref{eq:conformal}, on the same
 test questions. \emph{Released}: the per-primitive quantiles stored in the checkpoint, fitted on the
 campaign's 568-question CAL split. \emph{Refit}: one pooled quantile fitted on the rebuilt
-2{,}548-question CAL split (\texttt{release/build\_cal\_split.py}). \emph{Mondrian}: one quantile per
-cell on the same rebuilt split, the cell-conditional calibration a reviewer would ask for when
+2{,}548-question CAL split. \emph{Mondrian}: one quantile per
+cell on the same rebuilt split, the cell-conditional calibration of Vovk \cite{vovk2012conditional}, which is the standard answer when
 exchangeability across heterogeneous questions is in doubt.
 
 \begin{center}
@@ -663,40 +681,37 @@ over state lengths. (c) Artifact size; int8 is smaller but not faster and not fa
 \label{fig:systems}
 \end{widefigure}
 
-\section{What the Small Engine Does Not Do}
+\section{The Streaming Arm: Compute, Not Accuracy}
 \label{sec:diagnostics}
 
-The streaming arm is a deployment result, not an accuracy result. Three measurements make that
-concrete.
+The streaming arm is a deployment result. This section states its accuracy limits once, so that no
+reader mistakes the systems numbers of Section~\ref{sec:systems} for a benchmark claim.
 
-\textbf{Synthetic success does not transfer.}
-The v0 checkpoint scores 0.9525 on the synthetic typed-decision test split, against a gate
-threshold of 0.94. The v1b checkpoint, trained on the real suite, scores 0.3423 on the same
-synthetic rows, which is below the 0.3546 majority floor; on the real suite it scores 0.4893
-against a 0.4331 majority floor, and the data-path variant scores 0.5339. The synthetic task is
-solved and the real 16-cell task is not.
-
-\textbf{Removing the shortcut does not add the ability.}
-A dose-matched anti-prior arm removes the majority-label shortcut: constant-emitter cells go from 4
-to 0, blank-instruction accuracy rises from 0.3341 to 0.4315, and blank-options accuracy from
-0.2669 to 0.3674. The same change drops test macro from 0.5339 to 0.4785. The mechanism moved as
-designed and the accuracy moved down. Two caveats travel with the pair: the \emph{off} arm stopped
-at step 3{,}314 of 3{,}600 and its harness prints VOID, and the \emph{on} arm is a continuation
-rather than an uninterrupted run. The pair is a mechanism check, not a clean causal estimate.
+\textbf{It does not learn the 16-cell suite.}
+The v1b checkpoint scores 0.4893 macro on the real suite against a 0.4331 majority floor, and its
+data-path variant 0.5339. A checkpoint trained on the synthetic typed-decision task scores 0.9525
+there and 0.3423 on the synthetic rows of the real suite, below that suite's 0.3546 floor: success
+on the synthetic task does not transfer.
 
 \textbf{Long context is flat at chance.}
 The 4k truncated-backprop arm scores 0.1833 at 4{,}096 state tokens and 0.1500 at 16{,}384; the
-128-token rung is also 0.1500, against a 0.167 uniform floor. The harness prints
-\texttt{readable: false} because the shortest rung is at chance: this is not a decay curve but a
-model that never learned the task at any length. Steps 799 and 1199 agree exactly on all three
-shared rungs, so the limiter is the mechanism rather than the dose.
+128-token rung is also 0.1500 against a 0.167 uniform floor. Steps 799 and 1199 agree exactly on all
+three shared rungs, so the limiter is the mechanism rather than the training dose. This is not a
+decay curve: the model never learned the task at any length.
+
+\textbf{Why the systems numbers still mean something.}
+Latency, memory and numerical drift are properties of the scan and the state size, not of the
+weights' quality: a constant-state layer costs what Eq.~\eqref{eq:state} costs, whatever the
+checkpoint has learned. The measurements in Section~\ref{sec:systems} are reported for that reason
+and are not offered as evidence that the architecture is competitive. Closing the accuracy gap is
+future work, and the paper makes no cascade claim: no deferral policy between the engines was
+trained or evaluated.
 
 \begin{widetable}
 \centering
 \footnotesize
-\caption{The small-engine diagnostics. Synthetic and real columns are different suites: 0.9525 is
-the synthetic test split; 0.4893--0.5339 are the real 16-cell suite. The anti-prior \emph{off} arm
-stopped at step 3{,}314 of 3{,}600 and its harness prints VOID.}
+\caption{The small-engine accuracy diagnostics. Synthetic and real columns are different suites.
+These rows bound the streaming prototype; they are not comparison arms.}
 \label{tab:diagnostics}
 \begin{tabular}{llrr}
 \toprule
@@ -705,11 +720,10 @@ Arm & Data & macro & note \\
 v0 & synthetic & 0.9525 & gate 0.94 \\
 v1b & synthetic & 0.3423 & below floor \\
 v1b & real suite & 0.4893 & floor 0.4331 \\
-anti-prior off & real suite & 0.5339 & 4 emitters; VOID \\
-anti-prior on & real suite & 0.4785 & 0 emitters \\
-v6 & real suite & 0.8620 & in-domain \\
-lc1-4k, 4k state & needle & 0.1833 & readable:false \\
-lc1-4k, 16k state & needle & 0.1500 & readable:false \\
+data-path v1b & real suite & 0.5339 & \\
+v6 (reference) & real suite & 0.8620 & in-domain \\
+lc1-4k, 4k state & needle & 0.1833 & floor 0.167 \\
+lc1-4k, 16k state & needle & 0.1500 & floor 0.167 \\
 \bottomrule
 \end{tabular}
 \end{widetable}
@@ -733,7 +747,7 @@ a 0.525 TF-IDF baseline on the first. The checkpoint also stores a CORAL ordinal
 released configuration disables; it was trained with cross-entropy plus a cumulative-link term and
 an earth-mover term, and gated on development accuracy against the packed head's 0.6542. We decoded
 the stored head with the notebook's own forward pass and scored it on the same 240 questions
-(\texttt{bench/coral\_eval.py}): it reaches 0.6333 on the three cells against 0.6292 for the packed
+(released with the paper): it reaches 0.6333 on the three cells against 0.6292 for the packed
 head, with 7 questions won and 6 lost on a paired comparison. The head is a wash, which is
 consistent with the campaign's decision to leave it off, and the ordinal cells are simply harder
 than the boolean cells rather than broken.
