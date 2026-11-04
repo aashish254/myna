@@ -1,0 +1,44 @@
+{
+ "deberta_percell_seed42": {
+  "macro_myna": 0.8632,
+  "macro_arm": 0.691,
+  "delta_macro": 0.145,
+  "ci95": [
+   0.1222,
+   0.1681
+  ],
+  "mcnemar": {
+   "myna_only": 302,
+   "arm_only": 54,
+   "p": "3.71e-39"
+  }
+ },
+ "laya_0419": {
+  "macro_myna": 0.8632,
+  "macro_arm": 0.6382,
+  "delta_macro": 0.1956,
+  "ci95": [
+   0.1692,
+   0.2219
+  ],
+  "mcnemar": {
+   "myna_only": 391,
+   "arm_only": 67,
+   "p": "1.81e-51"
+  }
+ },
+ "vegaml_0150": {
+  "macro_myna": 0.8632,
+  "macro_arm": 0.5833,
+  "delta_macro": 0.2461,
+  "ci95": [
+   0.2182,
+   0.275
+  ],
+  "mcnemar": {
+   "myna_only": 478,
+   "arm_only": 75,
+   "p": "1.62e-65"
+  }
+ }
+}

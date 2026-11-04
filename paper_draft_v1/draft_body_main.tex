@@ -408,6 +408,12 @@ point. That pattern is the readout's contribution rather than a training-budget 
 the baseline is trained for one epoch and is visibly underfitted on the 77-way cell; a longer
 schedule would narrow that one gap and is the obvious next control.
 
+Pairing on the same rows makes the comparisons significant rather than descriptive. Resampling
+bundles gives \vsix{} minus the per-cell classifier at $+0.145$ macro (95\% CI $[0.122,0.168]$;
+McNemar on the 1{,}440 questions, $p=3.7\times10^{-39}$), minus Laya $+0.196$ $[0.169,0.222]$ and
+minus VegaML $+0.246$ $[0.218,0.275]$. The TF-IDF arm has no per-question record in the release, so
+its interval is not computed; that is a gap in the artifact, not in the test.
+
 \vsix{} also leads the supervised TF-IDF classifier on 15 of the 16 cells and loses
 \texttt{banking77/intent}, 0.6724 against 0.8190: a bag-of-words classifier that sees the whole
 option list beats the routed set-aware head on the 77-way question.
@@ -510,7 +516,10 @@ VegaML 0.15.0 & 2/172 & 29/172 & 26 & 3 \\
 \subsection{Temperature scaling and calibration error}
 The checkpoint stores three temperatures, 0.9 for \texttt{choice}, 0.9 for \texttt{score}, and
 0.85 for \texttt{noul}, fitted per primitive by minimizing negative log-likelihood on the CAL split
-that the released notebook draws from the training pool. They produce zero argmax flips between
+that the released notebook draws from the training pool. The rebuilt split is committed
+with the paper (\texttt{runs/cal\_split.jsonl}; 1{,}999 bundles, 2{,}548 questions,
+SHA-256 \texttt{918ddbf2\ldots0202a}); the campaign's original file is not recoverable, so
+this is a definition-level reproduction, not a byte match of the lost file. They produce zero argmax flips between
 development and test, so the calibration step changes probabilities but not decisions. On the
 1{,}440 test questions the 10-bin expected calibration error is 0.0190 and the multiclass Brier
 score is 0.0449; the campaign recorded 0.0189 and 0.0434, and the small gap is the rendering
@@ -738,6 +747,13 @@ lc1-4k, 16k state & needle & 0.1500 & floor 0.167 \\
 \section{Discussion and Limitations}
 \label{sec:limitations}
 
+\textbf{Pre-training exposure.}
+\texttt{deberta-v3-large} was pre-trained on a web corpus that overlaps several sources used here
+(agnews, imdb, sst, yelp among them), so the in-domain numbers may benefit from exposure during
+pre-training. The suite is not a contamination-free evaluation, and the external engines are not on
+an equal exposure footing either. A clean measurement would use sources that post-date the backbone;
+this one does not, and the paper flags it rather than correcting for it.
+
 \textbf{Scope and footing.}
 This is a controlled study on one frozen suite. The reported intervals are sampling error over the
 1{,}176 rows of the split, not a population over checkpoints or datasets. The accuracy arm is
@@ -750,7 +766,7 @@ three measurements that would most strengthen the claims, and none is in this dr
 \textbf{The ordinal primitive.}
 The \texttt{score} cells are the engine's weakest group and its most ordinary: 0.6375 on
 amazon/stars, 0.6125 on sst5/sentiment, and 0.6250 on yelp/rating, against a 0.20 uniform floor and
-a 0.525 TF-IDF baseline on the first. The checkpoint also stores a CORAL ordinal head that the
+a 0.525 TF-IDF baseline on the first. The checkpoint also stores a CORAL \cite{cao2020coral} ordinal head that the
 released configuration disables; it was trained with cross-entropy plus a cumulative-link term and
 an earth-mover term, and gated on development accuracy against the packed head's 0.6542. We decoded
 the stored head with the notebook's own forward pass and scored it on the same 240 questions
@@ -785,17 +801,11 @@ depends on hardware and library versions that the notebooks record but do not pi
 Typed decisions are used in routing, moderation, and triage. An abstention flag is not a safety
 guarantee: the confidence scores are not certified, the suite is English and public, and the labels
 carry their sources' biases. A deployment should log the committing engine and keep a human in the
-loop for high-stakes cells. This study measured latency and bytes, not energy.
-
-\textbf{Funding.} This research received no external funding.
-
-\textbf{Competing interests.} The authors declare no competing interests.
-
-\textbf{Ethics.}
-Typed decisions are used in routing, moderation, and triage. An abstention flag is not a safety
-guarantee: the confidence scores are not certified, the suite is English and public, and the labels
-carry their sources' biases. A deployment should log the committing engine and keep a human in the
-loop for high-stakes cells. This study measured latency and bytes, not energy.
+loop for high-stakes cells. Two failure modes deserve naming: misrouting a moderation or triage
+item at 33--870\,ms is fast enough to remove human review from the loop by default, and the suite is
+English-only, drawn from public corpora whose demographic coverage is uneven, so error rates across
+groups are unmeasured here. No fairness audit was run; a deployment should not infer one from the
+aggregate numbers. This study measured latency and bytes, not energy.
 
 \textbf{Funding.} This research received no external funding.
 
