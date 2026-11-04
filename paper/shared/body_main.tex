@@ -209,6 +209,29 @@ normalisation, and the last term gates the injected \textsc{none}-of-these optio
 term $d_i$ is the mechanism: an option is scored against the bundle's own competition, so the scale
 of $z$ is set by the other candidates rather than by a global bias.
 
+Algorithm~\ref{alg:answer} is the inference path those equations describe.
+
+\begin{algorithm}[t]
+\caption{Answering one typed question with \vsix{}.}
+\label{alg:answer}
+\begin{algorithmic}[1]
+\Require state $x$, question $q$ with options $O_q=(o_1,\dots,o_K)$, threshold $\kappa=16$, budget $L=512$
+\Ensure distribution $p$ over $O_q$
+\If{$K\le\kappa$}
+  \State $s\gets[\,P_\tau\mid x\mid o_1[M]\cdots o_K[M]\,]$, truncated to $L$ tokens with the state cut first
+  \State $h_i\gets$ encoder state at the $i$-th $[M]$ \Comment{packed scorer, Eq.~\eqref{eq:packed}}
+\Else
+  \For{$i=1$ to $K$}
+    \State $h_i\gets\operatorname{Enc}(x,o_i)_{\textsc{[CLS]}}$ \Comment{one forward pass per option}
+  \EndFor
+  \State $\bar h\gets\tfrac{1}{K}\sum_{j=1}^{K}h_j$; \quad $d_i\gets\operatorname{LN}(h_i)-\operatorname{LN}(\bar h)$
+  \State $z_i\gets f_b(\operatorname{LN}(h_i))+\tanh(\gamma)f_c([\operatorname{LN}(h_i);d_i])+\beta\mathbf{1}[o_i=\textsc{none}]$
+\EndIf
+\State $p\gets\operatorname{softmax}(z/T_\tau)$ \Comment{Eq.~\eqref{eq:readout}}
+\State \Return $p$, \,$\arg\max_i p_i$, and the set $C(x)$ of Eq.~\eqref{eq:conformal}
+\end{algorithmic}
+\end{algorithm}
+
 \emph{Objective.} For gold answers $y_q$,
 \begin{multline}
 \mathcal{L} = \sum_{q\in Q} -\log p_{y_q}
