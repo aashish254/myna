@@ -1,0 +1,1 @@
+typed decision engines; multiple-choice scoring; cardinality routing; calibration; conformal prediction; selective prediction; gated linear attention; edge deployment; reproducibility

@@ -435,7 +435,9 @@ Pairing on the same rows makes the comparisons significant rather than descripti
 bundles gives \vsix{} minus the per-cell classifier at $+0.145$ macro (95\% CI $[0.122,0.168]$;
 McNemar on the 1{,}440 questions, $p=3.7\times10^{-39}$), minus Laya $+0.196$ $[0.169,0.222]$ and
 minus VegaML $+0.246$ $[0.218,0.275]$. The TF-IDF arm has no per-question record in the release, so
-its interval is not computed; that is a gap in the artifact, not in the test.
+its interval is not computed; that is a gap in the artifact, not in the test. The paired effect
+sizes are moderate rather than marginal: Cohen's $d$ is 0.37 against the per-cell classifier, 0.44
+against Laya and 0.51 against VegaML on 1{,}440 paired questions.
 
 \vsix{} also leads the supervised TF-IDF classifier on 15 of the 16 cells and loses
 \texttt{banking77/intent}, 0.6724 against 0.8190: a bag-of-words classifier that sees the whole
@@ -545,7 +547,9 @@ SHA-256 \texttt{918ddbf2\ldots0202a}); the campaign's original file is not recov
 this is a definition-level reproduction, not a byte match of the lost file. They produce zero argmax flips between
 development and test, so the calibration step changes probabilities but not decisions. On the
 1{,}440 test questions the 10-bin expected calibration error is 0.0190 and the multiclass Brier
-score is 0.0449; the campaign recorded 0.0189 and 0.0434, and the small gap is the rendering
+score is 0.0449. The ECE is stable in the bin count --- 0.0184 at 5 bins, 0.0190 at 10, 0.0213 at
+15, 0.0223 at 20, 0.0276 at 30 --- and equal-frequency (adaptive) bins give 0.0162 at 10 bins, so
+the headline value is not an artefact of one binning; the campaign recorded 0.0189 and 0.0434, and the small gap is the rendering
 difference between its pipeline and the released engine. Figure~\ref{fig:calibration}a is the
 reliability diagram. The largest bin holds 847 questions at mean confidence 0.980 and accuracy
 0.983; the mid-confidence bins track the diagonal closely, with the 0.6--0.7 bin at mean
