@@ -542,18 +542,25 @@ exchangeability across heterogeneous questions is in doubt.
 
 \begin{center}
 \footnotesize
-\begin{tabular}{lrrr}
+\begin{tabular}{lrrl}
 \toprule
- & 90\% target & 95\% target & calibration \\
+ & 90\% & 95\% & calibration \\
 \midrule
 released (per primitive, 568 questions) & 0.8368 & 0.9333 & 568 \\
-refit pooled (2{,}548 questions) & 0.8917 & 0.9437 & 2{,}548 \\
-Mondrian per cell (2{,}548 questions) & 0.8396 & 0.9215 & 2{,}548 \\
+refit per primitive (2{,}548) & 0.8694 & 0.9396 & shared \\
+refit, disjoint halves (2{,}548) & 0.8729 & 0.9354 & half/half \\
+refit pooled (2{,}548) & 0.8917 & 0.9437 & shared \\
+Mondrian per cell (2{,}548) & 0.8396 & 0.9215 & shared \\
 \midrule
 nominal & 0.90 & 0.95 & \\
 \bottomrule
 \end{tabular}
 \end{center}
+
+Fitting the temperature on one half of the CAL bundles and the quantile on the other, so that the
+scoring function is fixed independently of the calibration examples, moves coverage by 0.35 points
+at the 90\% target (86.94\% to 87.29\%) and 0.42 at 95\% (93.96\% to 93.54\%): the shared-split
+design is not what drives the shortfall.
 
 Two things follow, and neither is the story the earlier draft told. First, most of the 90\% shortfall
 is calibration-sample size, not a violated guarantee: refitting the same score on 2{,}548 questions
