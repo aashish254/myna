@@ -502,7 +502,11 @@ the predicted topic is class $c$, the bundle asks \texttt{is}$\_c$, and the answ
 the predicted rating is 4--5 while \texttt{recommend} is ``no'', or 1--2 while \texttt{recommend}
 is ``yes''. Under it, \vsix{} has 3 contradictions in 172 bundles, Laya has 10, and VegaML has 29
 (Table~\ref{tab:consistency}). The \vsix{} rate is 1.7\%, and the three errors are two agnews
-bundles and one yelp bundle.
+bundles and one yelp bundle. The yelp half of the rule is strict --- a 4-star review that advises
+against the venue is counted as a contradiction --- so we report the halves separately: agnews
+2/92 for \vsix{} against 5/92 (Laya) and 26/92 (VegaML), yelp 1/80 against 5/80 and 3/80. The
+ranking is the same in both halves, and the yelp counts are small enough that the strict rule does
+not drive the result.
 
 This is a property of the fine-tuned encoder, not of the architecture. The checkpoint stores a
 cross-question graph head, but it changes nothing: the released notebook's five-arm ablation
