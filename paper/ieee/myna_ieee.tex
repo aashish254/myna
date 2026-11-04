@@ -21,7 +21,21 @@
 \thanks{P. Dhakal: ORCID 0009-0000-9463-0094.}}
 \maketitle
 \begin{abstract}
-Typed decision engines score a fixed option set instead of generating text. This paper reports a measurement study of Myna, two engines behind one typed choice/score/noul contract: a 14.45M gated-linear-attention streaming engine with a 576 KiB state, and a 446.63M fine-tuned DeBERTa-v3-large with a cardinality-routed readout. On a frozen 16-cell suite (1,176 bundles, 1,440 questions) Myna v6 reaches 0.8620 macro against five external systems: a supervised TF-IDF classifier (0.7111), three configurations of Laya 0.4.19 (0.7050 best), VegaML 0.15.0 (0.6160), a train-prior majority classifier (0.3726), and a zero-shot NLI scorer (0.3278). The comparison is in-domain for Myna and out-of-domain or zero-shot for the engines, so it is reported as a footing-qualified comparison rather than a leaderboard claim. Three results are bounded or negative. Cardinality routing is a budget repair worth 0.0399 macro on exactly one cell, and the isolated ablation on one checkpoint shows the other 15 cells identical. Cross-question consistency is an observed property of the encoder (3/172 contradictions against 10/172 and 29/172 for the external engines), not an enforced constraint. Split-conformal sets cover 83.68\% at a 90\% target and 93.33\% at 95\%, so the paper reports calibration error (ECE 0.0190) and risk--coverage instead of a guarantee. The streaming arm answers in 33--870 ms with a 576 KiB state and runs in a browser at $1.03\times10^{-6}$ drift. Every figure is recomputed from released per-question records.
+Typed decision engines score a fixed option set instead of generating text. This paper reports a
+measurement study of Myna, which places a 14.45M-parameter gated-linear-attention streaming engine
+with a constant 576\,KiB state and a 446.63M-parameter fine-tuned DeBERTa-v3-large encoder behind one
+typed contract of multiple choice, ordinal score and boolean (\texttt{noul}) questions. On a frozen
+16-cell suite (1,176 bundles, 1,440 questions), \vsix{} reaches 0.8620 macro. The comparison that
+matters is the in-domain one: the same backbone, fine-tuned on the same split with a conventional
+per-cell classifier, reaches 0.7126 over two seeds, 14.9 points behind, and the gap concentrates on
+multi-class choice cells. External engines and classical baselines are reported as a
+footing-qualified secondary reference, not as a leaderboard. Three results are bounded or negative.
+Cardinality routing is a budget repair worth 0.0399 macro on exactly one cell. Split-conformal sets
+cover 83.68\% at a 90\% target with the released quantiles, 89.17\% when refitted on the larger
+calibration split, and cell-conditional (Mondrian) calibration is worse, at 83.96\%, so the paper
+reports calibration error and risk--coverage instead of a coverage guarantee. The streaming
+prototype is a compute result, not an accuracy result: it does not learn the suite, and the paper
+says so. Every test figure is recomputed from released per-question records.
 \end{abstract}
 \begin{IEEEkeywords}
 Decision engines; typed decisions; cardinality; calibration; selective prediction; conformal prediction; gated linear attention; edge deployment; reproducibility.
