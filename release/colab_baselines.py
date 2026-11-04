@@ -43,16 +43,24 @@ import torch.nn.functional as F
 from torch.utils.data import DataLoader, Dataset
 
 REPO = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(REPO / "src"))
 
 MODEL_NAME = "microsoft/deberta-v3-large"
 
 
 def state_text(state) -> str:
-    """The suite's own renderer, so the baseline sees the text Myna sees."""
-    from myna.real_data import _state_text
+    """The suite's own renderer, inlined so the script does not import the package.
 
-    return _state_text(state)
+    `myna.real_data._state_text` flattens str / dict / list states in insertion order;
+    keeping the copy here means the notebook needs only the JSONL files from the clone,
+    not a working install of the package at whatever commit the clone happens to carry.
+    """
+    if isinstance(state, str):
+        return state
+    if isinstance(state, dict):
+        return " ".join(state_text(v) for v in state.values())
+    if isinstance(state, (list, tuple)):
+        return " ".join(state_text(v) for v in state)
+    raise ValueError(f"unsupported state type {type(state).__name__}")
 
 
 def gold_index(spec: dict) -> int:
@@ -221,6 +229,7 @@ def main() -> None:
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--ood-source", default="yelp")
     ap.add_argument("--skip-ood", action="store_true")
+    ap.add_argument("--data-dir", default="data/decision-v2-pilot")
     ap.add_argument("--out", default="runs/colab_baselines")
     ap.add_argument("--grad-checkpoint", action="store_true", default=True)
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
@@ -228,7 +237,9 @@ def main() -> None:
 
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
-    data = REPO / "data" / "decision-v2-pilot"
+    data = Path(args.data_dir)
+    if not data.is_absolute():
+        data = REPO / data
     load = lambda name: [json.loads(l) for l in (data / name).read_text().splitlines() if l.strip()]
     train_rows, test_rows = load("train.jsonl"), load("test.jsonl")
     print(f"train {len(train_rows)} rows | test {len(test_rows)} rows | device {args.device}",
