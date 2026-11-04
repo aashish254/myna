@@ -104,8 +104,12 @@ class MultiCellBaseline(nn.Module):
         from transformers import AutoModel
 
         # The DeBERTa-v3-large config declares float16; load float32 so the heads and the
-        # encoder share a dtype, and let autocast handle the GPU path.
-        self.encoder = AutoModel.from_pretrained(MODEL_NAME, torch_dtype=torch.float32)
+        # encoder share a dtype, and let autocast handle the GPU path. `dtype=` is the 5.x
+        # spelling, `torch_dtype=` the 4.x one.
+        try:
+            self.encoder = AutoModel.from_pretrained(MODEL_NAME, dtype=torch.float32)
+        except TypeError:
+            self.encoder = AutoModel.from_pretrained(MODEL_NAME, torch_dtype=torch.float32)
         hidden = self.encoder.config.hidden_size
         self.dropout = nn.Dropout(dropout)
         self.heads = nn.ModuleDict({c: nn.Linear(hidden, n) for c, n in n_labels.items()})
@@ -158,7 +162,8 @@ def evaluate(model, ds: CellDataset, tok, device, max_len, batch_size=8):
 
 def train(rows: list[dict], seed: int, epochs: int, batch: int, accum: int, lr_enc: float,
           lr_head: float, max_len: int, device: str, limit: int = 0,
-          grad_checkpoint: bool = True) -> tuple[MultiCellBaseline, object]:
+          grad_checkpoint: bool = True,
+          size_rows: list[dict] | None = None) -> tuple[MultiCellBaseline, object]:
     from transformers import DebertaV2Tokenizer
 
     random.seed(seed); np.random.seed(seed); torch.manual_seed(seed)
@@ -168,7 +173,14 @@ def train(rows: list[dict], seed: int, epochs: int, batch: int, accum: int, lr_e
     # fast class that tries to convert it as tiktoken and fails, so name the slow class.
     tok = DebertaV2Tokenizer.from_pretrained(MODEL_NAME)
     ds = CellDataset(rows)
-    n_labels = {c: ds.by_cell[c][0]["n"] for c in ds.cells}
+    # Heads are sized over train *and* test cardinalities: the option count is schema, not a
+    # label, and a head capped at the train maximum can never emit a test option that the
+    # training split happened not to contain (banking77's 78th option is the case in point).
+    sizing = CellDataset(size_rows) if size_rows is not None else ds
+    n_labels = {c: max(item["n"] for item in sizing.by_cell[c]) for c in sizing.cells}
+    for c in ds.cells:
+        worst = max(item["gold"] for item in ds.by_cell[c])
+        assert worst < n_labels[c], f"{c}: gold {worst} >= head {n_labels[c]}"
     model = MultiCellBaseline(n_labels).to(device)
     if grad_checkpoint and hasattr(model.encoder, "gradient_checkpointing_enable"):
         model.encoder.gradient_checkpointing_enable()
@@ -229,7 +241,9 @@ def main() -> None:
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--ood-source", default="yelp")
     ap.add_argument("--skip-ood", action="store_true")
+    ap.add_argument("--only-ood", action="store_true", help="skip the seed runs")
     ap.add_argument("--data-dir", default="data/decision-v2-pilot")
+    ap.add_argument("--force", action="store_true", help="re-run seeds already on disk")
     ap.add_argument("--out", default="runs/colab_baselines")
     ap.add_argument("--grad-checkpoint", action="store_true", default=True)
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
@@ -246,11 +260,15 @@ def main() -> None:
           flush=True)
 
     test_ds = CellDataset(test_rows)
-    for seed in args.seeds:
+    for seed in ([] if args.only_ood else args.seeds):
+        done_path = out / f"baseline_seed{seed}.json"
+        if done_path.exists() and not args.force:
+            print(f"seed {seed}: already written, skipping ({done_path})", flush=True)
+            continue
         print(f"=== in-domain baseline, seed {seed} ===", flush=True)
         model, tok = train(train_rows, seed, args.epochs, args.batch, args.accum,
                            args.lr_enc, args.lr_head, args.max_len, args.device, args.limit,
-                           args.grad_checkpoint)
+                           args.grad_checkpoint, size_rows=train_rows + test_rows)
         res = evaluate(model, test_ds, tok, args.device, args.max_len)
         res.update({"seed": seed, "epochs": args.epochs, "batch": args.batch, "accum": args.accum,
                     "lr_enc": args.lr_enc, "lr_head": args.lr_head, "max_len": args.max_len,
@@ -269,7 +287,7 @@ def main() -> None:
               f"test on {len(held)} ===", flush=True)
         model, tok = train(kept, args.seeds[0], args.epochs, args.batch, args.accum,
                            args.lr_enc, args.lr_head, args.max_len, args.device, args.limit,
-                           args.grad_checkpoint)
+                           args.grad_checkpoint, size_rows=train_rows + test_rows)
         res = evaluate(model, CellDataset(held), tok, args.device, args.max_len)
         res.update({"seed": args.seeds[0], "held_out_source": src, "kind": "leave_one_source_out",
                     "train_rows": len(kept)})
