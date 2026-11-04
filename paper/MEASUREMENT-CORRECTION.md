@@ -1,87 +1,47 @@
-# Measurement correction: the `score` primitive was scored one level off
+# Retraction: there was no scoring off-by-one
 
-**Status:** corrected 2026-11-04. Every number in the manuscript dated before this file is
-re-derived; the pre-correction witnesses are kept under `*.predates-fix.*` and are not cited.
+**Status: withdrawn 2026-11-04.** This file previously claimed that the evaluation harness scored the
+ordinal (`score`) cells one level off, and that the v6 macro was therefore 0.7777 rather than 0.8620.
+That claim was wrong, and it is retracted here rather than quietly deleted, because it was committed,
+quoted in the model card, and used to rewrite the manuscript for a day.
 
-## What was wrong
+## What was actually true
 
-The suite stores an ordinal answer as a **1-based star level** (`"label": 4` means four
-stars) while the option vector the model scores is **0-based** (`ranked[3]` is the four-star
-option). `bench/v6_audit.py` compared the two directly:
+The suite stores a `score` label as a **0-based class index** into the five-level `criteria` list.
+All three score sources carry labels `0..4` with all five values present in the test split
+(amazon/stars 13/21/19/13/14, sst5 13/20/16/18/13, yelp 13/12/18/22/15), and the upstream datasets
+— `SetFit/sst5`, `Yelp/yelp_review_full`, `SetFit/amazon_reviews_multi_en` — all use 0-based labels.
 
-```python
-hit = top == ranked[golds[i]]          # pre-fix: golds[i] is 1..5, ranked is 0..4
-```
+The original harness compared `top == ranked[golds[i]]`. With `golds[i]` a 0-based index, that is
+correct. There was no off-by-one.
 
-so a prediction was recorded as correct when it named the level **above** gold. The
-prediction itself was fine — the bookkeeping was not.
+The error came from reading the yelp criteria text ("1 star … 5 stars") as a 1-based star level and
+assuming `label: 4` meant four stars, when it means index 4, i.e. five stars. The corrected numbers
+that followed (macro 0.7777, score cells 0.1750, ECE 0.0637) were the artefact.
 
-## Evidence
+Two independent checks that the original numbers are the right ones:
 
-For the 240 `score` questions in the frozen test split:
+- The score cells score 0.6375 / 0.6125 / 0.6250 under the original comparison — above the 0.20
+  uniform floor, which is what a fine-tuned encoder should do. The "corrected" 0.1750 was *below*
+  chance, which should have been the tell.
+- The v6 notebook gates its ordinal head on "development score accuracy > 0.6542". That threshold
+  only makes sense if score accuracy is around 0.65; under the bad mapping it would have been ~0.17.
 
-| | pre-fix | corrected |
-|---|---:|---:|
-| amazon/stars | 0.6375 | 0.1750 |
-| sst5/sentiment | 0.6125 | 0.1500 |
-| yelp/rating | 0.6250 | 0.2000 |
-| score primitive | 0.6250 | 0.1750 |
+## What is true now
 
-Two facts fix the interpretation:
+- Macro **0.8620**, overall 0.8632, joint bundle exact 0.8393 (routed), packed-forced 0.8222.
+- Ordinal cells 0.6375 / 0.6125 / 0.6250; the disabled CORAL head scores 0.6333 on the same cells
+  against 0.6292 for the packed head — a wash, which is why the campaign left it off.
+- ECE 0.0190, multiclass Brier 0.0449, selective accuracy 0.9815 at 60% coverage.
+- Conformal 90% sets cover 83.68% (1,205/1,440); 95% sets cover 93.33% (1,344/1,440). The
+  undercoverage is real and is reported as a negative result.
 
-1. On a directly inspected yelp row (`yelp/test/2720`, gold 3 stars) the engine's argmax is
-   the *"3 stars: average"* option at p=0.574, and the pre-fix record says `ok=0`.
-2. The corrected rate (0.175) is at the uniform floor for five options (0.20). The pre-fix
-   rate (0.625) is the rate at which `pred_index == gold_level`, which is the signature of
-   the off-by-one, not of a working ordinal head.
+The manuscript no longer contains a correction section. The harness compares `ranked[gold]` for
+`choice` and `score` alike, and `bench/coral_eval.py`, `bench/cal_refit.py`, `bench/refit_coverage.py`
+and `release/colab_baselines.py` all treat the score label as the index it is.
 
-## Effect on the headline
+## The lesson
 
-| metric | pre-fix | corrected |
-|---|---:|---:|
-| 16-cell macro | 0.8620 | 0.7777 |
-| overall accuracy | 0.8632 | 0.7882 |
-| joint bundle exact | 0.8393 | 0.7509 |
-| ECE (10 bins) | 0.0190 | 0.0637 |
-| Brier (top-1) | 0.0434 | 0.1187 |
-| selective accuracy @ 60% | 0.9873 | 0.9653 |
-| conformal 90% coverage (shipped quantiles) | 0.8549 | 0.7715 |
-| conformal 90% coverage (refitted on corrected gold) | — | 0.8778 |
-
-The relative ordering of the systems does not change (Myna v6 0.7777 still leads the
-supervised TF-IDF baseline at 0.7111 and the best Laya configuration at 0.7050), but the
-margin shrinks and the absolute claims change. The `score` primitive is now reported as
-**at chance** — a finding in its own right, since a TF-IDF classifier reaches 0.525 on
-amazon/stars where the fine-tuned model reaches 0.175.
-
-The same target reached the calibration stage. The v6 notebook fitted the temperatures and the
-conformal quantiles on a CAL split drawn from the training pool, and its score loader carries the
-same 1-based/0-based mismatch. Refitting on that split (`bench/cal_refit.py`) reproduces the stored
-ordinal temperature exactly under the notebook's gold (0.9) and moves it to the grid ceiling (3.0)
-under the corrected gold; refitting the quantiles lifts ordinal coverage from 38.3% to 90.4% and
-overall 90% coverage from 77.15% to 87.78%, with ECE 0.0637 to 0.0326 (`bench/refit_coverage.py`).
-
-## Why the competitor columns are unaffected
-
-Laya and VegaML store `pred` and `gold` in the same space, so `ok == (pred == gold)` holds
-for all 240 of their score questions. Their numbers are unchanged by this correction; the
-Myna arms were the only ones scored by `bench/v6_audit.py`.
-
-## The fix
-
-- `bench/v6_audit.py` subtracts one for `score`: `hit = top == ranked[int(golds[i]) - 1]`.
-- Row outcomes now store `pred` as the 1-based level, so `pred == gold` is correct without a
-  second convention.
-- `bench/paper_numbers.py` recomputes every aggregate from row outcomes and accepts legacy
-  files with `--legacy-score`, so the two conventions cannot be silently mixed.
-- `runs/paper_myna_v6_test.predates-fix.rowoutcomes.json` keeps the old file; the correction
-  reproduces `0.7777` from it, which is the regression test that the fix is arithmetic and
-  not a re-run artifact.
-
-## The general lesson
-
-A benchmark harness that stores labels and predictions in one space can still compare them
-in another. The failure was invisible for two months because the corrupted cells were
-plausible (0.62 on a 5-way task looks like a decent ordinal model) and because nothing in
-the pipeline compared `pred` to `gold` in the raw records. `bench/paper_numbers.py` now
-does that comparison on every load; a mismatch between `ok` and `pred == gold` raises.
+A label's space is a property of the data, not of the column name. The check that would have caught
+this in one minute is the one now used everywhere here: print the label distribution before assuming
+its offset. `0..4` with every value present is an index; `1..5` would have been a level.

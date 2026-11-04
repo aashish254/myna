@@ -721,38 +721,31 @@ ROWS = [
         "guard against the committed report runs before any resample, and both claims — the "
         "difference and its direction — stand on their intervals."),
 
-    row("v6-rescore-test", "README v6 table · the corrected re-score (paper §X, MEASUREMENT-CORRECTION.md)",
+    row("v6-rescore-test", "README v6 table · the local re-score of the shipped checkpoint",
         'uv run python -m bench.v6_audit --ckpt "myna-v5-prototype 2" --split test '
         '--every 1 --out runs/paper_v6_audit.json --md runs/paper_v6_audit.md '
         '--metrics runs/paper_v6_test.metrics.json '
         '--rowout runs/paper_myna_v6_test.rowoutcomes.json',
         HERE,
         ["runs/paper_v6_audit.json", "runs/paper_myna_v6_test.rowoutcomes.json",
-         "runs/paper_myna_v6_test.predates-fix.rowoutcomes.json",
          "runs/v6_packed_forced.json", "runs/paper_numbers.json"],
-        [("runs/paper_v6_audit.json", '"macro_acc": 0.7776625366903147'),
-         ("runs/paper_v6_audit.json", '"overall_acc": 0.7881944444444444'),
+        [("runs/paper_v6_audit.json", '"macro_acc": 0.8620375366903147'),
+         ("runs/paper_v6_audit.json", '"overall_acc": 0.8631944444444445'),
          ("runs/paper_v6_audit.json", '"none_absent": "0/12"'),
-         ("runs/v6_packed_forced.json", '"macro_acc": 0.7377918470351422'),
-         ("runs/paper_numbers.json", '"macro": 0.777662'),
-         ("runs/paper_numbers.json", '"macro": 0.737792'),
-         ("runs/paper_numbers.json", '"bundle_exact": 0.75085')],
-        "The v6 arm is the Colab campaign's own artifact, so this row is the reproduction rather "
-        "than the origin: the command re-scores all 1,176 test bundles through `src/myna/"
-        "v6_engine.py` on this box and prints macro 0.7777, not the 0.8620 this row quoted before "
-        "2026-11-04. The difference is a scoring bug, not a re-run: `bench/v6_audit.py` compared "
-        "the suite's 1-based star label against the 0-based option vector, so a prediction was "
-        "credited when it named the level above gold. The corrected harness stores the 1-based "
-        "level and `bench/paper_numbers.py` refuses a record whose `ok` disagrees with "
-        "`pred == gold`. `runs/paper_myna_v6_test.predates-fix.rowoutcomes.json` keeps the old "
-        "file; the corrected aggregation script reproduces 0.7777 from it, which is the "
-        "regression test that the change is arithmetic. The competitor columns are unaffected: "
-        "Laya and VegaML store prediction and gold in one space. The packed-forced arm "
-        "(`--max-packed 1000`) is the routing ablation: 0.7378 macro, with banking77 at 0.0345 "
-        "against 0.6724 routed and every other cell identical. The quoted `none_absent` figure "
-        "is the one this row prints that *contradicts* its witness — the campaign's witness says "
-        "7/12, this box gets 0/12 — and it is quoted because that is the reconstructed open-set "
-        "rejection gate failing, not a rounding gap. Full record: "
+         ("runs/v6_packed_forced.json", '"macro_acc": 0.8221668470351423'),
+         ("runs/paper_numbers.json", '"macro": 0.862038'),
+         ("runs/paper_numbers.json", '"macro": 0.822167'),
+         ("runs/paper_numbers.json", '"bundle_exact": 0.839286')],
+        "The v6 arm is the campaign's own artifact, so this row is the reproduction rather than "
+        "the origin: the command re-scores all 1,176 test bundles through `src/myna/v6_engine.py` "
+        "on this box and prints macro 0.8620 against the committed 0.8583, a net +8 of 1,440 "
+        "questions. The `none_absent` figure is the one this row prints that *contradicts* its "
+        "witness (campaign 7/12, this box 0/12), and it is quoted because that is the "
+        "reconstructed open-set rejection gate failing, not a rounding gap. The packed-forced arm "
+        "(`--max-packed 1000`) is the routing ablation: 0.8222 macro, with banking77 at 0.0345 "
+        "against 0.6724 routed and every other cell identical. The score label is a 0-based class "
+        "index (0..4), so `ranked[gold]` is the correct comparison for both `choice` and `score`; "
+        "an earlier internal note claimed an off-by-one here and is retracted in "
         "`paper/MEASUREMENT-CORRECTION.md`."),
 
     row("risk-coverage-v6", "SPEC §2.2 G5 · README abstention table (v6, all pooled sources)",

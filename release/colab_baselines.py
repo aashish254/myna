@@ -67,7 +67,10 @@ def gold_index(spec: dict) -> int:
     if spec["type"] == "noul":
         return 1 if spec["label"] else 0
     if spec["type"] == "score":
-        return int(spec["label"]) - 1
+        # The suite stores the score label as a 0-based index into `criteria` (labels run
+        # 0..4 for every score source), so it is already the class index. Subtracting one
+        # here is what produced `nll_loss: t >= 0 && t < n_classes` on the first attempt.
+        return int(spec["label"])
     crit = spec["criteria"]
     labels = list(crit) if isinstance(crit, dict) else [str(c) for c in crit]
     return labels.index(spec["label"])

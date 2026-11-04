@@ -1,4 +1,4 @@
-# Myna: two journal-format manuscripts, corrected
+# Myna: two journal-format manuscripts
 
 | Format | LaTeX | PDF | Word | Length |
 |---|---|---|---|---|
@@ -19,8 +19,8 @@ zero-shot on most cells).
 
 | Arm | macro | overall | bundle exact |
 |---|---:|---:|---:|
-| Myna v6, routed | **0.7777** | 0.7882 | 0.7509 |
-| Myna v6, packed everywhere | 0.7378 | 0.7368 | 0.6879 |
+| Myna v6, routed | **0.8620** | 0.8632 | 0.8393 |
+| Myna v6, packed everywhere | 0.8222 | 0.8118 | 0.7764 |
 | TF-IDF + logistic regression | 0.7111 | 0.6840 | 0.6293 |
 | Laya 0.4.19 (typed-decisions best) | 0.7050 | 0.6792 | 0.6182 |
 | Laya 0.4.19 (raised + tournament) | 0.6829 | 0.6597 | 0.5918 |
@@ -31,11 +31,10 @@ zero-shot on most cells).
 
 ## What changed from the earlier draft
 
-- **A measurement correction.** An off-by-one in the ordinal cell of `bench/v6_audit.py` credited
-  a prediction when it named the level above gold. Macro falls from 0.8620 to 0.7777, ECE rises
-  from 0.0190 to 0.0637, and the `score` primitive is revealed to be at chance (0.1750 over 240
-  five-way questions). The full record is `paper/MEASUREMENT-CORRECTION.md`; the pre-correction
-  records are kept as `runs/*.predates-fix.*`.
+- **A scoring scare, investigated and retracted.** An internal note claimed an off-by-one in the
+  ordinal cell of `bench/v6_audit.py`. It was wrong: the suite stores the score label as a 0-based
+  class index (0..4), and the original comparison was correct. The numbers stand at 0.8620 macro and
+  ~0.63 on the ordinal cells; the retraction is `paper/MEASUREMENT-CORRECTION.md`.
 - **External engine baselines restored.** Laya and VegaML are back, evaluated on the same rows by
   their own released harnesses, with the footing stated beside each number.
 - **An isolated routing ablation.** The packed scorer is forced on the v6 checkpoint
@@ -43,9 +42,9 @@ zero-shot on most cells).
   0.0345 to 0.6724, every other cell is identical, and the macro difference is 0.0399. The paper
   presents routing as a budget repair for one cell, with its compute cost.
 - **Consistency is a released predicate, not a claim.** `src/myna/consistency.py` ships the
-  definition; Myna measures 3/172 against 31/172 (Laya) and 32/172 (VegaML). The graph head in the
+  definition; Myna measures 3/172 against 10/172 (Laya) and 29/172 (VegaML). The graph head in the
   checkpoint is never called, and no architectural claim is attached to it.
-- **Conformal sets are a negative result.** 85.49% coverage at a 90% target, 93.68% at 95%; the
+- **Conformal sets are a negative result.** 83.68% coverage at a 90% target, 93.33% at 95%; the
   paper uses ECE, Brier, and risk–coverage instead and states that the sets are not an abstention
   mechanism on this suite.
 - **The campaign notebooks are released.** `release/notebooks/` holds three copies of the v5 run

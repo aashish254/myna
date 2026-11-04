@@ -116,7 +116,7 @@ def main() -> None:
                 if spec["type"] != "score":
                     continue
                 labels = [str(c) for c in spec["criteria"]]
-                gold = int(spec["label"]) - 1          # corrected: 1-based level -> 0-based index
+                gold = int(spec["label"])              # 0-based class index, as stored
                 prefix = engine._prefix(f"{row['_meta']['source']}/{qname}", spec)
                 options = engine._options(spec)
                 seq, positions = engine._packed_ids(prefix, row["state"], options)

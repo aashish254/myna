@@ -92,9 +92,11 @@ def is_contradiction(source: str, answers: Mapping[str, str]) -> bool:
     if source == "yelp":
         if "rating" not in answers or "recommend" not in answers:
             return False
+        # The suite stores the star label as a 0-based index into the five-level
+        # criteria list: index 3-4 is 4-5 stars, index 0-1 is 1-2 stars.
         level = int(answers["rating"])
         rec = answers["recommend"]
-        return (level >= 4 and rec == "no") or (level <= 2 and rec == "yes")
+        return (level >= 3 and rec == "no") or (level <= 1 and rec == "yes")
     return False
 
 

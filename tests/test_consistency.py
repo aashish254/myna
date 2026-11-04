@@ -21,8 +21,8 @@ SPECS = {json.loads(line)["_meta"]["id"]: json.loads(line)["questions"]
 
 CASES = {
     "runs/paper_myna_v6_test.rowoutcomes.json": (3, 0),
-    "runs/laya_0419_test.rowoutcomes.json": (31, 1),
-    "runs/vegaml_0150_test.rowoutcomes.json": (32, 2),
+    "runs/laya_0419_test.rowoutcomes.json": (10, 1),
+    "runs/vegaml_0150_test.rowoutcomes.json": (29, 2),
 }
 
 

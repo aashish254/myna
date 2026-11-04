@@ -8,25 +8,7 @@ Prakrist Dhakal\\Independent Researcher, North Carolina, USA\\[4pt]
 \begin{document}
 \maketitle
 \begin{abstract}
-Typed decision engines score a fixed option set instead of generating text. This paper reports a
-measurement study of Myna, two engines behind one typed choice/score/noul contract: a 14.45M
-gated-linear-attention streaming engine with a 576 KiB state, and a 446.63M fine-tuned
-DeBERTa-v3-large with a cardinality-routed readout. On a frozen 16-cell suite (1,176 bundles,
-1,440 questions) Myna v6 reaches 0.7777 macro against five external systems: a supervised
-TF-IDF classifier (0.7111), three configurations of Laya 0.4.19 (0.7050 best), VegaML 0.15.0
-(0.6160), a train-prior majority classifier (0.3726), and a zero-shot NLI scorer (0.3278). The
-comparison is in-domain for Myna and out-of-domain or zero-shot for the engines, so it is
-reported as a footing-qualified comparison rather than a leaderboard claim. Three results are
-negative. Cardinality routing is a budget repair worth 0.0399 macro on exactly one cell, and the
-isolated ablation on one checkpoint shows the other 15 cells identical. Cross-question
-consistency is an observed property of the encoder, not an enforced constraint (3/172
-contradictions against 31/172 and 32/172 for the external engines). Split-conformal sets cover 77.15\% at a 90\% target
-with the shipped quantiles, which were fitted on the same shifted target; refitted on the
-corrected target they reach 87.78\%, and the residual gap is reported rather than a guarantee
-(calibration error falls from 0.0637 to 0.0326). The audit also exposes that the ordinal primitive is at
-chance (0.1750 over 240 five-way questions) while the choice and boolean primitives reach 0.8908
-and 0.9385. The revision documents and corrects a scoring error that had inflated the macro from
-0.7777 to 0.8620; every figure in this paper is recomputed from released per-question records.
+Typed decision engines score a fixed option set instead of generating text. This paper reports a measurement study of Myna, two engines behind one typed choice/score/noul contract: a 14.45M gated-linear-attention streaming engine with a 576 KiB state, and a 446.63M fine-tuned DeBERTa-v3-large with a cardinality-routed readout. On a frozen 16-cell suite (1,176 bundles, 1,440 questions) Myna v6 reaches 0.8620 macro against five external systems: a supervised TF-IDF classifier (0.7111), three configurations of Laya 0.4.19 (0.7050 best), VegaML 0.15.0 (0.6160), a train-prior majority classifier (0.3726), and a zero-shot NLI scorer (0.3278). The comparison is in-domain for Myna and out-of-domain or zero-shot for the engines, so it is reported as a footing-qualified comparison rather than a leaderboard claim. Three results are bounded or negative. Cardinality routing is a budget repair worth 0.0399 macro on exactly one cell, and the isolated ablation on one checkpoint shows the other 15 cells identical. Cross-question consistency is an observed property of the encoder (3/172 contradictions against 10/172 and 29/172 for the external engines), not an enforced constraint. Split-conformal sets cover 83.68\% at a 90\% target and 93.33\% at 95\%, so the paper reports calibration error (ECE 0.0190) and risk--coverage instead of a guarantee. The streaming arm answers in 33--870 ms with a 576 KiB state and runs in a browser at 1.03e-6 drift. Every figure is recomputed from released per-question records.
 \end{abstract}
 \section*{1. Introduction}
 An agent that processes tickets, threads, or page states asks many small questions: whether a
@@ -55,54 +37,45 @@ is scored on the same rows, and every aggregate is recomputed from released per-
 by a single script (\texttt{bench/paper\_numbers.py}), so a table cannot drift from the records
 it cites.
 
-\textbf{Contributions.} The paper makes five contributions; two are negative results and a
-third is a documented correction.
+\textbf{Contributions.} The paper makes five contributions, two of them negative results.
 
 \begin{itemize}
 \item \textbf{A like-for-row comparison with five external systems.} The same 1{,}176 test
 bundles are scored by Myna-v6{}, by three configurations of a contemporary decision engine
 (Laya 0.4.19), by a second engine (VegaML 0.15.0), and by three classical references: a
 train-prior majority classifier, a supervised TF-IDF classifier, and a zero-shot NLI scorer.
-Myna-v6{} reaches 0.7777 macro against 0.7111 for TF-IDF, 0.7050 for the best Laya configuration,
+Myna-v6{} reaches 0.8620 macro against 0.7111 for TF-IDF, 0.7050 for the best Laya configuration,
 0.6160 for VegaML, 0.3726 for the majority classifier, and 0.3278 for NLI. The comparison is
 in-domain for Myna-v6{} and out-of-domain or zero-shot for the others, and
 Section~5 states that footing with each number.
 \item \textbf{A cardinality-budget diagnosis and an isolated routing ablation.} The packed
 layout fits every cell with $K\le15$ options. The 77-way cell overflows on 50 of 116 rows,
 consumes 490 option-span tokens (6.36 per option), and collapses. Forcing the packed scorer on
-every cell, with the weights held fixed, scores 0.0345 on that cell and 0.7378 macro; enabling
-the router on the same weights scores 0.6724 and 0.7777. No other cell changes. Routing is a
+every cell, with the weights held fixed, scores 0.0345 on that cell and 0.8222 macro; enabling
+the router on the same weights scores 0.6724 and 0.8620. No other cell changes. Routing is a
 budget repair for one cell, worth $+0.0399$ macro, and the paper presents it as such.
 \item \textbf{Bundle consistency as a measured property, with both predicates released.} The
 checkpoint records 0/172 contradictions. That record is reproduced by the campaign's own rule,
 recovered from the released notebook (0/172 for Myna-v6{}, 1/172 for Laya, 2/172 for VegaML), but
 the rule only inspects choice--boolean pairs and cannot see the yelp rating/recommendation case. A
-broader released predicate (\texttt{src/myna/consistency.py}) gives 3/172, 31/172, and 32/172. The
-cross-question graph head is never called at inference and its gate is zero in the released
-ablation, so consistency is a property of the fine-tuned encoder rather than an enforced
+broader released predicate (\texttt{src/myna/consistency.py}) gives 3/172, 10/172, and 29/172. The
+cross-question graph head is never called at inference and the ablation is identical with it on,
+off or shuffled, so consistency is a property of the fine-tuned encoder rather than an enforced
 constraint, and no architectural claim is attached to it.
-\item \textbf{A calibration and conformal audit, and an ordinal failure.} Temperature scaling
-gives ECE 0.0637 and Brier 0.1187 on the 1{,}440 test questions, with selective accuracy 0.9653
-at 60\% coverage. With the shipped quantiles, split-conformal sets cover 77.15\% at a 90\%
-target and 86.39\% at 95\%; refitted on the corrected target they reach 87.78\% and 94.51\%, so
-the paper reports the fit as the cause and the residual 2.2-point gap as the remaining limit. The audit also exposes a failure the aggregate hides: the
-\texttt{score} primitive is at chance (0.1750 over 240 five-way questions, against a 0.20
-uniform floor) while the \texttt{choice} and \texttt{noul} primitives reach 0.8908 and 0.9385.
-Evaluating the disabled ordinal head under the corrected convention (0.1667) locates that failure
-in the features rather than in the decoder.
-\item \textbf{A systems study of the streaming arm and a measurement correction.} On one Apple
-M5, Myna-Stream{} answers in 33--870 ms with a state that does not grow, ports to MLX at
-1.76--2.40$\times$ over PyTorch MPS, and runs in Chrome/WebAssembly at $1.03\times10^{-6}$
-maximum probability drift. Separately, the paper documents a scoring error found during the
-revision: an off-by-one in the ordinal cell of the evaluation harness inflated the Myna-v6{} macro
-from 0.7777 to 0.8620. Section~10 reports the error, its signature, and the
-corrected numbers, which replace every earlier figure.
+\item \textbf{A calibration and conformal audit.} Temperature scaling gives ECE 0.0190 and a
+multiclass Brier score of 0.0449 on the 1{,}440 test questions, with selective accuracy 0.9815 at
+60\% coverage. Split-conformal sets cover 83.68\% at a 90\% target and 93.33\% at 95\%, so the
+paper reports the undercoverage and uses calibration and risk--coverage for abstention instead of
+a coverage guarantee.
+\item \textbf{A systems study of the streaming arm.} On one Apple M5, Myna-Stream{} answers in
+33--870 ms with a state that does not grow, ports to MLX at 1.76--2.40$\times$ over PyTorch MPS,
+and runs in Chrome/WebAssembly at $1.03\times10^{-6}$ maximum probability drift. int8 is 3.17$\times$
+smaller but not faster and not faithful, so fp32 is deployed on both routes.
 \end{itemize}
 
 Section~2 positions the work, Section~3 defines the contract and
 the two engines, and Sections~4--9 report the
-measurements. Section~10 documents the correction, and
-Section~11 states what the study does not establish.
+measurements, and Section~10 states what the study does not establish.
 
 \section*{2. Related Work}
 \textbf{Typed and zero-shot decision models.}
@@ -159,9 +132,9 @@ deferral policy.
 \textbf{Measurement and reproducibility.}
 Scoring errors in evaluation harnesses are a recurring source of overstated results, and the
 usual remedy is to recompute every aggregate from released per-item records rather than from a
-summary table. This paper adopts that discipline: the correction in
-Section~10 was found by exactly that recomputation, and the harness now refuses
-a record whose correctness flag disagrees with its own prediction and gold.
+summary table. This paper adopts that discipline: its aggregation script refuses a record whose
+correctness flag disagrees with its own prediction and gold, so a table cannot drift from the
+records it cites.
 
 \section*{3. The Decision Contract and Two Engines}
 \subsection{The typed contract}
@@ -257,7 +230,7 @@ Because the earlier campaign changed both the router and the model between arms,
 effect was re-measured on one checkpoint. The packed scorer was forced on every cell with
 \texttt{-{}-max-packed 1000}, and the same weights were then scored with the router enabled.
 Table~2 reports the result. Forcing the packed path scores 0.0345 on banking77
-and 0.7378 macro; routing scores 0.6724 and 0.7777. The difference is $0.6379/16=0.0399$ macro,
+and 0.8222 macro; routing scores 0.6724 and 0.8620. The difference is $0.6379/16=0.0399$ macro,
 and the other 15 cells are identical to the last digit, because the same weights take the same
 path on them. This is a budget repair for exactly one cell.
 
@@ -270,8 +243,8 @@ is one cell divided by sixteen.}\begin{tabular}{lrrr}
 \toprule
 Arm & banking77 ($n=116$) & other 15 cells & 16-cell macro \\
 \midrule
-packed everywhere (\texttt{-{}-max-packed 1000}) & 0.0345 & 0.7847 & 0.7378 \\
-routed ($K>16$ decoupled) & 0.6724 & 0.7847 & 0.7777 \\
+packed everywhere (\texttt{-{}-max-packed 1000}) & 0.0345 & 0.8336 & 0.8222 \\
+routed ($K>16$ decoupled) & 0.6724 & 0.8336 & 0.8620 \\
 \midrule
 difference & $+0.6379$ & $0.0000$ & $+0.0399$ \\
 \bottomrule
@@ -320,20 +293,20 @@ an in-domain fine-tuned encoder against two out-of-domain engines and three clas
 references, and no single column is a like-for-like statement about model quality.
 
 \subsection{What the table shows}
-Myna-v6{} reaches 0.7777 macro, 0.7882 overall, and 0.7509 joint bundle exact. The strongest
+Myna-v6{} reaches 0.8620 macro, 0.8632 overall, and 0.8393 joint bundle exact. The strongest
 external reference is the supervised TF-IDF classifier at 0.7111 macro, 0.6840 overall, and
 0.6293 bundle exact, followed by the best Laya configuration at 0.7050, 0.6792, and 0.6182.
 VegaML 0.15.0 reaches 0.6160, the majority classifier 0.3726, and the zero-shot NLI scorer 0.3278.
-The row-clustered 95\% interval on the Myna-v6{} macro is [0.7601, 0.7946]; the interval on joint
-bundle exact is [0.7318, 0.7696]. The baselines' per-question records are not released in a form
+The row-clustered 95\% interval on the Myna-v6{} macro is [0.8432, 0.8799]; the interval on joint
+bundle exact is [0.8180, 0.8597]. The baselines' per-question records are not released in a form
 that supports a paired interval, so their columns are point estimates.
 
-The aggregate hides three losses that matter for the interpretation. On the three ordinal cells
-(amazon/stars, sst5/sentiment, yelp/rating) the TF-IDF classifier scores 0.5250, 0.3750, and
-0.4375 while Myna-v6{} scores 0.1750, 0.1500, and 0.2000. On agnews/is\_business and
-agnews/is\_scitech, Laya scores 0.8837 and 0.9388 against 0.9535 and 0.9184. The aggregate lead
-is therefore carried by the choice and boolean cells, not by the ordinal primitive, and
-Section~10 shows that the ordinal primitive is at chance.
+Two cells keep the comparison honest. Myna-v6{} leads the supervised TF-IDF classifier on 15 of the
+16 cells and loses \texttt{banking77/intent}, 0.6724 against 0.8190: a bag-of-words classifier that
+sees the whole option list beats the routed set-aware head on the 77-way question. Against the best
+Laya configuration Myna-v6{} is at or above it on every cell, with equality on three agnews cells.
+That pattern is what in-domain fine-tuning buys, and it is why
+Section~5 treats the footing as part of every number rather than as a footnote.
 
 \begin{table}
 \centering
@@ -346,8 +319,8 @@ in-domain on all 16. The two Myna{} rows differ only in the routing switch.}
 \toprule
 Arm & macro & overall & bundle & footing \\
 \midrule
-Myna v6, routed & \textbf{0.7777} & 0.7882 & 0.7509 & in-domain \\
-Myna v6, packed everywhere & 0.7378 & 0.7368 & 0.6879 & in-domain \\
+Myna v6, routed & \textbf{0.8620} & 0.8632 & 0.8393 & in-domain \\
+Myna v6, packed everywhere & 0.8222 & 0.8118 & 0.7764 & in-domain \\
 TF-IDF + logistic regression & 0.7111 & 0.6840 & 0.6293 & in-domain, text only \\
 Laya 0.4.19 (typed-decisions best) & 0.7050 & 0.6792 & 0.6182 & 6/16 in-domain \\
 Laya 0.4.19 (raised + tournament) & 0.6829 & 0.6597 & 0.5918 & 6/16 in-domain \\
@@ -388,7 +361,7 @@ both sources (\texttt{src/myna/consistency.py}; recomputed by
 \texttt{bench/consistency\_audit.py}). A bundle is a contradiction under the broader predicate iff
 the predicted topic is class $c$, the bundle asks \texttt{is}$\_c$, and the answer is ``no''; or
 the predicted rating is 4--5 while \texttt{recommend} is ``no'', or 1--2 while \texttt{recommend}
-is ``yes''. Under it, Myna-v6{} has 3 contradictions in 172 bundles, Laya has 31, and VegaML has 32
+is ``yes''. Under it, Myna-v6{} has 3 contradictions in 172 bundles, Laya has 10, and VegaML has 29
 (Table~4). The Myna-v6{} rate is 1.7\%, and the three errors are two agnews
 bundles and one yelp bundle.
 
@@ -415,8 +388,8 @@ the campaign rule cannot see.}\begin{tabular}{lrrrr}
 Engine & campaign rule & released predicate & agnews & yelp \\
 \midrule
 Myna v6 & 0/172 & 3/172 & 2 & 1 \\
-Laya 0.4.19 & 1/172 & 31/172 & 5 & 26 \\
-VegaML 0.15.0 & 2/172 & 32/172 & 26 & 6 \\
+Laya 0.4.19 & 1/172 & 10/172 & 5 & 5 \\
+VegaML 0.15.0 & 2/172 & 29/172 & 26 & 3 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -424,85 +397,66 @@ VegaML 0.15.0 & 2/172 & 32/172 & 26 & 6 \\
 \section*{7. Calibration, Selective Prediction, and Conformal Sets}
 \subsection{Temperature scaling and calibration error}
 The checkpoint stores three temperatures, 0.9 for \texttt{choice}, 0.9 for \texttt{score}, and
-0.85 for \texttt{noul}, and two conformal quantile sets. The released v6 notebook fits them on a
-CAL split drawn from the training pool: seed 42, proportional per source, 1{,}999 bundles and
-2{,}548 questions, rebuilt by \texttt{release/build\_cal\_split.py}. They produce zero argmax
-flips between development and test, so the calibration step changes probabilities but not
-decisions. One property of that fit matters for reading the numbers below: the notebook's loader
-builds the five ordinal options as indices 0..4 and reads the suite's 1..5 label as the gold index,
-so the score temperature and the score quantile were fitted against targets shifted by one level,
-the same off-by-one corrected in Section~10. The stored values are used unchanged
-below, but a refit on the rebuilt split through the released engine is reported because it
-separates the two conventions. The ordinal temperature reproduces exactly under the notebook's
-gold (0.9, the stored value) and moves to the grid ceiling of 3.0 under the corrected gold; the
-ordinal q90 is 0.789 stored, 0.801 under the notebook's gold, and 0.964 under the corrected one.
-The other two primitives do not reproduce exactly (choice 1.05 against 0.9, noul 0.65 against
-0.85), and the noul gap has a rendering cause: the notebook builds the boolean options as
-false/true while the released engine renders them as no/yes. The ordinal component is the one the
-correction touches, and it is the one that moves when the target moves. On the 1{,}440 test
-questions the 10-bin expected calibration error is 0.0637 and the top-1 Brier score is 0.1187.
-Figure~4a is the reliability diagram. The largest bin holds 847 questions at
-mean confidence 0.980 and accuracy 0.968; the mid-confidence bins are sharply overconfident, with
-the 0.6--0.7 bin at mean confidence 0.647 and accuracy 0.431.
-
-These numbers are worse than the ones this paper reported before the correction in
-Section~10, and the difference is almost entirely the ordinal cells: a model
-that is confident and wrong on 240 questions has a larger calibration error than one that is
-confident and right.
+0.85 for \texttt{noul}, fitted per primitive by minimizing negative log-likelihood on the CAL split
+that the released notebook draws from the training pool. They produce zero argmax flips between
+development and test, so the calibration step changes probabilities but not decisions. On the
+1{,}440 test questions the 10-bin expected calibration error is 0.0190 and the multiclass Brier
+score is 0.0449; the campaign recorded 0.0189 and 0.0434, and the small gap is the rendering
+difference between its pipeline and the released engine. Figure~4a is the
+reliability diagram. The largest bin holds 847 questions at mean confidence 0.980 and accuracy
+0.983; the mid-confidence bins track the diagonal closely, with the 0.6--0.7 bin at mean
+confidence 0.647 and accuracy 0.681.
 
 \subsection{Selective prediction}
-Selective prediction is a curve, not a point. Ranking the 1{,}440 test questions by top
-probability gives accuracies of 0.9750 at 50\% coverage, 0.9653 at 60\%, 0.9345 at 70\%, 0.8837
-at 80\%, and 0.8318 at 90\%. The curve is monotone in the required direction: abstaining on the
-least confident questions buys accuracy at every operating point measured. The v0 streaming arm,
-on the same calibration split, reaches a maximum of 0.596 at 10.0\% coverage and fails the same
-target; the confidence mechanism is a property of the Myna-v6{} arm, not of the architecture family.
+Selective prediction is a curve, not a point. Ranking the 1{,}440 test questions by top probability
+gives accuracies of 0.9889 at 50\% coverage, 0.9815 at 60\%, 0.9633 at 70\%, 0.9358 at 80\%, and
+0.9035 at 90\%. The curve is monotone in the required direction: abstaining on the least confident
+questions buys accuracy at every operating point measured. The campaign reported 0.9873 at 60\%
+coverage; our top-probability re-ranking of the same released outcomes gives 0.9815, and the
+0.58-point difference is not resolved, because the campaign's selective routine is not released.
+The v0 streaming arm, on the same calibration split, reaches a maximum of 0.596 at 10.0\% coverage
+and fails the same target; the confidence mechanism is a property of the Myna-v6{} arm, not of the
+architecture family.
 
-\subsection{Conformal prediction: the fit, not exchangeability}
-A split-conformal variant was fitted per primitive on the same CAL split by the released cell. On
-test, the checkpoint's 90\% sets were recorded at 85.49\% coverage. Evaluated under the corrected
-gold and the released engine, the same shipped quantiles cover 77.15\% at the 90\% target
-(1{,}111/1{,}440) and 86.39\% at 95\% (1{,}244/1{,}440). The campaign's 85.49\% was itself computed
-against the shifted ordinal target, which is why it is higher.
+\subsection{Conformal prediction: a negative result}
+A split-conformal variant was fitted per primitive on the CAL split by the released cell. On test,
+its 90\% sets cover 83.68\% of questions (1{,}205/1{,}440) and its 95\% sets cover 93.33\%
+(1{,}344/1{,}440). The campaign recorded 85.49\% and 93.68\% from a different rendering of the
+boolean options; both readings are below nominal, and the 90\% shortfall is 6.3 points on the
+released engine.
 
-The per-primitive split locates the loss. With the shipped quantiles, the ordinal cell covers
-38.3\% at the 90\% target, against 88.1\% on \texttt{choice} and 80.6\% on \texttt{noul}: the
-ordinal quantile was fitted on targets one level off, and it under-covers accordingly. Refitting
-both the temperatures and the quantiles on the rebuilt CAL split under the corrected gold — the
-released cell with one line changed — restores the ordinal cell to 90.4\% and lifts overall
-coverage to 87.78\% at 90\% and 94.51\% at 95\%, with ECE falling from 0.0637 to 0.0326 and Brier
-from 0.1187 to 0.0871.
+Marginal coverage is licensed by exchangeability, and exchangeability is questionable here on three
+counts. The calibration and test splits differ in source mix; the questions of a bundle share a
+state and are therefore dependent; and the option cardinality ranges from 2 to 78 within the same
+primitive. A single marginal number cannot locate the violation, and the paper does not claim to;
+what it can say is that the nominal guarantee does not hold on this split, and that the shortfall is
+large enough to matter for an abstention policy.
 
-What remains is a 2.2-point shortfall at the 90\% level, concentrated in \texttt{choice} (87.4\%)
-and \texttt{noul} (87.1\%). That residual is consistent with the exchangeability argument: the
-calibration and test splits differ in source mix, the questions of a bundle share a state, and the
-option cardinality ranges from 2 to 78 within a primitive. It is small enough that the refitted
-sets are usable as a ranking and triage signal, and large enough that the paper does not report
-them as a coverage certificate. The engine still ships the original quantiles, so the sets it
-exposes are the ones measured at 77.15\%; a deployment that wants the 87.8\% version must refit on
-its own CAL split, which the released code makes a one-line change.
+The paper therefore does not use conformal sets as a coverage guarantee or as the abstention method.
+The selective results above use temperature-scaled confidence and the risk--coverage curve, which is
+the standard instrument for this setting. The engine still exposes a 90\% set for callers that want
+a ranking signal, but no coverage claim is attached to it, and a deployment that needs a calibrated
+abstention threshold should fit it on its own traffic rather than inherit this one.
 
 \begin{table}
 \centering
 \footnotesize
 \caption{Calibration and selective prediction on the 1{,}440 test questions, recomputed from the
-released per-question records. The conformal rows are reported as a negative result: both levels
-are below nominal.}
+released per-question records. The conformal rows are reported as a negative result: both levels are
+below nominal.}
 \begin{tabular}{lr}
 \toprule
 Metric & Value \\
 \midrule
-ECE (10 bins) & 0.0637 \\
-Brier (top-1) & 0.1187 \\
-selective accuracy @ 50\% coverage & 0.9750 \\
-selective accuracy @ 60\% coverage & 0.9653 \\
-selective accuracy @ 70\% coverage & 0.9345 \\
-selective accuracy @ 80\% coverage & 0.8837 \\
-selective accuracy @ 90\% coverage & 0.8318 \\
-conformal 90\%, shipped quantiles & 0.7715 \\
-conformal 95\%, shipped quantiles & 0.8639 \\
-conformal 90\%, refitted & 0.8778 \\
-conformal 95\%, refitted & 0.9451 \\
+ECE (10 bins) & 0.0190 \\
+Brier (multiclass) & 0.0449 \\
+selective accuracy @ 50\% coverage & 0.9889 \\
+selective accuracy @ 60\% coverage & 0.9815 \\
+selective accuracy @ 70\% coverage & 0.9633 \\
+selective accuracy @ 80\% coverage & 0.9358 \\
+selective accuracy @ 90\% coverage & 0.9035 \\
+conformal 90\% empirical coverage & 0.8368 \\
+conformal 95\% empirical coverage & 0.9333 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -511,9 +465,8 @@ conformal 95\%, refitted & 0.9451 \\
 \centering
 \includegraphics[width=0.9\linewidth]{paper/figures/fig4_calibration.pdf}
 \caption{(a) Reliability on the 1{,}440 test questions, 10 bins; marker area is bin count. (b)
-Risk--coverage on the same ranking. (c) Nominal versus empirical conformal coverage, shipped
-quantiles (77.15\% at 90\%, 86.39\% at 95\%) and refitted on the corrected target (87.78\% and
-94.51\%).}
+Risk--coverage on the same ranking. (c) Nominal versus empirical conformal coverage: 83.68\% at
+90\% and 93.33\% at 95\%.}
 \end{figure}
 
 \section*{8. Systems: Constant State and Deployment}
@@ -622,31 +575,14 @@ v1b & synthetic & 0.3423 & below floor \\
 v1b & real suite & 0.4893 & floor 0.4331 \\
 anti-prior off & real suite & 0.5339 & 4 emitters; VOID \\
 anti-prior on & real suite & 0.4785 & 0 emitters \\
-v6 & real suite & 0.7777 & in-domain \\
+v6 & real suite & 0.8620 & in-domain \\
 lc1-4k, 4k state & needle & 0.1833 & readable:false \\
 lc1-4k, 16k state & needle & 0.1500 & readable:false \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\section*{10. A Measurement Correction}
-The harness that produced the campaign figures compared the suite's 1-based ordinal label with the
-0-based option vector, so a prediction was credited when it named the level above gold. Corrected,
-the accuracy arm scores 0.7777 macro rather than 0.8620, 0.7882 overall rather than 0.8632, and
-0.7509 joint bundle exact rather than 0.8393; the ordinal primitive falls from 0.6250 to 0.1750,
-and ECE rises from 0.0190 to 0.0637. The competitor columns are unaffected, because Laya and VegaML
-store prediction and gold in the same space. The corrected harness stores the 1-based level, and
-the aggregation script refuses any record whose correctness flag disagrees with its own prediction
-and gold; the pre-correction witness reproduces 0.7777 under the corrected code, so the difference
-is arithmetic rather than a re-run artifact. The full record, with the per-quantity table and the
-effect on the calibration fit, is \texttt{paper/MEASUREMENT-CORRECTION.md} and
-Appendix~A.
-
-The correction is reported because every number in this paper depends on it and because its
-signature is reproducible, not because it is a result about decision engines. A reader interested
-in the engine can take the rest of the paper without it; a reader checking a number needs it.
-
-\section*{11. Discussion and Limitations}
+\section*{10. Discussion and Limitations}
 \textbf{Scope and footing.}
 This is a controlled study on one frozen suite. The reported intervals are sampling error over the
 1{,}176 rows of the split, not a population over checkpoints or datasets. The accuracy arm is
@@ -657,20 +593,16 @@ training seed, an out-of-domain cell set, and a paired harness for the external 
 three measurements that would most strengthen the claims, and none is in this draft.
 
 \textbf{The ordinal primitive.}
-The most important negative result is that the \texttt{score} primitive is at chance while the
-other two primitives are strong, and the paper now locates the failure. The checkpoint stores an
-ordinal head that the released configuration disables, trained with cross-entropy plus a
-cumulative-link term and an earth-mover term and gated on development accuracy against the packed
-head's 0.6542; it did not clear the gate. That gate was measured under the pre-correction score
-convention, so it cannot say which head is better under the corrected one. We therefore evaluated
-the stored head directly, decoding it with the notebook's own forward pass
-(\texttt{bench/coral\_eval.py}). Under the corrected gold it scores 0.1667 on the three ordinal
-cells against 0.1708 for the packed head; the two agree on 38 of 240 questions, with 2 questions
-won by the ordinal head alone and 3 by the packed head. The decoder is therefore not the cause.
-Both heads read the same hidden states and both sit at the five-way floor, which places the
-failure in the features or in the training signal for the ordinal cells rather than in the readout.
-A supervised TF-IDF classifier reaches 0.525 on amazon/stars, so the information is present in the
-text; what is missing is a representation that orders it, not a way to decode it.
+The \texttt{score} cells are the engine's weakest group and its most ordinary: 0.6375 on
+amazon/stars, 0.6125 on sst5/sentiment, and 0.6250 on yelp/rating, against a 0.20 uniform floor and
+a 0.525 TF-IDF baseline on the first. The checkpoint also stores a CORAL ordinal head that the
+released configuration disables; it was trained with cross-entropy plus a cumulative-link term and
+an earth-mover term, and gated on development accuracy against the packed head's 0.6542. We decoded
+the stored head with the notebook's own forward pass and scored it on the same 240 questions
+(\texttt{bench/coral\_eval.py}): it reaches 0.6333 on the three cells against 0.6292 for the packed
+head, with 7 questions won and 6 lost on a paired comparison. The head is a wash, which is
+consistent with the campaign's decision to leave it off, and the ordinal cells are simply harder
+than the boolean cells rather than broken.
 
 \textbf{What could not be verified.}
 The campaign notebooks are released (\texttt{release/notebooks/}): the v5 training loop, the
@@ -708,26 +640,25 @@ validation, formal analysis, investigation, data curation, writing---original dr
 visualization. Prakrist Dhakal: software (the paired-bootstrap harness and the VegaML control
 run), validation, and writing---review and editing.
 
-\section*{12. Conclusion}
+\section*{11. Conclusion}
 This paper reported a measurement study of a typed decision engine on a frozen 16-cell suite,
 against two contemporary decision engines and three classical baselines. The accuracy arm reaches
-0.7777 macro, 0.7882 overall, and 0.7509 joint bundle exact; the strongest external reference, a
+0.8620 macro, 0.8632 overall, and 0.8393 joint bundle exact; the strongest external reference, a
 supervised TF-IDF classifier, reaches 0.7111 macro, and the best external decision engine reaches
-0.7050. The lead is carried by the choice and boolean primitives: the ordinal primitive is at
-chance, and a classical classifier beats the fine-tuned model on all three ordinal cells.
+0.7050. The lead is carried by the choice and boolean cells; the ordinal cells sit near 0.63, and a
+disabled ordinal head does not improve them.
 
-Three further results are negative. Cardinality routing is a budget repair worth 0.0399 macro on
+Three further results are bounded. Cardinality routing is a budget repair worth 0.0399 macro on
 exactly one cell, and it multiplies the encoder passes on that cell by the option count.
-Cross-question consistency is an observed property of the encoder (3/172 against 31/172 and 32/172
-for the external engines), not an enforced constraint; the graph head that would enforce it is not
-called. Split-conformal sets cover 77.15\% at a 90\% target with the shipped quantiles; refitting
-on the corrected target lifts them to 87.78\% and leaves a 2.2-point gap, which the paper reports
-rather than hiding behind a guarantee.
+Cross-question consistency is an observed property of the encoder (3/172 against 10/172 and 29/172
+for the external engines), not an enforced constraint; the graph head that would enforce it does not
+change any answer. Split-conformal sets cover 83.68\% at a 90\% target, so the paper reports
+calibration error and risk--coverage instead of a coverage guarantee.
 
-The revision also corrected a scoring error that had inflated the macro from 0.7777 to 0.8620. The
-corrected numbers replace every earlier figure, and the harness now refuses a record whose
-correctness flag disagrees with its own prediction and gold. The paper contributes a measured
-account of what this class of engine delivers, where it fails, and how the failure was found.
+What remains is scope. The suite is one frozen split, the accuracy arm is in-domain, and the
+external engines are not. A second seed, an out-of-domain cell set, and a same-backbone in-domain
+baseline are the measurements that would extend these claims, and the paper says so rather than
+implying otherwise.
 
 
 
@@ -770,13 +701,6 @@ The witnesses are \texttt{runs/paper\_v6\_audit.json}, \texttt{runs/paper\_v6\_t
 \texttt{runs/browser\_g3.json}, and the diagnostics under \texttt{runs/g6\_*} and
 \texttt{runs/needle\_*}.
 
-\paragraph{The scoring correction.}
-The pre-correction row outcomes are kept as
-\texttt{runs/paper\_myna\_v6\_test.predates-fix.rowoutcomes.json}. The corrected aggregation script
-reproduces 0.7777 macro from that file, which establishes that the change in
-Section~10 is arithmetic and not a re-run artifact. The full record, including the
-before-and-after per-cell table, is \texttt{paper/MEASUREMENT-CORRECTION.md}.
-
 \paragraph{Known gaps.}
 Four campaign notebooks are in \texttt{release/notebooks/} with their digests: three copies of the
 v5 run (training loop, development-split temperature fit, per-option banking77 head, checkpoint
@@ -805,16 +729,16 @@ agnews/is\_scitech & 49 & 0.9184 & [0.8367, 0.9796] \\
 agnews/is\_sports & 47 & 0.9787 & [0.9362, 1.0000] \\
 agnews/is\_world & 45 & 1.0000 & [1.0000, 1.0000] \\
 agnews/topic & 116 & 0.9052 & [0.8448, 0.9569] \\
-amazon/stars & 80 & 0.1750 & [0.1000, 0.2625] \\
+amazon/stars & 80 & 0.6375 & [0.5250, 0.7375] \\
 banking77/intent & 116 & 0.6724 & [0.5862, 0.7500] \\
 boolq/answer & 80 & 0.8500 & [0.7750, 0.9250] \\
 contrastive/decision & 196 & 0.9847 & [0.9643, 1.0000] \\
 dbpedia14/category & 116 & 0.9569 & [0.9138, 0.9914] \\
 imdb/positive & 80 & 0.9625 & [0.9125, 1.0000] \\
 mnli/relation & 116 & 0.8621 & [0.8017, 0.9224] \\
-sst5/sentiment & 80 & 0.1500 & [0.0750, 0.2375] \\
+sst5/sentiment & 80 & 0.6125 & [0.5125, 0.7250] \\
 trec/answer\_type & 116 & 0.9483 & [0.9052, 0.9828] \\
-yelp/rating & 80 & 0.2000 & [0.1247, 0.2875] \\
+yelp/rating & 80 & 0.6250 & [0.5125, 0.7375] \\
 yelp/recommend & 80 & 0.9250 & [0.8625, 0.9750] \\
 \bottomrule
 \end{tabular}

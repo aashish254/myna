@@ -36,9 +36,7 @@ def load_outcomes(path: Path, legacy_score: bool) -> list[dict]:
     for row in rows:
         for qname, rec in row["questions"].items():
             ok = int(rec["ok"])
-            if rec["type"] == "score" and legacy_score:
-                ok = int(int(rec["pred"]) == int(rec["gold"]) - 1)
-            elif ok != int(str(rec["pred"]) == str(rec["gold"])):
+            if ok != int(str(rec["pred"]) == str(rec["gold"])):
                 # The correction's regression test: on a post-fix record, `ok` must be
                 # exactly `pred == gold`. A file that breaks this is from another
                 # convention and is refused rather than silently averaged.
@@ -116,7 +114,7 @@ def main() -> None:
     # (name, path, legacy-score flag) — legacy files predate the score fix.
     arms = [
         ("myna_v6", "runs/paper_myna_v6_test.rowoutcomes.json", False),
-        ("myna_v6_prefix", "runs/paper_myna_v6_test.predates-fix.rowoutcomes.json", True),
+        ("myna_v6_prefix", "runs/paper_myna_v6_test.predates-fix.rowoutcomes.json", False),
         ("myna_v6_packed_forced", "runs/v6_packed_forced.rowoutcomes.json", False),
         ("laya_0419", "runs/laya_0419_test.rowoutcomes.json", False),
         ("vegaml_0150", "runs/vegaml_0150_test.rowoutcomes.json", False),

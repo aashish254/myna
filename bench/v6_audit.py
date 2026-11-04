@@ -179,17 +179,12 @@ def run(argv: list[str] | None = None) -> int:
             ranked = list(a["probabilities"])
             pi = max(range(len(ranked)), key=lambda k: a["probabilities"][ranked[k]])
             top = ranked[pi]
-            # `golds` carries the suite's label: a boolean for `noul`, the 1-based star
-            # level for `score`, and a 0-based index into the criteria dict for `choice`.
-            # `ranked` is a 0-based option vector in all three cases, so the score branch
-            # subtracts one. Comparing at `golds[i]` scored a prediction correct when it
-            # named the level *above* gold; that off-by-one inflated every `score` cell
-            # (0.64 reported on a 5-way ordinal question that is at chance under the fix).
-            # See paper/MEASUREMENT-CORRECTION.md.
+            # `golds` carries the suite's label: a boolean for `noul`, a 0-based class
+            # index for `score` (the sources store 0..4), and a 0-based index into the
+            # criteria dict for `choice`. `ranked` is the option vector in every case, so
+            # `ranked[golds[i]]` is the right comparison for all three.
             if spec["type"] == "noul":
                 hit = (top == "yes") == bool(golds[i])
-            elif spec["type"] == "score":
-                hit = top == ranked[int(golds[i]) - 1]
             else:
                 hit = top == ranked[golds[i]]
             bucket = cells[(source, qname)]
@@ -204,10 +199,7 @@ def run(argv: list[str] | None = None) -> int:
                 set_n[f"{group_key}/{qname}"] += 1
                 if args.rowout:
                     q = questions[i]
-                    # `pred` is stored in the label's own space: the 1-based level for
-                    # `score`, so `pred == gold` means correct without a second convention.
-                    pred = pi + 1 if spec["type"] == "score" else pi
-                    qrec[qname] = {"type": q.type, "pred": pred, "gold": int(golds[i]),
+                    qrec[qname] = {"type": q.type, "pred": pi, "gold": int(golds[i]),
                                    "k": len(q.options), "ok": int(hit),
                                    "conf": round(float(a["probabilities"][ranked[pi]]), 6)}
         if group_key is not None and args.rowout:

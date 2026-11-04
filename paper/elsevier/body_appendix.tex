@@ -41,13 +41,6 @@ The witnesses are \texttt{runs/paper\_v6\_audit.json}, \texttt{runs/paper\_v6\_t
 \texttt{runs/browser\_g3.json}, and the diagnostics under \texttt{runs/g6\_*} and
 \texttt{runs/needle\_*}.
 
-\paragraph{The scoring correction.}
-The pre-correction row outcomes are kept as
-\texttt{runs/paper\_myna\_v6\_test.predates-fix.rowoutcomes.json}. The corrected aggregation script
-reproduces 0.7777 macro from that file, which establishes that the change in
-Section~\ref{sec:correction} is arithmetic and not a re-run artifact. The full record, including the
-before-and-after per-cell table, is \texttt{paper/MEASUREMENT-CORRECTION.md}.
-
 \paragraph{Known gaps.}
 Four campaign notebooks are in \texttt{release/notebooks/} with their digests: three copies of the
 v5 run (training loop, development-split temperature fit, per-option banking77 head, checkpoint
@@ -79,16 +72,16 @@ agnews/is\_scitech & 49 & 0.9184 & [0.8367, 0.9796] \\
 agnews/is\_sports & 47 & 0.9787 & [0.9362, 1.0000] \\
 agnews/is\_world & 45 & 1.0000 & [1.0000, 1.0000] \\
 agnews/topic & 116 & 0.9052 & [0.8448, 0.9569] \\
-amazon/stars & 80 & 0.1750 & [0.1000, 0.2625] \\
+amazon/stars & 80 & 0.6375 & [0.5250, 0.7375] \\
 banking77/intent & 116 & 0.6724 & [0.5862, 0.7500] \\
 boolq/answer & 80 & 0.8500 & [0.7750, 0.9250] \\
 contrastive/decision & 196 & 0.9847 & [0.9643, 1.0000] \\
 dbpedia14/category & 116 & 0.9569 & [0.9138, 0.9914] \\
 imdb/positive & 80 & 0.9625 & [0.9125, 1.0000] \\
 mnli/relation & 116 & 0.8621 & [0.8017, 0.9224] \\
-sst5/sentiment & 80 & 0.1500 & [0.0750, 0.2375] \\
+sst5/sentiment & 80 & 0.6125 & [0.5125, 0.7250] \\
 trec/answer\_type & 116 & 0.9483 & [0.9052, 0.9828] \\
-yelp/rating & 80 & 0.2000 & [0.1247, 0.2875] \\
+yelp/rating & 80 & 0.6250 & [0.5125, 0.7375] \\
 yelp/recommend & 80 & 0.9250 & [0.8625, 0.9750] \\
 \bottomrule
 \end{tabular}

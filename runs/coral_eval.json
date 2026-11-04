@@ -1,0 +1,1724 @@
+{
+ "head": "CoralOrdinalScoreHead (v6 notebook cell 4)",
+ "ordinal_mix": 0.5428,
+ "gate_threshold_recorded": 0.6542,
+ "gold": "corrected (1-based level -> 0-based option index)",
+ "n": 240,
+ "coral": {
+  "amazon/stars": {
+   "n": 80,
+   "acc": 0.625
+  },
+  "sst5/sentiment": {
+   "n": 80,
+   "acc": 0.6875
+  },
+  "yelp/rating": {
+   "n": 80,
+   "acc": 0.5875
+  }
+ },
+ "packed": {
+  "amazon/stars": {
+   "n": 80,
+   "acc": 0.625
+  },
+  "sst5/sentiment": {
+   "n": 80,
+   "acc": 0.625
+  },
+  "yelp/rating": {
+   "n": 80,
+   "acc": 0.6375
+  }
+ },
+ "coral_macro": 0.6333,
+ "packed_macro": 0.6292,
+ "paired": {
+  "coral_only": 7,
+  "packed_only": 6,
+  "both": 145
+ },
+ "rows": [
+  {
+   "id": "sst5/test/45",
+   "cell": "sst5/sentiment",
+   "gold": 3,
+   "coral": 2,
+   "packed": 3
+  },
+  {
+   "id": "sst5/test/339",
+   "cell": "sst5/sentiment",
+   "gold": 2,
+   "coral": 2,
+   "packed": 2
+  },
+  {
+   "id": "sst5/test/19",
+   "cell": "sst5/sentiment",
+   "gold": 4,
+   "coral": 4,
+   "packed": 4
+  },
+  {
+   "id": "sst5/test/1549",
+   "cell": "sst5/sentiment",
+   "gold": 3,
+   "coral": 3,
+   "packed": 3
+  },
+  {
+   "id": "sst5/test/1223",
+   "cell": "sst5/sentiment",
+   "gold": 2,
+   "coral": 1,
+   "packed": 1
+  },
+  {
+   "id": "sst5/test/1893",
+   "cell": "sst5/sentiment",
+   "gold": 1,
+   "coral": 1,
+   "packed": 1
+  },
+  {
+   "id": "sst5/test/138",
+   "cell": "sst5/sentiment",
+   "gold": 2,
+   "coral": 2,
+   "packed": 2
+  },
+  {
+   "id": "sst5/test/724",
+   "cell": "sst5/sentiment",
+   "gold": 0,
+   "coral": 1,
+   "packed": 1
+  },
+  {
+   "id": "sst5/test/1542",
+   "cell": "sst5/sentiment",
+   "gold": 4,
+   "coral": 3,
+   "packed": 3
+  },
+  {
+   "id": "sst5/test/215",
+   "cell": "sst5/sentiment",
+   "gold": 4,
+   "coral": 2,
+   "packed": 2
+  },
+  {
+   "id": "sst5/test/603",
+   "cell": "sst5/sentiment",
+   "gold": 1,
+   "coral": 1,
+   "packed": 1
+  },
+  {
+   "id": "sst5/test/355",
+   "cell": "sst5/sentiment",
+   "gold": 3,
+   "coral": 3,
+   "packed": 3
+  },
+  {
+   "id": "sst5/test/1329",
+   "cell": "sst5/sentiment",
+   "gold": 2,
+   "coral": 2,
+   "packed": 2
+  },
+  {
+   "id": "sst5/test/2040",
+   "cell": "sst5/sentiment",
+   "gold": 4,
+   "coral": 3,
+   "packed": 3
+  },
+  {
+   "id": "sst5/test/2039",
+   "cell": "sst5/sentiment",
+   "gold": 2,
+   "coral": 2,
+   "packed": 2
+  },
+  {
+   "id": "sst5/test/1465",
+   "cell": "sst5/sentiment",
+   "gold": 4,
+   "coral": 4,
+   "packed": 4
+  },
+  {
+   "id": "sst5/test/1384",
+   "cell": "sst5/sentiment",
+   "gold": 3,
+   "coral": 3,
+   "packed": 3
+  },
+  {
+   "id": "sst5/test/1125",
+   "cell": "sst5/sentiment",
+   "gold": 2,
+   "coral": 2,
+   "packed": 2
+  },
+  {
+   "id": "sst5/test/655",
+   "cell": "sst5/sentiment",
+   "gold": 4,
+   "coral": 4,
+   "packed": 4
+  },
+  {
+   "id": "sst5/test/1503",
+   "cell": "sst5/sentiment",
+   "gold": 0,
+   "coral": 2,
+   "packed": 2
+  },
+  {
+   "id": "sst5/test/1851",
+   "cell": "sst5/sentiment",
+   "gold": 4,
+   "coral": 3,
+   "packed": 3
+  },
+  {
+   "id": "sst5/test/2018",
+   "cell": "sst5/sentiment",
+   "gold": 0,
+   "coral": 0,
+   "packed": 1
+  },
+  {
+   "id": "sst5/test/669",
+   "cell": "sst5/sentiment",
+   "gold": 1,
+   "coral": 1,
+   "packed": 1
+  },
+  {
+   "id": "sst5/test/1632",
+   "cell": "sst5/sentiment",
+   "gold": 3,
+   "coral": 4,
+   "packed": 4
+  },
+  {
+   "id": "sst5/test/1410",
+   "cell": "sst5/sentiment",
+   "gold": 1,
+   "coral": 1,
+   "packed": 1
+  },
+  {
+   "id": "sst5/test/33",
+   "cell": "sst5/sentiment",
+   "gold": 1,
+   "coral": 1,
+   "packed": 1
+  },
+  {
+   "id": "sst5/test/1732",
+   "cell": "sst5/sentiment",
+   "gold": 2,
+   "coral": 2,
+   "packed": 2
+  },
+  {
+   "id": "sst5/test/1061",
+   "cell": "sst5/sentiment",
+   "gold": 3,
+   "coral": 3,
+   "packed": 3
+  },
+  {
+   "id": "sst5/test/836",
+   "cell": "sst5/sentiment",
+   "gold": 4,
+   "coral": 4,
+   "packed": 4
+  },
+  {
+   "id": "sst5/test/1643",
+   "cell": "sst5/sentiment",
+   "gold": 2,
+   "coral": 2,
+   "packed": 2
+  },
+  {
+   "id": "sst5/test/2120",
+   "cell": "sst5/sentiment",
+   "gold": 2,
+   "coral": 1,
+   "packed": 1
+  },
+  {
+   "id": "sst5/test/1467",
+   "cell": "sst5/sentiment",
+   "gold": 1,
+   "coral": 1,
+   "packed": 1
+  },
+  {
+   "id": "sst5/test/1626",
+   "cell": "sst5/sentiment",
+   "gold": 1,
+   "coral": 2,
+   "packed": 2
+  },
+  {
+   "id": "sst5/test/1901",
+   "cell": "sst5/sentiment",
+   "gold": 3,
+   "coral": 3,
+   "packed": 3
+  },
+  {
+   "id": "sst5/test/206",
+   "cell": "sst5/sentiment",
+   "gold": 3,
+   "coral": 3,
+   "packed": 3
+  },
+  {
+   "id": "sst5/test/156",
+   "cell": "sst5/sentiment",
+   "gold": 0,
+   "coral": 1,
+   "packed": 1
+  },
+  {
+   "id": "sst5/test/442",
+   "cell": "sst5/sentiment",
+   "gold": 3,
+   "coral": 3,
+   "packed": 3
+  },
+  {
+   "id": "sst5/test/81",
+   "cell": "sst5/sentiment",
+   "gold": 2,
+   "coral": 2,
+   "packed": 2
+  },
+  {
+   "id": "sst5/test/804",
+   "cell": "sst5/sentiment",
+   "gold": 0,
+   "coral": 0,
+   "packed": 0
+  },
+  {
+   "id": "sst5/test/321",
+   "cell": "sst5/sentiment",
+   "gold": 3,
+   "coral": 3,
+   "packed": 3
+  },
+  {
+   "id": "sst5/test/865",
+   "cell": "sst5/sentiment",
+   "gold": 3,
+   "coral": 2,
+   "packed": 2
+  },
+  {
+   "id": "sst5/test/784",
+   "cell": "sst5/sentiment",
+   "gold": 1,
+   "coral": 1,
+   "packed": 1
+  },
+  {
+   "id": "sst5/test/1174",
+   "cell": "sst5/sentiment",
+   "gold": 1,
+   "coral": 1,
+   "packed": 1
+  },
+  {
+   "id": "sst5/test/1753",
+   "cell": "sst5/sentiment",
+   "gold": 1,
+   "coral": 1,
+   "packed": 1
+  },
+  {
+   "id": "sst5/test/53",
+   "cell": "sst5/sentiment",
+   "gold": 0,
+   "coral": 0,
+   "packed": 0
+  },
+  {
+   "id": "sst5/test/1409",
+   "cell": "sst5/sentiment",
+   "gold": 3,
+   "coral": 3,
+   "packed": 3
+  },
+  {
+   "id": "sst5/test/1046",
+   "cell": "sst5/sentiment",
+   "gold": 4,
+   "coral": 4,
+   "packed": 4
+  },
+  {
+   "id": "sst5/test/572",
+   "cell": "sst5/sentiment",
+   "gold": 4,
+   "coral": 4,
+   "packed": 4
+  },
+  {
+   "id": "sst5/test/1438",
+   "cell": "sst5/sentiment",
+   "gold": 4,
+   "coral": 4,
+   "packed": 4
+  },
+  {
+   "id": "sst5/test/848",
+   "cell": "sst5/sentiment",
+   "gold": 1,
+   "coral": 0,
+   "packed": 0
+  },
+  {
+   "id": "sst5/test/1700",
+   "cell": "sst5/sentiment",
+   "gold": 2,
+   "coral": 1,
+   "packed": 1
+  },
+  {
+   "id": "sst5/test/1304",
+   "cell": "sst5/sentiment",
+   "gold": 2,
+   "coral": 0,
+   "packed": 0
+  },
+  {
+   "id": "sst5/test/683",
+   "cell": "sst5/sentiment",
+   "gold": 1,
+   "coral": 1,
+   "packed": 1
+  },
+  {
+   "id": "sst5/test/2110",
+   "cell": "sst5/sentiment",
+   "gold": 0,
+   "coral": 0,
+   "packed": 1
+  },
+  {
+   "id": "sst5/test/312",
+   "cell": "sst5/sentiment",
+   "gold": 2,
+   "coral": 2,
+   "packed": 1
+  },
+  {
+   "id": "sst5/test/417",
+   "cell": "sst5/sentiment",
+   "gold": 0,
+   "coral": 0,
+   "packed": 1
+  },
+  {
+   "id": "sst5/test/1672",
+   "cell": "sst5/sentiment",
+   "gold": 0,
+   "coral": 0,
+   "packed": 1
+  },
+  {
+   "id": "sst5/test/180",
+   "cell": "sst5/sentiment",
+   "gold": 1,
+   "coral": 1,
+   "packed": 1
+  },
+  {
+   "id": "sst5/test/1074",
+   "cell": "sst5/sentiment",
+   "gold": 3,
+   "coral": 3,
+   "packed": 3
+  },
+  {
+   "id": "sst5/test/1283",
+   "cell": "sst5/sentiment",
+   "gold": 2,
+   "coral": 3,
+   "packed": 3
+  },
+  {
+   "id": "sst5/test/97",
+   "cell": "sst5/sentiment",
+   "gold": 1,
+   "coral": 1,
+   "packed": 1
+  },
+  {
+   "id": "sst5/test/198",
+   "cell": "sst5/sentiment",
+   "gold": 3,
+   "coral": 4,
+   "packed": 4
+  },
+  {
+   "id": "sst5/test/1247",
+   "cell": "sst5/sentiment",
+   "gold": 0,
+   "coral": 0,
+   "packed": 0
+  },
+  {
+   "id": "sst5/test/1640",
+   "cell": "sst5/sentiment",
+   "gold": 0,
+   "coral": 1,
+   "packed": 1
+  },
+  {
+   "id": "sst5/test/245",
+   "cell": "sst5/sentiment",
+   "gold": 3,
+   "coral": 3,
+   "packed": 3
+  },
+  {
+   "id": "sst5/test/1817",
+   "cell": "sst5/sentiment",
+   "gold": 1,
+   "coral": 1,
+   "packed": 1
+  },
+  {
+   "id": "sst5/test/1942",
+   "cell": "sst5/sentiment",
+   "gold": 2,
+   "coral": 3,
+   "packed": 3
+  },
+  {
+   "id": "sst5/test/626",
+   "cell": "sst5/sentiment",
+   "gold": 1,
+   "coral": 2,
+   "packed": 2
+  },
+  {
+   "id": "sst5/test/2186",
+   "cell": "sst5/sentiment",
+   "gold": 1,
+   "coral": 2,
+   "packed": 2
+  },
+  {
+   "id": "sst5/test/1340",
+   "cell": "sst5/sentiment",
+   "gold": 3,
+   "coral": 3,
+   "packed": 3
+  },
+  {
+   "id": "sst5/test/1171",
+   "cell": "sst5/sentiment",
+   "gold": 4,
+   "coral": 4,
+   "packed": 4
+  },
+  {
+   "id": "sst5/test/1481",
+   "cell": "sst5/sentiment",
+   "gold": 4,
+   "coral": 4,
+   "packed": 3
+  },
+  {
+   "id": "sst5/test/1108",
+   "cell": "sst5/sentiment",
+   "gold": 0,
+   "coral": 0,
+   "packed": 0
+  },
+  {
+   "id": "sst5/test/1658",
+   "cell": "sst5/sentiment",
+   "gold": 3,
+   "coral": 3,
+   "packed": 3
+  },
+  {
+   "id": "sst5/test/169",
+   "cell": "sst5/sentiment",
+   "gold": 1,
+   "coral": 2,
+   "packed": 2
+  },
+  {
+   "id": "sst5/test/2043",
+   "cell": "sst5/sentiment",
+   "gold": 3,
+   "coral": 3,
+   "packed": 3
+  },
+  {
+   "id": "sst5/test/1065",
+   "cell": "sst5/sentiment",
+   "gold": 2,
+   "coral": 1,
+   "packed": 1
+  },
+  {
+   "id": "sst5/test/1539",
+   "cell": "sst5/sentiment",
+   "gold": 1,
+   "coral": 1,
+   "packed": 1
+  },
+  {
+   "id": "sst5/test/1217",
+   "cell": "sst5/sentiment",
+   "gold": 0,
+   "coral": 0,
+   "packed": 0
+  },
+  {
+   "id": "sst5/test/72",
+   "cell": "sst5/sentiment",
+   "gold": 1,
+   "coral": 2,
+   "packed": 2
+  },
+  {
+   "id": "yelp/test/36602",
+   "cell": "yelp/rating",
+   "gold": 4,
+   "coral": 4,
+   "packed": 4
+  },
+  {
+   "id": "yelp/test/42012",
+   "cell": "yelp/rating",
+   "gold": 0,
+   "coral": 0,
+   "packed": 0
+  },
+  {
+   "id": "yelp/test/344",
+   "cell": "yelp/rating",
+   "gold": 2,
+   "coral": 2,
+   "packed": 2
+  },
+  {
+   "id": "yelp/test/40235",
+   "cell": "yelp/rating",
+   "gold": 4,
+   "coral": 3,
+   "packed": 3
+  },
+  {
+   "id": "yelp/test/36661",
+   "cell": "yelp/rating",
+   "gold": 0,
+   "coral": 0,
+   "packed": 0
+  },
+  {
+   "id": "yelp/test/2720",
+   "cell": "yelp/rating",
+   "gold": 3,
+   "coral": 2,
+   "packed": 2
+  },
+  {
+   "id": "yelp/test/11816",
+   "cell": "yelp/rating",
+   "gold": 0,
+   "coral": 0,
+   "packed": 0
+  },
+  {
+   "id": "yelp/test/28261",
+   "cell": "yelp/rating",
+   "gold": 2,
+   "coral": 3,
+   "packed": 2
+  },
+  {
+   "id": "yelp/test/25872",
+   "cell": "yelp/rating",
+   "gold": 1,
+   "coral": 1,
+   "packed": 1
+  },
+  {
+   "id": "yelp/test/20500",
+   "cell": "yelp/rating",
+   "gold": 1,
+   "coral": 2,
+   "packed": 2
+  },
+  {
+   "id": "yelp/test/17050",
+   "cell": "yelp/rating",
+   "gold": 4,
+   "coral": 4,
+   "packed": 4
+  },
+  {
+   "id": "yelp/test/44873",
+   "cell": "yelp/rating",
+   "gold": 2,
+   "coral": 3,
+   "packed": 3
+  },
+  {
+   "id": "yelp/test/27412",
+   "cell": "yelp/rating",
+   "gold": 3,
+   "coral": 2,
+   "packed": 2
+  },
+  {
+   "id": "yelp/test/5247",
+   "cell": "yelp/rating",
+   "gold": 0,
+   "coral": 0,
+   "packed": 0
+  },
+  {
+   "id": "yelp/test/1567",
+   "cell": "yelp/rating",
+   "gold": 2,
+   "coral": 1,
+   "packed": 1
+  },
+  {
+   "id": "yelp/test/27911",
+   "cell": "yelp/rating",
+   "gold": 1,
+   "coral": 1,
+   "packed": 1
+  },
+  {
+   "id": "yelp/test/44764",
+   "cell": "yelp/rating",
+   "gold": 4,
+   "coral": 4,
+   "packed": 4
+  },
+  {
+   "id": "yelp/test/36116",
+   "cell": "yelp/rating",
+   "gold": 3,
+   "coral": 3,
+   "packed": 3
+  },
+  {
+   "id": "yelp/test/21205",
+   "cell": "yelp/rating",
+   "gold": 3,
+   "coral": 4,
+   "packed": 4
+  },
+  {
+   "id": "yelp/test/3662",
+   "cell": "yelp/rating",
+   "gold": 1,
+   "coral": 1,
+   "packed": 1
+  },
+  {
+   "id": "yelp/test/34807",
+   "cell": "yelp/rating",
+   "gold": 4,
+   "coral": 3,
+   "packed": 3
+  },
+  {
+   "id": "yelp/test/12668",
+   "cell": "yelp/rating",
+   "gold": 3,
+   "coral": 2,
+   "packed": 2
+  },
+  {
+   "id": "yelp/test/40932",
+   "cell": "yelp/rating",
+   "gold": 1,
+   "coral": 1,
+   "packed": 1
+  },
+  {
+   "id": "yelp/test/40671",
+   "cell": "yelp/rating",
+   "gold": 3,
+   "coral": 3,
+   "packed": 3
+  },
+  {
+   "id": "yelp/test/33480",
+   "cell": "yelp/rating",
+   "gold": 1,
+   "coral": 1,
+   "packed": 1
+  },
+  {
+   "id": "yelp/test/29648",
+   "cell": "yelp/rating",
+   "gold": 1,
+   "coral": 0,
+   "packed": 0
+  },
+  {
+   "id": "yelp/test/24007",
+   "cell": "yelp/rating",
+   "gold": 2,
+   "coral": 1,
+   "packed": 1
+  },
+  {
+   "id": "yelp/test/6651",
+   "cell": "yelp/rating",
+   "gold": 3,
+   "coral": 3,
+   "packed": 3
+  },
+  {
+   "id": "yelp/test/44739",
+   "cell": "yelp/rating",
+   "gold": 0,
+   "coral": 0,
+   "packed": 0
+  },
+  {
+   "id": "yelp/test/7625",
+   "cell": "yelp/rating",
+   "gold": 3,
+   "coral": 4,
+   "packed": 4
+  },
+  {
+   "id": "yelp/test/27696",
+   "cell": "yelp/rating",
+   "gold": 1,
+   "coral": 2,
+   "packed": 2
+  },
+  {
+   "id": "yelp/test/28696",
+   "cell": "yelp/rating",
+   "gold": 3,
+   "coral": 4,
+   "packed": 4
+  },
+  {
+   "id": "yelp/test/2057",
+   "cell": "yelp/rating",
+   "gold": 2,
+   "coral": 1,
+   "packed": 1
+  },
+  {
+   "id": "yelp/test/23792",
+   "cell": "yelp/rating",
+   "gold": 1,
+   "coral": 0,
+   "packed": 0
+  },
+  {
+   "id": "yelp/test/41437",
+   "cell": "yelp/rating",
+   "gold": 3,
+   "coral": 2,
+   "packed": 2
+  },
+  {
+   "id": "yelp/test/26016",
+   "cell": "yelp/rating",
+   "gold": 3,
+   "coral": 3,
+   "packed": 3
+  },
+  {
+   "id": "yelp/test/41472",
+   "cell": "yelp/rating",
+   "gold": 2,
+   "coral": 2,
+   "packed": 2
+  },
+  {
+   "id": "yelp/test/11249",
+   "cell": "yelp/rating",
+   "gold": 3,
+   "coral": 3,
+   "packed": 3
+  },
+  {
+   "id": "yelp/test/17802",
+   "cell": "yelp/rating",
+   "gold": 2,
+   "coral": 2,
+   "packed": 2
+  },
+  {
+   "id": "yelp/test/30194",
+   "cell": "yelp/rating",
+   "gold": 2,
+   "coral": 2,
+   "packed": 2
+  },
+  {
+   "id": "yelp/test/44887",
+   "cell": "yelp/rating",
+   "gold": 0,
+   "coral": 1,
+   "packed": 1
+  },
+  {
+   "id": "yelp/test/28757",
+   "cell": "yelp/rating",
+   "gold": 2,
+   "coral": 2,
+   "packed": 2
+  },
+  {
+   "id": "yelp/test/11150",
+   "cell": "yelp/rating",
+   "gold": 3,
+   "coral": 3,
+   "packed": 3
+  },
+  {
+   "id": "yelp/test/43371",
+   "cell": "yelp/rating",
+   "gold": 3,
+   "coral": 4,
+   "packed": 4
+  },
+  {
+   "id": "yelp/test/22178",
+   "cell": "yelp/rating",
+   "gold": 0,
+   "coral": 1,
+   "packed": 1
+  },
+  {
+   "id": "yelp/test/33895",
+   "cell": "yelp/rating",
+   "gold": 3,
+   "coral": 4,
+   "packed": 4
+  },
+  {
+   "id": "yelp/test/32450",
+   "cell": "yelp/rating",
+   "gold": 0,
+   "coral": 0,
+   "packed": 0
+  },
+  {
+   "id": "yelp/test/4504",
+   "cell": "yelp/rating",
+   "gold": 0,
+   "coral": 0,
+   "packed": 0
+  },
+  {
+   "id": "yelp/test/4162",
+   "cell": "yelp/rating",
+   "gold": 3,
+   "coral": 3,
+   "packed": 3
+  },
+  {
+   "id": "yelp/test/6135",
+   "cell": "yelp/rating",
+   "gold": 0,
+   "coral": 0,
+   "packed": 0
+  },
+  {
+   "id": "yelp/test/43639",
+   "cell": "yelp/rating",
+   "gold": 4,
+   "coral": 4,
+   "packed": 4
+  },
+  {
+   "id": "yelp/test/2128",
+   "cell": "yelp/rating",
+   "gold": 4,
+   "coral": 4,
+   "packed": 4
+  },
+  {
+   "id": "yelp/test/43632",
+   "cell": "yelp/rating",
+   "gold": 4,
+   "coral": 4,
+   "packed": 4
+  },
+  {
+   "id": "yelp/test/12145",
+   "cell": "yelp/rating",
+   "gold": 1,
+   "coral": 0,
+   "packed": 0
+  },
+  {
+   "id": "yelp/test/31320",
+   "cell": "yelp/rating",
+   "gold": 1,
+   "coral": 0,
+   "packed": 0
+  },
+  {
+   "id": "yelp/test/12783",
+   "cell": "yelp/rating",
+   "gold": 2,
+   "coral": 2,
+   "packed": 2
+  },
+  {
+   "id": "yelp/test/31559",
+   "cell": "yelp/rating",
+   "gold": 3,
+   "coral": 4,
+   "packed": 3
+  },
+  {
+   "id": "yelp/test/21060",
+   "cell": "yelp/rating",
+   "gold": 3,
+   "coral": 3,
+   "packed": 3
+  },
+  {
+   "id": "yelp/test/32190",
+   "cell": "yelp/rating",
+   "gold": 4,
+   "coral": 4,
+   "packed": 4
+  },
+  {
+   "id": "yelp/test/4124",
+   "cell": "yelp/rating",
+   "gold": 2,
+   "coral": 1,
+   "packed": 1
+  },
+  {
+   "id": "yelp/test/47137",
+   "cell": "yelp/rating",
+   "gold": 0,
+   "coral": 0,
+   "packed": 0
+  },
+  {
+   "id": "yelp/test/11262",
+   "cell": "yelp/rating",
+   "gold": 2,
+   "coral": 2,
+   "packed": 2
+  },
+  {
+   "id": "yelp/test/21189",
+   "cell": "yelp/rating",
+   "gold": 0,
+   "coral": 1,
+   "packed": 1
+  },
+  {
+   "id": "yelp/test/30742",
+   "cell": "yelp/rating",
+   "gold": 3,
+   "coral": 4,
+   "packed": 3
+  },
+  {
+   "id": "yelp/test/36409",
+   "cell": "yelp/rating",
+   "gold": 2,
+   "coral": 3,
+   "packed": 3
+  },
+  {
+   "id": "yelp/test/22589",
+   "cell": "yelp/rating",
+   "gold": 4,
+   "coral": 4,
+   "packed": 4
+  },
+  {
+   "id": "yelp/test/26314",
+   "cell": "yelp/rating",
+   "gold": 4,
+   "coral": 4,
+   "packed": 4
+  },
+  {
+   "id": "yelp/test/30223",
+   "cell": "yelp/rating",
+   "gold": 2,
+   "coral": 2,
+   "packed": 2
+  },
+  {
+   "id": "yelp/test/14298",
+   "cell": "yelp/rating",
+   "gold": 2,
+   "coral": 2,
+   "packed": 2
+  },
+  {
+   "id": "yelp/test/24663",
+   "cell": "yelp/rating",
+   "gold": 4,
+   "coral": 4,
+   "packed": 4
+  },
+  {
+   "id": "yelp/test/11695",
+   "cell": "yelp/rating",
+   "gold": 4,
+   "coral": 3,
+   "packed": 3
+  },
+  {
+   "id": "yelp/test/38819",
+   "cell": "yelp/rating",
+   "gold": 3,
+   "coral": 3,
+   "packed": 3
+  },
+  {
+   "id": "yelp/test/44385",
+   "cell": "yelp/rating",
+   "gold": 1,
+   "coral": 1,
+   "packed": 1
+  },
+  {
+   "id": "yelp/test/32299",
+   "cell": "yelp/rating",
+   "gold": 4,
+   "coral": 4,
+   "packed": 4
+  },
+  {
+   "id": "yelp/test/19059",
+   "cell": "yelp/rating",
+   "gold": 3,
+   "coral": 4,
+   "packed": 3
+  },
+  {
+   "id": "yelp/test/11983",
+   "cell": "yelp/rating",
+   "gold": 2,
+   "coral": 2,
+   "packed": 2
+  },
+  {
+   "id": "yelp/test/5733",
+   "cell": "yelp/rating",
+   "gold": 3,
+   "coral": 3,
+   "packed": 3
+  },
+  {
+   "id": "yelp/test/36806",
+   "cell": "yelp/rating",
+   "gold": 2,
+   "coral": 2,
+   "packed": 2
+  },
+  {
+   "id": "yelp/test/35481",
+   "cell": "yelp/rating",
+   "gold": 4,
+   "coral": 3,
+   "packed": 3
+  },
+  {
+   "id": "yelp/test/17716",
+   "cell": "yelp/rating",
+   "gold": 0,
+   "coral": 1,
+   "packed": 1
+  },
+  {
+   "id": "amazon/test/1893",
+   "cell": "amazon/stars",
+   "gold": 1,
+   "coral": 1,
+   "packed": 1
+  },
+  {
+   "id": "amazon/test/4427",
+   "cell": "amazon/stars",
+   "gold": 4,
+   "coral": 4,
+   "packed": 4
+  },
+  {
+   "id": "amazon/test/2658",
+   "cell": "amazon/stars",
+   "gold": 2,
+   "coral": 1,
+   "packed": 1
+  },
+  {
+   "id": "amazon/test/361",
+   "cell": "amazon/stars",
+   "gold": 0,
+   "coral": 1,
+   "packed": 1
+  },
+  {
+   "id": "amazon/test/1884",
+   "cell": "amazon/stars",
+   "gold": 1,
+   "coral": 1,
+   "packed": 1
+  },
+  {
+   "id": "amazon/test/942",
+   "cell": "amazon/stars",
+   "gold": 0,
+   "coral": 0,
+   "packed": 0
+  },
+  {
+   "id": "amazon/test/529",
+   "cell": "amazon/stars",
+   "gold": 0,
+   "coral": 1,
+   "packed": 1
+  },
+  {
+   "id": "amazon/test/1257",
+   "cell": "amazon/stars",
+   "gold": 1,
+   "coral": 0,
+   "packed": 0
+  },
+  {
+   "id": "amazon/test/3652",
+   "cell": "amazon/stars",
+   "gold": 3,
+   "coral": 3,
+   "packed": 3
+  },
+  {
+   "id": "amazon/test/2389",
+   "cell": "amazon/stars",
+   "gold": 2,
+   "coral": 4,
+   "packed": 4
+  },
+  {
+   "id": "amazon/test/2440",
+   "cell": "amazon/stars",
+   "gold": 2,
+   "coral": 2,
+   "packed": 2
+  },
+  {
+   "id": "amazon/test/3268",
+   "cell": "amazon/stars",
+   "gold": 3,
+   "coral": 3,
+   "packed": 3
+  },
+  {
+   "id": "amazon/test/1735",
+   "cell": "amazon/stars",
+   "gold": 1,
+   "coral": 1,
+   "packed": 1
+  },
+  {
+   "id": "amazon/test/2122",
+   "cell": "amazon/stars",
+   "gold": 2,
+   "coral": 2,
+   "packed": 2
+  },
+  {
+   "id": "amazon/test/626",
+   "cell": "amazon/stars",
+   "gold": 0,
+   "coral": 0,
+   "packed": 0
+  },
+  {
+   "id": "amazon/test/1201",
+   "cell": "amazon/stars",
+   "gold": 1,
+   "coral": 2,
+   "packed": 2
+  },
+  {
+   "id": "amazon/test/1797",
+   "cell": "amazon/stars",
+   "gold": 1,
+   "coral": 1,
+   "packed": 1
+  },
+  {
+   "id": "amazon/test/4365",
+   "cell": "amazon/stars",
+   "gold": 4,
+   "coral": 4,
+   "packed": 4
+  },
+  {
+   "id": "amazon/test/1251",
+   "cell": "amazon/stars",
+   "gold": 1,
+   "coral": 0,
+   "packed": 0
+  },
+  {
+   "id": "amazon/test/3204",
+   "cell": "amazon/stars",
+   "gold": 3,
+   "coral": 3,
+   "packed": 3
+  },
+  {
+   "id": "amazon/test/755",
+   "cell": "amazon/stars",
+   "gold": 0,
+   "coral": 0,
+   "packed": 0
+  },
+  {
+   "id": "amazon/test/4635",
+   "cell": "amazon/stars",
+   "gold": 4,
+   "coral": 4,
+   "packed": 4
+  },
+  {
+   "id": "amazon/test/1125",
+   "cell": "amazon/stars",
+   "gold": 1,
+   "coral": 0,
+   "packed": 0
+  },
+  {
+   "id": "amazon/test/2780",
+   "cell": "amazon/stars",
+   "gold": 2,
+   "coral": 2,
+   "packed": 2
+  },
+  {
+   "id": "amazon/test/4227",
+   "cell": "amazon/stars",
+   "gold": 4,
+   "coral": 4,
+   "packed": 4
+  },
+  {
+   "id": "amazon/test/2341",
+   "cell": "amazon/stars",
+   "gold": 2,
+   "coral": 2,
+   "packed": 2
+  },
+  {
+   "id": "amazon/test/3492",
+   "cell": "amazon/stars",
+   "gold": 3,
+   "coral": 2,
+   "packed": 2
+  },
+  {
+   "id": "amazon/test/4137",
+   "cell": "amazon/stars",
+   "gold": 4,
+   "coral": 4,
+   "packed": 4
+  },
+  {
+   "id": "amazon/test/1524",
+   "cell": "amazon/stars",
+   "gold": 1,
+   "coral": 1,
+   "packed": 1
+  },
+  {
+   "id": "amazon/test/1991",
+   "cell": "amazon/stars",
+   "gold": 1,
+   "coral": 0,
+   "packed": 0
+  },
+  {
+   "id": "amazon/test/904",
+   "cell": "amazon/stars",
+   "gold": 0,
+   "coral": 0,
+   "packed": 0
+  },
+  {
+   "id": "amazon/test/2794",
+   "cell": "amazon/stars",
+   "gold": 2,
+   "coral": 1,
+   "packed": 1
+  },
+  {
+   "id": "amazon/test/4507",
+   "cell": "amazon/stars",
+   "gold": 4,
+   "coral": 3,
+   "packed": 3
+  },
+  {
+   "id": "amazon/test/3388",
+   "cell": "amazon/stars",
+   "gold": 3,
+   "coral": 3,
+   "packed": 3
+  },
+  {
+   "id": "amazon/test/2192",
+   "cell": "amazon/stars",
+   "gold": 2,
+   "coral": 3,
+   "packed": 3
+  },
+  {
+   "id": "amazon/test/1184",
+   "cell": "amazon/stars",
+   "gold": 1,
+   "coral": 0,
+   "packed": 0
+  },
+  {
+   "id": "amazon/test/2297",
+   "cell": "amazon/stars",
+   "gold": 2,
+   "coral": 2,
+   "packed": 2
+  },
+  {
+   "id": "amazon/test/2148",
+   "cell": "amazon/stars",
+   "gold": 2,
+   "coral": 2,
+   "packed": 2
+  },
+  {
+   "id": "amazon/test/607",
+   "cell": "amazon/stars",
+   "gold": 0,
+   "coral": 0,
+   "packed": 0
+  },
+  {
+   "id": "amazon/test/423",
+   "cell": "amazon/stars",
+   "gold": 0,
+   "coral": 0,
+   "packed": 0
+  },
+  {
+   "id": "amazon/test/2911",
+   "cell": "amazon/stars",
+   "gold": 2,
+   "coral": 2,
+   "packed": 2
+  },
+  {
+   "id": "amazon/test/552",
+   "cell": "amazon/stars",
+   "gold": 0,
+   "coral": 0,
+   "packed": 0
+  },
+  {
+   "id": "amazon/test/1740",
+   "cell": "amazon/stars",
+   "gold": 1,
+   "coral": 2,
+   "packed": 2
+  },
+  {
+   "id": "amazon/test/1752",
+   "cell": "amazon/stars",
+   "gold": 1,
+   "coral": 0,
+   "packed": 1
+  },
+  {
+   "id": "amazon/test/4682",
+   "cell": "amazon/stars",
+   "gold": 4,
+   "coral": 4,
+   "packed": 4
+  },
+  {
+   "id": "amazon/test/2377",
+   "cell": "amazon/stars",
+   "gold": 2,
+   "coral": 2,
+   "packed": 2
+  },
+  {
+   "id": "amazon/test/2282",
+   "cell": "amazon/stars",
+   "gold": 2,
+   "coral": 3,
+   "packed": 3
+  },
+  {
+   "id": "amazon/test/2022",
+   "cell": "amazon/stars",
+   "gold": 2,
+   "coral": 0,
+   "packed": 0
+  },
+  {
+   "id": "amazon/test/4303",
+   "cell": "amazon/stars",
+   "gold": 4,
+   "coral": 4,
+   "packed": 4
+  },
+  {
+   "id": "amazon/test/4277",
+   "cell": "amazon/stars",
+   "gold": 4,
+   "coral": 4,
+   "packed": 4
+  },
+  {
+   "id": "amazon/test/4771",
+   "cell": "amazon/stars",
+   "gold": 4,
+   "coral": 2,
+   "packed": 2
+  },
+  {
+   "id": "amazon/test/2948",
+   "cell": "amazon/stars",
+   "gold": 2,
+   "coral": 2,
+   "packed": 2
+  },
+  {
+   "id": "amazon/test/2261",
+   "cell": "amazon/stars",
+   "gold": 2,
+   "coral": 2,
+   "packed": 2
+  },
+  {
+   "id": "amazon/test/3140",
+   "cell": "amazon/stars",
+   "gold": 3,
+   "coral": 4,
+   "packed": 4
+  },
+  {
+   "id": "amazon/test/1888",
+   "cell": "amazon/stars",
+   "gold": 1,
+   "coral": 1,
+   "packed": 0
+  },
+  {
+   "id": "amazon/test/4136",
+   "cell": "amazon/stars",
+   "gold": 4,
+   "coral": 4,
+   "packed": 4
+  },
+  {
+   "id": "amazon/test/1941",
+   "cell": "amazon/stars",
+   "gold": 1,
+   "coral": 2,
+   "packed": 2
+  },
+  {
+   "id": "amazon/test/4585",
+   "cell": "amazon/stars",
+   "gold": 4,
+   "coral": 4,
+   "packed": 4
+  },
+  {
+   "id": "amazon/test/1479",
+   "cell": "amazon/stars",
+   "gold": 1,
+   "coral": 1,
+   "packed": 1
+  },
+  {
+   "id": "amazon/test/1971",
+   "cell": "amazon/stars",
+   "gold": 1,
+   "coral": 2,
+   "packed": 2
+  },
+  {
+   "id": "amazon/test/3039",
+   "cell": "amazon/stars",
+   "gold": 3,
+   "coral": 4,
+   "packed": 4
+  },
+  {
+   "id": "amazon/test/3296",
+   "cell": "amazon/stars",
+   "gold": 3,
+   "coral": 2,
+   "packed": 2
+  },
+  {
+   "id": "amazon/test/2220",
+   "cell": "amazon/stars",
+   "gold": 2,
+   "coral": 4,
+   "packed": 4
+  },
+  {
+   "id": "amazon/test/122",
+   "cell": "amazon/stars",
+   "gold": 0,
+   "coral": 0,
+   "packed": 0
+  },
+  {
+   "id": "amazon/test/1283",
+   "cell": "amazon/stars",
+   "gold": 1,
+   "coral": 1,
+   "packed": 1
+  },
+  {
+   "id": "amazon/test/4251",
+   "cell": "amazon/stars",
+   "gold": 4,
+   "coral": 4,
+   "packed": 4
+  },
+  {
+   "id": "amazon/test/3540",
+   "cell": "amazon/stars",
+   "gold": 3,
+   "coral": 4,
+   "packed": 4
+  },
+  {
+   "id": "amazon/test/1021",
+   "cell": "amazon/stars",
+   "gold": 1,
+   "coral": 1,
+   "packed": 1
+  },
+  {
+   "id": "amazon/test/3866",
+   "cell": "amazon/stars",
+   "gold": 3,
+   "coral": 3,
+   "packed": 3
+  },
+  {
+   "id": "amazon/test/2885",
+   "cell": "amazon/stars",
+   "gold": 2,
+   "coral": 2,
+   "packed": 2
+  },
+  {
+   "id": "amazon/test/2841",
+   "cell": "amazon/stars",
+   "gold": 2,
+   "coral": 1,
+   "packed": 1
+  },
+  {
+   "id": "amazon/test/798",
+   "cell": "amazon/stars",
+   "gold": 0,
+   "coral": 0,
+   "packed": 0
+  },
+  {
+   "id": "amazon/test/426",
+   "cell": "amazon/stars",
+   "gold": 0,
+   "coral": 0,
+   "packed": 0
+  },
+  {
+   "id": "amazon/test/1532",
+   "cell": "amazon/stars",
+   "gold": 1,
+   "coral": 0,
+   "packed": 0
+  },
+  {
+   "id": "amazon/test/478",
+   "cell": "amazon/stars",
+   "gold": 0,
+   "coral": 0,
+   "packed": 0
+  },
+  {
+   "id": "amazon/test/3010",
+   "cell": "amazon/stars",
+   "gold": 3,
+   "coral": 3,
+   "packed": 3
+  },
+  {
+   "id": "amazon/test/1290",
+   "cell": "amazon/stars",
+   "gold": 1,
+   "coral": 1,
+   "packed": 1
+  },
+  {
+   "id": "amazon/test/4739",
+   "cell": "amazon/stars",
+   "gold": 4,
+   "coral": 2,
+   "packed": 1
+  },
+  {
+   "id": "amazon/test/3943",
+   "cell": "amazon/stars",
+   "gold": 3,
+   "coral": 3,
+   "packed": 3
+  },
+  {
+   "id": "amazon/test/3081",
+   "cell": "amazon/stars",
+   "gold": 3,
+   "coral": 2,
+   "packed": 2
+  }
+ ]
+}

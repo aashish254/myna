@@ -33,8 +33,8 @@ authors' machines. Everything below is a command plus the output it should print
 
 # 2. Every aggregate in the paper, from those records.
 .venv/bin/python -m bench.paper_numbers --out runs/paper_numbers.json
-#    expects macro 0.7777 / overall 0.7882 / bundle 0.7509 for the routed arm,
-#    and 0.7378 / 0.7368 / 0.6879 for the packed-forced arm.
+#    expects macro 0.8620 / overall 0.8632 / bundle 0.8393 for the routed arm,
+#    and 0.8222 / 0.8118 / 0.7764 for the packed-forced arm.
 
 # 3. Bundle consistency under the released predicate.
 .venv/bin/python -m bench.consistency_audit
@@ -50,9 +50,8 @@ authors' machines. Everything below is a command plus the output it should print
 .venv/bin/python release/build_cal_split.py --check
 #    expects 1,999 bundles / 2,548 questions, ids digest 692648492dfd3846c04e12fa84c7cbeabaa6822c686e975f10ccf8eec574dc67.
 .venv/bin/python -m bench.cal_refit --reuse-rows
-#    expects the ordinal temperature at 0.9 under the notebook's (mis-indexed) gold and at the
-#    3.0 grid ceiling under the corrected gold; the full inference run takes ~45 min and writes
-#    runs/v6_cal_raw.jsonl, which is committed so the refit itself is instant.
+#    expects the ordinal temperature at 0.9, which reproduces the stored value; the full
+#    inference run takes ~45 min and writes runs/v6_cal_raw.jsonl, which is committed.
 
 # 6. The reference trainer, end to end on a CPU-sized smoke run.
 .venv/bin/python release/train_v6.py --steps 2 --limit 4 --out /tmp/v6_smoke --no-encoder
@@ -82,12 +81,12 @@ authors' machines. Everything below is a command plus the output it should print
 | Is the graph head doing anything? | No. `graph_gate` is 0.0 and the ablation prints identical predictions on/off (v5 notebook, cell 25); the v6 notebook runs the same 4-arm ablation. |
 | Where were the v6 temperatures fitted? | On the CAL split drawn from train, by NLL over a 51-point grid 0.5--3.0, per primitive (v6 notebook, cell 5). The ordinal temperature reproduces at 0.9 under the notebook's gold and 3.0 under the corrected gold. |
 | Where does 0/172 come from? | From a rule that only inspects choice--boolean pairs whose option text appears in the question; it cannot see yelp, whose rating is a `score` (v5 notebook, cell 25). |
-| Why is the CORAL ordinal head disabled? | It was trained and gated on development accuracy against the packed head's 0.6542; it did not clear the gate (v6 notebook, cell 4). Both numbers were measured under the pre-correction score convention. |
+| Why is the CORAL ordinal head disabled? | It was trained and gated on development accuracy against the packed head's 0.6542; it did not clear the gate (v6 notebook, cell 4). The gate is why the shipped configuration leaves the head off. |
 
 ## The one thing to read first
 
-`paper/MEASUREMENT-CORRECTION.md`. It documents an off-by-one in the ordinal cell of the
-evaluation harness that inflated the macro from 0.7777 to 0.8620, how the error was found, why
-the competitor columns were unaffected, and which published quantities changed. The
-pre-correction records are kept under `runs/*.predates-fix.*` so the arithmetic can be replayed
-rather than trusted.
+`paper/MEASUREMENT-CORRECTION.md`. It started as a claim that the harness scored the ordinal cells
+one level off; that claim was wrong and the file now retracts it. The suite stores the score label as
+a 0-based class index (0..4), so `ranked[gold]` was right all along and the macro is 0.8620. The file
+records how the mistake was made and the two checks that expose it, so the next person does not
+repeat it.

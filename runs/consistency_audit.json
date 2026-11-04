@@ -31,7 +31,7 @@
     {
      "id": "yelp/test/17802",
      "source": "yelp",
-     "answers": "rating=4; recommend=no"
+     "answers": "rating=3; recommend=no"
     }
    ],
    "campaign": {
@@ -42,8 +42,8 @@
   },
   "Laya 0.4.19": {
    "bundles": 172,
-   "contradictions": 31,
-   "rate": 0.18023255813953487,
+   "contradictions": 10,
+   "rate": 0.05813953488372093,
    "by_source": {
     "agnews": {
      "bundles": 92,
@@ -51,7 +51,7 @@
     },
     "yelp": {
      "bundles": 80,
-     "contradictions": 26
+     "contradictions": 5
     }
    },
    "cases": [
@@ -81,41 +81,6 @@
      "answers": "rating=0; recommend=yes"
     },
     {
-     "id": "yelp/test/40235",
-     "source": "yelp",
-     "answers": "rating=2; recommend=yes"
-    },
-    {
-     "id": "yelp/test/2720",
-     "source": "yelp",
-     "answers": "rating=2; recommend=yes"
-    },
-    {
-     "id": "yelp/test/28261",
-     "source": "yelp",
-     "answers": "rating=2; recommend=yes"
-    },
-    {
-     "id": "yelp/test/25872",
-     "source": "yelp",
-     "answers": "rating=2; recommend=yes"
-    },
-    {
-     "id": "yelp/test/20500",
-     "source": "yelp",
-     "answers": "rating=2; recommend=yes"
-    },
-    {
-     "id": "yelp/test/17050",
-     "source": "yelp",
-     "answers": "rating=2; recommend=yes"
-    },
-    {
-     "id": "yelp/test/44873",
-     "source": "yelp",
-     "answers": "rating=2; recommend=yes"
-    },
-    {
      "id": "yelp/test/27412",
      "source": "yelp",
      "answers": "rating=0; recommend=yes"
@@ -126,84 +91,14 @@
      "answers": "rating=0; recommend=yes"
     },
     {
-     "id": "yelp/test/41437",
-     "source": "yelp",
-     "answers": "rating=2; recommend=yes"
-    },
-    {
-     "id": "yelp/test/11249",
-     "source": "yelp",
-     "answers": "rating=2; recommend=yes"
-    },
-    {
-     "id": "yelp/test/17802",
-     "source": "yelp",
-     "answers": "rating=2; recommend=yes"
-    },
-    {
-     "id": "yelp/test/28757",
-     "source": "yelp",
-     "answers": "rating=2; recommend=yes"
-    },
-    {
-     "id": "yelp/test/11150",
-     "source": "yelp",
-     "answers": "rating=2; recommend=yes"
-    },
-    {
      "id": "yelp/test/33895",
      "source": "yelp",
      "answers": "rating=4; recommend=no"
     },
     {
-     "id": "yelp/test/4162",
-     "source": "yelp",
-     "answers": "rating=2; recommend=yes"
-    },
-    {
      "id": "yelp/test/2128",
      "source": "yelp",
      "answers": "rating=4; recommend=no"
-    },
-    {
-     "id": "yelp/test/43632",
-     "source": "yelp",
-     "answers": "rating=2; recommend=yes"
-    },
-    {
-     "id": "yelp/test/12783",
-     "source": "yelp",
-     "answers": "rating=2; recommend=yes"
-    },
-    {
-     "id": "yelp/test/21060",
-     "source": "yelp",
-     "answers": "rating=2; recommend=yes"
-    },
-    {
-     "id": "yelp/test/11262",
-     "source": "yelp",
-     "answers": "rating=2; recommend=yes"
-    },
-    {
-     "id": "yelp/test/14298",
-     "source": "yelp",
-     "answers": "rating=2; recommend=yes"
-    },
-    {
-     "id": "yelp/test/11695",
-     "source": "yelp",
-     "answers": "rating=2; recommend=yes"
-    },
-    {
-     "id": "yelp/test/38819",
-     "source": "yelp",
-     "answers": "rating=2; recommend=yes"
-    },
-    {
-     "id": "yelp/test/5733",
-     "source": "yelp",
-     "answers": "rating=2; recommend=yes"
     },
     {
      "id": "agnews/test/234/permuted",
@@ -219,8 +114,8 @@
   },
   "VegaML 0.15.0": {
    "bundles": 172,
-   "contradictions": 32,
-   "rate": 0.18604651162790697,
+   "contradictions": 29,
+   "rate": 0.1686046511627907,
    "by_source": {
     "agnews": {
      "bundles": 92,
@@ -228,7 +123,7 @@
     },
     "yelp": {
      "bundles": 80,
-     "contradictions": 6
+     "contradictions": 3
     }
    },
    "cases": [
@@ -333,34 +228,19 @@
      "answers": "is_scitech=no; is_sports=no; topic=scitech"
     },
     {
-     "id": "yelp/test/2720",
+     "id": "yelp/test/34807",
      "source": "yelp",
-     "answers": "rating=2; recommend=yes"
+     "answers": "rating=3; recommend=no"
     },
     {
-     "id": "yelp/test/27696",
+     "id": "yelp/test/21060",
      "source": "yelp",
-     "answers": "rating=2; recommend=yes"
+     "answers": "rating=3; recommend=no"
     },
     {
-     "id": "yelp/test/2057",
+     "id": "yelp/test/30223",
      "source": "yelp",
-     "answers": "rating=2; recommend=yes"
-    },
-    {
-     "id": "yelp/test/30194",
-     "source": "yelp",
-     "answers": "rating=2; recommend=yes"
-    },
-    {
-     "id": "yelp/test/19059",
-     "source": "yelp",
-     "answers": "rating=2; recommend=yes"
-    },
-    {
-     "id": "yelp/test/35481",
-     "source": "yelp",
-     "answers": "rating=2; recommend=yes"
+     "answers": "rating=3; recommend=no"
     },
     {
      "id": "agnews/test/234/permuted",
@@ -401,8 +281,8 @@
   },
   "Myna v6 (campaign row outcomes)": {
    "bundles": 172,
-   "contradictions": 10,
-   "rate": 0.05813953488372093,
+   "contradictions": 3,
+   "rate": 0.01744186046511628,
    "by_source": {
     "agnews": {
      "bundles": 92,
@@ -410,7 +290,7 @@
     },
     "yelp": {
      "bundles": 80,
-     "contradictions": 8
+     "contradictions": 1
     }
    },
    "cases": [
@@ -425,44 +305,9 @@
      "answers": "is_scitech=no; is_world=no; topic=world"
     },
     {
-     "id": "yelp/test/2720",
+     "id": "yelp/test/17802",
      "source": "yelp",
-     "answers": "rating=2; recommend=yes"
-    },
-    {
-     "id": "yelp/test/28261",
-     "source": "yelp",
-     "answers": "rating=2; recommend=yes"
-    },
-    {
-     "id": "yelp/test/27412",
-     "source": "yelp",
-     "answers": "rating=2; recommend=yes"
-    },
-    {
-     "id": "yelp/test/12668",
-     "source": "yelp",
-     "answers": "rating=2; recommend=yes"
-    },
-    {
-     "id": "yelp/test/41437",
-     "source": "yelp",
-     "answers": "rating=2; recommend=yes"
-    },
-    {
-     "id": "yelp/test/28757",
-     "source": "yelp",
-     "answers": "rating=2; recommend=yes"
-    },
-    {
-     "id": "yelp/test/12783",
-     "source": "yelp",
-     "answers": "rating=2; recommend=yes"
-    },
-    {
-     "id": "yelp/test/14298",
-     "source": "yelp",
-     "answers": "rating=2; recommend=yes"
+     "answers": "rating=3; recommend=no"
     }
    ],
    "campaign": {
