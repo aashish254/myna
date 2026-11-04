@@ -9,11 +9,11 @@
  "n_questions": 1440,
  "n_cells": 16,
  "expected_cells": 16,
- "macro_acc": 0.7776625366903147,
- "overall_acc": 0.7881944444444444,
+ "macro_acc": 0.8620375366903147,
+ "overall_acc": 0.8631944444444445,
  "abstained": 119,
  "scoring": "argmax over the calibrated option vector; abstentions still ranked",
- "wall_clock_s": 972.5,
+ "wall_clock_s": 822.4,
  "per_cell": {
   "agnews/is_business": {
    "correct": 41,
@@ -46,10 +46,10 @@
    "acc": 0.9051724137931034
   },
   "amazon/stars": {
-   "correct": 14,
+   "correct": 51,
    "n": 80,
    "abstain": 0,
-   "acc": 0.175
+   "acc": 0.6375
   },
   "banking77/intent": {
    "correct": 78,
@@ -88,10 +88,10 @@
    "acc": 0.8620689655172413
   },
   "sst5/sentiment": {
-   "correct": 12,
+   "correct": 49,
    "n": 80,
    "abstain": 0,
-   "acc": 0.15
+   "acc": 0.6125
   },
   "trec/answer_type": {
    "correct": 110,
@@ -100,10 +100,10 @@
    "acc": 0.9482758620689655
   },
   "yelp/rating": {
-   "correct": 16,
+   "correct": 50,
    "n": 80,
    "abstain": 0,
-   "acc": 0.2
+   "acc": 0.625
   },
   "yelp/recommend": {
    "correct": 74,

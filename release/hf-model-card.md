@@ -67,9 +67,6 @@ like-for-like training-budget comparison, and the numbers above are not a leader
 - split-conformal sets: 90% sets cover **83.68%** and 95% sets cover **93.33%** on test, so
   they are a ranking signal here, not a coverage guarantee.
 
-Refitted on the rebuilt CAL split under the corrected target, the same engine reaches:
-90% sets cover **0.8778**, 95% sets cover **0.9451**, ECE **0.0326** (against 0.7715 and 0.8639 shipped).
-
 ## Quickstart
 
 ```python

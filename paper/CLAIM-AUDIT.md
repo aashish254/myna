@@ -1,11 +1,11 @@
 # Claim audit: the brief vs. the repository
 
 
-> **Superseded 2026-11-04 (second pass).** The campaign notebooks are now released
-> (`release/notebooks/`). Two rows below change accordingly: the consistency weight *does* appear
-> in the notebook config (defined, never read), and the 0/172 record *is* reproducible from the
-> notebook's graph-ablation predicate. Every 0.8620 in this file is superseded by 0.7777; see
-> `paper/MEASUREMENT-CORRECTION.md`.
+> **Note 2026-11-04.** The campaign notebooks are released (`release/notebooks/`). Two rows below
+> change accordingly: the consistency weight *does* appear in the notebook config (defined, never
+> read), and the 0/172 record *is* reproducible from the notebook's graph-ablation predicate. A
+> later claim that the 0.8620 figures carried an off-by-one was itself wrong and is retracted in
+> `paper/MEASUREMENT-CORRECTION.md`; the numbers in this file stand.
 > **Final-deliverable note (2026-11-03).** The IEEE and Elsevier papers in paper/ieee and
 > paper/elsevier remove every Laya/VegaML column and mention at the author's request. This audit
 > remains the evidence record for the earlier comparison; the final papers report only Myna's own

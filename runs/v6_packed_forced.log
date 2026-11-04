@@ -1,0 +1,23 @@
+W1104 14:20:30.432000 1835 .venv/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/redirects.py:35] NOTE: Redirects are currently not supported in MacOs.
+/Users/aashish/next ko ne next gen model/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+Loading weights:   0%|          | 0/390 [00:00<?, ?it/s]Loading weights: 100%|██████████| 390/390 [00:00<00:00, 7081.75it/s]
+1176 bundles from test | engine myna-v6-unified (DeBERTa-v3-large + SetAwareBankingHead + CORAL Ordinal + Conformal G5)
+  100 bundles, 61s
+  200 bundles, 125s
+  300 bundles, 169s
+  400 bundles, 191s
+  500 bundles, 255s
+  600 bundles, 282s
+  700 bundles, 309s
+  800 bundles, 346s
+  900 bundles, 370s
+  1000 bundles, 404s
+  1100 bundles, 434s
+
+1176 bundles, 1440 questions, 16 cells
+macro over 16 cells: 0.8222
+overall: 0.8118 over 1440 questions
+wrote runs/v6_packed_forced.json
+wrote runs/v6_packed_forced.md
+wrote runs/v6_packed_forced.rowoutcomes.json (1176 rows / 1440 question outcomes)

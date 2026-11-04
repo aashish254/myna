@@ -1,0 +1,31 @@
+$ '/Users/aashish/.venvs/vegaml-0.15.0/bin/python' bench/eval_vegaml_row_outcomes.py --limit 20 --every 10 --out runs/probe.vegaml.json
+Fetching 5 files:   0%|          | 0/5 [00:00<?, ?it/s]Fetching 5 files: 100%|██████████| 5/5 [00:00<00:00, 1831.25it/s]
+vegaml 0.15.0 at /Users/aashish/.venvs/vegaml-0.15.0/lib/python3.13/site-packages/vegaml · reader Qwen3.5-0.8B (1.75 GB) · ckpt 78f96be7c6a06abb · python 3.13.14 torch 2.15.0 transformers 5.22.1 · cpu threads=1 mode=engine views=1
+Fetching 5 files:   0%|          | 0/5 [00:00<?, ?it/s]Fetching 5 files: 100%|██████████| 5/5 [00:00<00:00, 1452.52it/s]
+W1101 23:05:30.699000 2202 torch/distributed/elastic/multiprocessing/redirects.py:35] NOTE: Redirects are currently not supported in MacOs.
+Loading weights:   0%|          | 0/320 [00:00<?, ?it/s]Loading weights:  78%|███████▊  | 248/320 [00:00<00:00, 2469.33it/s]Loading weights: 100%|██████████| 320/320 [00:00<00:00, 2516.25it/s]
+loaded: reader Qwen/Qwen3.5-0.8B at 752,393,024 params (torch.float32, 24 layers) · engine 14,342,512 trainable · warned 0
+[transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+[transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
+  10 rows in 17s (1711 ms/row, 763 tokens/row, 0 unanswered)
+  20 rows in 34s (1723 ms/row, 773 tokens/row, 0 unanswered)
+20 rows answered / 20 question outcomes in 34s on cpu · 0 problems · 15451 reader tokens · 0 argmax disagreements
+PROBE: 20 rows at 1.72s/row puts the full 1,176-row pass at 34 min on this box with device=cpu threads=1; nothing was written to runs/probe.vegaml.json
+       41.39 real        45.55 user         1.41 sys
+          5683429376  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              389834  page reclaims
+                  27  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                  20  messages sent
+                  65  messages received
+                   0  signals received
+                  35  voluntary context switches
+               11094  involuntary context switches
+        322655631573  instructions retired
+        108687464645  cycles elapsed
+          4047819792  peak memory footprint

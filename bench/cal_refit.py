@@ -102,11 +102,12 @@ def main() -> None:
         return {"temperatures": temps, "q90": q90, "q95": q95}
 
     def finish(recs: list[dict], stored: dict) -> None:
+        # The score label is the 0-based class index, so `gold_legacy` (the label as stored)
+        # is the correct target; `gold_corrected` was built on the retracted off-by-one.
         result = {"split": {"n_bundles": len({r["row_id"] for r in recs}),
                             "n_questions": len(recs)},
                   "stored": stored,
-                  "corrected": fit(recs, "gold_corrected"),
-                  "legacy": fit(recs, "gold_legacy")}
+                  "refit": fit(recs, "gold_legacy")}
         (REPO / args.out).write_text(json.dumps(result, indent=1))
         print(json.dumps(result, indent=1))
 

@@ -1,13 +1,12 @@
 # Myna
 
-> **Measurement correction (2026-11-04).** An off-by-one in the ordinal (`score`) cell of
-> `bench/v6_audit.py` credited a prediction when it named the level *above* gold. Corrected,
-> Myna v6 scores **0.7777** macro (not 0.8620), **0.7882** overall (not 0.8632), **0.7509**
-> joint bundle exact (not 0.8393), ECE **0.0637** (not 0.0190), and the `score` primitive is
-> at chance (**0.1750**). The competitor columns are unaffected. Every table below that quotes
-> a v6 figure predates the fix; the corrected table is in `paper/` and the full record is
-> [paper/MEASUREMENT-CORRECTION.md](paper/MEASUREMENT-CORRECTION.md). Pre-correction witnesses
-> are kept as `runs/*.predates-fix.*`. The corrected re-score is reproduced by:
+> **Retraction (2026-11-04).** An earlier note here claimed an off-by-one in the ordinal
+> (`score`) cell of `bench/v6_audit.py` and reported 0.7777 macro. That was wrong: the suite
+> stores the score label as a 0-based class index (0..4), so `ranked[gold]` was correct all
+> along. The numbers are **0.8620** macro, 0.8632 overall, 0.8393 joint bundle exact, ECE
+> 0.0190, and the ordinal cells score ~0.63. The mistake and the check that exposes it are in
+> [paper/MEASUREMENT-CORRECTION.md](paper/MEASUREMENT-CORRECTION.md). The corrected re-score is
+> reproduced by:
 >
 > ```
 > uv run python -m bench.v6_audit --ckpt "myna-v5-prototype 2" --split test --every 1 --out runs/paper_v6_audit.json --md runs/paper_v6_audit.md --metrics runs/paper_v6_test.metrics.json --rowout runs/paper_myna_v6_test.rowoutcomes.json

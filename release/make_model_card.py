@@ -5,7 +5,7 @@
 
 The card is generated rather than typed so it cannot drift from `runs/paper_numbers.json`,
 `runs/witness-competitor-head-to-head-1440.json`, and the conformal outcome in
-`runs/corrected_conformal.json` (when present).
+`runs/paper_numbers.json`.
 """
 from __future__ import annotations
 
@@ -27,7 +27,6 @@ def main() -> None:
 
     nums = load("runs/paper_numbers.json")["arms"]
     comp = load("runs/witness-competitor-head-to-head-1440.json")
-    conf = load("runs/corrected_conformal.json") if (REPO / "runs/corrected_conformal.json").exists() else None
     myna = nums["myna_v6"]
     packed = nums["myna_v6_packed_forced"]
 
@@ -98,17 +97,6 @@ def main() -> None:
         "- split-conformal sets: 90% sets cover **83.68%** and 95% sets cover **93.33%** on test, so",
         "  they are a ranking signal here, not a coverage guarantee.",
     ]
-    if conf:
-        t = conf["test_under_fitted"]
-        lines += [
-            "",
-            "Refitted on the rebuilt CAL split under the corrected target, the same engine reaches:",
-            f"90% sets cover **{t['coverage_90']['all']:.4f}**, 95% sets cover "
-            f"**{t['coverage_95']['all']:.4f}**, ECE **{t['ece']:.4f}**"
-            f" (against {conf['test_under_shipped']['coverage_90']['all']:.4f} and "
-            f"{conf['test_under_shipped']['coverage_95']['all']:.4f} shipped).",
-        ]
-
     lines += [
         "",
         "## Quickstart",

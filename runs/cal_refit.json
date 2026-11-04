@@ -20,24 +20,7 @@
    "noul": 0.4576
   }
  },
- "corrected": {
-  "temperatures": {
-   "choice": 1.05,
-   "score": 3.0,
-   "noul": 0.65
-  },
-  "q90": {
-   "choice": 0.5562,
-   "score": 0.964,
-   "noul": 0.2449
-  },
-  "q95": {
-   "choice": 0.8791,
-   "score": 0.971,
-   "noul": 0.5151
-  }
- },
- "legacy": {
+ "refit": {
   "temperatures": {
    "choice": 1.05,
    "score": 0.9,

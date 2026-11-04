@@ -1,0 +1,71 @@
+{
+ "cmd": "uv run python -m bench.v6_audit --ckpt \"myna-v5-prototype 2\" --split test --every 120 --out runs/v6_rescore.json",
+ "engine": "myna-v6-unified (DeBERTa-v3-large + SetAwareBankingHead + CORAL Ordinal + Conformal G5)",
+ "ckpt": "myna-v5-prototype 2",
+ "split": "test",
+ "every": 120,
+ "source_filter": null,
+ "bundles_scored": 10,
+ "n_questions": 10,
+ "n_cells": 8,
+ "expected_cells": 16,
+ "macro_acc": 0.75,
+ "overall_acc": 0.7,
+ "abstained": 2,
+ "scoring": "argmax over the calibrated option vector; abstentions still ranked",
+ "wall_clock_s": 14.2,
+ "per_cell": {
+  "banking77/intent": {
+   "correct": 0,
+   "n": 2,
+   "abstain": 2,
+   "acc": 0.0
+  },
+  "boolq/answer": {
+   "correct": 1,
+   "n": 1,
+   "abstain": 0,
+   "acc": 1.0
+  },
+  "contrastive/decision": {
+   "correct": 1,
+   "n": 1,
+   "abstain": 0,
+   "acc": 1.0
+  },
+  "dbpedia14/category": {
+   "correct": 1,
+   "n": 1,
+   "abstain": 0,
+   "acc": 1.0
+  },
+  "imdb/positive": {
+   "correct": 1,
+   "n": 1,
+   "abstain": 0,
+   "acc": 1.0
+  },
+  "mnli/relation": {
+   "correct": 1,
+   "n": 1,
+   "abstain": 0,
+   "acc": 1.0
+  },
+  "sst5/sentiment": {
+   "correct": 0,
+   "n": 1,
+   "abstain": 0,
+   "acc": 0.0
+  },
+  "trec/answer_type": {
+   "correct": 2,
+   "n": 2,
+   "abstain": 0,
+   "acc": 1.0
+  }
+ },
+ "banking77_variants": {
+  "clean": "0/1",
+  "none_present": "0/1"
+ }
+}

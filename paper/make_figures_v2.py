@@ -185,7 +185,7 @@ def fig4():
 
 
 def fig6_diagnostics():
-    """The small-engine diagnostics, with the corrected v6 bar (0.7777, not 0.8583)."""
+    """The small-engine diagnostics, with the v6 bar read from the current paper numbers."""
     labels = ["v0\nsynth", "v1b\nsynth", "v1b\nreal", "AP\noff", "AP\non", "v6\nreal"]
     vals = [load("runs/g6_v0_synthetic_s0.json")["macro_test"],
             load("runs/g6_v1b_synthetic_s0.json")["macro_test"],

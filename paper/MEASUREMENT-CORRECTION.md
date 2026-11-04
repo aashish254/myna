@@ -37,8 +37,8 @@ Two independent checks that the original numbers are the right ones:
   undercoverage is real and is reported as a negative result.
 
 The manuscript no longer contains a correction section. The harness compares `ranked[gold]` for
-`choice` and `score` alike, and `bench/coral_eval.py`, `bench/cal_refit.py`, `bench/refit_coverage.py`
-and `release/colab_baselines.py` all treat the score label as the index it is.
+`choice` and `score` alike, and `bench/coral_eval.py`, `bench/cal_refit.py` and
+`release/colab_baselines.py` all treat the score label as the index it is.
 
 ## The lesson
 

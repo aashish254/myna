@@ -1,0 +1,6 @@
+gates-check rc=0
+repro-check rc=0
+two-suites rc=1
+suite rc=1
+secrets rc=0
+ALLDONE
