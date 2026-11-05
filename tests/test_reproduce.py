@@ -118,11 +118,11 @@ def test_a_gated_row_is_not_asked_to_parse_as_a_shell_line():
 
 def test_the_flag_question_reaches_every_python_command_and_only_those():
     """A coverage assertion, not a behaviour one: the prefix-stripping above and the
-    `uv run` skip are what make 41 of the 48 rows checkable, and a checker that quietly
-    recognised fewer targets would still print 48/48."""
+    `uv run` skip are what make 42 of the 49 rows checkable, and a checker that quietly
+    recognised fewer targets would still print 49/49."""
     asked = [r["id"] for r in R.ROWS
              if r["status"] != R.KAGGLE and R.python_target(r["cmd"])]
-    assert len(asked) == 41, asked
+    assert len(asked) == 42, asked
     assert "v6-significance-paired" in asked, (
         "the row that carries G1's interval publishes `--B` and `--seed`, so it owes the "
         "flag question like the report row beside it")

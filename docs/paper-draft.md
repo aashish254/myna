@@ -48,7 +48,7 @@ state; a matched-condition throughput advantage over a competitor **we measure a
 parameters** (our count at their pinned snapshot, not a figure they publish) on the same inputs
 (33.083 ms against 100.691 ms at one question); a release-gate registry in which 7/7 verdicts and
 41/41 rows re-derive from committed witnesses — those are the §9.67 tree's counts, and the §9.69 tree
-prints **48/48 rows** and the same 7/7 with the two flipped verdicts; and a paired row-clustered bootstrap that puts a 95% interval
+prints **49/49 rows** and the same 7/7 with the two flipped verdicts; and a paired row-clustered bootstrap that puts a 95% interval
 on every headline accuracy in §5 and **refuses to write the file at all** unless macro, both floors and the
 gate's own margin agree with the committed report to 1e-9 — the instrument that, on its first run, rewrote
 two of the four sentences it was asked about. We report the failures as the primary result, because the
