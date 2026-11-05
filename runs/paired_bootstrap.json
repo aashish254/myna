@@ -1,16 +1,16 @@
 {
  "deberta_percell_seed42": {
   "macro_myna": 0.8632,
-  "macro_arm": 0.7514,
-  "delta_macro": 0.0875,
+  "macro_arm": 0.7604,
+  "delta_macro": 0.0737,
   "ci95": [
-   0.0675,
-   0.108
+   0.0544,
+   0.0937
   ],
   "mcnemar": {
-   "myna_only": 215,
-   "arm_only": 54,
-   "p": "1.75e-22"
+   "myna_only": 204,
+   "arm_only": 56,
+   "p": "7.76e-20"
   }
  },
  "laya_0419": {

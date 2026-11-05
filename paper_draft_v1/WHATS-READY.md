@@ -4,8 +4,8 @@
 
 A measurement study of a typed decision engine on a frozen 16-cell suite. The accuracy arm,
 Myna-v6, reaches 0.8620 macro. Its fair comparison is the same backbone fine-tuned on the same
-split with a conventional per-cell classifier: 0.7779 after two epochs over two seeds (0.7126 after
-one), so Myna leads by 8.4 points, concentrated on multi-class choice cells. Cardinality routing is a budget repair worth
+split with a conventional per-cell classifier: 0.7814 after two epochs over three seeds (0.7126 after
+one), so Myna leads by 8.1 points, concentrated on multi-class choice cells. Cardinality routing is a budget repair worth
 0.0399 macro on one cell; conformal sets are reported as a bounded result with three calibrations;
 the streaming engine is a compute result that does not learn the suite, and the paper says so.
 
@@ -38,8 +38,8 @@ Everything is in `upload/` — see `SUBMISSION-GUIDE.md` for the form-by-form in
 |---|---|
 | Myna-v6 macro / overall / bundle | 0.8620 / 0.8632 / 0.8393 |
 | Same-backbone baseline, 1 epoch (2 seeds) | 0.7126 |
-| Same-backbone baseline, 2 epochs | 0.7779 over two seeds (0.7746, 0.7813; seed 13 running) |
-| Readout gap | 8.4 points (paired CI [0.067, 0.108] and [0.059, 0.102]; McNemar p<1e-19) |
+| Same-backbone baseline, 2 epochs | 0.7814 over three seeds (0.7746, 0.7813, 0.7884; sd 0.7) |
+| Readout gap | 8.1 points (paired CIs [0.067,0.108], [0.059,0.102], [0.054,0.094]; McNemar p<1e-19) |
 | Routing ablation | 0.0345 -> 0.6724 on banking77, +0.0399 macro |
 | Consistency | 3/172 vs 10/172 (Laya), 29/172 (VegaML) |
 | Conformal, released / refit / Mondrian | 83.68 / 89.17 / 83.96 at 90% |

@@ -1,0 +1,10165 @@
+{
+ "cells": {
+  "agnews/is_business": {
+   "n": 43,
+   "acc": 0.953488
+  },
+  "agnews/is_scitech": {
+   "n": 49,
+   "acc": 1.0
+  },
+  "agnews/is_sports": {
+   "n": 47,
+   "acc": 1.0
+  },
+  "agnews/is_world": {
+   "n": 45,
+   "acc": 1.0
+  },
+  "agnews/topic": {
+   "n": 116,
+   "acc": 0.698276
+  },
+  "amazon/stars": {
+   "n": 80,
+   "acc": 0.525
+  },
+  "banking77/intent": {
+   "n": 116,
+   "acc": 0.543103
+  },
+  "boolq/answer": {
+   "n": 80,
+   "acc": 0.7625
+  },
+  "contrastive/decision": {
+   "n": 196,
+   "acc": 0.852041
+  },
+  "dbpedia14/category": {
+   "n": 116,
+   "acc": 0.715517
+  },
+  "imdb/positive": {
+   "n": 80,
+   "acc": 0.9625
+  },
+  "mnli/relation": {
+   "n": 116,
+   "acc": 0.681034
+  },
+  "sst5/sentiment": {
+   "n": 80,
+   "acc": 0.6375
+  },
+  "trec/answer_type": {
+   "n": 116,
+   "acc": 0.732759
+  },
+  "yelp/rating": {
+   "n": 80,
+   "acc": 0.6125
+  },
+  "yelp/recommend": {
+   "n": 80,
+   "acc": 0.9375
+  }
+ },
+ "macro": 0.788357,
+ "overall": 0.760417,
+ "bundle_exact": 0.712585,
+ "n_questions": 1440,
+ "n_rows": 1176,
+ "records": [
+  {
+   "row_id": "agnews/test/1901",
+   "cell": "agnews/is_business",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/234",
+   "cell": "agnews/is_business",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/5119",
+   "cell": "agnews/is_business",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/7025",
+   "cell": "agnews/is_business",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/2871",
+   "cell": "agnews/is_business",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/4341",
+   "cell": "agnews/is_business",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/5143",
+   "cell": "agnews/is_business",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/4",
+   "cell": "agnews/is_business",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/4203",
+   "cell": "agnews/is_business",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/2572",
+   "cell": "agnews/is_business",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/4700",
+   "cell": "agnews/is_business",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/1878",
+   "cell": "agnews/is_business",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/6113",
+   "cell": "agnews/is_business",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/7326",
+   "cell": "agnews/is_business",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/3631",
+   "cell": "agnews/is_business",
+   "pred": 0,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "agnews/test/7138",
+   "cell": "agnews/is_business",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/4663",
+   "cell": "agnews/is_business",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/4652",
+   "cell": "agnews/is_business",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/229",
+   "cell": "agnews/is_business",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/2408",
+   "cell": "agnews/is_business",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/1037",
+   "cell": "agnews/is_business",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/3300",
+   "cell": "agnews/is_business",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/1359",
+   "cell": "agnews/is_business",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/494",
+   "cell": "agnews/is_business",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/7229",
+   "cell": "agnews/is_business",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/104",
+   "cell": "agnews/is_business",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/4631",
+   "cell": "agnews/is_business",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/7527",
+   "cell": "agnews/is_business",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/4674",
+   "cell": "agnews/is_business",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/2317",
+   "cell": "agnews/is_business",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/6267",
+   "cell": "agnews/is_business",
+   "pred": 0,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "agnews/test/5061",
+   "cell": "agnews/is_business",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/7064",
+   "cell": "agnews/is_business",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/1395",
+   "cell": "agnews/is_business",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/847",
+   "cell": "agnews/is_business",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/2908",
+   "cell": "agnews/is_business",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/5629",
+   "cell": "agnews/is_business",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/4749",
+   "cell": "agnews/is_business",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/1614",
+   "cell": "agnews/is_business",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/1901/permuted",
+   "cell": "agnews/is_business",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/234/permuted",
+   "cell": "agnews/is_business",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/5119/permuted",
+   "cell": "agnews/is_business",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/7025/permuted",
+   "cell": "agnews/is_business",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/6309",
+   "cell": "agnews/is_scitech",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/6066",
+   "cell": "agnews/is_scitech",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/4022",
+   "cell": "agnews/is_scitech",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/7199",
+   "cell": "agnews/is_scitech",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/2203",
+   "cell": "agnews/is_scitech",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/2085",
+   "cell": "agnews/is_scitech",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/4617",
+   "cell": "agnews/is_scitech",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/7025",
+   "cell": "agnews/is_scitech",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/3118",
+   "cell": "agnews/is_scitech",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/3525",
+   "cell": "agnews/is_scitech",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/1106",
+   "cell": "agnews/is_scitech",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/4203",
+   "cell": "agnews/is_scitech",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/2572",
+   "cell": "agnews/is_scitech",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/7309",
+   "cell": "agnews/is_scitech",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/1381",
+   "cell": "agnews/is_scitech",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/1321",
+   "cell": "agnews/is_scitech",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/4934",
+   "cell": "agnews/is_scitech",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/3072",
+   "cell": "agnews/is_scitech",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/1339",
+   "cell": "agnews/is_scitech",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/1755",
+   "cell": "agnews/is_scitech",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/4700",
+   "cell": "agnews/is_scitech",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/1878",
+   "cell": "agnews/is_scitech",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/4663",
+   "cell": "agnews/is_scitech",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/4969",
+   "cell": "agnews/is_scitech",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/229",
+   "cell": "agnews/is_scitech",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/2408",
+   "cell": "agnews/is_scitech",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/2683",
+   "cell": "agnews/is_scitech",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/1359",
+   "cell": "agnews/is_scitech",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/7527",
+   "cell": "agnews/is_scitech",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/426",
+   "cell": "agnews/is_scitech",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/4674",
+   "cell": "agnews/is_scitech",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/512",
+   "cell": "agnews/is_scitech",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/618",
+   "cell": "agnews/is_scitech",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/7421",
+   "cell": "agnews/is_scitech",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/7064",
+   "cell": "agnews/is_scitech",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/297",
+   "cell": "agnews/is_scitech",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/6491",
+   "cell": "agnews/is_scitech",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/847",
+   "cell": "agnews/is_scitech",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/2908",
+   "cell": "agnews/is_scitech",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/5629",
+   "cell": "agnews/is_scitech",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/6309/permuted",
+   "cell": "agnews/is_scitech",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/6066/permuted",
+   "cell": "agnews/is_scitech",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/4022/permuted",
+   "cell": "agnews/is_scitech",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/7199/permuted",
+   "cell": "agnews/is_scitech",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/2203/permuted",
+   "cell": "agnews/is_scitech",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/2085/permuted",
+   "cell": "agnews/is_scitech",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/4617/permuted",
+   "cell": "agnews/is_scitech",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/7025/permuted",
+   "cell": "agnews/is_scitech",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/3118/permuted",
+   "cell": "agnews/is_scitech",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/1901",
+   "cell": "agnews/is_sports",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/6309",
+   "cell": "agnews/is_sports",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/234",
+   "cell": "agnews/is_sports",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/6066",
+   "cell": "agnews/is_sports",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/4022",
+   "cell": "agnews/is_sports",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/4617",
+   "cell": "agnews/is_sports",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/2871",
+   "cell": "agnews/is_sports",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/4341",
+   "cell": "agnews/is_sports",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/3796",
+   "cell": "agnews/is_sports",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/439",
+   "cell": "agnews/is_sports",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/2413",
+   "cell": "agnews/is_sports",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/4",
+   "cell": "agnews/is_sports",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/7149",
+   "cell": "agnews/is_sports",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/7309",
+   "cell": "agnews/is_sports",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/555",
+   "cell": "agnews/is_sports",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/4934",
+   "cell": "agnews/is_sports",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/3072",
+   "cell": "agnews/is_sports",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/6054",
+   "cell": "agnews/is_sports",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/1755",
+   "cell": "agnews/is_sports",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/136",
+   "cell": "agnews/is_sports",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/6113",
+   "cell": "agnews/is_sports",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/3631",
+   "cell": "agnews/is_sports",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/4969",
+   "cell": "agnews/is_sports",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/3729",
+   "cell": "agnews/is_sports",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/1037",
+   "cell": "agnews/is_sports",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/4534",
+   "cell": "agnews/is_sports",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/5625",
+   "cell": "agnews/is_sports",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/7229",
+   "cell": "agnews/is_sports",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/104",
+   "cell": "agnews/is_sports",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/6267",
+   "cell": "agnews/is_sports",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/2302",
+   "cell": "agnews/is_sports",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/512",
+   "cell": "agnews/is_sports",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/7421",
+   "cell": "agnews/is_sports",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/6491",
+   "cell": "agnews/is_sports",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/6148",
+   "cell": "agnews/is_sports",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/984",
+   "cell": "agnews/is_sports",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/1482",
+   "cell": "agnews/is_sports",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/4749",
+   "cell": "agnews/is_sports",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/7014",
+   "cell": "agnews/is_sports",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/4729",
+   "cell": "agnews/is_sports",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/1614",
+   "cell": "agnews/is_sports",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/1901/permuted",
+   "cell": "agnews/is_sports",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/6309/permuted",
+   "cell": "agnews/is_sports",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/234/permuted",
+   "cell": "agnews/is_sports",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/6066/permuted",
+   "cell": "agnews/is_sports",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/4022/permuted",
+   "cell": "agnews/is_sports",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/4617/permuted",
+   "cell": "agnews/is_sports",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/7199",
+   "cell": "agnews/is_world",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/2203",
+   "cell": "agnews/is_world",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/2085",
+   "cell": "agnews/is_world",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/5119",
+   "cell": "agnews/is_world",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/3118",
+   "cell": "agnews/is_world",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/3796",
+   "cell": "agnews/is_world",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/5143",
+   "cell": "agnews/is_world",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/3525",
+   "cell": "agnews/is_world",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/439",
+   "cell": "agnews/is_world",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/2413",
+   "cell": "agnews/is_world",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/1106",
+   "cell": "agnews/is_world",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/7149",
+   "cell": "agnews/is_world",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/1381",
+   "cell": "agnews/is_world",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/555",
+   "cell": "agnews/is_world",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/1321",
+   "cell": "agnews/is_world",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/6054",
+   "cell": "agnews/is_world",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/1339",
+   "cell": "agnews/is_world",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/136",
+   "cell": "agnews/is_world",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/7326",
+   "cell": "agnews/is_world",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/7138",
+   "cell": "agnews/is_world",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/4652",
+   "cell": "agnews/is_world",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/3729",
+   "cell": "agnews/is_world",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/2683",
+   "cell": "agnews/is_world",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/3300",
+   "cell": "agnews/is_world",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/4534",
+   "cell": "agnews/is_world",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/5625",
+   "cell": "agnews/is_world",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/494",
+   "cell": "agnews/is_world",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/4631",
+   "cell": "agnews/is_world",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/426",
+   "cell": "agnews/is_world",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/2317",
+   "cell": "agnews/is_world",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/2302",
+   "cell": "agnews/is_world",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/618",
+   "cell": "agnews/is_world",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/5061",
+   "cell": "agnews/is_world",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/297",
+   "cell": "agnews/is_world",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/1395",
+   "cell": "agnews/is_world",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/6148",
+   "cell": "agnews/is_world",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/984",
+   "cell": "agnews/is_world",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/1482",
+   "cell": "agnews/is_world",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/7014",
+   "cell": "agnews/is_world",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/4729",
+   "cell": "agnews/is_world",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/7199/permuted",
+   "cell": "agnews/is_world",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/2203/permuted",
+   "cell": "agnews/is_world",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/2085/permuted",
+   "cell": "agnews/is_world",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/5119/permuted",
+   "cell": "agnews/is_world",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/3118/permuted",
+   "cell": "agnews/is_world",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/1901",
+   "cell": "agnews/topic",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/6309",
+   "cell": "agnews/topic",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/234",
+   "cell": "agnews/topic",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/6066",
+   "cell": "agnews/topic",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/4022",
+   "cell": "agnews/topic",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/7199",
+   "cell": "agnews/topic",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/2203",
+   "cell": "agnews/topic",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/2085",
+   "cell": "agnews/topic",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/5119",
+   "cell": "agnews/topic",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/4617",
+   "cell": "agnews/topic",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/7025",
+   "cell": "agnews/topic",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/3118",
+   "cell": "agnews/topic",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/2871",
+   "cell": "agnews/topic",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/4341",
+   "cell": "agnews/topic",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/3796",
+   "cell": "agnews/topic",
+   "pred": 3,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "agnews/test/5143",
+   "cell": "agnews/topic",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/3525",
+   "cell": "agnews/topic",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/439",
+   "cell": "agnews/topic",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/2413",
+   "cell": "agnews/topic",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/4",
+   "cell": "agnews/topic",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/1106",
+   "cell": "agnews/topic",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/7149",
+   "cell": "agnews/topic",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/4203",
+   "cell": "agnews/topic",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/2572",
+   "cell": "agnews/topic",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/7309",
+   "cell": "agnews/topic",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/1381",
+   "cell": "agnews/topic",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/555",
+   "cell": "agnews/topic",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/1321",
+   "cell": "agnews/topic",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/4934",
+   "cell": "agnews/topic",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/3072",
+   "cell": "agnews/topic",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/6054",
+   "cell": "agnews/topic",
+   "pred": 0,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "agnews/test/1339",
+   "cell": "agnews/topic",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/1755",
+   "cell": "agnews/topic",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/136",
+   "cell": "agnews/topic",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/4700",
+   "cell": "agnews/topic",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/1878",
+   "cell": "agnews/topic",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/6113",
+   "cell": "agnews/topic",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/7326",
+   "cell": "agnews/topic",
+   "pred": 3,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "agnews/test/3631",
+   "cell": "agnews/topic",
+   "pred": 0,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "agnews/test/7138",
+   "cell": "agnews/topic",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/4663",
+   "cell": "agnews/topic",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/4969",
+   "cell": "agnews/topic",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/4652",
+   "cell": "agnews/topic",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/229",
+   "cell": "agnews/topic",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/3729",
+   "cell": "agnews/topic",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/2408",
+   "cell": "agnews/topic",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/2683",
+   "cell": "agnews/topic",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/1037",
+   "cell": "agnews/topic",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/3300",
+   "cell": "agnews/topic",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/1359",
+   "cell": "agnews/topic",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/4534",
+   "cell": "agnews/topic",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/5625",
+   "cell": "agnews/topic",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/494",
+   "cell": "agnews/topic",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/7229",
+   "cell": "agnews/topic",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/104",
+   "cell": "agnews/topic",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/4631",
+   "cell": "agnews/topic",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/7527",
+   "cell": "agnews/topic",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/426",
+   "cell": "agnews/topic",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/4674",
+   "cell": "agnews/topic",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/2317",
+   "cell": "agnews/topic",
+   "pred": 0,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "agnews/test/6267",
+   "cell": "agnews/topic",
+   "pred": 0,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "agnews/test/2302",
+   "cell": "agnews/topic",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/512",
+   "cell": "agnews/topic",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/618",
+   "cell": "agnews/topic",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/7421",
+   "cell": "agnews/topic",
+   "pred": 2,
+   "gold": 3,
+   "ok": 0
+  },
+  {
+   "row_id": "agnews/test/5061",
+   "cell": "agnews/topic",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/7064",
+   "cell": "agnews/topic",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/297",
+   "cell": "agnews/topic",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/6491",
+   "cell": "agnews/topic",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/1395",
+   "cell": "agnews/topic",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/847",
+   "cell": "agnews/topic",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/2908",
+   "cell": "agnews/topic",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/6148",
+   "cell": "agnews/topic",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/984",
+   "cell": "agnews/topic",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/5629",
+   "cell": "agnews/topic",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/1482",
+   "cell": "agnews/topic",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/4749",
+   "cell": "agnews/topic",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/7014",
+   "cell": "agnews/topic",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/4729",
+   "cell": "agnews/topic",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/1614",
+   "cell": "agnews/topic",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/1901/none_present",
+   "cell": "agnews/topic",
+   "pred": 3,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "agnews/test/1901/none_absent",
+   "cell": "agnews/topic",
+   "pred": 3,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "agnews/test/1901/permuted",
+   "cell": "agnews/topic",
+   "pred": 3,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "agnews/test/6309/none_present",
+   "cell": "agnews/topic",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/6309/none_absent",
+   "cell": "agnews/topic",
+   "pred": 3,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "agnews/test/6309/permuted",
+   "cell": "agnews/topic",
+   "pred": 3,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "agnews/test/234/none_present",
+   "cell": "agnews/topic",
+   "pred": 2,
+   "gold": 4,
+   "ok": 0
+  },
+  {
+   "row_id": "agnews/test/234/none_absent",
+   "cell": "agnews/topic",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/234/permuted",
+   "cell": "agnews/topic",
+   "pred": 2,
+   "gold": 3,
+   "ok": 0
+  },
+  {
+   "row_id": "agnews/test/6066/none_present",
+   "cell": "agnews/topic",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/6066/none_absent",
+   "cell": "agnews/topic",
+   "pred": 2,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "agnews/test/6066/permuted",
+   "cell": "agnews/topic",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/4022/none_present",
+   "cell": "agnews/topic",
+   "pred": 2,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "agnews/test/4022/none_absent",
+   "cell": "agnews/topic",
+   "pred": 2,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "agnews/test/4022/permuted",
+   "cell": "agnews/topic",
+   "pred": 2,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "agnews/test/7199/none_present",
+   "cell": "agnews/topic",
+   "pred": 1,
+   "gold": 4,
+   "ok": 0
+  },
+  {
+   "row_id": "agnews/test/7199/none_absent",
+   "cell": "agnews/topic",
+   "pred": 1,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "agnews/test/7199/permuted",
+   "cell": "agnews/topic",
+   "pred": 1,
+   "gold": 3,
+   "ok": 0
+  },
+  {
+   "row_id": "agnews/test/2203/none_present",
+   "cell": "agnews/topic",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/2203/none_absent",
+   "cell": "agnews/topic",
+   "pred": 0,
+   "gold": 3,
+   "ok": 0
+  },
+  {
+   "row_id": "agnews/test/2203/permuted",
+   "cell": "agnews/topic",
+   "pred": 0,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "agnews/test/2085/none_present",
+   "cell": "agnews/topic",
+   "pred": 3,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "agnews/test/2085/none_absent",
+   "cell": "agnews/topic",
+   "pred": 3,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "agnews/test/2085/permuted",
+   "cell": "agnews/topic",
+   "pred": 3,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "agnews/test/5119/none_present",
+   "cell": "agnews/topic",
+   "pred": 2,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "agnews/test/5119/none_absent",
+   "cell": "agnews/topic",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/5119/permuted",
+   "cell": "agnews/topic",
+   "pred": 2,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "agnews/test/4617/none_present",
+   "cell": "agnews/topic",
+   "pred": 3,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "agnews/test/4617/none_absent",
+   "cell": "agnews/topic",
+   "pred": 3,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "agnews/test/4617/permuted",
+   "cell": "agnews/topic",
+   "pred": 3,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "agnews/test/7025/none_present",
+   "cell": "agnews/topic",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/7025/none_absent",
+   "cell": "agnews/topic",
+   "pred": 0,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "agnews/test/7025/permuted",
+   "cell": "agnews/topic",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "agnews/test/3118/none_present",
+   "cell": "agnews/topic",
+   "pred": 0,
+   "gold": 4,
+   "ok": 0
+  },
+  {
+   "row_id": "agnews/test/3118/none_absent",
+   "cell": "agnews/topic",
+   "pred": 0,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "agnews/test/3118/permuted",
+   "cell": "agnews/topic",
+   "pred": 0,
+   "gold": 3,
+   "ok": 0
+  },
+  {
+   "row_id": "amazon/test/1893",
+   "cell": "amazon/stars",
+   "pred": 2,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "amazon/test/4427",
+   "cell": "amazon/stars",
+   "pred": 4,
+   "gold": 4,
+   "ok": 1
+  },
+  {
+   "row_id": "amazon/test/2658",
+   "cell": "amazon/stars",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "amazon/test/361",
+   "cell": "amazon/stars",
+   "pred": 1,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "amazon/test/1884",
+   "cell": "amazon/stars",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "amazon/test/942",
+   "cell": "amazon/stars",
+   "pred": 1,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "amazon/test/529",
+   "cell": "amazon/stars",
+   "pred": 1,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "amazon/test/1257",
+   "cell": "amazon/stars",
+   "pred": 0,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "amazon/test/3652",
+   "cell": "amazon/stars",
+   "pred": 2,
+   "gold": 3,
+   "ok": 0
+  },
+  {
+   "row_id": "amazon/test/2389",
+   "cell": "amazon/stars",
+   "pred": 4,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "amazon/test/2440",
+   "cell": "amazon/stars",
+   "pred": 3,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "amazon/test/3268",
+   "cell": "amazon/stars",
+   "pred": 4,
+   "gold": 3,
+   "ok": 0
+  },
+  {
+   "row_id": "amazon/test/1735",
+   "cell": "amazon/stars",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "amazon/test/2122",
+   "cell": "amazon/stars",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "amazon/test/626",
+   "cell": "amazon/stars",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "amazon/test/1201",
+   "cell": "amazon/stars",
+   "pred": 3,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "amazon/test/1797",
+   "cell": "amazon/stars",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "amazon/test/4365",
+   "cell": "amazon/stars",
+   "pred": 4,
+   "gold": 4,
+   "ok": 1
+  },
+  {
+   "row_id": "amazon/test/1251",
+   "cell": "amazon/stars",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "amazon/test/3204",
+   "cell": "amazon/stars",
+   "pred": 4,
+   "gold": 3,
+   "ok": 0
+  },
+  {
+   "row_id": "amazon/test/755",
+   "cell": "amazon/stars",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "amazon/test/4635",
+   "cell": "amazon/stars",
+   "pred": 4,
+   "gold": 4,
+   "ok": 1
+  },
+  {
+   "row_id": "amazon/test/1125",
+   "cell": "amazon/stars",
+   "pred": 0,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "amazon/test/2780",
+   "cell": "amazon/stars",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "amazon/test/4227",
+   "cell": "amazon/stars",
+   "pred": 4,
+   "gold": 4,
+   "ok": 1
+  },
+  {
+   "row_id": "amazon/test/2341",
+   "cell": "amazon/stars",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "amazon/test/3492",
+   "cell": "amazon/stars",
+   "pred": 2,
+   "gold": 3,
+   "ok": 0
+  },
+  {
+   "row_id": "amazon/test/4137",
+   "cell": "amazon/stars",
+   "pred": 4,
+   "gold": 4,
+   "ok": 1
+  },
+  {
+   "row_id": "amazon/test/1524",
+   "cell": "amazon/stars",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "amazon/test/1991",
+   "cell": "amazon/stars",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "amazon/test/904",
+   "cell": "amazon/stars",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "amazon/test/2794",
+   "cell": "amazon/stars",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "amazon/test/4507",
+   "cell": "amazon/stars",
+   "pred": 4,
+   "gold": 4,
+   "ok": 1
+  },
+  {
+   "row_id": "amazon/test/3388",
+   "cell": "amazon/stars",
+   "pred": 4,
+   "gold": 3,
+   "ok": 0
+  },
+  {
+   "row_id": "amazon/test/2192",
+   "cell": "amazon/stars",
+   "pred": 3,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "amazon/test/1184",
+   "cell": "amazon/stars",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "amazon/test/2297",
+   "cell": "amazon/stars",
+   "pred": 3,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "amazon/test/2148",
+   "cell": "amazon/stars",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "amazon/test/607",
+   "cell": "amazon/stars",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "amazon/test/423",
+   "cell": "amazon/stars",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "amazon/test/2911",
+   "cell": "amazon/stars",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "amazon/test/552",
+   "cell": "amazon/stars",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "amazon/test/1740",
+   "cell": "amazon/stars",
+   "pred": 2,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "amazon/test/1752",
+   "cell": "amazon/stars",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "amazon/test/4682",
+   "cell": "amazon/stars",
+   "pred": 4,
+   "gold": 4,
+   "ok": 1
+  },
+  {
+   "row_id": "amazon/test/2377",
+   "cell": "amazon/stars",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "amazon/test/2282",
+   "cell": "amazon/stars",
+   "pred": 4,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "amazon/test/2022",
+   "cell": "amazon/stars",
+   "pred": 1,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "amazon/test/4303",
+   "cell": "amazon/stars",
+   "pred": 4,
+   "gold": 4,
+   "ok": 1
+  },
+  {
+   "row_id": "amazon/test/4277",
+   "cell": "amazon/stars",
+   "pred": 4,
+   "gold": 4,
+   "ok": 1
+  },
+  {
+   "row_id": "amazon/test/4771",
+   "cell": "amazon/stars",
+   "pred": 2,
+   "gold": 4,
+   "ok": 0
+  },
+  {
+   "row_id": "amazon/test/2948",
+   "cell": "amazon/stars",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "amazon/test/2261",
+   "cell": "amazon/stars",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "amazon/test/3140",
+   "cell": "amazon/stars",
+   "pred": 4,
+   "gold": 3,
+   "ok": 0
+  },
+  {
+   "row_id": "amazon/test/1888",
+   "cell": "amazon/stars",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "amazon/test/4136",
+   "cell": "amazon/stars",
+   "pred": 4,
+   "gold": 4,
+   "ok": 1
+  },
+  {
+   "row_id": "amazon/test/1941",
+   "cell": "amazon/stars",
+   "pred": 2,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "amazon/test/4585",
+   "cell": "amazon/stars",
+   "pred": 4,
+   "gold": 4,
+   "ok": 1
+  },
+  {
+   "row_id": "amazon/test/1479",
+   "cell": "amazon/stars",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "amazon/test/1971",
+   "cell": "amazon/stars",
+   "pred": 2,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "amazon/test/3039",
+   "cell": "amazon/stars",
+   "pred": 4,
+   "gold": 3,
+   "ok": 0
+  },
+  {
+   "row_id": "amazon/test/3296",
+   "cell": "amazon/stars",
+   "pred": 2,
+   "gold": 3,
+   "ok": 0
+  },
+  {
+   "row_id": "amazon/test/2220",
+   "cell": "amazon/stars",
+   "pred": 4,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "amazon/test/122",
+   "cell": "amazon/stars",
+   "pred": 1,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "amazon/test/1283",
+   "cell": "amazon/stars",
+   "pred": 2,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "amazon/test/4251",
+   "cell": "amazon/stars",
+   "pred": 4,
+   "gold": 4,
+   "ok": 1
+  },
+  {
+   "row_id": "amazon/test/3540",
+   "cell": "amazon/stars",
+   "pred": 4,
+   "gold": 3,
+   "ok": 0
+  },
+  {
+   "row_id": "amazon/test/1021",
+   "cell": "amazon/stars",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "amazon/test/3866",
+   "cell": "amazon/stars",
+   "pred": 4,
+   "gold": 3,
+   "ok": 0
+  },
+  {
+   "row_id": "amazon/test/2885",
+   "cell": "amazon/stars",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "amazon/test/2841",
+   "cell": "amazon/stars",
+   "pred": 1,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "amazon/test/798",
+   "cell": "amazon/stars",
+   "pred": 1,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "amazon/test/426",
+   "cell": "amazon/stars",
+   "pred": 1,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "amazon/test/1532",
+   "cell": "amazon/stars",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "amazon/test/478",
+   "cell": "amazon/stars",
+   "pred": 1,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "amazon/test/3010",
+   "cell": "amazon/stars",
+   "pred": 2,
+   "gold": 3,
+   "ok": 0
+  },
+  {
+   "row_id": "amazon/test/1290",
+   "cell": "amazon/stars",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "amazon/test/4739",
+   "cell": "amazon/stars",
+   "pred": 1,
+   "gold": 4,
+   "ok": 0
+  },
+  {
+   "row_id": "amazon/test/3943",
+   "cell": "amazon/stars",
+   "pred": 4,
+   "gold": 3,
+   "ok": 0
+  },
+  {
+   "row_id": "amazon/test/3081",
+   "cell": "amazon/stars",
+   "pred": 2,
+   "gold": 3,
+   "ok": 0
+  },
+  {
+   "row_id": "banking77/test/196",
+   "cell": "banking77/intent",
+   "pred": 75,
+   "gold": 34,
+   "ok": 0
+  },
+  {
+   "row_id": "banking77/test/2557",
+   "cell": "banking77/intent",
+   "pred": 72,
+   "gold": 72,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/357",
+   "cell": "banking77/intent",
+   "pred": 60,
+   "gold": 4,
+   "ok": 0
+  },
+  {
+   "row_id": "banking77/test/1328",
+   "cell": "banking77/intent",
+   "pred": 54,
+   "gold": 62,
+   "ok": 0
+  },
+  {
+   "row_id": "banking77/test/2736",
+   "cell": "banking77/intent",
+   "pred": 20,
+   "gold": 20,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/463",
+   "cell": "banking77/intent",
+   "pred": 41,
+   "gold": 41,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/2422",
+   "cell": "banking77/intent",
+   "pred": 39,
+   "gold": 39,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/392",
+   "cell": "banking77/intent",
+   "pred": 14,
+   "gold": 14,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/2776",
+   "cell": "banking77/intent",
+   "pred": 32,
+   "gold": 31,
+   "ok": 0
+  },
+  {
+   "row_id": "banking77/test/5",
+   "cell": "banking77/intent",
+   "pred": 12,
+   "gold": 11,
+   "ok": 0
+  },
+  {
+   "row_id": "banking77/test/289",
+   "cell": "banking77/intent",
+   "pred": 12,
+   "gold": 12,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/2987",
+   "cell": "banking77/intent",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/1365",
+   "cell": "banking77/intent",
+   "pred": 29,
+   "gold": 29,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/2456",
+   "cell": "banking77/intent",
+   "pred": 58,
+   "gold": 58,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/1812",
+   "cell": "banking77/intent",
+   "pred": 53,
+   "gold": 25,
+   "ok": 0
+  },
+  {
+   "row_id": "banking77/test/1841",
+   "cell": "banking77/intent",
+   "pred": 66,
+   "gold": 48,
+   "ok": 0
+  },
+  {
+   "row_id": "banking77/test/2154",
+   "cell": "banking77/intent",
+   "pred": 21,
+   "gold": 21,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/2321",
+   "cell": "banking77/intent",
+   "pred": 58,
+   "gold": 65,
+   "ok": 0
+  },
+  {
+   "row_id": "banking77/test/2219",
+   "cell": "banking77/intent",
+   "pred": 64,
+   "gold": 64,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/1037",
+   "cell": "banking77/intent",
+   "pred": 61,
+   "gold": 61,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/2944",
+   "cell": "banking77/intent",
+   "pred": 9,
+   "gold": 9,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/2344",
+   "cell": "banking77/intent",
+   "pred": 65,
+   "gold": 65,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/773",
+   "cell": "banking77/intent",
+   "pred": 6,
+   "gold": 75,
+   "ok": 0
+  },
+  {
+   "row_id": "banking77/test/645",
+   "cell": "banking77/intent",
+   "pred": 47,
+   "gold": 47,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/2143",
+   "cell": "banking77/intent",
+   "pred": 21,
+   "gold": 21,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/2336",
+   "cell": "banking77/intent",
+   "pred": 65,
+   "gold": 65,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/2678",
+   "cell": "banking77/intent",
+   "pred": 59,
+   "gold": 59,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/592",
+   "cell": "banking77/intent",
+   "pred": 0,
+   "gold": 23,
+   "ok": 0
+  },
+  {
+   "row_id": "banking77/test/1937",
+   "cell": "banking77/intent",
+   "pred": 18,
+   "gold": 18,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/2429",
+   "cell": "banking77/intent",
+   "pred": 39,
+   "gold": 39,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/2415",
+   "cell": "banking77/intent",
+   "pred": 39,
+   "gold": 39,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/919",
+   "cell": "banking77/intent",
+   "pred": 54,
+   "gold": 54,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/1692",
+   "cell": "banking77/intent",
+   "pred": 52,
+   "gold": 52,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/687",
+   "cell": "banking77/intent",
+   "pred": 8,
+   "gold": 8,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/2601",
+   "cell": "banking77/intent",
+   "pred": 37,
+   "gold": 37,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/150",
+   "cell": "banking77/intent",
+   "pred": 17,
+   "gold": 17,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/2165",
+   "cell": "banking77/intent",
+   "pred": 7,
+   "gold": 7,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/282",
+   "cell": "banking77/intent",
+   "pred": 11,
+   "gold": 12,
+   "ok": 0
+  },
+  {
+   "row_id": "banking77/test/148",
+   "cell": "banking77/intent",
+   "pred": 17,
+   "gold": 17,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/2204",
+   "cell": "banking77/intent",
+   "pred": 56,
+   "gold": 64,
+   "ok": 0
+  },
+  {
+   "row_id": "banking77/test/38",
+   "cell": "banking77/intent",
+   "pred": 11,
+   "gold": 11,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/202",
+   "cell": "banking77/intent",
+   "pred": 46,
+   "gold": 46,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/1125",
+   "cell": "banking77/intent",
+   "pred": 30,
+   "gold": 30,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/1169",
+   "cell": "banking77/intent",
+   "pred": 74,
+   "gold": 74,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/2879",
+   "cell": "banking77/intent",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/2061",
+   "cell": "banking77/intent",
+   "pred": 67,
+   "gold": 67,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/843",
+   "cell": "banking77/intent",
+   "pred": 66,
+   "gold": 66,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/1765",
+   "cell": "banking77/intent",
+   "pred": 51,
+   "gold": 51,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/895",
+   "cell": "banking77/intent",
+   "pred": 54,
+   "gold": 54,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/2436",
+   "cell": "banking77/intent",
+   "pred": 39,
+   "gold": 39,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/1886",
+   "cell": "banking77/intent",
+   "pred": 55,
+   "gold": 55,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/1236",
+   "cell": "banking77/intent",
+   "pred": 42,
+   "gold": 68,
+   "ok": 0
+  },
+  {
+   "row_id": "banking77/test/1472",
+   "cell": "banking77/intent",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/96",
+   "cell": "banking77/intent",
+   "pred": 32,
+   "gold": 32,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/525",
+   "cell": "banking77/intent",
+   "pred": 55,
+   "gold": 49,
+   "ok": 0
+  },
+  {
+   "row_id": "banking77/test/1370",
+   "cell": "banking77/intent",
+   "pred": 29,
+   "gold": 29,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/2264",
+   "cell": "banking77/intent",
+   "pred": 50,
+   "gold": 50,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/1537",
+   "cell": "banking77/intent",
+   "pred": 44,
+   "gold": 44,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/1656",
+   "cell": "banking77/intent",
+   "pred": 42,
+   "gold": 42,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/753",
+   "cell": "banking77/intent",
+   "pred": 60,
+   "gold": 60,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/2868",
+   "cell": "banking77/intent",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/572",
+   "cell": "banking77/intent",
+   "pred": 59,
+   "gold": 23,
+   "ok": 0
+  },
+  {
+   "row_id": "banking77/test/1813",
+   "cell": "banking77/intent",
+   "pred": 7,
+   "gold": 25,
+   "ok": 0
+  },
+  {
+   "row_id": "banking77/test/1835",
+   "cell": "banking77/intent",
+   "pred": 14,
+   "gold": 25,
+   "ok": 0
+  },
+  {
+   "row_id": "banking77/test/542",
+   "cell": "banking77/intent",
+   "pred": 49,
+   "gold": 49,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/750",
+   "cell": "banking77/intent",
+   "pred": 60,
+   "gold": 60,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/943",
+   "cell": "banking77/intent",
+   "pred": 40,
+   "gold": 40,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/2094",
+   "cell": "banking77/intent",
+   "pred": 7,
+   "gold": 53,
+   "ok": 0
+  },
+  {
+   "row_id": "banking77/test/2095",
+   "cell": "banking77/intent",
+   "pred": 53,
+   "gold": 53,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/2519",
+   "cell": "banking77/intent",
+   "pred": 43,
+   "gold": 43,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/389",
+   "cell": "banking77/intent",
+   "pred": 14,
+   "gold": 14,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/810",
+   "cell": "banking77/intent",
+   "pred": 15,
+   "gold": 15,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/926",
+   "cell": "banking77/intent",
+   "pred": 40,
+   "gold": 40,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/1673",
+   "cell": "banking77/intent",
+   "pred": 42,
+   "gold": 42,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/2510",
+   "cell": "banking77/intent",
+   "pred": 43,
+   "gold": 43,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/571",
+   "cell": "banking77/intent",
+   "pred": 14,
+   "gold": 23,
+   "ok": 0
+  },
+  {
+   "row_id": "banking77/test/230",
+   "cell": "banking77/intent",
+   "pred": 46,
+   "gold": 46,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/948",
+   "cell": "banking77/intent",
+   "pred": 40,
+   "gold": 40,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/111",
+   "cell": "banking77/intent",
+   "pred": 32,
+   "gold": 32,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/892",
+   "cell": "banking77/intent",
+   "pred": 54,
+   "gold": 54,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/196/none_present",
+   "cell": "banking77/intent",
+   "pred": 75,
+   "gold": 17,
+   "ok": 0
+  },
+  {
+   "row_id": "banking77/test/196/none_absent",
+   "cell": "banking77/intent",
+   "pred": 75,
+   "gold": 62,
+   "ok": 0
+  },
+  {
+   "row_id": "banking77/test/196/permuted",
+   "cell": "banking77/intent",
+   "pred": 75,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "banking77/test/2557/none_present",
+   "cell": "banking77/intent",
+   "pred": 72,
+   "gold": 75,
+   "ok": 0
+  },
+  {
+   "row_id": "banking77/test/2557/none_absent",
+   "cell": "banking77/intent",
+   "pred": 72,
+   "gold": 51,
+   "ok": 0
+  },
+  {
+   "row_id": "banking77/test/2557/permuted",
+   "cell": "banking77/intent",
+   "pred": 72,
+   "gold": 74,
+   "ok": 0
+  },
+  {
+   "row_id": "banking77/test/357/none_present",
+   "cell": "banking77/intent",
+   "pred": 60,
+   "gold": 29,
+   "ok": 0
+  },
+  {
+   "row_id": "banking77/test/357/none_absent",
+   "cell": "banking77/intent",
+   "pred": 60,
+   "gold": 16,
+   "ok": 0
+  },
+  {
+   "row_id": "banking77/test/357/permuted",
+   "cell": "banking77/intent",
+   "pred": 60,
+   "gold": 29,
+   "ok": 0
+  },
+  {
+   "row_id": "banking77/test/1328/none_present",
+   "cell": "banking77/intent",
+   "pred": 54,
+   "gold": 24,
+   "ok": 0
+  },
+  {
+   "row_id": "banking77/test/1328/none_absent",
+   "cell": "banking77/intent",
+   "pred": 54,
+   "gold": 51,
+   "ok": 0
+  },
+  {
+   "row_id": "banking77/test/1328/permuted",
+   "cell": "banking77/intent",
+   "pred": 54,
+   "gold": 7,
+   "ok": 0
+  },
+  {
+   "row_id": "banking77/test/2736/none_present",
+   "cell": "banking77/intent",
+   "pred": 20,
+   "gold": 24,
+   "ok": 0
+  },
+  {
+   "row_id": "banking77/test/2736/none_absent",
+   "cell": "banking77/intent",
+   "pred": 20,
+   "gold": 51,
+   "ok": 0
+  },
+  {
+   "row_id": "banking77/test/2736/permuted",
+   "cell": "banking77/intent",
+   "pred": 20,
+   "gold": 20,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/463/none_present",
+   "cell": "banking77/intent",
+   "pred": 41,
+   "gold": 38,
+   "ok": 0
+  },
+  {
+   "row_id": "banking77/test/463/none_absent",
+   "cell": "banking77/intent",
+   "pred": 41,
+   "gold": 34,
+   "ok": 0
+  },
+  {
+   "row_id": "banking77/test/463/permuted",
+   "cell": "banking77/intent",
+   "pred": 41,
+   "gold": 38,
+   "ok": 0
+  },
+  {
+   "row_id": "banking77/test/2422/none_present",
+   "cell": "banking77/intent",
+   "pred": 39,
+   "gold": 61,
+   "ok": 0
+  },
+  {
+   "row_id": "banking77/test/2422/none_absent",
+   "cell": "banking77/intent",
+   "pred": 39,
+   "gold": 59,
+   "ok": 0
+  },
+  {
+   "row_id": "banking77/test/2422/permuted",
+   "cell": "banking77/intent",
+   "pred": 39,
+   "gold": 60,
+   "ok": 0
+  },
+  {
+   "row_id": "banking77/test/392/none_present",
+   "cell": "banking77/intent",
+   "pred": 14,
+   "gold": 29,
+   "ok": 0
+  },
+  {
+   "row_id": "banking77/test/392/none_absent",
+   "cell": "banking77/intent",
+   "pred": 14,
+   "gold": 13,
+   "ok": 0
+  },
+  {
+   "row_id": "banking77/test/392/permuted",
+   "cell": "banking77/intent",
+   "pred": 14,
+   "gold": 24,
+   "ok": 0
+  },
+  {
+   "row_id": "banking77/test/2776/none_present",
+   "cell": "banking77/intent",
+   "pred": 32,
+   "gold": 19,
+   "ok": 0
+  },
+  {
+   "row_id": "banking77/test/2776/none_absent",
+   "cell": "banking77/intent",
+   "pred": 32,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "banking77/test/2776/permuted",
+   "cell": "banking77/intent",
+   "pred": 32,
+   "gold": 19,
+   "ok": 0
+  },
+  {
+   "row_id": "banking77/test/5/none_present",
+   "cell": "banking77/intent",
+   "pred": 12,
+   "gold": 77,
+   "ok": 0
+  },
+  {
+   "row_id": "banking77/test/5/none_absent",
+   "cell": "banking77/intent",
+   "pred": 12,
+   "gold": 27,
+   "ok": 0
+  },
+  {
+   "row_id": "banking77/test/5/permuted",
+   "cell": "banking77/intent",
+   "pred": 12,
+   "gold": 76,
+   "ok": 0
+  },
+  {
+   "row_id": "banking77/test/289/none_present",
+   "cell": "banking77/intent",
+   "pred": 12,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "banking77/test/289/none_absent",
+   "cell": "banking77/intent",
+   "pred": 12,
+   "gold": 38,
+   "ok": 0
+  },
+  {
+   "row_id": "banking77/test/289/permuted",
+   "cell": "banking77/intent",
+   "pred": 12,
+   "gold": 12,
+   "ok": 1
+  },
+  {
+   "row_id": "banking77/test/2987/none_present",
+   "cell": "banking77/intent",
+   "pred": 2,
+   "gold": 33,
+   "ok": 0
+  },
+  {
+   "row_id": "banking77/test/2987/none_absent",
+   "cell": "banking77/intent",
+   "pred": 2,
+   "gold": 57,
+   "ok": 0
+  },
+  {
+   "row_id": "banking77/test/2987/permuted",
+   "cell": "banking77/intent",
+   "pred": 2,
+   "gold": 33,
+   "ok": 0
+  },
+  {
+   "row_id": "boolq/validation/2058",
+   "cell": "boolq/answer",
+   "pred": 0,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "boolq/validation/2142",
+   "cell": "boolq/answer",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/2177",
+   "cell": "boolq/answer",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/1156",
+   "cell": "boolq/answer",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/1114",
+   "cell": "boolq/answer",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/2643",
+   "cell": "boolq/answer",
+   "pred": 1,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "boolq/validation/2622",
+   "cell": "boolq/answer",
+   "pred": 0,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "boolq/validation/2328",
+   "cell": "boolq/answer",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/1784",
+   "cell": "boolq/answer",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/3189",
+   "cell": "boolq/answer",
+   "pred": 1,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "boolq/validation/1758",
+   "cell": "boolq/answer",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/1646",
+   "cell": "boolq/answer",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/426",
+   "cell": "boolq/answer",
+   "pred": 1,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "boolq/validation/1957",
+   "cell": "boolq/answer",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/1440",
+   "cell": "boolq/answer",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/19",
+   "cell": "boolq/answer",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/2052",
+   "cell": "boolq/answer",
+   "pred": 1,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "boolq/validation/867",
+   "cell": "boolq/answer",
+   "pred": 1,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "boolq/validation/840",
+   "cell": "boolq/answer",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/858",
+   "cell": "boolq/answer",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/1487",
+   "cell": "boolq/answer",
+   "pred": 0,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "boolq/validation/906",
+   "cell": "boolq/answer",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/3128",
+   "cell": "boolq/answer",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/2614",
+   "cell": "boolq/answer",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/1100",
+   "cell": "boolq/answer",
+   "pred": 1,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "boolq/validation/274",
+   "cell": "boolq/answer",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/1550",
+   "cell": "boolq/answer",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/1907",
+   "cell": "boolq/answer",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/3205",
+   "cell": "boolq/answer",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/1684",
+   "cell": "boolq/answer",
+   "pred": 1,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "boolq/validation/2584",
+   "cell": "boolq/answer",
+   "pred": 1,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "boolq/validation/203",
+   "cell": "boolq/answer",
+   "pred": 1,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "boolq/validation/2327",
+   "cell": "boolq/answer",
+   "pred": 1,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "boolq/validation/493",
+   "cell": "boolq/answer",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/1929",
+   "cell": "boolq/answer",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/2791",
+   "cell": "boolq/answer",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/2416",
+   "cell": "boolq/answer",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/3113",
+   "cell": "boolq/answer",
+   "pred": 1,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "boolq/validation/2277",
+   "cell": "boolq/answer",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/3244",
+   "cell": "boolq/answer",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/1490",
+   "cell": "boolq/answer",
+   "pred": 1,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "boolq/validation/34",
+   "cell": "boolq/answer",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/1039",
+   "cell": "boolq/answer",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/2577",
+   "cell": "boolq/answer",
+   "pred": 1,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "boolq/validation/1058",
+   "cell": "boolq/answer",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/1786",
+   "cell": "boolq/answer",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/2905",
+   "cell": "boolq/answer",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/1792",
+   "cell": "boolq/answer",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/1203",
+   "cell": "boolq/answer",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/1948",
+   "cell": "boolq/answer",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/3162",
+   "cell": "boolq/answer",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/2196",
+   "cell": "boolq/answer",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/277",
+   "cell": "boolq/answer",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/2311",
+   "cell": "boolq/answer",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/758",
+   "cell": "boolq/answer",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/2439",
+   "cell": "boolq/answer",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/2138",
+   "cell": "boolq/answer",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/1774",
+   "cell": "boolq/answer",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/687",
+   "cell": "boolq/answer",
+   "pred": 1,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "boolq/validation/1999",
+   "cell": "boolq/answer",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/215",
+   "cell": "boolq/answer",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/2717",
+   "cell": "boolq/answer",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/2538",
+   "cell": "boolq/answer",
+   "pred": 1,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "boolq/validation/2369",
+   "cell": "boolq/answer",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/270",
+   "cell": "boolq/answer",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/1901",
+   "cell": "boolq/answer",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/618",
+   "cell": "boolq/answer",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/3067",
+   "cell": "boolq/answer",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/1159",
+   "cell": "boolq/answer",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/962",
+   "cell": "boolq/answer",
+   "pred": 1,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "boolq/validation/1420",
+   "cell": "boolq/answer",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/3175",
+   "cell": "boolq/answer",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/3134",
+   "cell": "boolq/answer",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/1458",
+   "cell": "boolq/answer",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/768",
+   "cell": "boolq/answer",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/535",
+   "cell": "boolq/answer",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/2053",
+   "cell": "boolq/answer",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/175",
+   "cell": "boolq/answer",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/3196",
+   "cell": "boolq/answer",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "boolq/validation/1383",
+   "cell": "boolq/answer",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/return_window/20260919-eval-return_window-0001/a",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "contrastive/return_window/20260919-eval-return_window-0001/b",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/return_window/20260919-eval-return_window-0003/a",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/return_window/20260919-eval-return_window-0003/b",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/return_window/20260919-eval-return_window-0005/a",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/return_window/20260919-eval-return_window-0005/b",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/return_window/20260919-eval-return_window-0007/a",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/return_window/20260919-eval-return_window-0007/b",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/return_window/20260919-eval-return_window-0009/a",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/return_window/20260919-eval-return_window-0009/b",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/return_window/20260919-eval-return_window-0011/a",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "contrastive/return_window/20260919-eval-return_window-0011/b",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/return_window/20260919-eval-return_window-0013/a",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/return_window/20260919-eval-return_window-0013/b",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/return_window/20260919-eval-return_window-0015/a",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "contrastive/return_window/20260919-eval-return_window-0015/b",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/return_window/20260919-eval-return_window-0017/a",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "contrastive/return_window/20260919-eval-return_window-0017/b",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/return_window/20260919-eval-return_window-0019/a",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/return_window/20260919-eval-return_window-0019/b",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/return_window/20260919-eval-return_window-0021/a",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/return_window/20260919-eval-return_window-0021/b",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/return_window/20260919-eval-return_window-0023/a",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/return_window/20260919-eval-return_window-0023/b",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/return_window/20260919-eval-return_window-0025/a",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "contrastive/return_window/20260919-eval-return_window-0025/b",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/return_window/20260919-eval-return_window-0027/a",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/return_window/20260919-eval-return_window-0027/b",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/return_window/20260919-eval-return_window-0029/a",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/return_window/20260919-eval-return_window-0029/b",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/return_window/20260919-eval-return_window-0031/a",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/return_window/20260919-eval-return_window-0031/b",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/return_window/20260919-eval-return_window-0033/a",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/return_window/20260919-eval-return_window-0033/b",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/return_window/20260919-eval-return_window-0035/a",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "contrastive/return_window/20260919-eval-return_window-0035/b",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/return_window/20260919-eval-return_window-0037/a",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/return_window/20260919-eval-return_window-0037/b",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/return_window/20260919-eval-return_window-0039/a",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/return_window/20260919-eval-return_window-0039/b",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0001/a",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0001/b",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0003/a",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0003/b",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0005/a",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0005/b",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0007/a",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0007/b",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0009/a",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0009/b",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0011/a",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0011/b",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0013/a",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0013/b",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0015/a",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0015/b",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0017/a",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0017/b",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0019/a",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0019/b",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0021/a",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0021/b",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0023/a",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0023/b",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0025/a",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0025/b",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0027/a",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0027/b",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0029/a",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0029/b",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0031/a",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0031/b",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0033/a",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0033/b",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0035/a",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0035/b",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0037/a",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0037/b",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0039/a",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0039/b",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/age_eligibility/20260919-eval-age_eligibility-0001/a",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/age_eligibility/20260919-eval-age_eligibility-0001/b",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/age_eligibility/20260919-eval-age_eligibility-0003/a",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/age_eligibility/20260919-eval-age_eligibility-0003/b",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/age_eligibility/20260919-eval-age_eligibility-0005/a",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/age_eligibility/20260919-eval-age_eligibility-0005/b",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/age_eligibility/20260919-eval-age_eligibility-0007/a",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/age_eligibility/20260919-eval-age_eligibility-0007/b",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/age_eligibility/20260919-eval-age_eligibility-0009/a",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/age_eligibility/20260919-eval-age_eligibility-0009/b",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/age_eligibility/20260919-eval-age_eligibility-0011/a",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/age_eligibility/20260919-eval-age_eligibility-0011/b",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/age_eligibility/20260919-eval-age_eligibility-0013/a",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/age_eligibility/20260919-eval-age_eligibility-0013/b",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/age_eligibility/20260919-eval-age_eligibility-0015/a",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/age_eligibility/20260919-eval-age_eligibility-0015/b",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/age_eligibility/20260919-eval-age_eligibility-0017/a",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/age_eligibility/20260919-eval-age_eligibility-0017/b",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/age_eligibility/20260919-eval-age_eligibility-0019/a",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/age_eligibility/20260919-eval-age_eligibility-0019/b",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/age_eligibility/20260919-eval-age_eligibility-0021/a",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/age_eligibility/20260919-eval-age_eligibility-0021/b",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/age_eligibility/20260919-eval-age_eligibility-0023/a",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/age_eligibility/20260919-eval-age_eligibility-0023/b",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/age_eligibility/20260919-eval-age_eligibility-0025/a",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/age_eligibility/20260919-eval-age_eligibility-0025/b",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/age_eligibility/20260919-eval-age_eligibility-0027/a",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/age_eligibility/20260919-eval-age_eligibility-0027/b",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/age_eligibility/20260919-eval-age_eligibility-0029/a",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/age_eligibility/20260919-eval-age_eligibility-0029/b",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/age_eligibility/20260919-eval-age_eligibility-0031/a",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/age_eligibility/20260919-eval-age_eligibility-0031/b",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/age_eligibility/20260919-eval-age_eligibility-0033/a",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/age_eligibility/20260919-eval-age_eligibility-0033/b",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/age_eligibility/20260919-eval-age_eligibility-0035/a",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/age_eligibility/20260919-eval-age_eligibility-0035/b",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/age_eligibility/20260919-eval-age_eligibility-0037/a",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/age_eligibility/20260919-eval-age_eligibility-0037/b",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/age_eligibility/20260919-eval-age_eligibility-0039/a",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/age_eligibility/20260919-eval-age_eligibility-0039/b",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/quantity_limit/20260919-eval-quantity_limit-0001/a",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/quantity_limit/20260919-eval-quantity_limit-0001/b",
+   "cell": "contrastive/decision",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/quantity_limit/20260919-eval-quantity_limit-0003/a",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/quantity_limit/20260919-eval-quantity_limit-0003/b",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/quantity_limit/20260919-eval-quantity_limit-0005/a",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/quantity_limit/20260919-eval-quantity_limit-0005/b",
+   "cell": "contrastive/decision",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/quantity_limit/20260919-eval-quantity_limit-0007/a",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/quantity_limit/20260919-eval-quantity_limit-0007/b",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/quantity_limit/20260919-eval-quantity_limit-0009/a",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/quantity_limit/20260919-eval-quantity_limit-0009/b",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/quantity_limit/20260919-eval-quantity_limit-0011/a",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/quantity_limit/20260919-eval-quantity_limit-0011/b",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/quantity_limit/20260919-eval-quantity_limit-0013/a",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/quantity_limit/20260919-eval-quantity_limit-0013/b",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/quantity_limit/20260919-eval-quantity_limit-0015/a",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/quantity_limit/20260919-eval-quantity_limit-0015/b",
+   "cell": "contrastive/decision",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/quantity_limit/20260919-eval-quantity_limit-0017/a",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/quantity_limit/20260919-eval-quantity_limit-0017/b",
+   "cell": "contrastive/decision",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/quantity_limit/20260919-eval-quantity_limit-0019/a",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/quantity_limit/20260919-eval-quantity_limit-0019/b",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/quantity_limit/20260919-eval-quantity_limit-0021/a",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/quantity_limit/20260919-eval-quantity_limit-0021/b",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/quantity_limit/20260919-eval-quantity_limit-0023/a",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/quantity_limit/20260919-eval-quantity_limit-0023/b",
+   "cell": "contrastive/decision",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/quantity_limit/20260919-eval-quantity_limit-0025/a",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/quantity_limit/20260919-eval-quantity_limit-0025/b",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/quantity_limit/20260919-eval-quantity_limit-0027/a",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/quantity_limit/20260919-eval-quantity_limit-0027/b",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/quantity_limit/20260919-eval-quantity_limit-0029/a",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/quantity_limit/20260919-eval-quantity_limit-0029/b",
+   "cell": "contrastive/decision",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/quantity_limit/20260919-eval-quantity_limit-0031/a",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/quantity_limit/20260919-eval-quantity_limit-0031/b",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/quantity_limit/20260919-eval-quantity_limit-0033/a",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/quantity_limit/20260919-eval-quantity_limit-0033/b",
+   "cell": "contrastive/decision",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/quantity_limit/20260919-eval-quantity_limit-0035/a",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/quantity_limit/20260919-eval-quantity_limit-0035/b",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/quantity_limit/20260919-eval-quantity_limit-0037/a",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/quantity_limit/20260919-eval-quantity_limit-0037/b",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/quantity_limit/20260919-eval-quantity_limit-0039/a",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/quantity_limit/20260919-eval-quantity_limit-0039/b",
+   "cell": "contrastive/decision",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0001/a/none_present",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0001/a/none_absent",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0001/a/permuted",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0001/b/none_present",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0001/b/none_absent",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0001/b/permuted",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0003/a/none_present",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0003/a/none_absent",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0003/a/permuted",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0003/b/none_present",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 3,
+   "ok": 0
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0003/b/none_absent",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0003/b/permuted",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0005/a/none_present",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0005/a/none_absent",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0005/a/permuted",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0005/b/none_present",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0005/b/none_absent",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0005/b/permuted",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0007/a/none_present",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0007/a/none_absent",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0007/a/permuted",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0007/b/none_present",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 3,
+   "ok": 0
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0007/b/none_absent",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0007/b/permuted",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0009/a/none_present",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0009/a/none_absent",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0009/a/permuted",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0009/b/none_present",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0009/b/none_absent",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0009/b/permuted",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0011/a/none_present",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 3,
+   "ok": 0
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0011/a/none_absent",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0011/a/permuted",
+   "cell": "contrastive/decision",
+   "pred": 0,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0011/b/none_present",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0011/b/none_absent",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "contrastive/spend_threshold/20260919-eval-spend_threshold-0011/b/permuted",
+   "cell": "contrastive/decision",
+   "pred": 1,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "dbpedia14/test/36134",
+   "cell": "dbpedia14/category",
+   "pred": 7,
+   "gold": 7,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/66750",
+   "cell": "dbpedia14/category",
+   "pred": 13,
+   "gold": 13,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/59468",
+   "cell": "dbpedia14/category",
+   "pred": 11,
+   "gold": 11,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/20486",
+   "cell": "dbpedia14/category",
+   "pred": 4,
+   "gold": 4,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/7823",
+   "cell": "dbpedia14/category",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/21970",
+   "cell": "dbpedia14/category",
+   "pred": 4,
+   "gold": 4,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/12029",
+   "cell": "dbpedia14/category",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/39189",
+   "cell": "dbpedia14/category",
+   "pred": 7,
+   "gold": 7,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/29956",
+   "cell": "dbpedia14/category",
+   "pred": 5,
+   "gold": 5,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/66742",
+   "cell": "dbpedia14/category",
+   "pred": 13,
+   "gold": 13,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/2494",
+   "cell": "dbpedia14/category",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/67696",
+   "cell": "dbpedia14/category",
+   "pred": 13,
+   "gold": 13,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/60758",
+   "cell": "dbpedia14/category",
+   "pred": 12,
+   "gold": 12,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/31085",
+   "cell": "dbpedia14/category",
+   "pred": 6,
+   "gold": 6,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/68572",
+   "cell": "dbpedia14/category",
+   "pred": 13,
+   "gold": 13,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/9499",
+   "cell": "dbpedia14/category",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/57535",
+   "cell": "dbpedia14/category",
+   "pred": 11,
+   "gold": 11,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/35382",
+   "cell": "dbpedia14/category",
+   "pred": 7,
+   "gold": 7,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/37134",
+   "cell": "dbpedia14/category",
+   "pred": 7,
+   "gold": 7,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/48743",
+   "cell": "dbpedia14/category",
+   "pred": 9,
+   "gold": 9,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/33694",
+   "cell": "dbpedia14/category",
+   "pred": 6,
+   "gold": 6,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/49458",
+   "cell": "dbpedia14/category",
+   "pred": 9,
+   "gold": 9,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/58228",
+   "cell": "dbpedia14/category",
+   "pred": 11,
+   "gold": 11,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/38369",
+   "cell": "dbpedia14/category",
+   "pred": 7,
+   "gold": 7,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/14310",
+   "cell": "dbpedia14/category",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/45779",
+   "cell": "dbpedia14/category",
+   "pred": 9,
+   "gold": 9,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/59064",
+   "cell": "dbpedia14/category",
+   "pred": 11,
+   "gold": 11,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/61454",
+   "cell": "dbpedia14/category",
+   "pred": 12,
+   "gold": 12,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/12426",
+   "cell": "dbpedia14/category",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/58254",
+   "cell": "dbpedia14/category",
+   "pred": 11,
+   "gold": 11,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/26436",
+   "cell": "dbpedia14/category",
+   "pred": 5,
+   "gold": 5,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/5910",
+   "cell": "dbpedia14/category",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/53453",
+   "cell": "dbpedia14/category",
+   "pred": 10,
+   "gold": 10,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/7935",
+   "cell": "dbpedia14/category",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/38709",
+   "cell": "dbpedia14/category",
+   "pred": 7,
+   "gold": 7,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/5663",
+   "cell": "dbpedia14/category",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/49948",
+   "cell": "dbpedia14/category",
+   "pred": 9,
+   "gold": 9,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/11447",
+   "cell": "dbpedia14/category",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/47025",
+   "cell": "dbpedia14/category",
+   "pred": 9,
+   "gold": 9,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/61134",
+   "cell": "dbpedia14/category",
+   "pred": 12,
+   "gold": 12,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/54091",
+   "cell": "dbpedia14/category",
+   "pred": 10,
+   "gold": 10,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/21782",
+   "cell": "dbpedia14/category",
+   "pred": 4,
+   "gold": 4,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/41376",
+   "cell": "dbpedia14/category",
+   "pred": 8,
+   "gold": 8,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/67741",
+   "cell": "dbpedia14/category",
+   "pred": 13,
+   "gold": 13,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/58420",
+   "cell": "dbpedia14/category",
+   "pred": 11,
+   "gold": 11,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/63909",
+   "cell": "dbpedia14/category",
+   "pred": 12,
+   "gold": 12,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/44059",
+   "cell": "dbpedia14/category",
+   "pred": 8,
+   "gold": 8,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/54309",
+   "cell": "dbpedia14/category",
+   "pred": 10,
+   "gold": 10,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/54650",
+   "cell": "dbpedia14/category",
+   "pred": 10,
+   "gold": 10,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/7078",
+   "cell": "dbpedia14/category",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/69106",
+   "cell": "dbpedia14/category",
+   "pred": 13,
+   "gold": 13,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/2997",
+   "cell": "dbpedia14/category",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/46176",
+   "cell": "dbpedia14/category",
+   "pred": 9,
+   "gold": 9,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/62415",
+   "cell": "dbpedia14/category",
+   "pred": 12,
+   "gold": 12,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/59378",
+   "cell": "dbpedia14/category",
+   "pred": 11,
+   "gold": 11,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/65204",
+   "cell": "dbpedia14/category",
+   "pred": 13,
+   "gold": 13,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/52006",
+   "cell": "dbpedia14/category",
+   "pred": 10,
+   "gold": 10,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/2325",
+   "cell": "dbpedia14/category",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/10478",
+   "cell": "dbpedia14/category",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/36191",
+   "cell": "dbpedia14/category",
+   "pred": 7,
+   "gold": 7,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/47665",
+   "cell": "dbpedia14/category",
+   "pred": 9,
+   "gold": 9,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/31243",
+   "cell": "dbpedia14/category",
+   "pred": 6,
+   "gold": 6,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/64089",
+   "cell": "dbpedia14/category",
+   "pred": 12,
+   "gold": 12,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/48641",
+   "cell": "dbpedia14/category",
+   "pred": 9,
+   "gold": 9,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/2339",
+   "cell": "dbpedia14/category",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/9220",
+   "cell": "dbpedia14/category",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/39427",
+   "cell": "dbpedia14/category",
+   "pred": 7,
+   "gold": 7,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/46645",
+   "cell": "dbpedia14/category",
+   "pred": 9,
+   "gold": 9,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/54811",
+   "cell": "dbpedia14/category",
+   "pred": 10,
+   "gold": 10,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/25063",
+   "cell": "dbpedia14/category",
+   "pred": 5,
+   "gold": 5,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/18665",
+   "cell": "dbpedia14/category",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/2900",
+   "cell": "dbpedia14/category",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/22431",
+   "cell": "dbpedia14/category",
+   "pred": 4,
+   "gold": 4,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/62144",
+   "cell": "dbpedia14/category",
+   "pred": 12,
+   "gold": 12,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/67358",
+   "cell": "dbpedia14/category",
+   "pred": 13,
+   "gold": 13,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/29848",
+   "cell": "dbpedia14/category",
+   "pred": 5,
+   "gold": 5,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/15564",
+   "cell": "dbpedia14/category",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/32933",
+   "cell": "dbpedia14/category",
+   "pred": 6,
+   "gold": 6,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/45658",
+   "cell": "dbpedia14/category",
+   "pred": 9,
+   "gold": 9,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/20031",
+   "cell": "dbpedia14/category",
+   "pred": 4,
+   "gold": 4,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/36134/none_present",
+   "cell": "dbpedia14/category",
+   "pred": 7,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "dbpedia14/test/36134/none_absent",
+   "cell": "dbpedia14/category",
+   "pred": 7,
+   "gold": 13,
+   "ok": 0
+  },
+  {
+   "row_id": "dbpedia14/test/36134/permuted",
+   "cell": "dbpedia14/category",
+   "pred": 7,
+   "gold": 4,
+   "ok": 0
+  },
+  {
+   "row_id": "dbpedia14/test/66750/none_present",
+   "cell": "dbpedia14/category",
+   "pred": 13,
+   "gold": 3,
+   "ok": 0
+  },
+  {
+   "row_id": "dbpedia14/test/66750/none_absent",
+   "cell": "dbpedia14/category",
+   "pred": 13,
+   "gold": 8,
+   "ok": 0
+  },
+  {
+   "row_id": "dbpedia14/test/66750/permuted",
+   "cell": "dbpedia14/category",
+   "pred": 13,
+   "gold": 8,
+   "ok": 0
+  },
+  {
+   "row_id": "dbpedia14/test/59468/none_present",
+   "cell": "dbpedia14/category",
+   "pred": 11,
+   "gold": 4,
+   "ok": 0
+  },
+  {
+   "row_id": "dbpedia14/test/59468/none_absent",
+   "cell": "dbpedia14/category",
+   "pred": 11,
+   "gold": 3,
+   "ok": 0
+  },
+  {
+   "row_id": "dbpedia14/test/59468/permuted",
+   "cell": "dbpedia14/category",
+   "pred": 11,
+   "gold": 4,
+   "ok": 0
+  },
+  {
+   "row_id": "dbpedia14/test/20486/none_present",
+   "cell": "dbpedia14/category",
+   "pred": 4,
+   "gold": 10,
+   "ok": 0
+  },
+  {
+   "row_id": "dbpedia14/test/20486/none_absent",
+   "cell": "dbpedia14/category",
+   "pred": 4,
+   "gold": 3,
+   "ok": 0
+  },
+  {
+   "row_id": "dbpedia14/test/20486/permuted",
+   "cell": "dbpedia14/category",
+   "pred": 4,
+   "gold": 9,
+   "ok": 0
+  },
+  {
+   "row_id": "dbpedia14/test/7823/none_present",
+   "cell": "dbpedia14/category",
+   "pred": 1,
+   "gold": 11,
+   "ok": 0
+  },
+  {
+   "row_id": "dbpedia14/test/7823/none_absent",
+   "cell": "dbpedia14/category",
+   "pred": 1,
+   "gold": 6,
+   "ok": 0
+  },
+  {
+   "row_id": "dbpedia14/test/7823/permuted",
+   "cell": "dbpedia14/category",
+   "pred": 1,
+   "gold": 11,
+   "ok": 0
+  },
+  {
+   "row_id": "dbpedia14/test/21970/none_present",
+   "cell": "dbpedia14/category",
+   "pred": 4,
+   "gold": 7,
+   "ok": 0
+  },
+  {
+   "row_id": "dbpedia14/test/21970/none_absent",
+   "cell": "dbpedia14/category",
+   "pred": 4,
+   "gold": 9,
+   "ok": 0
+  },
+  {
+   "row_id": "dbpedia14/test/21970/permuted",
+   "cell": "dbpedia14/category",
+   "pred": 4,
+   "gold": 7,
+   "ok": 0
+  },
+  {
+   "row_id": "dbpedia14/test/12029/none_present",
+   "cell": "dbpedia14/category",
+   "pred": 2,
+   "gold": 7,
+   "ok": 0
+  },
+  {
+   "row_id": "dbpedia14/test/12029/none_absent",
+   "cell": "dbpedia14/category",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/12029/permuted",
+   "cell": "dbpedia14/category",
+   "pred": 2,
+   "gold": 7,
+   "ok": 0
+  },
+  {
+   "row_id": "dbpedia14/test/39189/none_present",
+   "cell": "dbpedia14/category",
+   "pred": 7,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "dbpedia14/test/39189/none_absent",
+   "cell": "dbpedia14/category",
+   "pred": 7,
+   "gold": 4,
+   "ok": 0
+  },
+  {
+   "row_id": "dbpedia14/test/39189/permuted",
+   "cell": "dbpedia14/category",
+   "pred": 7,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "dbpedia14/test/29956/none_present",
+   "cell": "dbpedia14/category",
+   "pred": 5,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "dbpedia14/test/29956/none_absent",
+   "cell": "dbpedia14/category",
+   "pred": 5,
+   "gold": 7,
+   "ok": 0
+  },
+  {
+   "row_id": "dbpedia14/test/29956/permuted",
+   "cell": "dbpedia14/category",
+   "pred": 5,
+   "gold": 3,
+   "ok": 0
+  },
+  {
+   "row_id": "dbpedia14/test/66742/none_present",
+   "cell": "dbpedia14/category",
+   "pred": 13,
+   "gold": 9,
+   "ok": 0
+  },
+  {
+   "row_id": "dbpedia14/test/66742/none_absent",
+   "cell": "dbpedia14/category",
+   "pred": 13,
+   "gold": 8,
+   "ok": 0
+  },
+  {
+   "row_id": "dbpedia14/test/66742/permuted",
+   "cell": "dbpedia14/category",
+   "pred": 13,
+   "gold": 8,
+   "ok": 0
+  },
+  {
+   "row_id": "dbpedia14/test/2494/none_present",
+   "cell": "dbpedia14/category",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/2494/none_absent",
+   "cell": "dbpedia14/category",
+   "pred": 0,
+   "gold": 5,
+   "ok": 0
+  },
+  {
+   "row_id": "dbpedia14/test/2494/permuted",
+   "cell": "dbpedia14/category",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "dbpedia14/test/67696/none_present",
+   "cell": "dbpedia14/category",
+   "pred": 13,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "dbpedia14/test/67696/none_absent",
+   "cell": "dbpedia14/category",
+   "pred": 13,
+   "gold": 7,
+   "ok": 0
+  },
+  {
+   "row_id": "dbpedia14/test/67696/permuted",
+   "cell": "dbpedia14/category",
+   "pred": 13,
+   "gold": 7,
+   "ok": 0
+  },
+  {
+   "row_id": "imdb/test/11009",
+   "cell": "imdb/positive",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/4433",
+   "cell": "imdb/positive",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/1007",
+   "cell": "imdb/positive",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/18570",
+   "cell": "imdb/positive",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/14816",
+   "cell": "imdb/positive",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/8075",
+   "cell": "imdb/positive",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/21729",
+   "cell": "imdb/positive",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/21020",
+   "cell": "imdb/positive",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/22650",
+   "cell": "imdb/positive",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/18132",
+   "cell": "imdb/positive",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/18948",
+   "cell": "imdb/positive",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/13234",
+   "cell": "imdb/positive",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/20583",
+   "cell": "imdb/positive",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/3691",
+   "cell": "imdb/positive",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/22337",
+   "cell": "imdb/positive",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/23813",
+   "cell": "imdb/positive",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/4800",
+   "cell": "imdb/positive",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/24362",
+   "cell": "imdb/positive",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/5132",
+   "cell": "imdb/positive",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/11434",
+   "cell": "imdb/positive",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/2277",
+   "cell": "imdb/positive",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/16954",
+   "cell": "imdb/positive",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/3687",
+   "cell": "imdb/positive",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/11830",
+   "cell": "imdb/positive",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/4064",
+   "cell": "imdb/positive",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/21385",
+   "cell": "imdb/positive",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/4373",
+   "cell": "imdb/positive",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/19633",
+   "cell": "imdb/positive",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/17819",
+   "cell": "imdb/positive",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/19159",
+   "cell": "imdb/positive",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/18272",
+   "cell": "imdb/positive",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/2979",
+   "cell": "imdb/positive",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/19828",
+   "cell": "imdb/positive",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/23098",
+   "cell": "imdb/positive",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/19023",
+   "cell": "imdb/positive",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/9694",
+   "cell": "imdb/positive",
+   "pred": 1,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "imdb/test/12946",
+   "cell": "imdb/positive",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/23015",
+   "cell": "imdb/positive",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/8121",
+   "cell": "imdb/positive",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/8437",
+   "cell": "imdb/positive",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/10481",
+   "cell": "imdb/positive",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/22075",
+   "cell": "imdb/positive",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/18112",
+   "cell": "imdb/positive",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/346",
+   "cell": "imdb/positive",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/19717",
+   "cell": "imdb/positive",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/16118",
+   "cell": "imdb/positive",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/13594",
+   "cell": "imdb/positive",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/5925",
+   "cell": "imdb/positive",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/9058",
+   "cell": "imdb/positive",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/8295",
+   "cell": "imdb/positive",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/736",
+   "cell": "imdb/positive",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/21977",
+   "cell": "imdb/positive",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/18545",
+   "cell": "imdb/positive",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/6111",
+   "cell": "imdb/positive",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/23681",
+   "cell": "imdb/positive",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/1987",
+   "cell": "imdb/positive",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/20668",
+   "cell": "imdb/positive",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/20933",
+   "cell": "imdb/positive",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/3563",
+   "cell": "imdb/positive",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/9703",
+   "cell": "imdb/positive",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/14670",
+   "cell": "imdb/positive",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/3016",
+   "cell": "imdb/positive",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/17536",
+   "cell": "imdb/positive",
+   "pred": 0,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "imdb/test/8377",
+   "cell": "imdb/positive",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/23910",
+   "cell": "imdb/positive",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/8005",
+   "cell": "imdb/positive",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/12224",
+   "cell": "imdb/positive",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/8070",
+   "cell": "imdb/positive",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/23558",
+   "cell": "imdb/positive",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/5253",
+   "cell": "imdb/positive",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/13084",
+   "cell": "imdb/positive",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/22004",
+   "cell": "imdb/positive",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/19549",
+   "cell": "imdb/positive",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/4686",
+   "cell": "imdb/positive",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/12927",
+   "cell": "imdb/positive",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/18595",
+   "cell": "imdb/positive",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/6488",
+   "cell": "imdb/positive",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/3317",
+   "cell": "imdb/positive",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/21806",
+   "cell": "imdb/positive",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "imdb/test/8115",
+   "cell": "imdb/positive",
+   "pred": 1,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "mnli/validation_matched/9313",
+   "cell": "mnli/relation",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/6100",
+   "cell": "mnli/relation",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/6860",
+   "cell": "mnli/relation",
+   "pred": 1,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "mnli/validation_matched/5514",
+   "cell": "mnli/relation",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/2667",
+   "cell": "mnli/relation",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/6123",
+   "cell": "mnli/relation",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/1815",
+   "cell": "mnli/relation",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/5582",
+   "cell": "mnli/relation",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/9110",
+   "cell": "mnli/relation",
+   "pred": 0,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "mnli/validation_matched/3724",
+   "cell": "mnli/relation",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/8416",
+   "cell": "mnli/relation",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/7516",
+   "cell": "mnli/relation",
+   "pred": 0,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "mnli/validation_matched/2110",
+   "cell": "mnli/relation",
+   "pred": 0,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "mnli/validation_matched/8248",
+   "cell": "mnli/relation",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/9103",
+   "cell": "mnli/relation",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/7278",
+   "cell": "mnli/relation",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/5954",
+   "cell": "mnli/relation",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/151",
+   "cell": "mnli/relation",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/5561",
+   "cell": "mnli/relation",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/8634",
+   "cell": "mnli/relation",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/103",
+   "cell": "mnli/relation",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/630",
+   "cell": "mnli/relation",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/4158",
+   "cell": "mnli/relation",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/7389",
+   "cell": "mnli/relation",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/9359",
+   "cell": "mnli/relation",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/5886",
+   "cell": "mnli/relation",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/3902",
+   "cell": "mnli/relation",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/7262",
+   "cell": "mnli/relation",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/9389",
+   "cell": "mnli/relation",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/3875",
+   "cell": "mnli/relation",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/182",
+   "cell": "mnli/relation",
+   "pred": 2,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "mnli/validation_matched/3419",
+   "cell": "mnli/relation",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/7402",
+   "cell": "mnli/relation",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/7756",
+   "cell": "mnli/relation",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/5348",
+   "cell": "mnli/relation",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/6331",
+   "cell": "mnli/relation",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/7367",
+   "cell": "mnli/relation",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/4037",
+   "cell": "mnli/relation",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/8442",
+   "cell": "mnli/relation",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/9030",
+   "cell": "mnli/relation",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/6758",
+   "cell": "mnli/relation",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/5391",
+   "cell": "mnli/relation",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/8212",
+   "cell": "mnli/relation",
+   "pred": 0,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "mnli/validation_matched/4070",
+   "cell": "mnli/relation",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/6766",
+   "cell": "mnli/relation",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/6864",
+   "cell": "mnli/relation",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/8602",
+   "cell": "mnli/relation",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/6107",
+   "cell": "mnli/relation",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/1818",
+   "cell": "mnli/relation",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/289",
+   "cell": "mnli/relation",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/6211",
+   "cell": "mnli/relation",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/600",
+   "cell": "mnli/relation",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/7623",
+   "cell": "mnli/relation",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/6999",
+   "cell": "mnli/relation",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/1055",
+   "cell": "mnli/relation",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/6699",
+   "cell": "mnli/relation",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/2980",
+   "cell": "mnli/relation",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/1796",
+   "cell": "mnli/relation",
+   "pred": 1,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "mnli/validation_matched/7090",
+   "cell": "mnli/relation",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/4254",
+   "cell": "mnli/relation",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/4006",
+   "cell": "mnli/relation",
+   "pred": 1,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "mnli/validation_matched/3570",
+   "cell": "mnli/relation",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/7111",
+   "cell": "mnli/relation",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/2963",
+   "cell": "mnli/relation",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/5033",
+   "cell": "mnli/relation",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/9174",
+   "cell": "mnli/relation",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/7393",
+   "cell": "mnli/relation",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/6080",
+   "cell": "mnli/relation",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/2057",
+   "cell": "mnli/relation",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/6176",
+   "cell": "mnli/relation",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/5030",
+   "cell": "mnli/relation",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/7510",
+   "cell": "mnli/relation",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/1641",
+   "cell": "mnli/relation",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/6060",
+   "cell": "mnli/relation",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/9107",
+   "cell": "mnli/relation",
+   "pred": 1,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "mnli/validation_matched/2340",
+   "cell": "mnli/relation",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/7721",
+   "cell": "mnli/relation",
+   "pred": 0,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "mnli/validation_matched/3478",
+   "cell": "mnli/relation",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/8954",
+   "cell": "mnli/relation",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/4508",
+   "cell": "mnli/relation",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/9313/none_present",
+   "cell": "mnli/relation",
+   "pred": 2,
+   "gold": 3,
+   "ok": 0
+  },
+  {
+   "row_id": "mnli/validation_matched/9313/none_absent",
+   "cell": "mnli/relation",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/9313/permuted",
+   "cell": "mnli/relation",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/6100/none_present",
+   "cell": "mnli/relation",
+   "pred": 2,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "mnli/validation_matched/6100/none_absent",
+   "cell": "mnli/relation",
+   "pred": 2,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "mnli/validation_matched/6100/permuted",
+   "cell": "mnli/relation",
+   "pred": 2,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "mnli/validation_matched/6860/none_present",
+   "cell": "mnli/relation",
+   "pred": 1,
+   "gold": 3,
+   "ok": 0
+  },
+  {
+   "row_id": "mnli/validation_matched/6860/none_absent",
+   "cell": "mnli/relation",
+   "pred": 1,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "mnli/validation_matched/6860/permuted",
+   "cell": "mnli/relation",
+   "pred": 1,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "mnli/validation_matched/5514/none_present",
+   "cell": "mnli/relation",
+   "pred": 0,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "mnli/validation_matched/5514/none_absent",
+   "cell": "mnli/relation",
+   "pred": 0,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "mnli/validation_matched/5514/permuted",
+   "cell": "mnli/relation",
+   "pred": 0,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "mnli/validation_matched/2667/none_present",
+   "cell": "mnli/relation",
+   "pred": 1,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "mnli/validation_matched/2667/none_absent",
+   "cell": "mnli/relation",
+   "pred": 1,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "mnli/validation_matched/2667/permuted",
+   "cell": "mnli/relation",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/6123/none_present",
+   "cell": "mnli/relation",
+   "pred": 1,
+   "gold": 3,
+   "ok": 0
+  },
+  {
+   "row_id": "mnli/validation_matched/6123/none_absent",
+   "cell": "mnli/relation",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/6123/permuted",
+   "cell": "mnli/relation",
+   "pred": 1,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "mnli/validation_matched/1815/none_present",
+   "cell": "mnli/relation",
+   "pred": 0,
+   "gold": 3,
+   "ok": 0
+  },
+  {
+   "row_id": "mnli/validation_matched/1815/none_absent",
+   "cell": "mnli/relation",
+   "pred": 0,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "mnli/validation_matched/1815/permuted",
+   "cell": "mnli/relation",
+   "pred": 0,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "mnli/validation_matched/5582/none_present",
+   "cell": "mnli/relation",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/5582/none_absent",
+   "cell": "mnli/relation",
+   "pred": 0,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "mnli/validation_matched/5582/permuted",
+   "cell": "mnli/relation",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/9110/none_present",
+   "cell": "mnli/relation",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/9110/none_absent",
+   "cell": "mnli/relation",
+   "pred": 0,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "mnli/validation_matched/9110/permuted",
+   "cell": "mnli/relation",
+   "pred": 0,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "mnli/validation_matched/3724/none_present",
+   "cell": "mnli/relation",
+   "pred": 0,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "mnli/validation_matched/3724/none_absent",
+   "cell": "mnli/relation",
+   "pred": 0,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "mnli/validation_matched/3724/permuted",
+   "cell": "mnli/relation",
+   "pred": 0,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "mnli/validation_matched/8416/none_present",
+   "cell": "mnli/relation",
+   "pred": 0,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "mnli/validation_matched/8416/none_absent",
+   "cell": "mnli/relation",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "mnli/validation_matched/8416/permuted",
+   "cell": "mnli/relation",
+   "pred": 0,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "mnli/validation_matched/7516/none_present",
+   "cell": "mnli/relation",
+   "pred": 0,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "mnli/validation_matched/7516/none_absent",
+   "cell": "mnli/relation",
+   "pred": 0,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "mnli/validation_matched/7516/permuted",
+   "cell": "mnli/relation",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "sst5/test/45",
+   "cell": "sst5/sentiment",
+   "pred": 4,
+   "gold": 3,
+   "ok": 0
+  },
+  {
+   "row_id": "sst5/test/339",
+   "cell": "sst5/sentiment",
+   "pred": 3,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "sst5/test/19",
+   "cell": "sst5/sentiment",
+   "pred": 4,
+   "gold": 4,
+   "ok": 1
+  },
+  {
+   "row_id": "sst5/test/1549",
+   "cell": "sst5/sentiment",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "sst5/test/1223",
+   "cell": "sst5/sentiment",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "sst5/test/1893",
+   "cell": "sst5/sentiment",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "sst5/test/138",
+   "cell": "sst5/sentiment",
+   "pred": 3,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "sst5/test/724",
+   "cell": "sst5/sentiment",
+   "pred": 1,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "sst5/test/1542",
+   "cell": "sst5/sentiment",
+   "pred": 3,
+   "gold": 4,
+   "ok": 0
+  },
+  {
+   "row_id": "sst5/test/215",
+   "cell": "sst5/sentiment",
+   "pred": 2,
+   "gold": 4,
+   "ok": 0
+  },
+  {
+   "row_id": "sst5/test/603",
+   "cell": "sst5/sentiment",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "sst5/test/355",
+   "cell": "sst5/sentiment",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "sst5/test/1329",
+   "cell": "sst5/sentiment",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "sst5/test/2040",
+   "cell": "sst5/sentiment",
+   "pred": 3,
+   "gold": 4,
+   "ok": 0
+  },
+  {
+   "row_id": "sst5/test/2039",
+   "cell": "sst5/sentiment",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "sst5/test/1465",
+   "cell": "sst5/sentiment",
+   "pred": 4,
+   "gold": 4,
+   "ok": 1
+  },
+  {
+   "row_id": "sst5/test/1384",
+   "cell": "sst5/sentiment",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "sst5/test/1125",
+   "cell": "sst5/sentiment",
+   "pred": 1,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "sst5/test/655",
+   "cell": "sst5/sentiment",
+   "pred": 4,
+   "gold": 4,
+   "ok": 1
+  },
+  {
+   "row_id": "sst5/test/1503",
+   "cell": "sst5/sentiment",
+   "pred": 1,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "sst5/test/1851",
+   "cell": "sst5/sentiment",
+   "pred": 3,
+   "gold": 4,
+   "ok": 0
+  },
+  {
+   "row_id": "sst5/test/2018",
+   "cell": "sst5/sentiment",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "sst5/test/669",
+   "cell": "sst5/sentiment",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "sst5/test/1632",
+   "cell": "sst5/sentiment",
+   "pred": 4,
+   "gold": 3,
+   "ok": 0
+  },
+  {
+   "row_id": "sst5/test/1410",
+   "cell": "sst5/sentiment",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "sst5/test/33",
+   "cell": "sst5/sentiment",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "sst5/test/1732",
+   "cell": "sst5/sentiment",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "sst5/test/1061",
+   "cell": "sst5/sentiment",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "sst5/test/836",
+   "cell": "sst5/sentiment",
+   "pred": 4,
+   "gold": 4,
+   "ok": 1
+  },
+  {
+   "row_id": "sst5/test/1643",
+   "cell": "sst5/sentiment",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "sst5/test/2120",
+   "cell": "sst5/sentiment",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "sst5/test/1467",
+   "cell": "sst5/sentiment",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "sst5/test/1626",
+   "cell": "sst5/sentiment",
+   "pred": 2,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "sst5/test/1901",
+   "cell": "sst5/sentiment",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "sst5/test/206",
+   "cell": "sst5/sentiment",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "sst5/test/156",
+   "cell": "sst5/sentiment",
+   "pred": 2,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "sst5/test/442",
+   "cell": "sst5/sentiment",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "sst5/test/81",
+   "cell": "sst5/sentiment",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "sst5/test/804",
+   "cell": "sst5/sentiment",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "sst5/test/321",
+   "cell": "sst5/sentiment",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "sst5/test/865",
+   "cell": "sst5/sentiment",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "sst5/test/784",
+   "cell": "sst5/sentiment",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "sst5/test/1174",
+   "cell": "sst5/sentiment",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "sst5/test/1753",
+   "cell": "sst5/sentiment",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "sst5/test/53",
+   "cell": "sst5/sentiment",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "sst5/test/1409",
+   "cell": "sst5/sentiment",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "sst5/test/1046",
+   "cell": "sst5/sentiment",
+   "pred": 4,
+   "gold": 4,
+   "ok": 1
+  },
+  {
+   "row_id": "sst5/test/572",
+   "cell": "sst5/sentiment",
+   "pred": 4,
+   "gold": 4,
+   "ok": 1
+  },
+  {
+   "row_id": "sst5/test/1438",
+   "cell": "sst5/sentiment",
+   "pred": 4,
+   "gold": 4,
+   "ok": 1
+  },
+  {
+   "row_id": "sst5/test/848",
+   "cell": "sst5/sentiment",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "sst5/test/1700",
+   "cell": "sst5/sentiment",
+   "pred": 1,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "sst5/test/1304",
+   "cell": "sst5/sentiment",
+   "pred": 1,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "sst5/test/683",
+   "cell": "sst5/sentiment",
+   "pred": 2,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "sst5/test/2110",
+   "cell": "sst5/sentiment",
+   "pred": 1,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "sst5/test/312",
+   "cell": "sst5/sentiment",
+   "pred": 3,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "sst5/test/417",
+   "cell": "sst5/sentiment",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "sst5/test/1672",
+   "cell": "sst5/sentiment",
+   "pred": 1,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "sst5/test/180",
+   "cell": "sst5/sentiment",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "sst5/test/1074",
+   "cell": "sst5/sentiment",
+   "pred": 4,
+   "gold": 3,
+   "ok": 0
+  },
+  {
+   "row_id": "sst5/test/1283",
+   "cell": "sst5/sentiment",
+   "pred": 3,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "sst5/test/97",
+   "cell": "sst5/sentiment",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "sst5/test/198",
+   "cell": "sst5/sentiment",
+   "pred": 4,
+   "gold": 3,
+   "ok": 0
+  },
+  {
+   "row_id": "sst5/test/1247",
+   "cell": "sst5/sentiment",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "sst5/test/1640",
+   "cell": "sst5/sentiment",
+   "pred": 2,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "sst5/test/245",
+   "cell": "sst5/sentiment",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "sst5/test/1817",
+   "cell": "sst5/sentiment",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "sst5/test/1942",
+   "cell": "sst5/sentiment",
+   "pred": 3,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "sst5/test/626",
+   "cell": "sst5/sentiment",
+   "pred": 2,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "sst5/test/2186",
+   "cell": "sst5/sentiment",
+   "pred": 2,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "sst5/test/1340",
+   "cell": "sst5/sentiment",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "sst5/test/1171",
+   "cell": "sst5/sentiment",
+   "pred": 4,
+   "gold": 4,
+   "ok": 1
+  },
+  {
+   "row_id": "sst5/test/1481",
+   "cell": "sst5/sentiment",
+   "pred": 4,
+   "gold": 4,
+   "ok": 1
+  },
+  {
+   "row_id": "sst5/test/1108",
+   "cell": "sst5/sentiment",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "sst5/test/1658",
+   "cell": "sst5/sentiment",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "sst5/test/169",
+   "cell": "sst5/sentiment",
+   "pred": 2,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "sst5/test/2043",
+   "cell": "sst5/sentiment",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "sst5/test/1065",
+   "cell": "sst5/sentiment",
+   "pred": 1,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "sst5/test/1539",
+   "cell": "sst5/sentiment",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "sst5/test/1217",
+   "cell": "sst5/sentiment",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "sst5/test/72",
+   "cell": "sst5/sentiment",
+   "pred": 2,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "trec/test/341",
+   "cell": "trec/answer_type",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/173",
+   "cell": "trec/answer_type",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/187",
+   "cell": "trec/answer_type",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/71",
+   "cell": "trec/answer_type",
+   "pred": 5,
+   "gold": 5,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/311",
+   "cell": "trec/answer_type",
+   "pred": 4,
+   "gold": 4,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/49",
+   "cell": "trec/answer_type",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/12",
+   "cell": "trec/answer_type",
+   "pred": 5,
+   "gold": 5,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/25",
+   "cell": "trec/answer_type",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/421",
+   "cell": "trec/answer_type",
+   "pred": 4,
+   "gold": 4,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/73",
+   "cell": "trec/answer_type",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/467",
+   "cell": "trec/answer_type",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/497",
+   "cell": "trec/answer_type",
+   "pred": 5,
+   "gold": 5,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/8",
+   "cell": "trec/answer_type",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/44",
+   "cell": "trec/answer_type",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/256",
+   "cell": "trec/answer_type",
+   "pred": 5,
+   "gold": 5,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/69",
+   "cell": "trec/answer_type",
+   "pred": 4,
+   "gold": 4,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/127",
+   "cell": "trec/answer_type",
+   "pred": 5,
+   "gold": 5,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/441",
+   "cell": "trec/answer_type",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/318",
+   "cell": "trec/answer_type",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/463",
+   "cell": "trec/answer_type",
+   "pred": 5,
+   "gold": 5,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/470",
+   "cell": "trec/answer_type",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/387",
+   "cell": "trec/answer_type",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/411",
+   "cell": "trec/answer_type",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/68",
+   "cell": "trec/answer_type",
+   "pred": 5,
+   "gold": 5,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/383",
+   "cell": "trec/answer_type",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/451",
+   "cell": "trec/answer_type",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/468",
+   "cell": "trec/answer_type",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/6",
+   "cell": "trec/answer_type",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/434",
+   "cell": "trec/answer_type",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/432",
+   "cell": "trec/answer_type",
+   "pred": 4,
+   "gold": 4,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/248",
+   "cell": "trec/answer_type",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/265",
+   "cell": "trec/answer_type",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/247",
+   "cell": "trec/answer_type",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/465",
+   "cell": "trec/answer_type",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/448",
+   "cell": "trec/answer_type",
+   "pred": 5,
+   "gold": 5,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/26",
+   "cell": "trec/answer_type",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/120",
+   "cell": "trec/answer_type",
+   "pred": 5,
+   "gold": 5,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/271",
+   "cell": "trec/answer_type",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/102",
+   "cell": "trec/answer_type",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/67",
+   "cell": "trec/answer_type",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/406",
+   "cell": "trec/answer_type",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/171",
+   "cell": "trec/answer_type",
+   "pred": 5,
+   "gold": 5,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/404",
+   "cell": "trec/answer_type",
+   "pred": 5,
+   "gold": 5,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/194",
+   "cell": "trec/answer_type",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/37",
+   "cell": "trec/answer_type",
+   "pred": 5,
+   "gold": 5,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/323",
+   "cell": "trec/answer_type",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/191",
+   "cell": "trec/answer_type",
+   "pred": 5,
+   "gold": 5,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/222",
+   "cell": "trec/answer_type",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/232",
+   "cell": "trec/answer_type",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/108",
+   "cell": "trec/answer_type",
+   "pred": 5,
+   "gold": 5,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/29",
+   "cell": "trec/answer_type",
+   "pred": 4,
+   "gold": 4,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/1",
+   "cell": "trec/answer_type",
+   "pred": 4,
+   "gold": 4,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/2",
+   "cell": "trec/answer_type",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/301",
+   "cell": "trec/answer_type",
+   "pred": 5,
+   "gold": 5,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/374",
+   "cell": "trec/answer_type",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/348",
+   "cell": "trec/answer_type",
+   "pred": 5,
+   "gold": 5,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/249",
+   "cell": "trec/answer_type",
+   "pred": 2,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "trec/test/366",
+   "cell": "trec/answer_type",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/349",
+   "cell": "trec/answer_type",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/484",
+   "cell": "trec/answer_type",
+   "pred": 4,
+   "gold": 4,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/204",
+   "cell": "trec/answer_type",
+   "pred": 5,
+   "gold": 5,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/167",
+   "cell": "trec/answer_type",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/291",
+   "cell": "trec/answer_type",
+   "pred": 2,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "trec/test/452",
+   "cell": "trec/answer_type",
+   "pred": 2,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "trec/test/170",
+   "cell": "trec/answer_type",
+   "pred": 5,
+   "gold": 5,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/394",
+   "cell": "trec/answer_type",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/405",
+   "cell": "trec/answer_type",
+   "pred": 4,
+   "gold": 4,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/292",
+   "cell": "trec/answer_type",
+   "pred": 5,
+   "gold": 5,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/217",
+   "cell": "trec/answer_type",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/286",
+   "cell": "trec/answer_type",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/281",
+   "cell": "trec/answer_type",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/496",
+   "cell": "trec/answer_type",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/258",
+   "cell": "trec/answer_type",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/371",
+   "cell": "trec/answer_type",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/52",
+   "cell": "trec/answer_type",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/158",
+   "cell": "trec/answer_type",
+   "pred": 4,
+   "gold": 4,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/233",
+   "cell": "trec/answer_type",
+   "pred": 5,
+   "gold": 5,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/317",
+   "cell": "trec/answer_type",
+   "pred": 4,
+   "gold": 4,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/188",
+   "cell": "trec/answer_type",
+   "pred": 4,
+   "gold": 4,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/466",
+   "cell": "trec/answer_type",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/341/none_present",
+   "cell": "trec/answer_type",
+   "pred": 1,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "trec/test/341/none_absent",
+   "cell": "trec/answer_type",
+   "pred": 1,
+   "gold": 4,
+   "ok": 0
+  },
+  {
+   "row_id": "trec/test/341/permuted",
+   "cell": "trec/answer_type",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/173/none_present",
+   "cell": "trec/answer_type",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/173/none_absent",
+   "cell": "trec/answer_type",
+   "pred": 2,
+   "gold": 4,
+   "ok": 0
+  },
+  {
+   "row_id": "trec/test/173/permuted",
+   "cell": "trec/answer_type",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/187/none_present",
+   "cell": "trec/answer_type",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/187/none_absent",
+   "cell": "trec/answer_type",
+   "pred": 2,
+   "gold": 4,
+   "ok": 0
+  },
+  {
+   "row_id": "trec/test/187/permuted",
+   "cell": "trec/answer_type",
+   "pred": 2,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "trec/test/71/none_present",
+   "cell": "trec/answer_type",
+   "pred": 5,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "trec/test/71/none_absent",
+   "cell": "trec/answer_type",
+   "pred": 5,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "trec/test/71/permuted",
+   "cell": "trec/answer_type",
+   "pred": 5,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "trec/test/311/none_present",
+   "cell": "trec/answer_type",
+   "pred": 4,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "trec/test/311/none_absent",
+   "cell": "trec/answer_type",
+   "pred": 4,
+   "gold": 3,
+   "ok": 0
+  },
+  {
+   "row_id": "trec/test/311/permuted",
+   "cell": "trec/answer_type",
+   "pred": 4,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "trec/test/49/none_present",
+   "cell": "trec/answer_type",
+   "pred": 3,
+   "gold": 4,
+   "ok": 0
+  },
+  {
+   "row_id": "trec/test/49/none_absent",
+   "cell": "trec/answer_type",
+   "pred": 3,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "trec/test/49/permuted",
+   "cell": "trec/answer_type",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/12/none_present",
+   "cell": "trec/answer_type",
+   "pred": 5,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "trec/test/12/none_absent",
+   "cell": "trec/answer_type",
+   "pred": 5,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "trec/test/12/permuted",
+   "cell": "trec/answer_type",
+   "pred": 5,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "trec/test/25/none_present",
+   "cell": "trec/answer_type",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/25/none_absent",
+   "cell": "trec/answer_type",
+   "pred": 3,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "trec/test/25/permuted",
+   "cell": "trec/answer_type",
+   "pred": 3,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "trec/test/421/none_present",
+   "cell": "trec/answer_type",
+   "pred": 4,
+   "gold": 3,
+   "ok": 0
+  },
+  {
+   "row_id": "trec/test/421/none_absent",
+   "cell": "trec/answer_type",
+   "pred": 4,
+   "gold": 5,
+   "ok": 0
+  },
+  {
+   "row_id": "trec/test/421/permuted",
+   "cell": "trec/answer_type",
+   "pred": 4,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "trec/test/73/none_present",
+   "cell": "trec/answer_type",
+   "pred": 3,
+   "gold": 5,
+   "ok": 0
+  },
+  {
+   "row_id": "trec/test/73/none_absent",
+   "cell": "trec/answer_type",
+   "pred": 3,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "trec/test/73/permuted",
+   "cell": "trec/answer_type",
+   "pred": 3,
+   "gold": 4,
+   "ok": 0
+  },
+  {
+   "row_id": "trec/test/467/none_present",
+   "cell": "trec/answer_type",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/467/none_absent",
+   "cell": "trec/answer_type",
+   "pred": 3,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "trec/test/467/permuted",
+   "cell": "trec/answer_type",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "trec/test/497/none_present",
+   "cell": "trec/answer_type",
+   "pred": 5,
+   "gold": 3,
+   "ok": 0
+  },
+  {
+   "row_id": "trec/test/497/none_absent",
+   "cell": "trec/answer_type",
+   "pred": 5,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "trec/test/497/permuted",
+   "cell": "trec/answer_type",
+   "pred": 5,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "yelp/test/36602",
+   "cell": "yelp/rating",
+   "pred": 4,
+   "gold": 4,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/42012",
+   "cell": "yelp/rating",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/344",
+   "cell": "yelp/rating",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/40235",
+   "cell": "yelp/rating",
+   "pred": 3,
+   "gold": 4,
+   "ok": 0
+  },
+  {
+   "row_id": "yelp/test/36661",
+   "cell": "yelp/rating",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/2720",
+   "cell": "yelp/rating",
+   "pred": 2,
+   "gold": 3,
+   "ok": 0
+  },
+  {
+   "row_id": "yelp/test/11816",
+   "cell": "yelp/rating",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/28261",
+   "cell": "yelp/rating",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/25872",
+   "cell": "yelp/rating",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/20500",
+   "cell": "yelp/rating",
+   "pred": 2,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "yelp/test/17050",
+   "cell": "yelp/rating",
+   "pred": 3,
+   "gold": 4,
+   "ok": 0
+  },
+  {
+   "row_id": "yelp/test/44873",
+   "cell": "yelp/rating",
+   "pred": 3,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "yelp/test/27412",
+   "cell": "yelp/rating",
+   "pred": 2,
+   "gold": 3,
+   "ok": 0
+  },
+  {
+   "row_id": "yelp/test/5247",
+   "cell": "yelp/rating",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/1567",
+   "cell": "yelp/rating",
+   "pred": 1,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "yelp/test/27911",
+   "cell": "yelp/rating",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/44764",
+   "cell": "yelp/rating",
+   "pred": 4,
+   "gold": 4,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/36116",
+   "cell": "yelp/rating",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/21205",
+   "cell": "yelp/rating",
+   "pred": 4,
+   "gold": 3,
+   "ok": 0
+  },
+  {
+   "row_id": "yelp/test/3662",
+   "cell": "yelp/rating",
+   "pred": 0,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "yelp/test/34807",
+   "cell": "yelp/rating",
+   "pred": 3,
+   "gold": 4,
+   "ok": 0
+  },
+  {
+   "row_id": "yelp/test/12668",
+   "cell": "yelp/rating",
+   "pred": 2,
+   "gold": 3,
+   "ok": 0
+  },
+  {
+   "row_id": "yelp/test/40932",
+   "cell": "yelp/rating",
+   "pred": 2,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "yelp/test/40671",
+   "cell": "yelp/rating",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/33480",
+   "cell": "yelp/rating",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/29648",
+   "cell": "yelp/rating",
+   "pred": 0,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "yelp/test/24007",
+   "cell": "yelp/rating",
+   "pred": 1,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "yelp/test/6651",
+   "cell": "yelp/rating",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/44739",
+   "cell": "yelp/rating",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/7625",
+   "cell": "yelp/rating",
+   "pred": 4,
+   "gold": 3,
+   "ok": 0
+  },
+  {
+   "row_id": "yelp/test/27696",
+   "cell": "yelp/rating",
+   "pred": 2,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "yelp/test/28696",
+   "cell": "yelp/rating",
+   "pred": 4,
+   "gold": 3,
+   "ok": 0
+  },
+  {
+   "row_id": "yelp/test/2057",
+   "cell": "yelp/rating",
+   "pred": 0,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "yelp/test/23792",
+   "cell": "yelp/rating",
+   "pred": 0,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "yelp/test/41437",
+   "cell": "yelp/rating",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/26016",
+   "cell": "yelp/rating",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/41472",
+   "cell": "yelp/rating",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/11249",
+   "cell": "yelp/rating",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/17802",
+   "cell": "yelp/rating",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/30194",
+   "cell": "yelp/rating",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/44887",
+   "cell": "yelp/rating",
+   "pred": 1,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "yelp/test/28757",
+   "cell": "yelp/rating",
+   "pred": 3,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "yelp/test/11150",
+   "cell": "yelp/rating",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/43371",
+   "cell": "yelp/rating",
+   "pred": 4,
+   "gold": 3,
+   "ok": 0
+  },
+  {
+   "row_id": "yelp/test/22178",
+   "cell": "yelp/rating",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/33895",
+   "cell": "yelp/rating",
+   "pred": 4,
+   "gold": 3,
+   "ok": 0
+  },
+  {
+   "row_id": "yelp/test/32450",
+   "cell": "yelp/rating",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/4504",
+   "cell": "yelp/rating",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/4162",
+   "cell": "yelp/rating",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/6135",
+   "cell": "yelp/rating",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/43639",
+   "cell": "yelp/rating",
+   "pred": 4,
+   "gold": 4,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/2128",
+   "cell": "yelp/rating",
+   "pred": 4,
+   "gold": 4,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/43632",
+   "cell": "yelp/rating",
+   "pred": 3,
+   "gold": 4,
+   "ok": 0
+  },
+  {
+   "row_id": "yelp/test/12145",
+   "cell": "yelp/rating",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/31320",
+   "cell": "yelp/rating",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/12783",
+   "cell": "yelp/rating",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/31559",
+   "cell": "yelp/rating",
+   "pred": 4,
+   "gold": 3,
+   "ok": 0
+  },
+  {
+   "row_id": "yelp/test/21060",
+   "cell": "yelp/rating",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/32190",
+   "cell": "yelp/rating",
+   "pred": 4,
+   "gold": 4,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/4124",
+   "cell": "yelp/rating",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/47137",
+   "cell": "yelp/rating",
+   "pred": 1,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "yelp/test/11262",
+   "cell": "yelp/rating",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/21189",
+   "cell": "yelp/rating",
+   "pred": 1,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "yelp/test/30742",
+   "cell": "yelp/rating",
+   "pred": 4,
+   "gold": 3,
+   "ok": 0
+  },
+  {
+   "row_id": "yelp/test/36409",
+   "cell": "yelp/rating",
+   "pred": 3,
+   "gold": 2,
+   "ok": 0
+  },
+  {
+   "row_id": "yelp/test/22589",
+   "cell": "yelp/rating",
+   "pred": 4,
+   "gold": 4,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/26314",
+   "cell": "yelp/rating",
+   "pred": 4,
+   "gold": 4,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/30223",
+   "cell": "yelp/rating",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/14298",
+   "cell": "yelp/rating",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/24663",
+   "cell": "yelp/rating",
+   "pred": 4,
+   "gold": 4,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/11695",
+   "cell": "yelp/rating",
+   "pred": 4,
+   "gold": 4,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/38819",
+   "cell": "yelp/rating",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/44385",
+   "cell": "yelp/rating",
+   "pred": 0,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "yelp/test/32299",
+   "cell": "yelp/rating",
+   "pred": 4,
+   "gold": 4,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/19059",
+   "cell": "yelp/rating",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/11983",
+   "cell": "yelp/rating",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/5733",
+   "cell": "yelp/rating",
+   "pred": 3,
+   "gold": 3,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/36806",
+   "cell": "yelp/rating",
+   "pred": 2,
+   "gold": 2,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/35481",
+   "cell": "yelp/rating",
+   "pred": 4,
+   "gold": 4,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/17716",
+   "cell": "yelp/rating",
+   "pred": 1,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "yelp/test/36602",
+   "cell": "yelp/recommend",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/42012",
+   "cell": "yelp/recommend",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/344",
+   "cell": "yelp/recommend",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/40235",
+   "cell": "yelp/recommend",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/36661",
+   "cell": "yelp/recommend",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/2720",
+   "cell": "yelp/recommend",
+   "pred": 0,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "yelp/test/11816",
+   "cell": "yelp/recommend",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/28261",
+   "cell": "yelp/recommend",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/25872",
+   "cell": "yelp/recommend",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/20500",
+   "cell": "yelp/recommend",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/17050",
+   "cell": "yelp/recommend",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/44873",
+   "cell": "yelp/recommend",
+   "pred": 1,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "yelp/test/27412",
+   "cell": "yelp/recommend",
+   "pred": 0,
+   "gold": 1,
+   "ok": 0
+  },
+  {
+   "row_id": "yelp/test/5247",
+   "cell": "yelp/recommend",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/1567",
+   "cell": "yelp/recommend",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/27911",
+   "cell": "yelp/recommend",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/44764",
+   "cell": "yelp/recommend",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/36116",
+   "cell": "yelp/recommend",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/21205",
+   "cell": "yelp/recommend",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/3662",
+   "cell": "yelp/recommend",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/34807",
+   "cell": "yelp/recommend",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/12668",
+   "cell": "yelp/recommend",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/40932",
+   "cell": "yelp/recommend",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/40671",
+   "cell": "yelp/recommend",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/33480",
+   "cell": "yelp/recommend",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/29648",
+   "cell": "yelp/recommend",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/24007",
+   "cell": "yelp/recommend",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/6651",
+   "cell": "yelp/recommend",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/44739",
+   "cell": "yelp/recommend",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/7625",
+   "cell": "yelp/recommend",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/27696",
+   "cell": "yelp/recommend",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/28696",
+   "cell": "yelp/recommend",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/2057",
+   "cell": "yelp/recommend",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/23792",
+   "cell": "yelp/recommend",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/41437",
+   "cell": "yelp/recommend",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/26016",
+   "cell": "yelp/recommend",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/41472",
+   "cell": "yelp/recommend",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/11249",
+   "cell": "yelp/recommend",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/17802",
+   "cell": "yelp/recommend",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/30194",
+   "cell": "yelp/recommend",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/44887",
+   "cell": "yelp/recommend",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/28757",
+   "cell": "yelp/recommend",
+   "pred": 1,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "yelp/test/11150",
+   "cell": "yelp/recommend",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/43371",
+   "cell": "yelp/recommend",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/22178",
+   "cell": "yelp/recommend",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/33895",
+   "cell": "yelp/recommend",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/32450",
+   "cell": "yelp/recommend",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/4504",
+   "cell": "yelp/recommend",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/4162",
+   "cell": "yelp/recommend",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/6135",
+   "cell": "yelp/recommend",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/43639",
+   "cell": "yelp/recommend",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/2128",
+   "cell": "yelp/recommend",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/43632",
+   "cell": "yelp/recommend",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/12145",
+   "cell": "yelp/recommend",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/31320",
+   "cell": "yelp/recommend",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/12783",
+   "cell": "yelp/recommend",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/31559",
+   "cell": "yelp/recommend",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/21060",
+   "cell": "yelp/recommend",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/32190",
+   "cell": "yelp/recommend",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/4124",
+   "cell": "yelp/recommend",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/47137",
+   "cell": "yelp/recommend",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/11262",
+   "cell": "yelp/recommend",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/21189",
+   "cell": "yelp/recommend",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/30742",
+   "cell": "yelp/recommend",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/36409",
+   "cell": "yelp/recommend",
+   "pred": 1,
+   "gold": 0,
+   "ok": 0
+  },
+  {
+   "row_id": "yelp/test/22589",
+   "cell": "yelp/recommend",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/26314",
+   "cell": "yelp/recommend",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/30223",
+   "cell": "yelp/recommend",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/14298",
+   "cell": "yelp/recommend",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/24663",
+   "cell": "yelp/recommend",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/11695",
+   "cell": "yelp/recommend",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/38819",
+   "cell": "yelp/recommend",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/44385",
+   "cell": "yelp/recommend",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/32299",
+   "cell": "yelp/recommend",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/19059",
+   "cell": "yelp/recommend",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/11983",
+   "cell": "yelp/recommend",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/5733",
+   "cell": "yelp/recommend",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/36806",
+   "cell": "yelp/recommend",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/35481",
+   "cell": "yelp/recommend",
+   "pred": 1,
+   "gold": 1,
+   "ok": 1
+  },
+  {
+   "row_id": "yelp/test/17716",
+   "cell": "yelp/recommend",
+   "pred": 0,
+   "gold": 0,
+   "ok": 1
+  }
+ ],
+ "seed": 13,
+ "epochs": 2,
+ "batch": 8,
+ "accum": 2,
+ "lr_enc": 2e-05,
+ "lr_head": 0.0001,
+ "max_len": 512,
+ "model": "microsoft/deberta-v3-large",
+ "train_rows": 57904,
+ "kind": "in_domain"
+}
