@@ -1,0 +1,13 @@
+{
+ "id": "aashishkumarmahato01/myna-baseline-2ep-s13",
+ "title": "myna baseline 2ep s13",
+ "code_file": "run2ep_seed13.py",
+ "language": "python",
+ "kernel_type": "script",
+ "is_private": true,
+ "enable_gpu": true,
+ "enable_internet": true,
+ "dataset_sources": [],
+ "competition_sources": [],
+ "kernel_sources": []
+}
