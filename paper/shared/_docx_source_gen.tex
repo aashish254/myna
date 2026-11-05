@@ -884,22 +884,33 @@ the risk--coverage curve from those records, and refuses a record whose correctn
 with its own prediction and gold. The row-clustered intervals use 20{,}000 bootstrap replicates with
 seed 20261104 and resample rows, not questions, because the questions of a bundle share a state.
 
-The witnesses are \texttt{runs/paper\_v6\_audit.json}, \texttt{runs/paper\_v6\_test.metrics.json},
-\texttt{runs/paper\_myna\_v6\_test.rowoutcomes.json}, \texttt{runs/v6\_packed\_forced.*},
-\texttt{runs/paper\_numbers.json}, \texttt{runs/paper\_bootstrap.json},
-\texttt{runs/routing\_cost.json}, \texttt{runs/consistency\_audit.json},
-\texttt{runs/paper\_cell\_intervals.json}, \texttt{runs/external\_\{majority,tfidf,nli\}.json},
-\texttt{runs/laya\_0419\_test.rowoutcomes.json}, \texttt{runs/vegaml\_0150\_test.rowoutcomes.json},
-\texttt{runs/latency\_matched.json}, \texttt{runs/bench\_mlx\_int8.json},
-\texttt{runs/browser\_g3.json}, and the diagnostics under \texttt{runs/g6\_*} and
-\texttt{runs/needle\_*}.
+The witnesses are, one per line:
+{\footnotesize\ttfamily\raggedright
+runs/paper\_v6\_audit.json \\
+runs/paper\_v6\_test.metrics.json \\
+runs/paper\_myna\_v6\_test.rowoutcomes.json \\
+runs/v6\_packed\_forced.* \\
+runs/paper\_numbers.json \\
+runs/paper\_bootstrap.json \\
+runs/routing\_cost.json \\
+runs/consistency\_audit.json \\
+runs/paper\_cell\_intervals.json \\
+runs/external\_\{majority,tfidf,nli\}.json \\
+runs/laya\_0419\_test.rowoutcomes.json \\
+runs/vegaml\_0150\_test.rowoutcomes.json \\
+runs/latency\_matched.json \\
+runs/bench\_mlx\_int8.json \\
+runs/browser\_g3.json \\
+runs/g6\_* and runs/needle\_* \\
+\par}
 
 \paragraph{Known gaps.}
-Four campaign notebooks are in \texttt{release/notebooks/} with their digests: three copies of the
+Four training notebooks are in \texttt{release/notebooks/} with their digests: three copies of the
 v5 run (training loop, development-split temperature fit, per-option banking77 head, checkpoint
-merge) and the v6 campaign (CAL split, CAL temperature and conformal fit, CORAL gate, checkpoint
-assembly). The CAL file itself was not committed; \texttt{release/build\_cal\_split.py} redraws
-it deterministically at 1{,}999 bundles and 2{,}548 questions. The suite's committed calibration
+merge) and the v6 run (CAL split, CAL temperature and conformal fit, CORAL gate, checkpoint
+assembly). The original CAL file was not committed; the deterministic redraw (1{,}999 bundles,
+2{,}548 questions) is now a committed artifact with its SHA-256, and
+\texttt{release/build\_cal\_split.py} regenerates it. The suite's committed calibration
 split has 448 rows and 568 questions and is a different, earlier split; no number in this paper is
 computed from it. The banking77 \texttt{none\_absent}
 decomposition is 0/12 here against 7/12 in the training record while the cell aggregate matches at
