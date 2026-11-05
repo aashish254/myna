@@ -8,18 +8,22 @@ repository. The main commands are:
 
 {\scriptsize
 \begin{verbatim}
-python -m bench.v6_audit --ckpt "myna-v5-prototype 2" --split test --every 1 \
+python -m bench.v6_audit --ckpt "myna-v5-prototype 2" \
+  --split test --every 1 \
   --out runs/paper_v6_audit.json --md runs/paper_v6_audit.md \
   --metrics runs/paper_v6_test.metrics.json \
   --rowout runs/paper_myna_v6_test.rowoutcomes.json
-python -m bench.v6_audit --ckpt "myna-v5-prototype 2" --split test --every 1 \
+python -m bench.v6_audit --ckpt "myna-v5-prototype 2" \
+  --split test --every 1 \
   --max-packed 1000 --out runs/v6_packed_forced.json \
   --rowout runs/v6_packed_forced.rowoutcomes.json
 python -m bench.paper_numbers --out runs/paper_numbers.json
-python -m bench.consistency_audit --out runs/consistency_audit.json
+python -m bench.consistency_audit \
+  --out runs/consistency_audit.json
 python -m bench.paper_bootstrap --out runs/paper_bootstrap.json
 python -m bench.routing_cost --out runs/routing_cost.json
-python -m bench.prob_dump --split test --out runs/v6_prob_test.jsonl
+python -m bench.prob_dump --split test \
+  --out runs/v6_prob_test.jsonl
 python paper/make_figures_v2.py
 \end{verbatim}
 }
