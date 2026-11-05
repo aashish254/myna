@@ -38,7 +38,7 @@ Everything is in `upload/` — see `SUBMISSION-GUIDE.md` for the form-by-form in
 |---|---|
 | Myna-v6 macro / overall / bundle | 0.8620 / 0.8632 / 0.8393 |
 | Same-backbone baseline, 1 epoch (2 seeds) | 0.7126 |
-| Same-backbone baseline, 2 epochs (seed 42) | 0.7746 |
+| Same-backbone baseline, 2 epochs | 0.7746 (seed 42; seeds 7 and 13 running) |
 | Readout gap | 8.7 points (paired CI [0.068, 0.108], McNemar p=1.8e-22) |
 | Routing ablation | 0.0345 -> 0.6724 on banking77, +0.0399 macro |
 | Consistency | 3/172 vs 10/172 (Laya), 29/172 (VegaML) |
