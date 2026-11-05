@@ -95,3 +95,18 @@ already planned around them: converged baseline across 3 seeds, a second Myna-v6
 out-of-domain cell, paired intervals for TF-IDF, and an external benchmark. Resubmission to TMLR is
 allowed and common; the second attempt usually scores better because the reviews tell you exactly
 which sentence each reviewer doubted.
+
+---
+
+## Appendix note: the camera-ready build
+
+`myna_tmlr_camera.tex` is the same paper with your names, ORCIDs and the contributions paragraph
+restored. It exists so that after acceptance you do not have to reconstruct the author block under
+time pressure:
+
+```bash
+tectonic -X compile myna_tmlr_camera.tex   # produces myna_tmlr_camera.pdf
+```
+
+Use `myna_tmlr.pdf` for the submission (anonymous) and `myna_tmlr_camera.pdf` for the accepted
+version. Do not upload the camera build by mistake — it breaks double-blind.
