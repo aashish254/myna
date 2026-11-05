@@ -3,31 +3,6 @@
  "n_a": 1325,
  "n_b": 1223,
  "regimes": {
-  "shared": {
-   "temperatures": {
-    "choice": 1.05,
-    "score": 0.9,
-    "noul": 0.65
-   },
-   "coverage": {
-    "90": {
-     "coverage": 0.8694,
-     "q": {
-      "choice": 0.5539,
-      "score": 0.8005,
-      "noul": 0.2446
-     }
-    },
-    "95": {
-     "coverage": 0.9396,
-     "q": {
-      "choice": 0.879,
-      "score": 0.8857,
-      "noul": 0.5149
-     }
-    }
-   }
-  },
   "disjoint": {
    "temperatures": {
     "choice": 1.0,
@@ -53,5 +28,6 @@
     }
    }
   }
- }
+ },
+ "cmd": "python -m bench.cal_split_check"
 }

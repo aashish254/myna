@@ -80,7 +80,7 @@ def main() -> None:
                        ("vegaml_0150", "runs/vegaml_0150_test.rowoutcomes.json")):
         arms[name] = ok_map(load_rows(REPO / path))
 
-    out = {}
+    out = {"cmd": "python -m bench.paired_bootstrap"}
     for name, ok in arms.items():
         if not ok:
             continue

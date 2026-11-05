@@ -1,4 +1,5 @@
 {
+ "cmd": "python -m bench.stats_extra",
  "ece": {
   "5": 0.0184,
   "10": 0.019,

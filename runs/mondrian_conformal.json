@@ -1,4 +1,5 @@
 {
+ "cmd": "python -m bench.mondrian_conformal",
  "cells": {},
  "alphas": {
   "90": {

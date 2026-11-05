@@ -94,7 +94,7 @@ def main() -> None:
         by_test[cell_of(r)].append(r)
 
     stored = json.loads((REPO / args.stored).read_text())["stored"]
-    out = {"cells": {}, "alphas": {}}
+    out = {"cmd": "python -m bench.mondrian_conformal", "cells": {}, "alphas": {}}
     for alpha in (0.10, 0.05):
         pooled_q = quantile([s for v in by_cal.values() for s in v], alpha)
         pooled_cov = coverage(test, pooled_q)

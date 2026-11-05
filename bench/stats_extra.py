@@ -67,7 +67,7 @@ def temperature(rows: list[dict]) -> list[dict]:
 
 def main() -> None:
     rows = temperature(load_test())
-    out = {"ece": {f"{b}": round(ece(rows, b), 4) for b in (5, 10, 15, 20, 30)},
+    out = {"cmd": "python -m bench.stats_extra", "ece": {f"{b}": round(ece(rows, b), 4) for b in (5, 10, 15, 20, 30)},
            "ece_adaptive": {f"{b}": round(ece(rows, b, adaptive=True), 4) for b in (5, 10, 15, 20)}}
 
     # paired effect sizes against the arms that have per-question records

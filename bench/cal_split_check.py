@@ -84,7 +84,8 @@ def main() -> None:
                 hit += 1 - p[r["gold"]] <= qs[r["type"]] + 1e-12
             res[f"{int((1-alpha)*100)}"] = {"coverage": round(hit / len(test), 4),
                                             "q": {k: round(v, 4) for k, v in qs.items()}}
-        out["regimes"][name] = {"temperatures": temps, "coverage": res}
+        out["cmd"] = "python -m bench.cal_split_check"
+    out["regimes"][name] = {"temperatures": temps, "coverage": res}
     (REPO / "runs/cal_split_check.json").write_text(json.dumps(out, indent=1))
 
     for name, d in out["regimes"].items():
