@@ -417,8 +417,9 @@ external reference is the supervised TF-IDF classifier at 0.7111 macro, 0.6840 o
 0.6293 bundle exact, followed by the best Laya configuration at 0.7050, 0.6792, and 0.6182.
 VegaML 0.15.0 reaches 0.6160, the majority classifier 0.3726, and the zero-shot NLI scorer 0.3278.
 The row-clustered 95\% interval on the \vsix{} macro is [0.8432, 0.8799]; the interval on joint
-bundle exact is [0.8180, 0.8597]. The baselines' per-question records are not released in a form
-that supports a paired interval, so their columns are point estimates.
+bundle exact is [0.8180, 0.8597]. The per-question records of the DeBERTa control and of the two
+external engines are released, so their comparisons are paired and tested below; the TF-IDF arm's
+are not, so that column is a point estimate.
 
 The in-domain reference that matters is not TF-IDF but the same backbone. We fine-tuned
 \texttt{microsoft/deberta-v3-large} on the same train split with a conventional readout: one linear
