@@ -93,3 +93,9 @@ deberta-v5-finetuned/
 *.zip
 *.onnx
 *.pdf
+
+# Local model weights and Kaggle-upload scratch: never part of the artifact.
+myna-v5-prototype 2/
+*.pt
+kaggle-dataset/
+runs/overnight.log
