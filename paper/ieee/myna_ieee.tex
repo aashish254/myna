@@ -30,7 +30,7 @@ with a constant 576\,KiB state and a 446.63M-parameter fine-tuned DeBERTa-v3-lar
 typed contract of multiple choice, ordinal score and boolean (\texttt{noul}) questions. On a frozen
 16-cell suite (1,176 bundles, 1,440 questions), \vsix{} reaches 0.8620 macro. The comparison that
 matters is the in-domain one: the same backbone, fine-tuned on the same split with a conventional
-per-cell classifier, reaches 0.7907 at three epochs over two seeds, 7.1 points behind, and the gap concentrates on
+per-cell classifier, reaches 0.7931 at six epochs, 6.9 points behind once the control plateaus, and the gap concentrates on
 multi-class choice cells. External engines and classical baselines are reported as a
 secondary reference with the comparison footing disclosed, not as a leaderboard. Three results are bounded or negative.
 Cardinality routing is a budget repair worth 0.0399 macro on exactly one cell. Split-conformal sets

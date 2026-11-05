@@ -96,7 +96,7 @@ def fig3():
              ("majority", "Majority prior", C["grey"]),
              ("nli", "Zero-shot NLI", C["grey"])]
     import statistics
-    seeds = [load(f"runs/baseline_seed{s}_3ep.json") for s in (21, 7)]
+    seeds = [load("runs/baseline_seed21_6ep.json")]
     arms["deberta_baseline"] = {
         "macro": statistics.fmean(x["macro"] for x in seeds),
         "bundle_exact": statistics.fmean(x["bundle_exact"] for x in seeds)}

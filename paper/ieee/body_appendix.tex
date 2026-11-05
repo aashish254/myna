@@ -134,29 +134,29 @@ length for the 4k-trained arm: flat at the 0.167 uniform floor.}
 \centering
 \footnotesize
 \caption{Per-cell accuracy on the 1{,}176 test bundles: \vsix{}, the same-backbone per-cell
-classifier (seed 21, three epochs) and the supervised TF-IDF reference. The last column is the
-classifier minus \vsix{}.}
+classifier (seed 21, six epochs, the converged control) and the supervised TF-IDF reference. The
+last column is the classifier minus \vsix{}.}
 \label{tab:percell_baselines}
 \begin{tabular}{lrrrr}
 \toprule
 Cell & \vsix{} & DeBERTa per-cell & TF-IDF & $\Delta$ (DeBERTa $-$ \vsix{}) \\
 \midrule
-agnews/is\_business & 0.9535 & 0.9070 & 0.8372 & -0.0465 \\
+agnews/is\_business & 0.9535 & 0.9302 & 0.8372 & -0.0233 \\
 agnews/is\_scitech & 0.9184 & 0.9796 & 0.8571 & +0.0612 \\
-agnews/is\_sports & 0.9787 & 0.9787 & 0.9362 & +0.0000 \\
+agnews/is\_sports & 0.9787 & 1.0000 & 0.9362 & +0.0213 \\
 agnews/is\_world & 1.0000 & 0.9778 & 0.9556 & -0.0222 \\
-agnews/topic & 0.9052 & 0.7069 & 0.7931 & -0.1983 \\
-amazon/stars & 0.6375 & 0.5750 & 0.5250 & -0.0625 \\
-banking77/intent & 0.6724 & 0.6121 & 0.8190 & -0.0603 \\
-boolq/answer & 0.8500 & 0.8375 & 0.6125 & -0.0125 \\
+agnews/topic & 0.9052 & 0.6897 & 0.7931 & -0.2155 \\
+amazon/stars & 0.6375 & 0.5625 & 0.5250 & -0.0750 \\
+banking77/intent & 0.6724 & 0.6293 & 0.8190 & -0.0431 \\
+boolq/answer & 0.8500 & 0.7875 & 0.6125 & -0.0625 \\
 contrastive/decision & 0.9847 & 0.8724 & 0.5663 & -0.1122 \\
 dbpedia14/category & 0.9569 & 0.7155 & 0.8448 & -0.2414 \\
-imdb/positive & 0.9625 & 0.9500 & 0.8500 & -0.0125 \\
-mnli/relation & 0.8621 & 0.6983 & 0.4052 & -0.1638 \\
-sst5/sentiment & 0.6125 & 0.5875 & 0.3750 & -0.0250 \\
+imdb/positive & 0.9625 & 0.9625 & 0.8500 & +0.0000 \\
+mnli/relation & 0.8621 & 0.7155 & 0.4052 & -0.1466 \\
+sst5/sentiment & 0.6125 & 0.6250 & 0.3750 & +0.0125 \\
 trec/answer\_type & 0.9483 & 0.7414 & 0.7759 & -0.2069 \\
-yelp/rating & 0.6250 & 0.6375 & 0.4375 & +0.0125 \\
-yelp/recommend & 0.9250 & 0.9375 & 0.7875 & +0.0125 \\
+yelp/rating & 0.6250 & 0.5750 & 0.4375 & -0.0500 \\
+yelp/recommend & 0.9250 & 0.9250 & 0.7875 & +0.0000 \\
 \bottomrule
 \end{tabular}
 \end{widetable}

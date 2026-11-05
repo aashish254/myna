@@ -1,0 +1,2526 @@
+Downloading colab_baselines.py to /tmp/c6_old
+  0%|          | 0.00/16.1k [00:00<?, ?B/s]100%|██████████| 16.1k/16.1k [00:00<00:00, 495kB/s]
+
+Output file downloaded to /tmp/c6_old/colab_baselines.py
+Downloading HEAD to /tmp/c6_old/myna/.git
+  0%|          | 0.00/21.0 [00:00<?, ?B/s]100%|██████████| 21.0/21.0 [00:00<00:00, 63.0kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/.git/HEAD
+Downloading config to /tmp/c6_old/myna/.git
+  0%|          | 0.00/265 [00:00<?, ?B/s]100%|██████████| 265/265 [00:00<00:00, 580kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/.git/config
+Downloading description to /tmp/c6_old/myna/.git
+  0%|          | 0.00/73.0 [00:00<?, ?B/s]100%|██████████| 73.0/73.0 [00:00<00:00, 236kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/.git/description
+Downloading applypatch-msg.sample to /tmp/c6_old/myna/.git/hooks
+  0%|          | 0.00/478 [00:00<?, ?B/s]100%|██████████| 478/478 [00:00<00:00, 1.87MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/.git/hooks/applypatch-msg.sample
+Downloading commit-msg.sample to /tmp/c6_old/myna/.git/hooks
+  0%|          | 0.00/896 [00:00<?, ?B/s]100%|██████████| 896/896 [00:00<00:00, 2.28MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/.git/hooks/commit-msg.sample
+Downloading fsmonitor-watchman.sample to /tmp/c6_old/myna/.git/hooks
+  0%|          | 0.00/4.62k [00:00<?, ?B/s]100%|██████████| 4.62k/4.62k [00:00<00:00, 10.3MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/.git/hooks/fsmonitor-watchman.sample
+Downloading post-update.sample to /tmp/c6_old/myna/.git/hooks
+  0%|          | 0.00/189 [00:00<?, ?B/s]100%|██████████| 189/189 [00:00<00:00, 470kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/.git/hooks/post-update.sample
+Downloading pre-applypatch.sample to /tmp/c6_old/myna/.git/hooks
+  0%|          | 0.00/424 [00:00<?, ?B/s]100%|██████████| 424/424 [00:00<00:00, 1.26MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/.git/hooks/pre-applypatch.sample
+Downloading pre-commit.sample to /tmp/c6_old/myna/.git/hooks
+  0%|          | 0.00/1.60k [00:00<?, ?B/s]100%|██████████| 1.60k/1.60k [00:00<00:00, 4.09MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/.git/hooks/pre-commit.sample
+Downloading pre-merge-commit.sample to /tmp/c6_old/myna/.git/hooks
+  0%|          | 0.00/416 [00:00<?, ?B/s]100%|██████████| 416/416 [00:00<00:00, 1.32MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/.git/hooks/pre-merge-commit.sample
+Downloading pre-push.sample to /tmp/c6_old/myna/.git/hooks
+  0%|          | 0.00/1.34k [00:00<?, ?B/s]100%|██████████| 1.34k/1.34k [00:00<00:00, 3.60MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/.git/hooks/pre-push.sample
+Downloading pre-rebase.sample to /tmp/c6_old/myna/.git/hooks
+  0%|          | 0.00/4.78k [00:00<?, ?B/s]100%|██████████| 4.78k/4.78k [00:00<00:00, 10.1MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/.git/hooks/pre-rebase.sample
+Downloading pre-receive.sample to /tmp/c6_old/myna/.git/hooks
+  0%|          | 0.00/544 [00:00<?, ?B/s]100%|██████████| 544/544 [00:00<00:00, 1.50MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/.git/hooks/pre-receive.sample
+Downloading prepare-commit-msg.sample to /tmp/c6_old/myna/.git/hooks
+  0%|          | 0.00/1.46k [00:00<?, ?B/s]100%|██████████| 1.46k/1.46k [00:00<00:00, 4.18MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/.git/hooks/prepare-commit-msg.sample
+Downloading push-to-checkout.sample to /tmp/c6_old/myna/.git/hooks
+  0%|          | 0.00/2.72k [00:00<?, ?B/s]100%|██████████| 2.72k/2.72k [00:00<00:00, 4.68MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/.git/hooks/push-to-checkout.sample
+Downloading sendemail-validate.sample to /tmp/c6_old/myna/.git/hooks
+  0%|          | 0.00/2.25k [00:00<?, ?B/s]100%|██████████| 2.25k/2.25k [00:00<00:00, 5.48MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/.git/hooks/sendemail-validate.sample
+Downloading update.sample to /tmp/c6_old/myna/.git/hooks
+  0%|          | 0.00/3.56k [00:00<?, ?B/s]100%|██████████| 3.56k/3.56k [00:00<00:00, 9.76MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/.git/hooks/update.sample
+Downloading index to /tmp/c6_old/myna/.git
+  0%|          | 0.00/56.2k [00:00<?, ?B/s]100%|██████████| 56.2k/56.2k [00:00<00:00, 177kB/s]100%|██████████| 56.2k/56.2k [00:00<00:00, 177kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/.git/index
+Downloading exclude to /tmp/c6_old/myna/.git/info
+  0%|          | 0.00/240 [00:00<?, ?B/s]100%|██████████| 240/240 [00:00<00:00, 769kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/.git/info/exclude
+Downloading HEAD to /tmp/c6_old/myna/.git/logs
+  0%|          | 0.00/182 [00:00<?, ?B/s]100%|██████████| 182/182 [00:00<00:00, 482kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/.git/logs/HEAD
+Downloading main to /tmp/c6_old/myna/.git/logs/refs/heads
+  0%|          | 0.00/182 [00:00<?, ?B/s]100%|██████████| 182/182 [00:00<00:00, 428kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/.git/logs/refs/heads/main
+Downloading HEAD to /tmp/c6_old/myna/.git/logs/refs/remotes/origin
+  0%|          | 0.00/182 [00:00<?, ?B/s]100%|██████████| 182/182 [00:00<00:00, 574kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/.git/logs/refs/remotes/origin/HEAD
+Downloading pack-38f23dcd5ac6e66e75e0825abb5da4d0565a8728.idx to /tmp/c6_old/myna/.git/objects/pack
+  0%|          | 0.00/17.8k [00:00<?, ?B/s]100%|██████████| 17.8k/17.8k [00:00<00:00, 318kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/.git/objects/pack/pack-38f23dcd5ac6e66e75e0825abb5da4d0565a8728.idx
+Downloading pack-38f23dcd5ac6e66e75e0825abb5da4d0565a8728.pack to /tmp/c6_old/myna/.git/objects/pack
+  0%|          | 0.00/24.3M [00:00<?, ?B/s]  4%|▍         | 1.00M/24.3M [00:01<00:36, 664kB/s]  8%|▊         | 2.00M/24.3M [00:01<00:19, 1.23MB/s] 12%|█▏        | 3.00M/24.3M [00:02<00:11, 1.88MB/s] 16%|█▋        | 4.00M/24.3M [00:02<00:08, 2.57MB/s] 21%|██        | 5.00M/24.3M [00:02<00:06, 3.21MB/s] 25%|██▍       | 6.00M/24.3M [00:02<00:05, 3.81MB/s] 29%|██▉       | 7.00M/24.3M [00:02<00:04, 4.28MB/s] 33%|███▎      | 8.00M/24.3M [00:03<00:03, 4.72MB/s] 37%|███▋      | 9.00M/24.3M [00:03<00:03, 5.01MB/s] 41%|████      | 10.0M/24.3M [00:03<00:02, 5.23MB/s] 45%|████▌     | 11.0M/24.3M [00:03<00:02, 5.43MB/s] 49%|████▉     | 12.0M/24.3M [00:03<00:02, 5.54MB/s] 53%|█████▎    | 13.0M/24.3M [00:03<00:02, 5.67MB/s] 58%|█████▊    | 14.0M/24.3M [00:04<00:01, 5.69MB/s] 62%|██████▏   | 15.0M/24.3M [00:04<00:01, 5.73MB/s] 66%|██████▌   | 16.0M/24.3M [00:04<00:01, 5.81MB/s] 70%|██████▉   | 17.0M/24.3M [00:04<00:01, 5.79MB/s] 74%|███████▍  | 18.0M/24.3M [00:04<00:01, 5.84MB/s] 78%|███████▊  | 19.0M/24.3M [00:04<00:00, 5.82MB/s] 82%|████████▏ | 20.0M/24.3M [00:05<00:00, 5.87MB/s] 86%|████████▋ | 21.0M/24.3M [00:05<00:00, 5.90MB/s] 90%|█████████ | 22.0M/24.3M [00:05<00:00, 5.87MB/s] 94%|█████████▍| 23.0M/24.3M [00:05<00:00, 5.91MB/s] 99%|█████████▊| 24.0M/24.3M [00:05<00:00, 5.86MB/s]100%|██████████| 24.3M/24.3M [00:05<00:00, 4.29MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/.git/objects/pack/pack-38f23dcd5ac6e66e75e0825abb5da4d0565a8728.pack
+Downloading pack-38f23dcd5ac6e66e75e0825abb5da4d0565a8728.rev to /tmp/c6_old/myna/.git/objects/pack
+  0%|          | 0.00/2.45k [00:00<?, ?B/s]100%|██████████| 2.45k/2.45k [00:00<00:00, 4.89MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/.git/objects/pack/pack-38f23dcd5ac6e66e75e0825abb5da4d0565a8728.rev
+Downloading packed-refs to /tmp/c6_old/myna/.git
+  0%|          | 0.00/112 [00:00<?, ?B/s]100%|██████████| 112/112 [00:00<00:00, 332kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/.git/packed-refs
+Downloading main to /tmp/c6_old/myna/.git/refs/heads
+  0%|          | 0.00/41.0 [00:00<?, ?B/s]100%|██████████| 41.0/41.0 [00:00<00:00, 85.8kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/.git/refs/heads/main
+Downloading HEAD to /tmp/c6_old/myna/.git/refs/remotes/origin
+  0%|          | 0.00/30.0 [00:00<?, ?B/s]100%|██████████| 30.0/30.0 [00:00<00:00, 104kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/.git/refs/remotes/origin/HEAD
+Downloading shallow to /tmp/c6_old/myna/.git
+  0%|          | 0.00/41.0 [00:00<?, ?B/s]100%|██████████| 41.0/41.0 [00:00<00:00, 130kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/.git/shallow
+Downloading ci.yml to /tmp/c6_old/myna/.github/workflows
+  0%|          | 0.00/2.71k [00:00<?, ?B/s]100%|██████████| 2.71k/2.71k [00:00<00:00, 6.80MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/.github/workflows/ci.yml
+Downloading .gitignore to /tmp/c6_old/myna
+  0%|          | 0.00/4.62k [00:00<?, ?B/s]100%|██████████| 4.62k/4.62k [00:00<00:00, 8.60MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/.gitignore
+Downloading .python-version to /tmp/c6_old/myna
+  0%|          | 0.00/5.00 [00:00<?, ?B/s]100%|██████████| 5.00/5.00 [00:00<00:00, 14.2kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/.python-version
+Downloading COMMANDS.md to /tmp/c6_old/myna
+  0%|          | 0.00/14.3k [00:00<?, ?B/s]100%|██████████| 14.3k/14.3k [00:00<00:00, 390kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/COMMANDS.md
+Downloading Dockerfile to /tmp/c6_old/myna
+  0%|          | 0.00/599 [00:00<?, ?B/s]100%|██████████| 599/599 [00:00<00:00, 1.33MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/Dockerfile
+Downloading LICENSE to /tmp/c6_old/myna
+  0%|          | 0.00/11.1k [00:00<?, ?B/s]100%|██████████| 11.1k/11.1k [00:00<00:00, 703kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/LICENSE
+Downloading Makefile to /tmp/c6_old/myna
+  0%|          | 0.00/1.91k [00:00<?, ?B/s]100%|██████████| 1.91k/1.91k [00:00<00:00, 3.60MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/Makefile
+Downloading PLAN.md to /tmp/c6_old/myna
+  0%|          | 0.00/14.5k [00:00<?, ?B/s]100%|██████████| 14.5k/14.5k [00:00<00:00, 389kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/PLAN.md
+Downloading README.md to /tmp/c6_old/myna
+  0%|          | 0.00/86.5k [00:00<?, ?B/s]100%|██████████| 86.5k/86.5k [00:00<00:00, 181kB/s]100%|██████████| 86.5k/86.5k [00:00<00:00, 181kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/README.md
+Downloading SPEC.md to /tmp/c6_old/myna
+  0%|          | 0.00/467k [00:00<?, ?B/s]100%|██████████| 467k/467k [00:01<00:00, 396kB/s]100%|██████████| 467k/467k [00:01<00:00, 395kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/SPEC.md
+Downloading TODO.md to /tmp/c6_old/myna
+  0%|          | 0.00/90.4k [00:00<?, ?B/s]100%|██████████| 90.4k/90.4k [00:00<00:00, 183kB/s]100%|██████████| 90.4k/90.4k [00:00<00:00, 182kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/TODO.md
+Downloading V2_SPEC.md to /tmp/c6_old/myna
+  0%|          | 0.00/9.60k [00:00<?, ?B/s]100%|██████████| 9.60k/9.60k [00:00<00:00, 1.80MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/V2_SPEC.md
+Downloading anti_prior_audit.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/15.3k [00:00<?, ?B/s]100%|██████████| 15.3k/15.3k [00:00<00:00, 340kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/anti_prior_audit.py
+Downloading baseline_suite.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/1.76k [00:00<?, ?B/s]100%|██████████| 1.76k/1.76k [00:00<00:00, 4.30MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/baseline_suite.py
+Downloading bench_latency_matched.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/24.5k [00:00<?, ?B/s]100%|██████████| 24.5k/24.5k [00:00<00:00, 234kB/s]100%|██████████| 24.5k/24.5k [00:00<00:00, 233kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/bench_latency_matched.py
+Downloading bench_mlx.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/20.1k [00:00<?, ?B/s]100%|██████████| 20.1k/20.1k [00:00<00:00, 279kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/bench_mlx.py
+Downloading bench_stream.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/8.74k [00:00<?, ?B/s]100%|██████████| 8.74k/8.74k [00:00<00:00, 18.4MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/bench_stream.py
+Downloading browser_expected.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/12.1k [00:00<?, ?B/s]100%|██████████| 12.1k/12.1k [00:00<00:00, 560kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/browser_expected.py
+Downloading browser_g3.mjs to /tmp/c6_old/myna/bench
+  0%|          | 0.00/15.1k [00:00<?, ?B/s]100%|██████████| 15.1k/15.1k [00:00<00:00, 346kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/browser_g3.mjs
+Downloading cal_refit.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/7.25k [00:00<?, ?B/s]100%|██████████| 7.25k/7.25k [00:00<00:00, 12.0MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/cal_refit.py
+Downloading cal_split_check.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/3.57k [00:00<?, ?B/s]100%|██████████| 3.57k/3.57k [00:00<00:00, 6.26MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/cal_split_check.py
+Downloading check_python311.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/5.33k [00:00<?, ?B/s]100%|██████████| 5.33k/5.33k [00:00<00:00, 9.80MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/check_python311.py
+Downloading consistency_audit.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/3.26k [00:00<?, ?B/s]100%|██████████| 3.26k/3.26k [00:00<00:00, 5.07MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/consistency_audit.py
+Downloading coral_eval.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/6.92k [00:00<?, ?B/s]100%|██████████| 6.92k/6.92k [00:00<00:00, 13.4MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/coral_eval.py
+Downloading coverage_replay.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/10.1k [00:00<?, ?B/s]100%|██████████| 10.1k/10.1k [00:00<00:00, 1.03MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/coverage_replay.py
+Downloading diag_learn.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/2.81k [00:00<?, ?B/s]100%|██████████| 2.81k/2.81k [00:00<00:00, 6.97MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/diag_learn.py
+Downloading diag_mlx_int8_gem.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/6.52k [00:00<?, ?B/s]100%|██████████| 6.52k/6.52k [00:00<00:00, 10.2MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/diag_mlx_int8_gem.py
+Downloading diag_overfit.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/2.52k [00:00<?, ?B/s]100%|██████████| 2.52k/2.52k [00:00<00:00, 6.16MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/diag_overfit.py
+Downloading diag_question_ablation.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/25.9k [00:00<?, ?B/s]100%|██████████| 25.9k/25.9k [00:00<00:00, 236kB/s]100%|██████████| 25.9k/25.9k [00:00<00:00, 235kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/diag_question_ablation.py
+Downloading eval_laya_real.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/5.68k [00:00<?, ?B/s]100%|██████████| 5.68k/5.68k [00:00<00:00, 10.0MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/eval_laya_real.py
+Downloading eval_laya_row_outcomes.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/21.3k [00:00<?, ?B/s]100%|██████████| 21.3k/21.3k [00:00<00:00, 267kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/eval_laya_row_outcomes.py
+Downloading eval_needle.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/6.14k [00:00<?, ?B/s]100%|██████████| 6.14k/6.14k [00:00<00:00, 8.23MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/eval_needle.py
+Downloading eval_scratch.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/11.2k [00:00<?, ?B/s]100%|██████████| 11.2k/11.2k [00:00<00:00, 519kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/eval_scratch.py
+Downloading eval_synthetic.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/12.0k [00:00<?, ?B/s]100%|██████████| 12.0k/12.0k [00:00<00:00, 554kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/eval_synthetic.py
+Downloading eval_vegaml_row_outcomes.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/30.5k [00:00<?, ?B/s]100%|██████████| 30.5k/30.5k [00:00<00:00, 201kB/s]100%|██████████| 30.5k/30.5k [00:00<00:00, 201kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/eval_vegaml_row_outcomes.py
+Downloading gates.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/36.5k [00:00<?, ?B/s]100%|██████████| 36.5k/36.5k [00:00<00:00, 206kB/s]100%|██████████| 36.5k/36.5k [00:00<00:00, 206kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/gates.py
+Downloading mem_profile.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/5.13k [00:00<?, ?B/s]100%|██████████| 5.13k/5.13k [00:00<00:00, 9.28MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/mem_profile.py
+Downloading mondrian_conformal.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/5.78k [00:00<?, ?B/s]100%|██████████| 5.78k/5.78k [00:00<00:00, 9.63MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/mondrian_conformal.py
+Downloading mutation_anti_prior.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/18.4k [00:00<?, ?B/s]100%|██████████| 18.4k/18.4k [00:00<00:00, 288kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/mutation_anti_prior.py
+Downloading mutation_browser.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/13.3k [00:00<?, ?B/s]100%|██████████| 13.3k/13.3k [00:00<00:00, 553kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/mutation_browser.py
+Downloading mutation_diag_question_ablation.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/19.0k [00:00<?, ?B/s]100%|██████████| 19.0k/19.0k [00:00<00:00, 292kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/mutation_diag_question_ablation.py
+Downloading mutation_gates.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/10.3k [00:00<?, ?B/s]100%|██████████| 10.3k/10.3k [00:00<00:00, 659kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/mutation_gates.py
+Downloading mutation_kaggle_bundle.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/16.8k [00:00<?, ?B/s]100%|██████████| 16.8k/16.8k [00:00<00:00, 301kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/mutation_kaggle_bundle.py
+Downloading mutation_latency_matched.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/11.5k [00:00<?, ?B/s]100%|██████████| 11.5k/11.5k [00:00<00:00, 559kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/mutation_latency_matched.py
+Downloading mutation_longctx.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/9.90k [00:00<?, ?B/s]100%|██████████| 9.90k/9.90k [00:00<00:00, 1.42MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/mutation_longctx.py
+Downloading mutation_memory_plan.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/12.6k [00:00<?, ?B/s]100%|██████████| 12.6k/12.6k [00:00<00:00, 422kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/mutation_memory_plan.py
+Downloading mutation_mlx.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/8.58k [00:00<?, ?B/s]100%|██████████| 8.58k/8.58k [00:00<00:00, 20.3MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/mutation_mlx.py
+Downloading mutation_onnx.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/12.1k [00:00<?, ?B/s]100%|██████████| 12.1k/12.1k [00:00<00:00, 622kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/mutation_onnx.py
+Downloading mutation_ordinal.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/9.61k [00:00<?, ?B/s]100%|██████████| 9.61k/9.61k [00:00<00:00, 1.63MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/mutation_ordinal.py
+Downloading mutation_p5.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/15.2k [00:00<?, ?B/s]100%|██████████| 15.2k/15.2k [00:00<00:00, 355kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/mutation_p5.py
+Downloading mutation_paraphrase.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/10.4k [00:00<?, ?B/s]100%|██████████| 10.4k/10.4k [00:00<00:00, 720kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/mutation_paraphrase.py
+Downloading mutation_report.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/25.2k [00:00<?, ?B/s]100%|██████████| 25.2k/25.2k [00:00<00:00, 250kB/s]100%|██████████| 25.2k/25.2k [00:00<00:00, 249kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/mutation_report.py
+Downloading mutation_reproduce.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/12.9k [00:00<?, ?B/s]100%|██████████| 12.9k/12.9k [00:00<00:00, 386kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/mutation_reproduce.py
+Downloading mutation_scope_pricing.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/11.6k [00:00<?, ?B/s]100%|██████████| 11.6k/11.6k [00:00<00:00, 606kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/mutation_scope_pricing.py
+Downloading mutation_scratch.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/8.15k [00:00<?, ?B/s]100%|██████████| 8.15k/8.15k [00:00<00:00, 18.8MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/mutation_scratch.py
+Downloading mutation_significance.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/17.9k [00:00<?, ?B/s]100%|██████████| 17.9k/17.9k [00:00<00:00, 299kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/mutation_significance.py
+Downloading mutation_train_longctx.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/13.6k [00:00<?, ?B/s]100%|██████████| 13.6k/13.6k [00:00<00:00, 424kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/mutation_train_longctx.py
+Downloading mutation_vegaml_control.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/21.3k [00:00<?, ?B/s]100%|██████████| 21.3k/21.3k [00:00<00:00, 257kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/mutation_vegaml_control.py
+Downloading mutation_weights.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/8.18k [00:00<?, ?B/s]100%|██████████| 8.18k/8.18k [00:00<00:00, 19.4MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/mutation_weights.py
+Downloading ordinal_ab.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/10.0k [00:00<?, ?B/s]100%|██████████| 10.0k/10.0k [00:00<00:00, 686kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/ordinal_ab.py
+Downloading paired_bootstrap.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/3.55k [00:00<?, ?B/s]100%|██████████| 3.55k/3.55k [00:00<00:00, 5.74MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/paired_bootstrap.py
+Downloading paper_bootstrap.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/2.66k [00:00<?, ?B/s]100%|██████████| 2.66k/2.66k [00:00<00:00, 6.36MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/paper_bootstrap.py
+Downloading paper_numbers.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/7.19k [00:00<?, ?B/s]100%|██████████| 7.19k/7.19k [00:00<00:00, 13.6MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/paper_numbers.py
+Downloading pilot_topology.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/3.48k [00:00<?, ?B/s]100%|██████████| 3.48k/3.48k [00:00<00:00, 9.41MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/pilot_topology.py
+Downloading prob_dump.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/4.26k [00:00<?, ?B/s]100%|██████████| 4.26k/4.26k [00:00<00:00, 10.4MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/prob_dump.py
+Downloading pull_upstream.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/18.9k [00:00<?, ?B/s]100%|██████████| 18.9k/18.9k [00:00<00:00, 292kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/pull_upstream.py
+Downloading quantize_int8.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/7.83k [00:00<?, ?B/s]100%|██████████| 7.83k/7.83k [00:00<00:00, 16.2MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/quantize_int8.py
+Downloading reproduce.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/73.1k [00:00<?, ?B/s]100%|██████████| 73.1k/73.1k [00:00<00:00, 164kB/s]100%|██████████| 73.1k/73.1k [00:00<00:00, 163kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/reproduce.py
+Downloading risk_coverage.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/18.2k [00:00<?, ?B/s]100%|██████████| 18.2k/18.2k [00:00<00:00, 291kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/risk_coverage.py
+Downloading routing_cost.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/2.84k [00:00<?, ?B/s]100%|██████████| 2.84k/2.84k [00:00<00:00, 7.39MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/routing_cost.py
+Downloading row_outcomes.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/16.4k [00:00<?, ?B/s]100%|██████████| 16.4k/16.4k [00:00<00:00, 293kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/row_outcomes.py
+Downloading scan_secrets.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/6.09k [00:00<?, ?B/s]100%|██████████| 6.09k/6.09k [00:00<00:00, 10.7MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/scan_secrets.py
+Downloading scope_pricing.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/6.22k [00:00<?, ?B/s]100%|██████████| 6.22k/6.22k [00:00<00:00, 12.6MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/scope_pricing.py
+Downloading significance.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/24.3k [00:00<?, ?B/s]100%|██████████| 24.3k/24.3k [00:00<00:00, 260kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/significance.py
+Downloading stats_extra.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/3.74k [00:00<?, ?B/s]100%|██████████| 3.74k/3.74k [00:00<00:00, 9.01MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/stats_extra.py
+Downloading summarize_v1.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/4.97k [00:00<?, ?B/s]100%|██████████| 4.97k/4.97k [00:00<00:00, 10.1MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/summarize_v1.py
+Downloading v6_audit.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/17.3k [00:00<?, ?B/s]100%|██████████| 17.3k/17.3k [00:00<00:00, 321kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/v6_audit.py
+Downloading vegaml_control.py to /tmp/c6_old/myna/bench
+  0%|          | 0.00/16.4k [00:00<?, ?B/s]100%|██████████| 16.4k/16.4k [00:00<00:00, 329kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/bench/vegaml_control.py
+Downloading app.js to /tmp/c6_old/myna/browser
+  0%|          | 0.00/17.6k [00:00<?, ?B/s]100%|██████████| 17.6k/17.6k [00:00<00:00, 277kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/browser/app.js
+Downloading bpe.js to /tmp/c6_old/myna/browser
+  0%|          | 0.00/6.51k [00:00<?, ?B/s]100%|██████████| 6.51k/6.51k [00:00<00:00, 16.0MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/browser/bpe.js
+Downloading expected.json to /tmp/c6_old/myna/browser
+  0%|          | 0.00/32.8k [00:00<?, ?B/s]100%|██████████| 32.8k/32.8k [00:00<00:00, 240kB/s]100%|██████████| 32.8k/32.8k [00:00<00:00, 240kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/browser/expected.json
+Downloading head.js to /tmp/c6_old/myna/browser
+  0%|          | 0.00/5.46k [00:00<?, ?B/s]100%|██████████| 5.46k/5.46k [00:00<00:00, 12.2MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/browser/head.js
+Downloading index.html to /tmp/c6_old/myna/browser
+  0%|          | 0.00/9.37k [00:00<?, ?B/s]100%|██████████| 9.37k/9.37k [00:00<00:00, 769kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/browser/index.html
+Downloading myna.js to /tmp/c6_old/myna/browser
+  0%|          | 0.00/7.97k [00:00<?, ?B/s]100%|██████████| 7.97k/7.97k [00:00<00:00, 1.50MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/browser/myna.js
+Downloading parity.mjs to /tmp/c6_old/myna/browser
+  0%|          | 0.00/9.74k [00:00<?, ?B/s]100%|██████████| 9.74k/9.74k [00:00<00:00, 806kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/browser/parity.mjs
+Downloading selftest.mjs to /tmp/c6_old/myna/browser
+  0%|          | 0.00/3.75k [00:00<?, ?B/s]100%|██████████| 3.75k/3.75k [00:00<00:00, 7.99MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/browser/selftest.mjs
+Downloading calibration.jsonl to /tmp/c6_old/myna/data/decision-v2-pilot
+  0%|          | 0.00/608k [00:00<?, ?B/s]100%|██████████| 608k/608k [00:01<00:00, 443kB/s]100%|██████████| 608k/608k [00:01<00:00, 443kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/data/decision-v2-pilot/calibration.jsonl
+Downloading development.jsonl to /tmp/c6_old/myna/data/decision-v2-pilot
+  0%|          | 0.00/1.62M [00:00<?, ?B/s] 62%|██████▏   | 1.00M/1.62M [00:01<00:01, 617kB/s]100%|██████████| 1.62M/1.62M [00:01<00:00, 952kB/s]100%|██████████| 1.62M/1.62M [00:01<00:00, 865kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/data/decision-v2-pilot/development.jsonl
+Downloading test.jsonl to /tmp/c6_old/myna/data/decision-v2-pilot
+  0%|          | 0.00/1.63M [00:00<?, ?B/s] 61%|██████▏   | 1.00M/1.63M [00:01<00:01, 633kB/s]100%|██████████| 1.63M/1.63M [00:01<00:00, 976kB/s]100%|██████████| 1.63M/1.63M [00:01<00:00, 887kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/data/decision-v2-pilot/test.jsonl
+Downloading tokenizer-8192.json to /tmp/c6_old/myna/data/decision-v2-pilot
+  0%|          | 0.00/514k [00:00<?, ?B/s]100%|██████████| 514k/514k [00:01<00:00, 439kB/s]100%|██████████| 514k/514k [00:01<00:00, 438kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/data/decision-v2-pilot/tokenizer-8192.json
+Downloading train.jsonl to /tmp/c6_old/myna/data/decision-v2-pilot
+  0%|          | 0.00/79.1M [00:00<?, ?B/s]  1%|▏         | 1.00M/79.1M [00:01<02:10, 626kB/s]  3%|▎         | 2.00M/79.1M [00:02<01:10, 1.14MB/s]  4%|▍         | 3.00M/79.1M [00:02<00:46, 1.71MB/s]  5%|▌         | 4.00M/79.1M [00:02<00:33, 2.38MB/s]  6%|▋         | 5.00M/79.1M [00:02<00:25, 3.04MB/s]  8%|▊         | 6.00M/79.1M [00:02<00:21, 3.62MB/s]  9%|▉         | 7.00M/79.1M [00:03<00:18, 4.12MB/s] 10%|█         | 8.00M/79.1M [00:03<00:16, 4.57MB/s] 11%|█▏        | 9.00M/79.1M [00:03<00:15, 4.90MB/s] 13%|█▎        | 10.0M/79.1M [00:03<00:13, 5.20MB/s] 14%|█▍        | 11.0M/79.1M [00:03<00:13, 5.35MB/s] 15%|█▌        | 12.0M/79.1M [00:03<00:12, 5.54MB/s] 16%|█▋        | 13.0M/79.1M [00:04<00:12, 5.61MB/s] 18%|█▊        | 14.0M/79.1M [00:04<00:11, 5.71MB/s] 19%|█▉        | 15.0M/79.1M [00:04<00:11, 5.72MB/s] 20%|██        | 16.0M/79.1M [00:04<00:11, 5.80MB/s] 21%|██▏       | 17.0M/79.1M [00:04<00:11, 5.78MB/s] 23%|██▎       | 18.0M/79.1M [00:04<00:10, 5.85MB/s] 24%|██▍       | 19.0M/79.1M [00:05<00:10, 5.82MB/s] 25%|██▌       | 20.0M/79.1M [00:05<00:10, 5.88MB/s] 27%|██▋       | 21.0M/79.1M [00:05<00:10, 5.84MB/s] 28%|██▊       | 22.0M/79.1M [00:05<00:10, 5.88MB/s] 29%|██▉       | 23.0M/79.1M [00:05<00:10, 5.85MB/s] 30%|███       | 24.0M/79.1M [00:06<00:09, 5.84MB/s] 32%|███▏      | 25.0M/79.1M [00:06<00:09, 5.87MB/s] 33%|███▎      | 26.0M/79.1M [00:06<00:11, 4.96MB/s] 34%|███▍      | 27.0M/79.1M [00:06<00:10, 5.32MB/s] 35%|███▌      | 28.0M/79.1M [00:06<00:09, 5.45MB/s] 37%|███▋      | 29.0M/79.1M [00:07<00:09, 5.54MB/s] 38%|███▊      | 30.0M/79.1M [00:07<00:09, 5.68MB/s] 39%|███▉      | 31.0M/79.1M [00:07<00:08, 5.71MB/s] 40%|████      | 32.0M/79.1M [00:07<00:08, 5.79MB/s] 42%|████▏     | 33.0M/79.1M [00:07<00:08, 5.77MB/s] 43%|████▎     | 34.0M/79.1M [00:07<00:08, 5.84MB/s] 44%|████▍     | 35.0M/79.1M [00:08<00:07, 5.83MB/s] 46%|████▌     | 36.0M/79.1M [00:08<00:07, 5.87MB/s] 47%|████▋     | 37.0M/79.1M [00:08<00:07, 5.83MB/s] 48%|████▊     | 38.0M/79.1M [00:08<00:07, 5.87MB/s] 49%|████▉     | 39.0M/79.1M [00:08<00:07, 5.92MB/s] 51%|█████     | 40.0M/79.1M [00:09<00:07, 5.84MB/s] 52%|█████▏    | 41.0M/79.1M [00:09<00:06, 5.90MB/s] 53%|█████▎    | 42.0M/79.1M [00:09<00:06, 5.86MB/s] 54%|█████▍    | 43.0M/79.1M [00:09<00:06, 5.83MB/s] 56%|█████▌    | 44.0M/79.1M [00:09<00:06, 5.89MB/s] 57%|█████▋    | 45.0M/79.1M [00:09<00:06, 5.92MB/s] 58%|█████▊    | 46.0M/79.1M [00:10<00:05, 5.87MB/s] 59%|█████▉    | 47.0M/79.1M [00:10<00:05, 5.91MB/s] 61%|██████    | 48.0M/79.1M [00:10<00:05, 5.87MB/s] 62%|██████▏   | 49.0M/79.1M [00:10<00:05, 5.88MB/s] 63%|██████▎   | 50.0M/79.1M [00:10<00:05, 5.85MB/s] 64%|██████▍   | 51.0M/79.1M [00:10<00:04, 5.90MB/s] 66%|██████▌   | 52.0M/79.1M [00:11<00:04, 5.86MB/s] 67%|██████▋   | 53.0M/79.1M [00:11<00:04, 5.91MB/s] 68%|██████▊   | 54.0M/79.1M [00:11<00:04, 5.87MB/s] 70%|██████▉   | 55.0M/79.1M [00:11<00:05, 5.01MB/s] 71%|███████   | 56.0M/79.1M [00:11<00:04, 5.32MB/s] 72%|███████▏  | 57.0M/79.1M [00:12<00:04, 5.45MB/s] 73%|███████▎  | 58.0M/79.1M [00:12<00:03, 5.61MB/s] 75%|███████▍  | 59.0M/79.1M [00:12<00:03, 5.67MB/s] 76%|███████▌  | 60.0M/79.1M [00:12<00:03, 5.54MB/s] 77%|███████▋  | 61.0M/79.1M [00:12<00:03, 5.68MB/s] 78%|███████▊  | 62.0M/79.1M [00:13<00:03, 5.77MB/s] 80%|███████▉  | 63.0M/79.1M [00:13<00:02, 5.76MB/s] 81%|████████  | 64.0M/79.1M [00:13<00:02, 5.84MB/s] 82%|████████▏ | 65.0M/79.1M [00:13<00:02, 5.83MB/s] 83%|████████▎ | 66.0M/79.1M [00:13<00:02, 5.82MB/s] 85%|████████▍ | 67.0M/79.1M [00:13<00:02, 5.87MB/s] 86%|████████▌ | 68.0M/79.1M [00:14<00:01, 5.84MB/s] 87%|████████▋ | 69.0M/79.1M [00:14<00:01, 5.87MB/s] 89%|████████▊ | 70.0M/79.1M [00:14<00:01, 5.84MB/s] 90%|████████▉ | 71.0M/79.1M [00:14<00:01, 5.89MB/s] 91%|█████████ | 72.0M/79.1M [00:14<00:01, 5.86MB/s] 92%|█████████▏| 73.0M/79.1M [00:15<00:01, 5.83MB/s] 94%|█████████▎| 74.0M/79.1M [00:15<00:00, 5.89MB/s] 95%|█████████▍| 75.0M/79.1M [00:15<00:00, 5.88MB/s] 96%|█████████▌| 76.0M/79.1M [00:15<00:00, 5.85MB/s] 97%|█████████▋| 77.0M/79.1M [00:15<00:00, 5.90MB/s] 99%|█████████▊| 78.0M/79.1M [00:15<00:00, 5.88MB/s]100%|█████████▉| 79.0M/79.1M [00:16<00:00, 5.84MB/s]100%|██████████| 79.1M/79.1M [00:16<00:00, 5.15MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/data/decision-v2-pilot/train.jsonl
+Downloading upstream_manifest.json to /tmp/c6_old/myna/data/decision-v2-pilot
+  0%|          | 0.00/7.56k [00:00<?, ?B/s]100%|██████████| 7.56k/7.56k [00:00<00:00, 12.2MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/data/decision-v2-pilot/upstream_manifest.json
+Downloading RELEASE-v0.1.0-notes.md to /tmp/c6_old/myna/docs
+  0%|          | 0.00/3.84k [00:00<?, ?B/s]100%|██████████| 3.84k/3.84k [00:00<00:00, 10.5MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/docs/RELEASE-v0.1.0-notes.md
+Downloading benchmarks.html to /tmp/c6_old/myna/docs
+  0%|          | 0.00/15.9k [00:00<?, ?B/s]100%|██████████| 15.9k/15.9k [00:00<00:00, 367kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/docs/benchmarks.html
+Downloading paper-draft.md to /tmp/c6_old/myna/docs
+  0%|          | 0.00/66.8k [00:00<?, ?B/s]100%|██████████| 66.8k/66.8k [00:00<00:00, 172kB/s]100%|██████████| 66.8k/66.8k [00:00<00:00, 172kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/docs/paper-draft.md
+Downloading release-stageC-draft.md to /tmp/c6_old/myna/docs
+  0%|          | 0.00/11.9k [00:00<?, ?B/s]100%|██████████| 11.9k/11.9k [00:00<00:00, 583kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/docs/release-stageC-draft.md
+Downloading isolated-1440px.png to /tmp/c6_old/myna/docs/screenshots
+  0%|          | 0.00/1.19M [00:00<?, ?B/s] 84%|████████▍ | 1.00M/1.19M [00:01<00:00, 632kB/s]100%|██████████| 1.19M/1.19M [00:01<00:00, 719kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/docs/screenshots/isolated-1440px.png
+Downloading isolated-390px.png to /tmp/c6_old/myna/docs/screenshots
+  0%|          | 0.00/0.98M [00:00<?, ?B/s]100%|██████████| 0.98M/0.98M [00:01<00:00, 614kB/s]100%|██████████| 0.98M/0.98M [00:01<00:00, 614kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/docs/screenshots/isolated-390px.png
+Downloading plain-1440px.png to /tmp/c6_old/myna/docs/screenshots
+  0%|          | 0.00/1.19M [00:00<?, ?B/s] 84%|████████▎ | 1.00M/1.19M [00:01<00:00, 681kB/s]100%|██████████| 1.19M/1.19M [00:01<00:00, 776kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/docs/screenshots/plain-1440px.png
+Downloading plain-390px.png to /tmp/c6_old/myna/docs/screenshots
+  0%|          | 0.00/0.99M [00:00<?, ?B/s]100%|██████████| 0.99M/0.99M [00:01<00:00, 670kB/s]100%|██████████| 0.99M/0.99M [00:01<00:00, 669kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/docs/screenshots/plain-390px.png
+Downloading campaign.py to /tmp/c6_old/myna/kaggle
+  0%|          | 0.00/17.5k [00:00<?, ?B/s]100%|██████████| 17.5k/17.5k [00:00<00:00, 723kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/kaggle/campaign.py
+Downloading antiprior-on-t4.ipynb to /tmp/c6_old/myna/kaggle/notebooks/antiprior-on-t4
+  0%|          | 0.00/6.53k [00:00<?, ?B/s]100%|██████████| 6.53k/6.53k [00:00<00:00, 12.5MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/kaggle/notebooks/antiprior-on-t4/antiprior-on-t4.ipynb
+Downloading kernel-metadata.json to /tmp/c6_old/myna/kaggle/notebooks/antiprior-on-t4
+  0%|          | 0.00/372 [00:00<?, ?B/s]100%|██████████| 372/372 [00:00<00:00, 1.01MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/kaggle/notebooks/antiprior-on-t4/kernel-metadata.json
+Downloading package_dataset.py to /tmp/c6_old/myna/kaggle
+  0%|          | 0.00/7.09k [00:00<?, ?B/s]100%|██████████| 7.09k/7.09k [00:00<00:00, 18.6MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/kaggle/package_dataset.py
+Downloading requirements.txt to /tmp/c6_old/myna/kaggle
+  0%|          | 0.00/786 [00:00<?, ?B/s]100%|██████████| 786/786 [00:00<00:00, 1.50MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/kaggle/requirements.txt
+Downloading run.py to /tmp/c6_old/myna/kaggle
+  0%|          | 0.00/16.5k [00:00<?, ?B/s]100%|██████████| 16.5k/16.5k [00:00<00:00, 340kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/kaggle/run.py
+Downloading package-lock.json to /tmp/c6_old/myna
+  0%|          | 0.00/6.53k [00:00<?, ?B/s]100%|██████████| 6.53k/6.53k [00:00<00:00, 11.3MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/package-lock.json
+Downloading package.json to /tmp/c6_old/myna
+  0%|          | 0.00/514 [00:00<?, ?B/s]100%|██████████| 514/514 [00:00<00:00, 1.78MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/package.json
+Downloading CLAIM-AUDIT.md to /tmp/c6_old/myna/paper
+  0%|          | 0.00/15.1k [00:00<?, ?B/s]100%|██████████| 15.1k/15.1k [00:00<00:00, 363kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/CLAIM-AUDIT.md
+Downloading MEASUREMENT-CORRECTION.md to /tmp/c6_old/myna/paper
+  0%|          | 0.00/2.80k [00:00<?, ?B/s]100%|██████████| 2.80k/2.80k [00:00<00:00, 5.77MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/MEASUREMENT-CORRECTION.md
+Downloading README.md to /tmp/c6_old/myna/paper
+  0%|          | 0.00/6.28k [00:00<?, ?B/s]100%|██████████| 6.28k/6.28k [00:00<00:00, 9.89MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/README.md
+Downloading STYLE-SURVEY.md to /tmp/c6_old/myna/paper
+  0%|          | 0.00/22.2k [00:00<?, ?B/s]100%|██████████| 22.2k/22.2k [00:00<00:00, 242kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/STYLE-SURVEY.md
+Downloading acl.sty to /tmp/c6_old/myna/paper
+  0%|          | 0.00/11.3k [00:00<?, ?B/s]100%|██████████| 11.3k/11.3k [00:00<00:00, 443kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/acl.sty
+Downloading acl_natbib.bst to /tmp/c6_old/myna/paper
+  0%|          | 0.00/44.4k [00:00<?, ?B/s]100%|██████████| 44.4k/44.4k [00:00<00:00, 202kB/s]100%|██████████| 44.4k/44.4k [00:00<00:00, 201kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/acl_natbib.bst
+Downloading main.tex to /tmp/c6_old/myna/paper/archive_acl
+  0%|          | 0.00/35.9k [00:00<?, ?B/s]100%|██████████| 35.9k/35.9k [00:00<00:00, 252kB/s]100%|██████████| 35.9k/35.9k [00:00<00:00, 252kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/archive_acl/main.tex
+Downloading make_compact_table.py to /tmp/c6_old/myna/paper/archive_acl
+  0%|          | 0.00/2.26k [00:00<?, ?B/s]100%|██████████| 2.26k/2.26k [00:00<00:00, 3.48MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/archive_acl/make_compact_table.py
+Downloading make_tables.py to /tmp/c6_old/myna/paper/archive_acl
+  0%|          | 0.00/10.7k [00:00<?, ?B/s]100%|██████████| 10.7k/10.7k [00:00<00:00, 850kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/archive_acl/make_tables.py
+Downloading patch_tables.py to /tmp/c6_old/myna/paper/archive_acl
+  0%|          | 0.00/1.77k [00:00<?, ?B/s]100%|██████████| 1.77k/1.77k [00:00<00:00, 3.18MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/archive_acl/patch_tables.py
+Downloading patch_tables2.py to /tmp/c6_old/myna/paper/archive_acl
+  0%|          | 0.00/702 [00:00<?, ?B/s]100%|██████████| 702/702 [00:00<00:00, 2.13MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/archive_acl/patch_tables2.py
+Downloading tab_appendix_cells.tex to /tmp/c6_old/myna/paper/archive_acl/tables
+  0%|          | 0.00/1.52k [00:00<?, ?B/s]100%|██████████| 1.52k/1.52k [00:00<00:00, 3.33MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/archive_acl/tables/tab_appendix_cells.tex
+Downloading tab_calibration.tex to /tmp/c6_old/myna/paper/archive_acl/tables
+  0%|          | 0.00/1.02k [00:00<?, ?B/s]100%|██████████| 1.02k/1.02k [00:00<00:00, 1.87MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/archive_acl/tables/tab_calibration.tex
+Downloading tab_consistency.tex to /tmp/c6_old/myna/paper/archive_acl/tables
+  0%|          | 0.00/859 [00:00<?, ?B/s]100%|██████████| 859/859 [00:00<00:00, 2.46MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/archive_acl/tables/tab_consistency.tex
+Downloading tab_dataset.tex to /tmp/c6_old/myna/paper/archive_acl/tables
+  0%|          | 0.00/656 [00:00<?, ?B/s]100%|██████████| 656/656 [00:00<00:00, 1.95MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/archive_acl/tables/tab_dataset.tex
+Downloading tab_diagnostics.tex to /tmp/c6_old/myna/paper/archive_acl/tables
+  0%|          | 0.00/903 [00:00<?, ?B/s]100%|██████████| 903/903 [00:00<00:00, 2.40MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/archive_acl/tables/tab_diagnostics.tex
+Downloading tab_main.tex to /tmp/c6_old/myna/paper/archive_acl/tables
+  0%|          | 0.00/2.58k [00:00<?, ?B/s]100%|██████████| 2.58k/2.58k [00:00<00:00, 6.05MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/archive_acl/tables/tab_main.tex
+Downloading tab_main_compact.tex to /tmp/c6_old/myna/paper/archive_acl/tables
+  0%|          | 0.00/1.01k [00:00<?, ?B/s]100%|██████████| 1.01k/1.01k [00:00<00:00, 3.22MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/archive_acl/tables/tab_main_compact.tex
+Downloading tab_routing.tex to /tmp/c6_old/myna/paper/archive_acl/tables
+  0%|          | 0.00/958 [00:00<?, ?B/s]100%|██████████| 958/958 [00:00<00:00, 1.65MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/archive_acl/tables/tab_routing.tex
+Downloading tab_systems.tex to /tmp/c6_old/myna/paper/archive_acl/tables
+  0%|          | 0.00/1.09k [00:00<?, ?B/s]100%|██████████| 1.09k/1.09k [00:00<00:00, 3.22MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/archive_acl/tables/tab_systems.tex
+Downloading widen_compact.py to /tmp/c6_old/myna/paper/archive_acl
+  0%|          | 0.00/230 [00:00<?, ?B/s]100%|██████████| 230/230 [00:00<00:00, 468kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/archive_acl/widen_compact.py
+Downloading bundle_stats.json to /tmp/c6_old/myna/paper/data
+  0%|          | 0.00/325 [00:00<?, ?B/s]100%|██████████| 325/325 [00:00<00:00, 898kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/data/bundle_stats.json
+Downloading consistency_all_engines.json to /tmp/c6_old/myna/paper/data
+  0%|          | 0.00/1.77k [00:00<?, ?B/s]100%|██████████| 1.77k/1.77k [00:00<00:00, 2.86MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/data/consistency_all_engines.json
+Downloading dataset_stats.json to /tmp/c6_old/myna/paper/data
+  0%|          | 0.00/2.80k [00:00<?, ?B/s]100%|██████████| 2.80k/2.80k [00:00<00:00, 7.35MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/data/dataset_stats.json
+Downloading figure_values.json to /tmp/c6_old/myna/paper/data
+  0%|          | 0.00/703 [00:00<?, ?B/s]100%|██████████| 703/703 [00:00<00:00, 1.69MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/data/figure_values.json
+Downloading style_skeleton_table.md to /tmp/c6_old/myna/paper/data
+  0%|          | 0.00/10.0k [00:00<?, ?B/s]100%|██████████| 10.0k/10.0k [00:00<00:00, 966kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/data/style_skeleton_table.md
+Downloading style_survey_raw.json to /tmp/c6_old/myna/paper/data
+  0%|          | 0.00/102k [00:00<?, ?B/s]100%|██████████| 102k/102k [00:00<00:00, 208kB/s]100%|██████████| 102k/102k [00:00<00:00, 208kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/data/style_survey_raw.json
+Downloading token_budget.json to /tmp/c6_old/myna/paper/data
+  0%|          | 0.00/6.78k [00:00<?, ?B/s]100%|██████████| 6.78k/6.78k [00:00<00:00, 11.4MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/data/token_budget.json
+Downloading fig1_architecture.puml to /tmp/c6_old/myna/paper/diagrams
+  0%|          | 0.00/1.19k [00:00<?, ?B/s]100%|██████████| 1.19k/1.19k [00:00<00:00, 3.73MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/diagrams/fig1_architecture.puml
+Downloading figA1_sequence.puml to /tmp/c6_old/myna/paper/diagrams
+  0%|          | 0.00/702 [00:00<?, ?B/s]100%|██████████| 702/702 [00:00<00:00, 2.44MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/diagrams/figA1_sequence.puml
+Downloading README.md to /tmp/c6_old/myna/paper/elsevier
+  0%|          | 0.00/609 [00:00<?, ?B/s]100%|██████████| 609/609 [00:00<00:00, 1.85MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/elsevier/README.md
+Downloading body_appendix.tex to /tmp/c6_old/myna/paper/elsevier
+  0%|          | 0.00/6.98k [00:00<?, ?B/s]100%|██████████| 6.98k/6.98k [00:00<00:00, 10.4MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/elsevier/body_appendix.tex
+Downloading body_main.tex to /tmp/c6_old/myna/paper/elsevier
+  0%|          | 0.00/54.6k [00:00<?, ?B/s]100%|██████████| 54.6k/54.6k [00:00<00:00, 165kB/s]100%|██████████| 54.6k/54.6k [00:00<00:00, 165kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/elsevier/body_main.tex
+Downloading fig1_architecture.png to /tmp/c6_old/myna/paper/elsevier/figures
+  0%|          | 0.00/126k [00:00<?, ?B/s]100%|██████████| 126k/126k [00:00<00:00, 218kB/s]100%|██████████| 126k/126k [00:00<00:00, 218kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/elsevier/figures/fig1_architecture.png
+Downloading fig2_cardinality.png to /tmp/c6_old/myna/paper/elsevier/figures
+  0%|          | 0.00/115k [00:00<?, ?B/s]100%|██████████| 115k/115k [00:00<00:00, 181kB/s]100%|██████████| 115k/115k [00:00<00:00, 181kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/elsevier/figures/fig2_cardinality.png
+Downloading fig3_external.png to /tmp/c6_old/myna/paper/elsevier/figures
+  0%|          | 0.00/98.0k [00:00<?, ?B/s]100%|██████████| 98.0k/98.0k [00:00<00:00, 185kB/s]100%|██████████| 98.0k/98.0k [00:00<00:00, 185kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/elsevier/figures/fig3_external.png
+Downloading fig4_calibration.png to /tmp/c6_old/myna/paper/elsevier/figures
+  0%|          | 0.00/140k [00:00<?, ?B/s]100%|██████████| 140k/140k [00:00<00:00, 221kB/s]100%|██████████| 140k/140k [00:00<00:00, 221kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/elsevier/figures/fig4_calibration.png
+Downloading fig6_diagnostics_journal.png to /tmp/c6_old/myna/paper/elsevier/figures
+  0%|          | 0.00/104k [00:00<?, ?B/s]100%|██████████| 104k/104k [00:00<00:00, 199kB/s]100%|██████████| 104k/104k [00:00<00:00, 199kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/elsevier/figures/fig6_diagnostics_journal.png
+Downloading fig7_sequence.png to /tmp/c6_old/myna/paper/elsevier/figures
+  0%|          | 0.00/91.0k [00:00<?, ?B/s]100%|██████████| 91.0k/91.0k [00:00<00:00, 221kB/s]100%|██████████| 91.0k/91.0k [00:00<00:00, 221kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/elsevier/figures/fig7_sequence.png
+Downloading myna_elsevier.docx to /tmp/c6_old/myna/paper/elsevier
+  0%|          | 0.00/342k [00:00<?, ?B/s]100%|██████████| 342k/342k [00:01<00:00, 337kB/s]100%|██████████| 342k/342k [00:01<00:00, 337kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/elsevier/myna_elsevier.docx
+Downloading myna_elsevier.tex to /tmp/c6_old/myna/paper/elsevier
+  0%|          | 0.00/2.98k [00:00<?, ?B/s]100%|██████████| 2.98k/2.98k [00:00<00:00, 7.92MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/elsevier/myna_elsevier.tex
+Downloading refs.bib to /tmp/c6_old/myna/paper/elsevier
+  0%|          | 0.00/13.8k [00:00<?, ?B/s]100%|██████████| 13.8k/13.8k [00:00<00:00, 318kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/elsevier/refs.bib
+Downloading fig1_architecture.png to /tmp/c6_old/myna/paper/figures
+  0%|          | 0.00/126k [00:00<?, ?B/s]100%|██████████| 126k/126k [00:00<00:00, 240kB/s]100%|██████████| 126k/126k [00:00<00:00, 240kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/figures/fig1_architecture.png
+Downloading fig2_cardinality.png to /tmp/c6_old/myna/paper/figures
+  0%|          | 0.00/115k [00:00<?, ?B/s]100%|██████████| 115k/115k [00:00<00:00, 219kB/s]100%|██████████| 115k/115k [00:00<00:00, 219kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/figures/fig2_cardinality.png
+Downloading fig3_ablation.png to /tmp/c6_old/myna/paper/figures
+  0%|          | 0.00/139k [00:00<?, ?B/s]100%|██████████| 139k/139k [00:00<00:00, 233kB/s]100%|██████████| 139k/139k [00:00<00:00, 233kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/figures/fig3_ablation.png
+Downloading fig3_consistency_ours.png to /tmp/c6_old/myna/paper/figures
+  0%|          | 0.00/91.6k [00:00<?, ?B/s]100%|██████████| 91.6k/91.6k [00:00<00:00, 184kB/s]100%|██████████| 91.6k/91.6k [00:00<00:00, 184kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/figures/fig3_consistency_ours.png
+Downloading fig3_external.png to /tmp/c6_old/myna/paper/figures
+  0%|          | 0.00/98.0k [00:00<?, ?B/s]100%|██████████| 98.0k/98.0k [00:00<00:00, 168kB/s]100%|██████████| 98.0k/98.0k [00:00<00:00, 167kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/figures/fig3_external.png
+Downloading fig4_calibration.png to /tmp/c6_old/myna/paper/figures
+  0%|          | 0.00/140k [00:00<?, ?B/s]100%|██████████| 140k/140k [00:00<00:00, 229kB/s]100%|██████████| 140k/140k [00:00<00:00, 229kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/figures/fig4_calibration.png
+Downloading fig4_consistency.png to /tmp/c6_old/myna/paper/figures
+  0%|          | 0.00/104k [00:00<?, ?B/s]100%|██████████| 104k/104k [00:00<00:00, 282kB/s]100%|██████████| 104k/104k [00:00<00:00, 282kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/figures/fig4_consistency.png
+Downloading fig5_calibration.png to /tmp/c6_old/myna/paper/figures
+  0%|          | 0.00/201k [00:00<?, ?B/s]100%|██████████| 201k/201k [00:00<00:00, 251kB/s]100%|██████████| 201k/201k [00:00<00:00, 251kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/figures/fig5_calibration.png
+Downloading fig5_systems_ours.png to /tmp/c6_old/myna/paper/figures
+  0%|          | 0.00/148k [00:00<?, ?B/s]100%|██████████| 148k/148k [00:00<00:00, 235kB/s]100%|██████████| 148k/148k [00:00<00:00, 235kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/figures/fig5_systems_ours.png
+Downloading fig6_diagnostics_journal.png to /tmp/c6_old/myna/paper/figures
+  0%|          | 0.00/104k [00:00<?, ?B/s]100%|██████████| 104k/104k [00:00<00:00, 213kB/s]100%|██████████| 104k/104k [00:00<00:00, 213kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/figures/fig6_diagnostics_journal.png
+Downloading fig6_systems.png to /tmp/c6_old/myna/paper/figures
+  0%|          | 0.00/156k [00:00<?, ?B/s]100%|██████████| 156k/156k [00:00<00:00, 236kB/s]100%|██████████| 156k/156k [00:00<00:00, 236kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/figures/fig6_systems.png
+Downloading fig7_diagnostics.png to /tmp/c6_old/myna/paper/figures
+  0%|          | 0.00/128k [00:00<?, ?B/s]100%|██████████| 128k/128k [00:00<00:00, 235kB/s]100%|██████████| 128k/128k [00:00<00:00, 235kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/figures/fig7_diagnostics.png
+Downloading fig7_sequence.png to /tmp/c6_old/myna/paper/figures
+  0%|          | 0.00/91.0k [00:00<?, ?B/s]100%|██████████| 91.0k/91.0k [00:00<00:00, 169kB/s]100%|██████████| 91.0k/91.0k [00:00<00:00, 169kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/figures/fig7_sequence.png
+Downloading figA1_sequence.png to /tmp/c6_old/myna/paper/figures
+  0%|          | 0.00/91.0k [00:00<?, ?B/s]100%|██████████| 91.0k/91.0k [00:00<00:00, 176kB/s]100%|██████████| 91.0k/91.0k [00:00<00:00, 176kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/figures/figA1_sequence.png
+Downloading README.md to /tmp/c6_old/myna/paper/ieee
+  0%|          | 0.00/584 [00:00<?, ?B/s]100%|██████████| 584/584 [00:00<00:00, 1.74MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/ieee/README.md
+Downloading body_appendix.tex to /tmp/c6_old/myna/paper/ieee
+  0%|          | 0.00/6.98k [00:00<?, ?B/s]100%|██████████| 6.98k/6.98k [00:00<00:00, 17.2MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/ieee/body_appendix.tex
+Downloading body_main.tex to /tmp/c6_old/myna/paper/ieee
+  0%|          | 0.00/54.6k [00:00<?, ?B/s]100%|██████████| 54.6k/54.6k [00:00<00:00, 182kB/s]100%|██████████| 54.6k/54.6k [00:00<00:00, 181kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/ieee/body_main.tex
+Downloading fig1_architecture.png to /tmp/c6_old/myna/paper/ieee/figures
+  0%|          | 0.00/126k [00:00<?, ?B/s]100%|██████████| 126k/126k [00:00<00:00, 208kB/s]100%|██████████| 126k/126k [00:00<00:00, 208kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/ieee/figures/fig1_architecture.png
+Downloading fig2_cardinality.png to /tmp/c6_old/myna/paper/ieee/figures
+  0%|          | 0.00/115k [00:00<?, ?B/s]100%|██████████| 115k/115k [00:00<00:00, 208kB/s]100%|██████████| 115k/115k [00:00<00:00, 208kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/ieee/figures/fig2_cardinality.png
+Downloading fig3_external.png to /tmp/c6_old/myna/paper/ieee/figures
+  0%|          | 0.00/98.0k [00:00<?, ?B/s]100%|██████████| 98.0k/98.0k [00:00<00:00, 190kB/s]100%|██████████| 98.0k/98.0k [00:00<00:00, 190kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/ieee/figures/fig3_external.png
+Downloading fig4_calibration.png to /tmp/c6_old/myna/paper/ieee/figures
+  0%|          | 0.00/140k [00:00<?, ?B/s]100%|██████████| 140k/140k [00:00<00:00, 236kB/s]100%|██████████| 140k/140k [00:00<00:00, 236kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/ieee/figures/fig4_calibration.png
+Downloading fig6_diagnostics_journal.png to /tmp/c6_old/myna/paper/ieee/figures
+  0%|          | 0.00/104k [00:00<?, ?B/s]100%|██████████| 104k/104k [00:00<00:00, 203kB/s]100%|██████████| 104k/104k [00:00<00:00, 202kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/ieee/figures/fig6_diagnostics_journal.png
+Downloading fig7_sequence.png to /tmp/c6_old/myna/paper/ieee/figures
+  0%|          | 0.00/91.0k [00:00<?, ?B/s]100%|██████████| 91.0k/91.0k [00:00<00:00, 186kB/s]100%|██████████| 91.0k/91.0k [00:00<00:00, 186kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/ieee/figures/fig7_sequence.png
+Downloading myna_ieee.docx to /tmp/c6_old/myna/paper/ieee
+  0%|          | 0.00/342k [00:00<?, ?B/s]100%|██████████| 342k/342k [00:01<00:00, 335kB/s]100%|██████████| 342k/342k [00:01<00:00, 335kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/ieee/myna_ieee.docx
+Downloading myna_ieee.tex to /tmp/c6_old/myna/paper/ieee
+  0%|          | 0.00/2.89k [00:00<?, ?B/s]100%|██████████| 2.89k/2.89k [00:00<00:00, 4.95MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/ieee/myna_ieee.tex
+Downloading refs.bib to /tmp/c6_old/myna/paper/ieee
+  0%|          | 0.00/13.8k [00:00<?, ?B/s]100%|██████████| 13.8k/13.8k [00:00<00:00, 375kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/ieee/refs.bib
+Downloading make_figures.py to /tmp/c6_old/myna/paper
+  0%|          | 0.00/20.6k [00:00<?, ?B/s]100%|██████████| 20.6k/20.6k [00:00<00:00, 235kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/make_figures.py
+Downloading make_figures_v2.py to /tmp/c6_old/myna/paper
+  0%|          | 0.00/10.3k [00:00<?, ?B/s]100%|██████████| 10.3k/10.3k [00:00<00:00, 720kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/make_figures_v2.py
+Downloading make_refs.py to /tmp/c6_old/myna/paper
+  0%|          | 0.00/9.11k [00:00<?, ?B/s]100%|██████████| 9.11k/9.11k [00:00<00:00, 1.27MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/make_refs.py
+Downloading refs.bib to /tmp/c6_old/myna/paper
+  0%|          | 0.00/17.9k [00:00<?, ?B/s]100%|██████████| 17.9k/17.9k [00:00<00:00, 289kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/refs.bib
+Downloading analyze_survey.py to /tmp/c6_old/myna/paper/scripts
+  0%|          | 0.00/1.71k [00:00<?, ?B/s]100%|██████████| 1.71k/1.71k [00:00<00:00, 5.46MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/scripts/analyze_survey.py
+Downloading build_skeleton_table.py to /tmp/c6_old/myna/paper/scripts
+  0%|          | 0.00/1.85k [00:00<?, ?B/s]100%|██████████| 1.85k/1.85k [00:00<00:00, 5.44MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/scripts/build_skeleton_table.py
+Downloading check_gold_entailment.py to /tmp/c6_old/myna/paper/scripts
+  0%|          | 0.00/1.06k [00:00<?, ?B/s]100%|██████████| 1.06k/1.06k [00:00<00:00, 2.86MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/scripts/check_gold_entailment.py
+Downloading compact_values.py to /tmp/c6_old/myna/paper/scripts
+  0%|          | 0.00/720 [00:00<?, ?B/s]100%|██████████| 720/720 [00:00<00:00, 1.29MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/scripts/compact_values.py
+Downloading compare_audits.py to /tmp/c6_old/myna/paper/scripts
+  0%|          | 0.00/766 [00:00<?, ?B/s]100%|██████████| 766/766 [00:00<00:00, 2.31MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/scripts/compare_audits.py
+Downloading consistency_all_engines.py to /tmp/c6_old/myna/paper/scripts
+  0%|          | 0.00/2.54k [00:00<?, ?B/s]100%|██████████| 2.54k/2.54k [00:00<00:00, 4.25MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/scripts/consistency_all_engines.py
+Downloading dataset_stats.py to /tmp/c6_old/myna/paper/scripts
+  0%|          | 0.00/1.09k [00:00<?, ?B/s]100%|██████████| 1.09k/1.09k [00:00<00:00, 3.36MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/scripts/dataset_stats.py
+Downloading deep_read_captions.py to /tmp/c6_old/myna/paper/scripts
+  0%|          | 0.00/802 [00:00<?, ?B/s]100%|██████████| 802/802 [00:00<00:00, 2.51MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/scripts/deep_read_captions.py
+Downloading extract_table_values.py to /tmp/c6_old/myna/paper/scripts
+  0%|          | 0.00/1.14k [00:00<?, ?B/s]100%|██████████| 1.14k/1.14k [00:00<00:00, 3.65MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/scripts/extract_table_values.py
+Downloading find_dataset_ids.py to /tmp/c6_old/myna/paper/scripts
+  0%|          | 0.00/804 [00:00<?, ?B/s]100%|██████████| 804/804 [00:00<00:00, 2.22MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/scripts/find_dataset_ids.py
+Downloading find_ids.py to /tmp/c6_old/myna/paper/scripts
+  0%|          | 0.00/1.11k [00:00<?, ?B/s]100%|██████████| 1.11k/1.11k [00:00<00:00, 2.11MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/scripts/find_ids.py
+Downloading find_ids2.py to /tmp/c6_old/myna/paper/scripts
+  0%|          | 0.00/757 [00:00<?, ?B/s]100%|██████████| 757/757 [00:00<00:00, 1.90MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/scripts/find_ids2.py
+Downloading probe_ar5iv.py to /tmp/c6_old/myna/paper/scripts
+  0%|          | 0.00/445 [00:00<?, ?B/s]100%|██████████| 445/445 [00:00<00:00, 1.25MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/scripts/probe_ar5iv.py
+Downloading reliability_from_outcomes.py to /tmp/c6_old/myna/paper/scripts
+  0%|          | 0.00/0.98k [00:00<?, ?B/s]100%|██████████| 0.98k/0.98k [00:00<00:00, 3.12MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/scripts/reliability_from_outcomes.py
+Downloading show_contradictions.py to /tmp/c6_old/myna/paper/scripts
+  0%|          | 0.00/1.06k [00:00<?, ?B/s]100%|██████████| 1.06k/1.06k [00:00<00:00, 2.69MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/scripts/show_contradictions.py
+Downloading subset_refs.py to /tmp/c6_old/myna/paper/scripts
+  0%|          | 0.00/1.54k [00:00<?, ?B/s]100%|██████████| 1.54k/1.54k [00:00<00:00, 4.13MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/scripts/subset_refs.py
+Downloading survey_papers.py to /tmp/c6_old/myna/paper/scripts
+  0%|          | 0.00/4.84k [00:00<?, ?B/s]100%|██████████| 4.84k/4.84k [00:00<00:00, 12.6MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/scripts/survey_papers.py
+Downloading validate_topic_mapping.py to /tmp/c6_old/myna/paper/scripts
+  0%|          | 0.00/782 [00:00<?, ?B/s]100%|██████████| 782/782 [00:00<00:00, 1.36MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/scripts/validate_topic_mapping.py
+Downloading _docx_source_gen.tex to /tmp/c6_old/myna/paper/shared
+  0%|          | 0.00/62.3k [00:00<?, ?B/s]100%|██████████| 62.3k/62.3k [00:00<00:00, 189kB/s]100%|██████████| 62.3k/62.3k [00:00<00:00, 189kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/shared/_docx_source_gen.tex
+Downloading abstract.txt to /tmp/c6_old/myna/paper/shared
+  0%|          | 0.00/1.41k [00:00<?, ?B/s]100%|██████████| 1.41k/1.41k [00:00<00:00, 3.78MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/shared/abstract.txt
+Downloading appendix.tex to /tmp/c6_old/myna/paper/shared
+  0%|          | 0.00/4.87k [00:00<?, ?B/s]100%|██████████| 4.87k/4.87k [00:00<00:00, 11.9MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/shared/appendix.tex
+Downloading body.tex to /tmp/c6_old/myna/paper/shared
+  0%|          | 0.00/37.7k [00:00<?, ?B/s]100%|██████████| 37.7k/37.7k [00:00<00:00, 191kB/s]100%|██████████| 37.7k/37.7k [00:00<00:00, 190kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/shared/body.tex
+Downloading body2.tex to /tmp/c6_old/myna/paper/shared
+  0%|          | 0.00/16.6k [00:00<?, ?B/s]100%|██████████| 16.6k/16.6k [00:00<00:00, 336kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/shared/body2.tex
+Downloading body_appendix.tex to /tmp/c6_old/myna/paper/shared
+  0%|          | 0.00/6.98k [00:00<?, ?B/s]100%|██████████| 6.98k/6.98k [00:00<00:00, 11.5MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/shared/body_appendix.tex
+Downloading body_main.tex to /tmp/c6_old/myna/paper/shared
+  0%|          | 0.00/54.6k [00:00<?, ?B/s]100%|██████████| 54.6k/54.6k [00:00<00:00, 177kB/s]100%|██████████| 54.6k/54.6k [00:00<00:00, 177kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/shared/body_main.tex
+Downloading body_main_v2.tex to /tmp/c6_old/myna/paper/shared
+  0%|          | 0.00/30.6k [00:00<?, ?B/s]100%|██████████| 30.6k/30.6k [00:00<00:00, 210kB/s]100%|██████████| 30.6k/30.6k [00:00<00:00, 209kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/shared/body_main_v2.tex
+Downloading docx_source.tex to /tmp/c6_old/myna/paper/shared
+  0%|          | 0.00/2.22k [00:00<?, ?B/s]100%|██████████| 2.22k/2.22k [00:00<00:00, 5.80MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/shared/docx_source.tex
+Downloading external_baselines.py to /tmp/c6_old/myna/paper/shared
+  0%|          | 0.00/6.48k [00:00<?, ?B/s]100%|██████████| 6.48k/6.48k [00:00<00:00, 16.5MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/shared/external_baselines.py
+Downloading fill_nli.py to /tmp/c6_old/myna/paper/shared
+  0%|          | 0.00/583 [00:00<?, ?B/s]100%|██████████| 583/583 [00:00<00:00, 1.75MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/shared/fill_nli.py
+Downloading finish_docx.py to /tmp/c6_old/myna/paper/shared
+  0%|          | 0.00/2.62k [00:00<?, ?B/s]100%|██████████| 2.62k/2.62k [00:00<00:00, 7.98MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/shared/finish_docx.py
+Downloading flatten_docx.py to /tmp/c6_old/myna/paper/shared
+  0%|          | 0.00/1.61k [00:00<?, ?B/s]100%|██████████| 1.61k/1.61k [00:00<00:00, 4.03MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/shared/flatten_docx.py
+Downloading flatten_docx_full.py to /tmp/c6_old/myna/paper/shared
+  0%|          | 0.00/3.13k [00:00<?, ?B/s]100%|██████████| 3.13k/3.13k [00:00<00:00, 8.22MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/shared/flatten_docx_full.py
+Downloading make_diag_journal.py to /tmp/c6_old/myna/paper/shared
+  0%|          | 0.00/2.54k [00:00<?, ?B/s]100%|██████████| 2.54k/2.54k [00:00<00:00, 6.43MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/shared/make_diag_journal.py
+Downloading make_docx.py to /tmp/c6_old/myna/paper/shared
+  0%|          | 0.00/9.22k [00:00<?, ?B/s]100%|██████████| 9.22k/9.22k [00:00<00:00, 874kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/shared/make_docx.py
+Downloading make_journal_figures.py to /tmp/c6_old/myna/paper/shared
+  0%|          | 0.00/5.31k [00:00<?, ?B/s]100%|██████████| 5.31k/5.31k [00:00<00:00, 8.26MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/shared/make_journal_figures.py
+Downloading make_v2.py to /tmp/c6_old/myna/paper/shared
+  0%|          | 0.00/891 [00:00<?, ?B/s]100%|██████████| 891/891 [00:00<00:00, 1.83MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/shared/make_v2.py
+Downloading merge_body.py to /tmp/c6_old/myna/paper/shared
+  0%|          | 0.00/421 [00:00<?, ?B/s]100%|██████████| 421/421 [00:00<00:00, 1.28MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/shared/merge_body.py
+Downloading refs.bib to /tmp/c6_old/myna/paper/shared
+  0%|          | 0.00/12.6k [00:00<?, ?B/s]100%|██████████| 12.6k/12.6k [00:00<00:00, 443kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/shared/refs.bib
+Downloading split_body.py to /tmp/c6_old/myna/paper/shared
+  0%|          | 0.00/0.98k [00:00<?, ?B/s]100%|██████████| 0.98k/0.98k [00:00<00:00, 1.67MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper/shared/split_body.py
+Downloading DRAFT-2-PLAN.md to /tmp/c6_old/myna/paper_draft_v1
+  0%|          | 0.00/2.42k [00:00<?, ?B/s]100%|██████████| 2.42k/2.42k [00:00<00:00, 6.33MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper_draft_v1/DRAFT-2-PLAN.md
+Downloading README.md to /tmp/c6_old/myna/paper_draft_v1
+  0%|          | 0.00/2.49k [00:00<?, ?B/s]100%|██████████| 2.49k/2.49k [00:00<00:00, 5.41MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper_draft_v1/README.md
+Downloading build_upload.sh to /tmp/c6_old/myna/paper_draft_v1
+  0%|          | 0.00/1.19k [00:00<?, ?B/s]100%|██████████| 1.19k/1.19k [00:00<00:00, 3.16MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper_draft_v1/build_upload.sh
+Downloading camera_body_appendix.tex to /tmp/c6_old/myna/paper_draft_v1
+  0%|          | 0.00/7.04k [00:00<?, ?B/s]100%|██████████| 7.04k/7.04k [00:00<00:00, 16.8MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper_draft_v1/camera_body_appendix.tex
+Downloading draft_body_appendix.tex to /tmp/c6_old/myna/paper_draft_v1
+  0%|          | 0.00/6.98k [00:00<?, ?B/s]100%|██████████| 6.98k/6.98k [00:00<00:00, 11.9MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper_draft_v1/draft_body_appendix.tex
+Downloading draft_body_main.tex to /tmp/c6_old/myna/paper_draft_v1
+  0%|          | 0.00/54.2k [00:00<?, ?B/s]100%|██████████| 54.2k/54.2k [00:00<00:00, 173kB/s]100%|██████████| 54.2k/54.2k [00:00<00:00, 172kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper_draft_v1/draft_body_main.tex
+Downloading myna_tmlr.tex to /tmp/c6_old/myna/paper_draft_v1
+  0%|          | 0.00/2.31k [00:00<?, ?B/s]100%|██████████| 2.31k/2.31k [00:00<00:00, 6.95MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper_draft_v1/myna_tmlr.tex
+Downloading refs.bib to /tmp/c6_old/myna/paper_draft_v1
+  0%|          | 0.00/13.8k [00:00<?, ?B/s]100%|██████████| 13.8k/13.8k [00:00<00:00, 404kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper_draft_v1/refs.bib
+Downloading tmlr.sty to /tmp/c6_old/myna/paper_draft_v1
+  0%|          | 0.00/6.41k [00:00<?, ?B/s]100%|██████████| 6.41k/6.41k [00:00<00:00, 8.68MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper_draft_v1/tmlr.sty
+Downloading abstract.txt to /tmp/c6_old/myna/paper_draft_v1/upload
+  0%|          | 0.00/1.43k [00:00<?, ?B/s]100%|██████████| 1.43k/1.43k [00:00<00:00, 3.76MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper_draft_v1/upload/abstract.txt
+Downloading keywords.txt to /tmp/c6_old/myna/paper_draft_v1/upload
+  0%|          | 0.00/184 [00:00<?, ?B/s]100%|██████████| 184/184 [00:00<00:00, 537kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/paper_draft_v1/upload/keywords.txt
+Downloading pyproject.toml to /tmp/c6_old/myna
+  0%|          | 0.00/2.47k [00:00<?, ?B/s]100%|██████████| 2.47k/2.47k [00:00<00:00, 7.48MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/pyproject.toml
+Downloading README.md to /tmp/c6_old/myna/release
+  0%|          | 0.00/6.03k [00:00<?, ?B/s]100%|██████████| 6.03k/6.03k [00:00<00:00, 11.6MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/release/README.md
+Downloading build_anon_mirror.py to /tmp/c6_old/myna/release
+  0%|          | 0.00/7.30k [00:00<?, ?B/s]100%|██████████| 7.30k/7.30k [00:00<00:00, 17.6MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/release/build_anon_mirror.py
+Downloading build_cal_split.py to /tmp/c6_old/myna/release
+  0%|          | 0.00/2.87k [00:00<?, ?B/s]100%|██████████| 2.87k/2.87k [00:00<00:00, 7.53MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/release/build_cal_split.py
+Downloading colab_baselines.ipynb to /tmp/c6_old/myna/release
+  0%|          | 0.00/22.6k [00:00<?, ?B/s]100%|██████████| 22.6k/22.6k [00:00<00:00, 244kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/release/colab_baselines.ipynb
+Downloading colab_baselines.py to /tmp/c6_old/myna/release
+  0%|          | 0.00/16.1k [00:00<?, ?B/s]100%|██████████| 16.1k/16.1k [00:00<00:00, 296kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/release/colab_baselines.py
+Downloading hf-model-card.md to /tmp/c6_old/myna/release
+  0%|          | 0.00/3.50k [00:00<?, ?B/s]100%|██████████| 3.50k/3.50k [00:00<00:00, 5.73MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/release/hf-model-card.md
+Downloading kernel-metadata.json to /tmp/c6_old/myna/release/kaggle/a3ep
+  0%|          | 0.00/306 [00:00<?, ?B/s]100%|██████████| 306/306 [00:00<00:00, 1.12MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/release/kaggle/a3ep/kernel-metadata.json
+Downloading run.py to /tmp/c6_old/myna/release/kaggle/a3ep
+  0%|          | 0.00/22.3k [00:00<?, ?B/s]100%|██████████| 22.3k/22.3k [00:00<00:00, 264kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/release/kaggle/a3ep/run.py
+Downloading kernel-metadata.json to /tmp/c6_old/myna/release/kaggle/bseed27
+  0%|          | 0.00/306 [00:00<?, ?B/s]100%|██████████| 306/306 [00:00<00:00, 1.09MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/release/kaggle/bseed27/kernel-metadata.json
+Downloading run.py to /tmp/c6_old/myna/release/kaggle/bseed27
+  0%|          | 0.00/22.3k [00:00<?, ?B/s]100%|██████████| 22.3k/22.3k [00:00<00:00, 225kB/s]100%|██████████| 22.3k/22.3k [00:00<00:00, 223kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/release/kaggle/bseed27/run.py
+Downloading kernel-metadata.json to /tmp/c6_old/myna/release/kaggle/c3ep
+  0%|          | 0.00/304 [00:00<?, ?B/s]100%|██████████| 304/304 [00:00<00:00, 1.22MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/release/kaggle/c3ep/kernel-metadata.json
+Downloading run.py to /tmp/c6_old/myna/release/kaggle/c3ep
+  0%|          | 0.00/22.3k [00:00<?, ?B/s]100%|██████████| 22.3k/22.3k [00:00<00:00, 678kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/release/kaggle/c3ep/run.py
+Downloading kernel-metadata.json to /tmp/c6_old/myna/release/kaggle/d6ep
+  0%|          | 0.00/306 [00:00<?, ?B/s]100%|██████████| 306/306 [00:00<00:00, 1.05MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/release/kaggle/d6ep/kernel-metadata.json
+Downloading run.py to /tmp/c6_old/myna/release/kaggle/d6ep
+  0%|          | 0.00/22.3k [00:00<?, ?B/s]100%|██████████| 22.3k/22.3k [00:00<00:00, 256kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/release/kaggle/d6ep/run.py
+Downloading kernel-metadata-2ep-s13.json to /tmp/c6_old/myna/release/kaggle
+  0%|          | 0.00/316 [00:00<?, ?B/s]100%|██████████| 316/316 [00:00<00:00, 849kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/release/kaggle/kernel-metadata-2ep-s13.json
+Downloading kernel-metadata-2ep-s7.json to /tmp/c6_old/myna/release/kaggle
+  0%|          | 0.00/313 [00:00<?, ?B/s]100%|██████████| 313/313 [00:00<00:00, 1.03MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/release/kaggle/kernel-metadata-2ep-s7.json
+Downloading kernel-metadata-2ep.json to /tmp/c6_old/myna/release/kaggle
+  0%|          | 0.00/301 [00:00<?, ?B/s]100%|██████████| 301/301 [00:00<00:00, 827kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/release/kaggle/kernel-metadata-2ep.json
+Downloading kernel-metadata.json to /tmp/c6_old/myna/release/kaggle
+  0%|          | 0.00/290 [00:00<?, ?B/s]100%|██████████| 290/290 [00:00<00:00, 765kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/release/kaggle/kernel-metadata.json
+Downloading overnight.sh to /tmp/c6_old/myna/release/kaggle
+  0%|          | 0.00/1.44k [00:00<?, ?B/s]100%|██████████| 1.44k/1.44k [00:00<00:00, 3.67MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/release/kaggle/overnight.sh
+Downloading push.py to /tmp/c6_old/myna/release/kaggle
+  0%|          | 0.00/1.88k [00:00<?, ?B/s]100%|██████████| 1.88k/1.88k [00:00<00:00, 4.30MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/release/kaggle/push.py
+Downloading run.py to /tmp/c6_old/myna/release/kaggle
+  0%|          | 0.00/20.8k [00:00<?, ?B/s]100%|██████████| 20.8k/20.8k [00:00<00:00, 244kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/release/kaggle/run.py
+Downloading run2ep.py to /tmp/c6_old/myna/release/kaggle
+  0%|          | 0.00/22.4k [00:00<?, ?B/s]100%|██████████| 22.4k/22.4k [00:00<00:00, 271kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/release/kaggle/run2ep.py
+Downloading run2ep_seed13.py to /tmp/c6_old/myna/release/kaggle
+  0%|          | 0.00/22.3k [00:00<?, ?B/s]100%|██████████| 22.3k/22.3k [00:00<00:00, 253kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/release/kaggle/run2ep_seed13.py
+Downloading run2ep_seed7.py to /tmp/c6_old/myna/release/kaggle
+  0%|          | 0.00/22.3k [00:00<?, ?B/s]100%|██████████| 22.3k/22.3k [00:00<00:00, 227kB/s]100%|██████████| 22.3k/22.3k [00:00<00:00, 226kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/release/kaggle/run2ep_seed7.py
+Downloading watch_c3ep.sh to /tmp/c6_old/myna/release/kaggle
+  0%|          | 0.00/971 [00:00<?, ?B/s]100%|██████████| 971/971 [00:00<00:00, 3.12MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/release/kaggle/watch_c3ep.sh
+Downloading make_commands.py to /tmp/c6_old/myna/release
+  0%|          | 0.00/1.05k [00:00<?, ?B/s]100%|██████████| 1.05k/1.05k [00:00<00:00, 2.32MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/release/make_commands.py
+Downloading make_model_card.py to /tmp/c6_old/myna/release
+  0%|          | 0.00/5.63k [00:00<?, ?B/s]100%|██████████| 5.63k/5.63k [00:00<00:00, 8.92MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/release/make_model_card.py
+Downloading 01-v5-campaign-full.ipynb to /tmp/c6_old/myna/release/notebooks
+  0%|          | 0.00/285k [00:00<?, ?B/s]100%|██████████| 285k/285k [00:00<00:00, 309kB/s]100%|██████████| 285k/285k [00:00<00:00, 309kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/release/notebooks/01-v5-campaign-full.ipynb
+Downloading 02-v5-campaign-no-merge.ipynb to /tmp/c6_old/myna/release/notebooks
+  0%|          | 0.00/249k [00:00<?, ?B/s]100%|██████████| 249k/249k [00:00<00:00, 292kB/s]100%|██████████| 249k/249k [00:00<00:00, 292kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/release/notebooks/02-v5-campaign-no-merge.ipynb
+Downloading 03-v5-campaign-cells-1-12.ipynb to /tmp/c6_old/myna/release/notebooks
+  0%|          | 0.00/125k [00:00<?, ?B/s]100%|██████████| 125k/125k [00:00<00:00, 202kB/s]100%|██████████| 125k/125k [00:00<00:00, 201kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/release/notebooks/03-v5-campaign-cells-1-12.ipynb
+Downloading 04-v6-campaign.ipynb to /tmp/c6_old/myna/release/notebooks
+  0%|          | 0.00/103k [00:00<?, ?B/s]100%|██████████| 103k/103k [00:00<00:00, 203kB/s]100%|██████████| 103k/103k [00:00<00:00, 203kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/release/notebooks/04-v6-campaign.ipynb
+Downloading MANIFEST.json to /tmp/c6_old/myna/release/notebooks
+  0%|          | 0.00/1.80k [00:00<?, ?B/s]100%|██████████| 1.80k/1.80k [00:00<00:00, 4.40MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/release/notebooks/MANIFEST.json
+Downloading train_v6.py to /tmp/c6_old/myna/release
+  0%|          | 0.00/12.2k [00:00<?, ?B/s]100%|██████████| 12.2k/12.2k [00:00<00:00, 587kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/release/train_v6.py
+Downloading anti_prior_audit.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/25.8k [00:00<?, ?B/s]100%|██████████| 25.8k/25.8k [00:00<00:00, 232kB/s]100%|██████████| 25.8k/25.8k [00:00<00:00, 231kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/anti_prior_audit.json
+Downloading anti_prior_audit.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/8.18k [00:00<?, ?B/s]100%|██████████| 8.18k/8.18k [00:00<00:00, 16.1MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/anti_prior_audit.log
+Downloading antiprior_off_s0.metrics.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/288k [00:00<?, ?B/s]100%|██████████| 288k/288k [00:00<00:00, 315kB/s]100%|██████████| 288k/288k [00:00<00:00, 315kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/antiprior_off_s0.metrics.json
+Downloading antiprior_off_s0.report.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/11.3k [00:00<?, ?B/s]100%|██████████| 11.3k/11.3k [00:00<00:00, 458kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/antiprior_off_s0.report.json
+Downloading antiprior_off_s0.report.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/6.44k [00:00<?, ?B/s]100%|██████████| 6.44k/6.44k [00:00<00:00, 10.6MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/antiprior_off_s0.report.log
+Downloading antiprior_off_s0.report_repro.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/1.33k [00:00<?, ?B/s]100%|██████████| 1.33k/1.33k [00:00<00:00, 4.49MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/antiprior_off_s0.report_repro.log
+Downloading antiprior_off_s0.train.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/135k [00:00<?, ?B/s]100%|██████████| 135k/135k [00:00<00:00, 215kB/s]100%|██████████| 135k/135k [00:00<00:00, 214kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/antiprior_off_s0.train.log
+Downloading antiprior_on_s0.train.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/1.78k [00:00<?, ?B/s]100%|██████████| 1.78k/1.78k [00:00<00:00, 4.58MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/antiprior_on_s0.train.log
+Downloading antiprior_on_s0c.metrics.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/291k [00:00<?, ?B/s]100%|██████████| 291k/291k [00:01<00:00, 298kB/s]100%|██████████| 291k/291k [00:01<00:00, 298kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/antiprior_on_s0c.metrics.json
+Downloading antiprior_on_s0c.report.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/12.1k [00:00<?, ?B/s]100%|██████████| 12.1k/12.1k [00:00<00:00, 402kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/antiprior_on_s0c.report.json
+Downloading antiprior_on_s0c.report.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/6.36k [00:00<?, ?B/s]100%|██████████| 6.36k/6.36k [00:00<00:00, 11.7MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/antiprior_on_s0c.report.log
+Downloading antiprior_on_s0c.train.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/135k [00:00<?, ?B/s]100%|██████████| 135k/135k [00:00<00:00, 233kB/s]100%|██████████| 135k/135k [00:00<00:00, 233kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/antiprior_on_s0c.train.log
+Downloading baseline_seed13_2ep.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/171k [00:00<?, ?B/s]100%|██████████| 171k/171k [00:00<00:00, 240kB/s]100%|██████████| 171k/171k [00:00<00:00, 240kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/baseline_seed13_2ep.json
+Downloading baseline_seed21_3ep.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/171k [00:00<?, ?B/s]100%|██████████| 171k/171k [00:00<00:00, 229kB/s]100%|██████████| 171k/171k [00:00<00:00, 229kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/baseline_seed21_3ep.json
+Downloading baseline_seed42.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/171k [00:00<?, ?B/s]100%|██████████| 171k/171k [00:00<00:00, 237kB/s]100%|██████████| 171k/171k [00:00<00:00, 237kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/baseline_seed42.json
+Downloading baseline_seed42_2ep.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/171k [00:00<?, ?B/s]100%|██████████| 171k/171k [00:00<00:00, 231kB/s]100%|██████████| 171k/171k [00:00<00:00, 230kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/baseline_seed42_2ep.json
+Downloading baseline_seed42_q.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/171k [00:00<?, ?B/s]100%|██████████| 171k/171k [00:00<00:00, 244kB/s]100%|██████████| 171k/171k [00:00<00:00, 243kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/baseline_seed42_q.json
+Downloading baseline_seed7_2ep.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/171k [00:00<?, ?B/s]100%|██████████| 171k/171k [00:00<00:00, 232kB/s]100%|██████████| 171k/171k [00:00<00:00, 232kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/baseline_seed7_2ep.json
+Downloading baseline_seed7_3ep.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/171k [00:00<?, ?B/s]100%|██████████| 171k/171k [00:00<00:00, 233kB/s]100%|██████████| 171k/171k [00:00<00:00, 233kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/baseline_seed7_3ep.json
+Downloading baseline_seed7_q.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/171k [00:00<?, ?B/s]100%|██████████| 171k/171k [00:00<00:00, 236kB/s]100%|██████████| 171k/171k [00:00<00:00, 236kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/baseline_seed7_q.json
+Downloading bench_mlx_int8.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/15.3k [00:00<?, ?B/s]100%|██████████| 15.3k/15.3k [00:00<00:00, 311kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/bench_mlx_int8.json
+Downloading bench_mlx_int8.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/1.39k [00:00<?, ?B/s]100%|██████████| 1.39k/1.39k [00:00<00:00, 4.41MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/bench_mlx_int8.log
+Downloading bench_mlx_int8.md to /tmp/c6_old/myna/runs
+  0%|          | 0.00/2.85k [00:00<?, ?B/s]100%|██████████| 2.85k/2.85k [00:00<00:00, 6.62MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/bench_mlx_int8.md
+Downloading bench_mlx_int8_keepgate.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/14.7k [00:00<?, ?B/s]100%|██████████| 14.7k/14.7k [00:00<00:00, 410kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/bench_mlx_int8_keepgate.json
+Downloading bench_mlx_int8_keepgate.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/1.04k [00:00<?, ?B/s]100%|██████████| 1.04k/1.04k [00:00<00:00, 1.95MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/bench_mlx_int8_keepgate.log
+Downloading bench_mlx_int8_keepgate.md to /tmp/c6_old/myna/runs
+  0%|          | 0.00/2.76k [00:00<?, ?B/s]100%|██████████| 2.76k/2.76k [00:00<00:00, 5.10MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/bench_mlx_int8_keepgate.md
+Downloading bench_mlx_int8_run2.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/15.4k [00:00<?, ?B/s]100%|██████████| 15.4k/15.4k [00:00<00:00, 315kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/bench_mlx_int8_run2.json
+Downloading bench_mlx_int8_run2.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/1.40k [00:00<?, ?B/s]100%|██████████| 1.40k/1.40k [00:00<00:00, 5.22MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/bench_mlx_int8_run2.log
+Downloading bench_mlx_int8_run2.md to /tmp/c6_old/myna/runs
+  0%|          | 0.00/2.93k [00:00<?, ?B/s]100%|██████████| 2.93k/2.93k [00:00<00:00, 7.73MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/bench_mlx_int8_run2.md
+Downloading bench_probe_extended.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/632 [00:00<?, ?B/s]100%|██████████| 632/632 [00:00<00:00, 2.38MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/bench_probe_extended.log
+Downloading bench_stream.md to /tmp/c6_old/myna/runs
+  0%|          | 0.00/429 [00:00<?, ?B/s]100%|██████████| 429/429 [00:00<00:00, 1.13MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/bench_stream.md
+Downloading bench_stream_v0.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/1.66k [00:00<?, ?B/s]100%|██████████| 1.66k/1.66k [00:00<00:00, 4.51MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/bench_stream_v0.log
+Downloading browser_g3.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/19.7k [00:00<?, ?B/s]100%|██████████| 19.7k/19.7k [00:00<00:00, 269kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/browser_g3.json
+Downloading browser_g3.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/949 [00:00<?, ?B/s]100%|██████████| 949/949 [00:00<00:00, 2.52MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/browser_g3.log
+Downloading browser_g3_int8.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/19.9k [00:00<?, ?B/s]100%|██████████| 19.9k/19.9k [00:00<00:00, 257kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/browser_g3_int8.json
+Downloading browser_g3_int8.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/1.01k [00:00<?, ?B/s]100%|██████████| 1.01k/1.01k [00:00<00:00, 2.53MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/browser_g3_int8.log
+Downloading browser_selftest.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/1.12k [00:00<?, ?B/s]100%|██████████| 1.12k/1.12k [00:00<00:00, 3.32MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/browser_selftest.log
+Downloading cal_refit.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/543 [00:00<?, ?B/s]100%|██████████| 543/543 [00:00<00:00, 988kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/cal_refit.json
+Downloading cal_split.jsonl to /tmp/c6_old/myna/runs
+  0%|          | 0.00/2.72M [00:00<?, ?B/s] 37%|███▋      | 1.00M/2.72M [00:01<00:02, 632kB/s] 73%|███████▎  | 2.00M/2.72M [00:02<00:00, 1.17MB/s]100%|██████████| 2.72M/2.72M [00:02<00:00, 1.62MB/s]100%|██████████| 2.72M/2.72M [00:02<00:00, 1.30MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/cal_split.jsonl
+Downloading cal_split_check.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/488 [00:00<?, ?B/s]100%|██████████| 488/488 [00:00<00:00, 1.51MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/cal_split_check.json
+Downloading ci_8887725.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/13.3k [00:00<?, ?B/s]100%|██████████| 13.3k/13.3k [00:00<00:00, 494kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/ci_8887725.log
+Downloading ci_ae3924e.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/16.5k [00:00<?, ?B/s]100%|██████████| 16.5k/16.5k [00:00<00:00, 328kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/ci_ae3924e.log
+Downloading ci_cfccc48.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/75.8k [00:00<?, ?B/s]100%|██████████| 75.8k/75.8k [00:00<00:00, 174kB/s]100%|██████████| 75.8k/75.8k [00:00<00:00, 174kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/ci_cfccc48.log
+Downloading ci_d8d408e.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/13.7k [00:00<?, ?B/s]100%|██████████| 13.7k/13.7k [00:00<00:00, 397kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/ci_d8d408e.log
+Downloading ci_efaca29.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/56.8k [00:00<?, ?B/s]100%|██████████| 56.8k/56.8k [00:00<00:00, 180kB/s]100%|██████████| 56.8k/56.8k [00:00<00:00, 180kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/ci_efaca29.log
+Downloading ckpt_backup.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/2.65k [00:00<?, ?B/s]100%|██████████| 2.65k/2.65k [00:00<00:00, 6.25MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/ckpt_backup.log
+Downloading colab_baselines.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/2.64k [00:00<?, ?B/s]100%|██████████| 2.64k/2.64k [00:00<00:00, 7.40MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/colab_baselines.log
+Downloading consistency_audit.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/7.09k [00:00<?, ?B/s]100%|██████████| 7.09k/7.09k [00:00<00:00, 10.1MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/consistency_audit.json
+Downloading consistency_audit.md to /tmp/c6_old/myna/runs
+  0%|          | 0.00/428 [00:00<?, ?B/s]100%|██████████| 428/428 [00:00<00:00, 775kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/consistency_audit.md
+Downloading coral_eval.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/26.0k [00:00<?, ?B/s]100%|██████████| 26.0k/26.0k [00:00<00:00, 247kB/s]100%|██████████| 26.0k/26.0k [00:00<00:00, 246kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/coral_eval.json
+Downloading coral_eval.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/14.7k [00:00<?, ?B/s]100%|██████████| 14.7k/14.7k [00:00<00:00, 349kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/coral_eval.log
+Downloading coverage_replay.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/2.12k [00:00<?, ?B/s]100%|██████████| 2.12k/2.12k [00:00<00:00, 4.29MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/coverage_replay.log
+Downloading diag1200.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/296 [00:00<?, ?B/s]100%|██████████| 296/296 [00:00<00:00, 590kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/diag1200.log
+Downloading diag1200_gatefix.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/174 [00:00<?, ?B/s]100%|██████████| 174/174 [00:00<00:00, 569kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/diag1200_gatefix.log
+Downloading diag_fit256.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/267 [00:00<?, ?B/s]100%|██████████| 267/267 [00:00<00:00, 812kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/diag_fit256.log
+Downloading diag_fit64.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/118 [00:00<?, ?B/s]100%|██████████| 118/118 [00:00<00:00, 231kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/diag_fit64.log
+Downloading diag_question_ablation.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/16.3k [00:00<?, ?B/s]100%|██████████| 16.3k/16.3k [00:00<00:00, 301kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/diag_question_ablation.json
+Downloading diag_question_ablation.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/6.17k [00:00<?, ?B/s]100%|██████████| 6.17k/6.17k [00:00<00:00, 13.3MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/diag_question_ablation.log
+Downloading doc_suites_post_969.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/142 [00:00<?, ?B/s]100%|██████████| 142/142 [00:00<00:00, 450kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/doc_suites_post_969.log
+Downloading external_majority.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/1.21k [00:00<?, ?B/s]100%|██████████| 1.21k/1.21k [00:00<00:00, 4.03MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/external_majority.json
+Downloading external_nli.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/2.35k [00:00<?, ?B/s]100%|██████████| 2.35k/2.35k [00:00<00:00, 6.58MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/external_nli.json
+Downloading external_tfidf.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/2.32k [00:00<?, ?B/s]100%|██████████| 2.32k/2.32k [00:00<00:00, 5.56MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/external_tfidf.json
+Downloading g6_v0_synthetic_s0.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/2.79k [00:00<?, ?B/s]100%|██████████| 2.79k/2.79k [00:00<00:00, 7.33MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/g6_v0_synthetic_s0.json
+Downloading g6_v0_synthetic_s0.md to /tmp/c6_old/myna/runs
+  0%|          | 0.00/1.45k [00:00<?, ?B/s]100%|██████████| 1.45k/1.45k [00:00<00:00, 4.68MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/g6_v0_synthetic_s0.md
+Downloading g6_v0_synthetic_s1.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/2.81k [00:00<?, ?B/s]100%|██████████| 2.81k/2.81k [00:00<00:00, 7.06MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/g6_v0_synthetic_s1.json
+Downloading g6_v0_synthetic_s1.md to /tmp/c6_old/myna/runs
+  0%|          | 0.00/1.45k [00:00<?, ?B/s]100%|██████████| 1.45k/1.45k [00:00<00:00, 4.26MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/g6_v0_synthetic_s1.md
+Downloading g6_v1b_synthetic_s0.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/2.84k [00:00<?, ?B/s]100%|██████████| 2.84k/2.84k [00:00<00:00, 4.22MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/g6_v1b_synthetic_s0.json
+Downloading g6_v1b_synthetic_s0.md to /tmp/c6_old/myna/runs
+  0%|          | 0.00/1.47k [00:00<?, ?B/s]100%|██████████| 1.47k/1.47k [00:00<00:00, 3.31MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/g6_v1b_synthetic_s0.md
+Downloading g6_v1b_synthetic_s1.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/2.76k [00:00<?, ?B/s]100%|██████████| 2.76k/2.76k [00:00<00:00, 7.27MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/g6_v1b_synthetic_s1.json
+Downloading g6_v1b_synthetic_s1.md to /tmp/c6_old/myna/runs
+  0%|          | 0.00/1.47k [00:00<?, ?B/s]100%|██████████| 1.47k/1.47k [00:00<00:00, 3.76MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/g6_v1b_synthetic_s1.md
+Downloading gates_check_post_967.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/403 [00:00<?, ?B/s]100%|██████████| 403/403 [00:00<00:00, 1.13MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/gates_check_post_967.log
+Downloading gates_check_post_967b.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/403 [00:00<?, ?B/s]100%|██████████| 403/403 [00:00<00:00, 1.24MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/gates_check_post_967b.log
+Downloading gates_check_post_967c.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/403 [00:00<?, ?B/s]100%|██████████| 403/403 [00:00<00:00, 1.26MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/gates_check_post_967c.log
+Downloading gates_check_post_969.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/404 [00:00<?, ?B/s]100%|██████████| 404/404 [00:00<00:00, 1.11MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/gates_check_post_969.log
+Downloading hf_upload_d8d408e.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/1.01k [00:00<?, ?B/s]100%|██████████| 1.01k/1.01k [00:00<00:00, 2.25MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/hf_upload_d8d408e.log
+Downloading int8_quantize.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/813 [00:00<?, ?B/s]100%|██████████| 813/813 [00:00<00:00, 2.02MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/int8_quantize.log
+Downloading latency_matched.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/9.43k [00:00<?, ?B/s]100%|██████████| 9.43k/9.43k [00:00<00:00, 1.82MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/latency_matched.json
+Downloading latency_matched.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/3.82k [00:00<?, ?B/s]100%|██████████| 3.82k/3.82k [00:00<00:00, 9.39MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/latency_matched.log
+Downloading latency_matched.md to /tmp/c6_old/myna/runs
+  0%|          | 0.00/2.95k [00:00<?, ?B/s]100%|██████████| 2.95k/2.95k [00:00<00:00, 5.12MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/latency_matched.md
+Downloading latency_matched_run1_superseded.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/9.46k [00:00<?, ?B/s]100%|██████████| 9.46k/9.46k [00:00<00:00, 1.73MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/latency_matched_run1_superseded.json
+Downloading latency_matched_run1_superseded.md to /tmp/c6_old/myna/runs
+  0%|          | 0.00/2.98k [00:00<?, ?B/s]100%|██████████| 2.98k/2.98k [00:00<00:00, 7.35MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/latency_matched_run1_superseded.md
+Downloading laya_0419_test.rowoutcomes.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/744k [00:00<?, ?B/s]100%|██████████| 744k/744k [00:01<00:00, 545kB/s]100%|██████████| 744k/744k [00:01<00:00, 544kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/laya_0419_test.rowoutcomes.json
+Downloading laya_0419_test.rowoutcomes.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/2.64k [00:00<?, ?B/s]100%|██████████| 2.64k/2.64k [00:00<00:00, 5.03MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/laya_0419_test.rowoutcomes.log
+Downloading laya_decision_v2.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/2.74k [00:00<?, ?B/s]100%|██████████| 2.74k/2.74k [00:00<00:00, 7.36MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/laya_decision_v2.json
+Downloading laya_decision_v2_test.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/2.74k [00:00<?, ?B/s]100%|██████████| 2.74k/2.74k [00:00<00:00, 6.46MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/laya_decision_v2_test.json
+Downloading laya_smoke.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/1.87k [00:00<?, ?B/s]100%|██████████| 1.87k/1.87k [00:00<00:00, 5.53MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/laya_smoke.json
+Downloading laya_smoke.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/870 [00:00<?, ?B/s]100%|██████████| 870/870 [00:00<00:00, 2.46MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/laya_smoke.log
+Downloading laya_witness.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/1.82k [00:00<?, ?B/s]100%|██████████| 1.82k/1.82k [00:00<00:00, 4.42MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/laya_witness.log
+Downloading laya_witness_test.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/1.81k [00:00<?, ?B/s]100%|██████████| 1.81k/1.81k [00:00<00:00, 2.76MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/laya_witness_test.log
+Downloading lc0_smoke_s0.metrics.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/684 [00:00<?, ?B/s]100%|██████████| 684/684 [00:00<00:00, 1.63MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/lc0_smoke_s0.metrics.json
+Downloading lc0_smoke_s0.train.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/4.37k [00:00<?, ?B/s]100%|██████████| 4.37k/4.37k [00:00<00:00, 7.32MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/lc0_smoke_s0.train.log
+Downloading lc1_4k_s0.metrics.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/694 [00:00<?, ?B/s]100%|██████████| 694/694 [00:00<00:00, 1.61MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/lc1_4k_s0.metrics.json
+Downloading lc1_4k_s0.stageA.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/5.16k [00:00<?, ?B/s]100%|██████████| 5.16k/5.16k [00:00<00:00, 10.6MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/lc1_4k_s0.stageA.log
+Downloading lc1_4k_s0.stageB_resume.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/2.90k [00:00<?, ?B/s]100%|██████████| 2.90k/2.90k [00:00<00:00, 4.52MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/lc1_4k_s0.stageB_resume.log
+Downloading lc1_4k_s0.stageC_final.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/5.24k [00:00<?, ?B/s]100%|██████████| 5.24k/5.24k [00:00<00:00, 12.9MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/lc1_4k_s0.stageC_final.log
+Downloading lc1_4k_s0.train.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/1.88k [00:00<?, ?B/s]100%|██████████| 1.88k/1.88k [00:00<00:00, 5.41MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/lc1_4k_s0.train.log
+Downloading lc1_4k_s0_resume.train.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/3.26k [00:00<?, ?B/s]100%|██████████| 3.26k/3.26k [00:00<00:00, 8.08MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/lc1_4k_s0_resume.train.log
+Downloading mlx_int8_gem_probe.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/1.10k [00:00<?, ?B/s]100%|██████████| 1.10k/1.10k [00:00<00:00, 3.16MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/mlx_int8_gem_probe.log
+Downloading mlx_int8_gem_probe.md to /tmp/c6_old/myna/runs
+  0%|          | 0.00/970 [00:00<?, ?B/s]100%|██████████| 970/970 [00:00<00:00, 2.93MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/mlx_int8_gem_probe.md
+Downloading mondrian_conformal.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/4.32k [00:00<?, ?B/s]100%|██████████| 4.32k/4.32k [00:00<00:00, 9.80MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/mondrian_conformal.json
+Downloading mutation_anti_prior.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/8.82k [00:00<?, ?B/s]100%|██████████| 8.82k/8.82k [00:00<00:00, 1.71MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/mutation_anti_prior.log
+Downloading mutation_browser.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/4.33k [00:00<?, ?B/s]100%|██████████| 4.33k/4.33k [00:00<00:00, 10.8MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/mutation_browser.log
+Downloading mutation_diag_question_ablation.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/7.67k [00:00<?, ?B/s]100%|██████████| 7.67k/7.67k [00:00<00:00, 15.9MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/mutation_diag_question_ablation.log
+Downloading mutation_gates.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/3.61k [00:00<?, ?B/s]100%|██████████| 3.61k/3.61k [00:00<00:00, 9.93MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/mutation_gates.log
+Downloading mutation_gates_post_966.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/492 [00:00<?, ?B/s]100%|██████████| 492/492 [00:00<00:00, 1.35MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/mutation_gates_post_966.log
+Downloading mutation_gates_post_967.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/3.43k [00:00<?, ?B/s]100%|██████████| 3.43k/3.43k [00:00<00:00, 5.87MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/mutation_gates_post_967.log
+Downloading mutation_gates_post_967.time to /tmp/c6_old/myna/runs
+  0%|          | 0.00/36.0 [00:00<?, ?B/s]100%|██████████| 36.0/36.0 [00:00<00:00, 104kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/mutation_gates_post_967.time
+Downloading mutation_gates_post_969.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/2.42k [00:00<?, ?B/s]100%|██████████| 2.42k/2.42k [00:00<00:00, 4.85MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/mutation_gates_post_969.log
+Downloading mutation_kaggle_bundle.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/9.64k [00:00<?, ?B/s]100%|██████████| 9.64k/9.64k [00:00<00:00, 1.62MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/mutation_kaggle_bundle.log
+Downloading mutation_latency_matched.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/6.08k [00:00<?, ?B/s]100%|██████████| 6.08k/6.08k [00:00<00:00, 14.2MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/mutation_latency_matched.log
+Downloading mutation_longctx.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/4.19k [00:00<?, ?B/s]100%|██████████| 4.19k/4.19k [00:00<00:00, 9.34MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/mutation_longctx.log
+Downloading mutation_memory_plan.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/7.21k [00:00<?, ?B/s]100%|██████████| 7.21k/7.21k [00:00<00:00, 14.3MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/mutation_memory_plan.log
+Downloading mutation_mlx.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/2.68k [00:00<?, ?B/s]100%|██████████| 2.68k/2.68k [00:00<00:00, 5.59MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/mutation_mlx.log
+Downloading mutation_onnx.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/4.01k [00:00<?, ?B/s]100%|██████████| 4.01k/4.01k [00:00<00:00, 8.66MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/mutation_onnx.log
+Downloading mutation_ordinal.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/3.35k [00:00<?, ?B/s]100%|██████████| 3.35k/3.35k [00:00<00:00, 7.24MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/mutation_ordinal.log
+Downloading mutation_p5.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/8.36k [00:00<?, ?B/s]100%|██████████| 8.36k/8.36k [00:00<00:00, 13.4MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/mutation_p5.log
+Downloading mutation_paraphrase.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/4.20k [00:00<?, ?B/s]100%|██████████| 4.20k/4.20k [00:00<00:00, 8.98MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/mutation_paraphrase.log
+Downloading mutation_paraphrase_post_958.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/4.68k [00:00<?, ?B/s]100%|██████████| 4.68k/4.68k [00:00<00:00, 11.9MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/mutation_paraphrase_post_958.log
+Downloading mutation_report.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/15.7k [00:00<?, ?B/s]100%|██████████| 15.7k/15.7k [00:00<00:00, 371kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/mutation_report.log
+Downloading mutation_reproduce.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/5.09k [00:00<?, ?B/s]100%|██████████| 5.09k/5.09k [00:00<00:00, 12.7MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/mutation_reproduce.log
+Downloading mutation_reproduce_post_10c.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/4.96k [00:00<?, ?B/s]100%|██████████| 4.96k/4.96k [00:00<00:00, 13.4MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/mutation_reproduce_post_10c.log
+Downloading mutation_reproduce_post_966.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/5.01k [00:00<?, ?B/s]100%|██████████| 5.01k/5.01k [00:00<00:00, 12.1MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/mutation_reproduce_post_966.log
+Downloading mutation_reproduce_post_967.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/4.95k [00:00<?, ?B/s]100%|██████████| 4.95k/4.95k [00:00<00:00, 10.9MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/mutation_reproduce_post_967.log
+Downloading mutation_reproduce_post_967.time to /tmp/c6_old/myna/runs
+  0%|          | 0.00/35.0 [00:00<?, ?B/s]100%|██████████| 35.0/35.0 [00:00<00:00, 102kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/mutation_reproduce_post_967.time
+Downloading mutation_reproduce_post_969.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/4.98k [00:00<?, ?B/s]100%|██████████| 4.98k/4.98k [00:00<00:00, 11.2MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/mutation_reproduce_post_969.log
+Downloading mutation_reproduce_post_P11.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/4.95k [00:00<?, ?B/s]100%|██████████| 4.95k/4.95k [00:00<00:00, 11.0MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/mutation_reproduce_post_P11.log
+Downloading mutation_scope_pricing.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/5.25k [00:00<?, ?B/s]100%|██████████| 5.25k/5.25k [00:00<00:00, 12.4MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/mutation_scope_pricing.log
+Downloading mutation_scratch.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/2.27k [00:00<?, ?B/s]100%|██████████| 2.27k/2.27k [00:00<00:00, 6.00MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/mutation_scratch.log
+Downloading mutation_significance_post_966.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/7.04k [00:00<?, ?B/s]100%|██████████| 7.04k/7.04k [00:00<00:00, 17.2MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/mutation_significance_post_966.log
+Downloading mutation_train_longctx.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/4.54k [00:00<?, ?B/s]100%|██████████| 4.54k/4.54k [00:00<00:00, 10.1MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/mutation_train_longctx.log
+Downloading mutation_vegaml_control_post_967.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/10.6k [00:00<?, ?B/s]100%|██████████| 10.6k/10.6k [00:00<00:00, 745kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/mutation_vegaml_control_post_967.log
+Downloading mutation_vegaml_control_post_967b.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/10.6k [00:00<?, ?B/s]100%|██████████| 10.6k/10.6k [00:00<00:00, 864kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/mutation_vegaml_control_post_967b.log
+Downloading mutation_weights.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/2.64k [00:00<?, ?B/s]100%|██████████| 2.64k/2.64k [00:00<00:00, 6.45MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/mutation_weights.log
+Downloading myna_v1_accum.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/513 [00:00<?, ?B/s]100%|██████████| 513/513 [00:00<00:00, 856kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/myna_v1_accum.log
+Downloading myna_v1_batch16_interference.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/0.99k [00:00<?, ?B/s]100%|██████████| 0.99k/0.99k [00:00<00:00, 2.52MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/myna_v1_batch16_interference.log
+Downloading myna_v1_pool_accum.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/799 [00:00<?, ?B/s]100%|██████████| 799/799 [00:00<00:00, 2.44MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/myna_v1_pool_accum.log
+Downloading myna_v1_train.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/0.99k [00:00<?, ?B/s]100%|██████████| 0.99k/0.99k [00:00<00:00, 1.84MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/myna_v1_train.log
+Downloading myna_v1_uniform_belowchance_250.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/513 [00:00<?, ?B/s]100%|██████████| 513/513 [00:00<00:00, 1.76MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/myna_v1_uniform_belowchance_250.log
+Downloading myna_v1b_test.rowoutcomes.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/800k [00:00<?, ?B/s]100%|██████████| 800k/800k [00:01<00:00, 463kB/s]100%|██████████| 800k/800k [00:01<00:00, 463kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/myna_v1b_test.rowoutcomes.json
+Downloading myna_v6_test.rowoutcomes.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/791k [00:00<?, ?B/s]100%|██████████| 791k/791k [00:01<00:00, 529kB/s]100%|██████████| 791k/791k [00:01<00:00, 529kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/myna_v6_test.rowoutcomes.json
+Downloading needle_lc1_stageA.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/991 [00:00<?, ?B/s]100%|██████████| 991/991 [00:00<00:00, 2.98MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/needle_lc1_stageA.json
+Downloading needle_lc1_stageA.md to /tmp/c6_old/myna/runs
+  0%|          | 0.00/928 [00:00<?, ?B/s]100%|██████████| 928/928 [00:00<00:00, 2.81MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/needle_lc1_stageA.md
+Downloading needle_lc1_stageB_resume.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/1.08k [00:00<?, ?B/s]100%|██████████| 1.08k/1.08k [00:00<00:00, 3.20MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/needle_lc1_stageB_resume.json
+Downloading needle_lc1_stageB_resume.md to /tmp/c6_old/myna/runs
+  0%|          | 0.00/988 [00:00<?, ?B/s]100%|██████████| 988/988 [00:00<00:00, 2.32MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/needle_lc1_stageB_resume.md
+Downloading needle_lc1_stageC_final.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/1.27k [00:00<?, ?B/s]100%|██████████| 1.27k/1.27k [00:00<00:00, 2.91MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/needle_lc1_stageC_final.json
+Downloading needle_lc1_stageC_final.md to /tmp/c6_old/myna/runs
+  0%|          | 0.00/1.02k [00:00<?, ?B/s]100%|██████████| 1.02k/1.02k [00:00<00:00, 1.88MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/needle_lc1_stageC_final.md
+Downloading needle_lc1_stageC_replay.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/1.24k [00:00<?, ?B/s]100%|██████████| 1.24k/1.24k [00:00<00:00, 2.20MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/needle_lc1_stageC_replay.json
+Downloading needle_lc1_stageC_replay.md to /tmp/c6_old/myna/runs
+  0%|          | 0.00/1.00k [00:00<?, ?B/s]100%|██████████| 1.00k/1.00k [00:00<00:00, 3.16MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/needle_lc1_stageC_replay.md
+Downloading needle_myna-v0.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/0.98k [00:00<?, ?B/s]100%|██████████| 0.98k/0.98k [00:00<00:00, 2.91MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/needle_myna-v0.json
+Downloading needle_myna-v0.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/513 [00:00<?, ?B/s]100%|██████████| 513/513 [00:00<00:00, 2.03MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/needle_myna-v0.log
+Downloading needle_myna-v0.md to /tmp/c6_old/myna/runs
+  0%|          | 0.00/810 [00:00<?, ?B/s]100%|██████████| 810/810 [00:00<00:00, 1.50MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/needle_myna-v0.md
+Downloading needle_v6.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/1.42k [00:00<?, ?B/s]100%|██████████| 1.42k/1.42k [00:00<00:00, 4.42MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/needle_v6.log
+Downloading onnx_export.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/3.46k [00:00<?, ?B/s]100%|██████████| 3.46k/3.46k [00:00<00:00, 6.97MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/onnx_export.log
+Downloading onnx_export_widest.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/3.59k [00:00<?, ?B/s]100%|██████████| 3.59k/3.59k [00:00<00:00, 6.47MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/onnx_export_widest.log
+Downloading onnx_parity.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/1.08k [00:00<?, ?B/s]100%|██████████| 1.08k/1.08k [00:00<00:00, 3.15MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/onnx_parity.json
+Downloading onnx_parity_widest.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/1.10k [00:00<?, ?B/s]100%|██████████| 1.10k/1.10k [00:00<00:00, 3.27MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/onnx_parity_widest.json
+Downloading ordinal_ab.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/13.3k [00:00<?, ?B/s]100%|██████████| 13.3k/13.3k [00:00<00:00, 484kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/ordinal_ab.json
+Downloading paired_bootstrap.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/683 [00:00<?, ?B/s]100%|██████████| 683/683 [00:00<00:00, 1.67MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/paired_bootstrap.json
+Downloading paper_bootstrap.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/273 [00:00<?, ?B/s]100%|██████████| 273/273 [00:00<00:00, 860kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/paper_bootstrap.json
+Downloading paper_cell_intervals.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/1.57k [00:00<?, ?B/s]100%|██████████| 1.57k/1.57k [00:00<00:00, 3.94MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/paper_cell_intervals.json
+Downloading paper_myna_v6_test.predates-fix.rowoutcomes.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/791k [00:00<?, ?B/s]100%|██████████| 791k/791k [00:01<00:00, 560kB/s]100%|██████████| 791k/791k [00:01<00:00, 560kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/paper_myna_v6_test.predates-fix.rowoutcomes.json
+Downloading paper_myna_v6_test.rowoutcomes.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/791k [00:00<?, ?B/s]100%|██████████| 791k/791k [00:01<00:00, 567kB/s]100%|██████████| 791k/791k [00:01<00:00, 567kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/paper_myna_v6_test.rowoutcomes.json
+Downloading paper_numbers.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/17.7k [00:00<?, ?B/s]100%|██████████| 17.7k/17.7k [00:00<00:00, 471kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/paper_numbers.json
+Downloading paper_numbers.md to /tmp/c6_old/myna/runs
+  0%|          | 0.00/1.12k [00:00<?, ?B/s]100%|██████████| 1.12k/1.12k [00:00<00:00, 2.04MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/paper_numbers.md
+Downloading paper_v6_audit.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/2.39k [00:00<?, ?B/s]100%|██████████| 2.39k/2.39k [00:00<00:00, 6.85MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/paper_v6_audit.json
+Downloading paper_v6_audit.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/1.16k [00:00<?, ?B/s]100%|██████████| 1.16k/1.16k [00:00<00:00, 3.28MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/paper_v6_audit.log
+Downloading paper_v6_audit.md to /tmp/c6_old/myna/runs
+  0%|          | 0.00/1.28k [00:00<?, ?B/s]100%|██████████| 1.28k/1.28k [00:00<00:00, 2.68MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/paper_v6_audit.md
+Downloading paper_v6_test.metrics.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/24.8k [00:00<?, ?B/s]100%|██████████| 24.8k/24.8k [00:00<00:00, 240kB/s]100%|██████████| 24.8k/24.8k [00:00<00:00, 239kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/paper_v6_test.metrics.json
+Downloading paper_v6_test.predates-fix.metrics.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/24.8k [00:00<?, ?B/s]100%|██████████| 24.8k/24.8k [00:00<00:00, 252kB/s]100%|██████████| 24.8k/24.8k [00:00<00:00, 251kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/paper_v6_test.predates-fix.metrics.json
+Downloading post_967_checks.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/82.0 [00:00<?, ?B/s]100%|██████████| 82.0/82.0 [00:00<00:00, 272kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/post_967_checks.log
+Downloading post_967b_checks.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/82.0 [00:00<?, ?B/s]100%|██████████| 82.0/82.0 [00:00<00:00, 218kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/post_967b_checks.log
+Downloading probe_vegaml_cpu1.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/2.71k [00:00<?, ?B/s]100%|██████████| 2.71k/2.71k [00:00<00:00, 6.28MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/probe_vegaml_cpu1.log
+Downloading probe_vegaml_views2.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/155k [00:00<?, ?B/s]100%|██████████| 155k/155k [00:00<00:00, 234kB/s]100%|██████████| 155k/155k [00:00<00:00, 233kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/probe_vegaml_views2.json
+Downloading probe_vegaml_views2.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/3.43k [00:00<?, ?B/s]100%|██████████| 3.43k/3.43k [00:00<00:00, 8.22MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/probe_vegaml_views2.log
+Downloading pypi_readiness_audit.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/20.0k [00:00<?, ?B/s]100%|██████████| 20.0k/20.0k [00:00<00:00, 242kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/pypi_readiness_audit.log
+Downloading python311_check.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/2.15k [00:00<?, ?B/s]100%|██████████| 2.15k/2.15k [00:00<00:00, 5.42MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/python311_check.log
+Downloading quickstart_from_gh_download.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/1.13k [00:00<?, ?B/s]100%|██████████| 1.13k/1.13k [00:00<00:00, 3.05MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/quickstart_from_gh_download.log
+Downloading quickstart_from_git_install.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/2.84k [00:00<?, ?B/s]100%|██████████| 2.84k/2.84k [00:00<00:00, 4.72MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/quickstart_from_git_install.log
+Downloading quickstart_from_public_install.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/4.58k [00:00<?, ?B/s]100%|██████████| 4.58k/4.58k [00:00<00:00, 9.53MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/quickstart_from_public_install.log
+Downloading report_scratch_vs_laya.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/12.8k [00:00<?, ?B/s]100%|██████████| 12.8k/12.8k [00:00<00:00, 441kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/report_scratch_vs_laya.json
+Downloading report_scratch_vs_laya.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/6.56k [00:00<?, ?B/s]100%|██████████| 6.56k/6.56k [00:00<00:00, 14.0MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/report_scratch_vs_laya.log
+Downloading report_void_vs_laya.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/13.2k [00:00<?, ?B/s]100%|██████████| 13.2k/13.2k [00:00<00:00, 398kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/report_void_vs_laya.json
+Downloading report_void_vs_laya.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/6.61k [00:00<?, ?B/s]100%|██████████| 6.61k/6.61k [00:00<00:00, 11.2MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/report_void_vs_laya.log
+Downloading repro_check_post_967.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/3.22k [00:00<?, ?B/s]100%|██████████| 3.22k/3.22k [00:00<00:00, 8.38MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/repro_check_post_967.log
+Downloading repro_check_post_967b.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/3.22k [00:00<?, ?B/s]100%|██████████| 3.22k/3.22k [00:00<00:00, 9.22MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/repro_check_post_967b.log
+Downloading repro_check_post_967c.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/3.22k [00:00<?, ?B/s]100%|██████████| 3.22k/3.22k [00:00<00:00, 7.71MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/repro_check_post_967c.log
+Downloading repro_check_post_969.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/3.67k [00:00<?, ?B/s]100%|██████████| 3.67k/3.67k [00:00<00:00, 8.07MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/repro_check_post_969.log
+Downloading rich_fit.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/134k [00:00<?, ?B/s]100%|██████████| 134k/134k [00:00<00:00, 228kB/s]100%|██████████| 134k/134k [00:00<00:00, 228kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/rich_fit.log
+Downloading risk_coverage.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/23.6k [00:00<?, ?B/s]100%|██████████| 23.6k/23.6k [00:00<00:00, 226kB/s]100%|██████████| 23.6k/23.6k [00:00<00:00, 225kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/risk_coverage.json
+Downloading risk_coverage.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/2.00k [00:00<?, ?B/s]100%|██████████| 2.00k/2.00k [00:00<00:00, 4.95MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/risk_coverage.log
+Downloading risk_coverage.md to /tmp/c6_old/myna/runs
+  0%|          | 0.00/1.95k [00:00<?, ?B/s]100%|██████████| 1.95k/1.95k [00:00<00:00, 3.65MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/risk_coverage.md
+Downloading risk_coverage_v6.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/25.2k [00:00<?, ?B/s]100%|██████████| 25.2k/25.2k [00:00<00:00, 253kB/s]100%|██████████| 25.2k/25.2k [00:00<00:00, 252kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/risk_coverage_v6.json
+Downloading risk_coverage_v6.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/2.72k [00:00<?, ?B/s]100%|██████████| 2.72k/2.72k [00:00<00:00, 6.91MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/risk_coverage_v6.log
+Downloading risk_coverage_v6.md to /tmp/c6_old/myna/runs
+  0%|          | 0.00/1.95k [00:00<?, ?B/s]100%|██████████| 1.95k/1.95k [00:00<00:00, 3.34MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/risk_coverage_v6.md
+Downloading risk_coverage_v6_g5trio.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/8.61k [00:00<?, ?B/s]100%|██████████| 8.61k/8.61k [00:00<00:00, 13.5MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/risk_coverage_v6_g5trio.json
+Downloading risk_coverage_v6_g5trio.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/2.35k [00:00<?, ?B/s]100%|██████████| 2.35k/2.35k [00:00<00:00, 5.78MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/risk_coverage_v6_g5trio.log
+Downloading risk_coverage_v6_g5trio.md to /tmp/c6_old/myna/runs
+  0%|          | 0.00/1.57k [00:00<?, ?B/s]100%|██████████| 1.57k/1.57k [00:00<00:00, 4.29MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/risk_coverage_v6_g5trio.md
+Downloading risk_coverage_v6_g5trio_dev.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/9.98k [00:00<?, ?B/s]100%|██████████| 9.98k/9.98k [00:00<00:00, 1.73MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/risk_coverage_v6_g5trio_dev.json
+Downloading risk_coverage_v6_g5trio_dev.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/2.38k [00:00<?, ?B/s]100%|██████████| 2.38k/2.38k [00:00<00:00, 3.81MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/risk_coverage_v6_g5trio_dev.log
+Downloading risk_coverage_v6_g5trio_dev.md to /tmp/c6_old/myna/runs
+  0%|          | 0.00/1.58k [00:00<?, ?B/s]100%|██████████| 1.58k/1.58k [00:00<00:00, 4.45MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/risk_coverage_v6_g5trio_dev.md
+Downloading risk_coverage_v6_g5trio_test.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/9.62k [00:00<?, ?B/s]100%|██████████| 9.62k/9.62k [00:00<00:00, 1.62MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/risk_coverage_v6_g5trio_test.json
+Downloading risk_coverage_v6_g5trio_test.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/2.36k [00:00<?, ?B/s]100%|██████████| 2.36k/2.36k [00:00<00:00, 7.18MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/risk_coverage_v6_g5trio_test.log
+Downloading risk_coverage_v6_g5trio_test.md to /tmp/c6_old/myna/runs
+  0%|          | 0.00/1.56k [00:00<?, ?B/s]100%|██████████| 1.56k/1.56k [00:00<00:00, 3.11MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/risk_coverage_v6_g5trio_test.md
+Downloading rlcd_v0.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/567 [00:00<?, ?B/s]100%|██████████| 567/567 [00:00<00:00, 1.08MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/rlcd_v0.log
+Downloading routing_cost.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/543 [00:00<?, ?B/s]100%|██████████| 543/543 [00:00<00:00, 1.73MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/routing_cost.json
+Downloading scope_pricing.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/2.36k [00:00<?, ?B/s]100%|██████████| 2.36k/2.36k [00:00<00:00, 6.26MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/scope_pricing.json
+Downloading scratch_decision_v2_test.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/7.52k [00:00<?, ?B/s]100%|██████████| 7.52k/7.52k [00:00<00:00, 10.6MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/scratch_decision_v2_test.json
+Downloading scratch_decision_v2_test.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/2.72k [00:00<?, ?B/s]100%|██████████| 2.72k/2.72k [00:00<00:00, 7.77MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/scratch_decision_v2_test.log
+Downloading scratch_decision_v2_test.md to /tmp/c6_old/myna/runs
+  0%|          | 0.00/2.85k [00:00<?, ?B/s]100%|██████████| 2.85k/2.85k [00:00<00:00, 4.59MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/scratch_decision_v2_test.md
+Downloading scratch_metrics_test.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/26.2k [00:00<?, ?B/s]100%|██████████| 26.2k/26.2k [00:00<00:00, 228kB/s]100%|██████████| 26.2k/26.2k [00:00<00:00, 227kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/scratch_metrics_test.json
+Downloading secrets_post_967.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/164 [00:00<?, ?B/s]100%|██████████| 164/164 [00:00<00:00, 478kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/secrets_post_967.log
+Downloading secrets_post_967b.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/164 [00:00<?, ?B/s]100%|██████████| 164/164 [00:00<00:00, 554kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/secrets_post_967b.log
+Downloading secrets_post_967c.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/164 [00:00<?, ?B/s]100%|██████████| 164/164 [00:00<00:00, 534kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/secrets_post_967c.log
+Downloading significance.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/9.37k [00:00<?, ?B/s]100%|██████████| 9.37k/9.37k [00:00<00:00, 1.01MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/significance.json
+Downloading significance.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/1.00k [00:00<?, ?B/s]100%|██████████| 1.00k/1.00k [00:00<00:00, 2.13MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/significance.log
+Downloading significance.md to /tmp/c6_old/myna/runs
+  0%|          | 0.00/5.39k [00:00<?, ?B/s]100%|██████████| 5.39k/5.39k [00:00<00:00, 12.0MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/significance.md
+Downloading significance_v6.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/9.16k [00:00<?, ?B/s]100%|██████████| 9.16k/9.16k [00:00<00:00, 1.74MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/significance_v6.json
+Downloading significance_v6.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/1.07k [00:00<?, ?B/s]100%|██████████| 1.07k/1.07k [00:00<00:00, 3.14MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/significance_v6.log
+Downloading significance_v6.md to /tmp/c6_old/myna/runs
+  0%|          | 0.00/5.38k [00:00<?, ?B/s]100%|██████████| 5.38k/5.38k [00:00<00:00, 8.53MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/significance_v6.md
+Downloading stats_extra.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/399 [00:00<?, ?B/s]100%|██████████| 399/399 [00:00<00:00, 2.06MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/stats_extra.json
+Downloading suite_mlx_extra_missing.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/3.04k [00:00<?, ?B/s]100%|██████████| 3.04k/3.04k [00:00<00:00, 7.10MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/suite_mlx_extra_missing.log
+Downloading suite_post_10c.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/1.17k [00:00<?, ?B/s]100%|██████████| 1.17k/1.17k [00:00<00:00, 2.90MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/suite_post_10c.log
+Downloading suite_post_958.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/1.24k [00:00<?, ?B/s]100%|██████████| 1.24k/1.24k [00:00<00:00, 3.31MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/suite_post_958.log
+Downloading suite_post_959.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/1.24k [00:00<?, ?B/s]100%|██████████| 1.24k/1.24k [00:00<00:00, 3.66MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/suite_post_959.log
+Downloading suite_post_967.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/5.54k [00:00<?, ?B/s]100%|██████████| 5.54k/5.54k [00:00<00:00, 9.18MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/suite_post_967.log
+Downloading suite_post_967b.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/4.00k [00:00<?, ?B/s]100%|██████████| 4.00k/4.00k [00:00<00:00, 10.9MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/suite_post_967b.log
+Downloading suite_post_967d.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/4.00k [00:00<?, ?B/s]100%|██████████| 4.00k/4.00k [00:00<00:00, 3.31MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/suite_post_967d.log
+Downloading suite_post_969.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/1.94k [00:00<?, ?B/s]100%|██████████| 1.94k/1.94k [00:00<00:00, 5.55MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/suite_post_969.log
+Downloading suite_post_969b.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/1.94k [00:00<?, ?B/s]100%|██████████| 1.94k/1.94k [00:00<00:00, 5.68MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/suite_post_969b.log
+Downloading suite_post_P11.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/1.24k [00:00<?, ?B/s]100%|██████████| 1.24k/1.24k [00:00<00:00, 3.96MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/suite_post_P11.log
+Downloading suite_post_pypi_rename.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/1.46k [00:00<?, ?B/s]100%|██████████| 1.46k/1.46k [00:00<00:00, 3.90MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/suite_post_pypi_rename.log
+Downloading tier0_antiprior_off_s0.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/16.2k [00:00<?, ?B/s]100%|██████████| 16.2k/16.2k [00:00<00:00, 329kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/tier0_antiprior_off_s0.json
+Downloading tier0_antiprior_off_s0.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/6.32k [00:00<?, ?B/s]100%|██████████| 6.32k/6.32k [00:00<00:00, 15.8MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/tier0_antiprior_off_s0.log
+Downloading tier0_antiprior_on_s0c.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/16.4k [00:00<?, ?B/s]100%|██████████| 16.4k/16.4k [00:00<00:00, 326kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/tier0_antiprior_on_s0c.json
+Downloading tier0_antiprior_on_s0c.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/6.11k [00:00<?, ?B/s]100%|██████████| 6.11k/6.11k [00:00<00:00, 11.5MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/tier0_antiprior_on_s0c.log
+Downloading train-v0-blind1000.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/218 [00:00<?, ?B/s]100%|██████████| 218/218 [00:00<00:00, 622kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/train-v0-blind1000.log
+Downloading train-v0.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/4.13k [00:00<?, ?B/s]100%|██████████| 4.13k/4.13k [00:00<00:00, 9.37MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/train-v0.log
+Downloading two_suites_post_967.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/2.06k [00:00<?, ?B/s]100%|██████████| 2.06k/2.06k [00:00<00:00, 5.52MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/two_suites_post_967.log
+Downloading two_suites_post_967b.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/536 [00:00<?, ?B/s]100%|██████████| 536/536 [00:00<00:00, 1.66MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/two_suites_post_967b.log
+Downloading two_suites_post_967c.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/142 [00:00<?, ?B/s]100%|██████████| 142/142 [00:00<00:00, 464kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/two_suites_post_967c.log
+Downloading v1b_kaggle_3600b.dev.report.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/10.9k [00:00<?, ?B/s]100%|██████████| 10.9k/10.9k [00:00<00:00, 770kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/v1b_kaggle_3600b.dev.report.json
+Downloading v1b_kaggle_3600b.dev.report.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/5.76k [00:00<?, ?B/s]100%|██████████| 5.76k/5.76k [00:00<00:00, 14.3MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/v1b_kaggle_3600b.dev.report.log
+Downloading v1b_kaggle_3600b.metrics.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/288k [00:00<?, ?B/s]100%|██████████| 288k/288k [00:00<00:00, 308kB/s]100%|██████████| 288k/288k [00:00<00:00, 308kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/v1b_kaggle_3600b.metrics.json
+Downloading v1b_kaggle_3600b.report.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/8.90k [00:00<?, ?B/s]100%|██████████| 8.90k/8.90k [00:00<00:00, 721kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/v1b_kaggle_3600b.report.json
+Downloading v1b_kaggle_3600b.train.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/278k [00:00<?, ?B/s]100%|██████████| 278k/278k [00:00<00:00, 318kB/s]100%|██████████| 278k/278k [00:00<00:00, 318kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/v1b_kaggle_3600b.train.log
+Downloading v1b_recovered_tier0.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/16.3k [00:00<?, ?B/s]100%|██████████| 16.3k/16.3k [00:00<00:00, 301kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/v1b_recovered_tier0.json
+Downloading v6_cal_raw.jsonl to /tmp/c6_old/myna/runs
+  0%|          | 0.00/1.35M [00:00<?, ?B/s] 74%|███████▍  | 1.00M/1.35M [00:01<00:00, 668kB/s]100%|██████████| 1.35M/1.35M [00:01<00:00, 890kB/s]100%|██████████| 1.35M/1.35M [00:01<00:00, 828kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/v6_cal_raw.jsonl
+Downloading v6_g1_test.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/2.37k [00:00<?, ?B/s]100%|██████████| 2.37k/2.37k [00:00<00:00, 7.22MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/v6_g1_test.json
+Downloading v6_g1_test.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/1.18k [00:00<?, ?B/s]100%|██████████| 1.18k/1.18k [00:00<00:00, 3.22MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/v6_g1_test.log
+Downloading v6_g1_test.md to /tmp/c6_old/myna/runs
+  0%|          | 0.00/1.26k [00:00<?, ?B/s]100%|██████████| 1.26k/1.26k [00:00<00:00, 3.95MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/v6_g1_test.md
+Downloading v6_g1_test_rerun.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/1.18k [00:00<?, ?B/s]100%|██████████| 1.18k/1.18k [00:00<00:00, 2.13MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/v6_g1_test_rerun.log
+Downloading v6_live_smoke.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/7.56k [00:00<?, ?B/s]100%|██████████| 7.56k/7.56k [00:00<00:00, 15.2MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/v6_live_smoke.json
+Downloading v6_packed_forced.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/2.35k [00:00<?, ?B/s]100%|██████████| 2.35k/2.35k [00:00<00:00, 4.70MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/v6_packed_forced.json
+Downloading v6_packed_forced.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/1.11k [00:00<?, ?B/s]100%|██████████| 1.11k/1.11k [00:00<00:00, 3.21MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/v6_packed_forced.log
+Downloading v6_packed_forced.md to /tmp/c6_old/myna/runs
+  0%|          | 0.00/1.24k [00:00<?, ?B/s]100%|██████████| 1.24k/1.24k [00:00<00:00, 3.86MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/v6_packed_forced.md
+Downloading v6_packed_forced.rowoutcomes.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/791k [00:00<?, ?B/s]100%|██████████| 791k/791k [00:01<00:00, 562kB/s]100%|██████████| 791k/791k [00:01<00:00, 562kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/v6_packed_forced.rowoutcomes.json
+Downloading v6_rescore.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/1.32k [00:00<?, ?B/s]100%|██████████| 1.32k/1.32k [00:00<00:00, 3.67MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/v6_rescore.json
+Downloading v6_rescore_test.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/2.27k [00:00<?, ?B/s]100%|██████████| 2.27k/2.27k [00:00<00:00, 6.43MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/v6_rescore_test.json
+Downloading v6_rescore_test.md to /tmp/c6_old/myna/runs
+  0%|          | 0.00/1.17k [00:00<?, ?B/s]100%|██████████| 1.17k/1.17k [00:00<00:00, 2.34MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/v6_rescore_test.md
+Downloading v6_test.metrics.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/24.8k [00:00<?, ?B/s]100%|██████████| 24.8k/24.8k [00:00<00:00, 231kB/s]100%|██████████| 24.8k/24.8k [00:00<00:00, 230kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/v6_test.metrics.json
+Downloading v6_test.report.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/9.60k [00:00<?, ?B/s]100%|██████████| 9.60k/9.60k [00:00<00:00, 663kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/v6_test.report.json
+Downloading v6_test_raw.jsonl to /tmp/c6_old/myna/runs
+  0%|          | 0.00/811k [00:00<?, ?B/s]100%|██████████| 811k/811k [00:01<00:00, 573kB/s]100%|██████████| 811k/811k [00:01<00:00, 573kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/v6_test_raw.jsonl
+Downloading v6_test_report.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/5.20k [00:00<?, ?B/s]100%|██████████| 5.20k/5.20k [00:00<00:00, 10.6MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/v6_test_report.log
+Downloading vegaml_0150_pass1.rowoutcomes.raw.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/858k [00:00<?, ?B/s]100%|██████████| 858k/858k [00:01<00:00, 590kB/s]100%|██████████| 858k/858k [00:01<00:00, 590kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/vegaml_0150_pass1.rowoutcomes.raw.json
+Downloading vegaml_0150_test.rowoutcomes.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/862k [00:00<?, ?B/s]100%|██████████| 862k/862k [00:01<00:00, 603kB/s]100%|██████████| 862k/862k [00:01<00:00, 602kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/vegaml_0150_test.rowoutcomes.json
+Downloading vegaml_0150_test.rowoutcomes.log to /tmp/c6_old/myna/runs
+  0%|          | 0.00/4.47k [00:00<?, ?B/s]100%|██████████| 4.47k/4.47k [00:00<00:00, 10.6MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/vegaml_0150_test.rowoutcomes.log
+Downloading vegaml_control.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/9.03k [00:00<?, ?B/s]100%|██████████| 9.03k/9.03k [00:00<00:00, 770kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/vegaml_control.json
+Downloading vegaml_control.md to /tmp/c6_old/myna/runs
+  0%|          | 0.00/2.73k [00:00<?, ?B/s]100%|██████████| 2.73k/2.73k [00:00<00:00, 5.22MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/vegaml_control.md
+Downloading witness-competitor-head-to-head-1440.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/7.10k [00:00<?, ?B/s]100%|██████████| 7.10k/7.10k [00:00<00:00, 14.6MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/witness-competitor-head-to-head-1440.json
+Downloading witness-hybrid-v3.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/2.18k [00:00<?, ?B/s]100%|██████████| 2.18k/2.18k [00:00<00:00, 4.28MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/witness-hybrid-v3.json
+Downloading witness-v5-master-paper.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/2.45k [00:00<?, ?B/s]100%|██████████| 2.45k/2.45k [00:00<00:00, 7.00MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/witness-v5-master-paper.json
+Downloading witness-v6-master-paper.json to /tmp/c6_old/myna/runs
+  0%|          | 0.00/3.50k [00:00<?, ?B/s]100%|██████████| 3.50k/3.50k [00:00<00:00, 8.60MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/runs/witness-v6-master-paper.json
+Downloading upload_to_hf.py to /tmp/c6_old/myna/scripts
+  0%|          | 0.00/14.9k [00:00<?, ?B/s]100%|██████████| 14.9k/14.9k [00:00<00:00, 350kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/scripts/upload_to_hf.py
+Downloading __init__.py to /tmp/c6_old/myna/src/myna
+  0%|          | 0.00/1.03k [00:00<?, ?B/s]100%|██████████| 1.03k/1.03k [00:00<00:00, 2.88MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/src/myna/__init__.py
+Downloading config_scaled.py to /tmp/c6_old/myna/src/myna
+  0%|          | 0.00/1.38k [00:00<?, ?B/s]100%|██████████| 1.38k/1.38k [00:00<00:00, 6.15MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/src/myna/config_scaled.py
+Downloading consistency.py to /tmp/c6_old/myna/src/myna
+  0%|          | 0.00/8.62k [00:00<?, ?B/s]100%|██████████| 8.62k/8.62k [00:00<00:00, 13.8MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/src/myna/consistency.py
+Downloading data.py to /tmp/c6_old/myna/src/myna
+  0%|          | 0.00/13.5k [00:00<?, ?B/s]100%|██████████| 13.5k/13.5k [00:00<00:00, 368kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/src/myna/data.py
+Downloading engine.py to /tmp/c6_old/myna/src/myna
+  0%|          | 0.00/12.1k [00:00<?, ?B/s]100%|██████████| 12.1k/12.1k [00:00<00:00, 569kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/src/myna/engine.py
+Downloading fallback.py to /tmp/c6_old/myna/src/myna
+  0%|          | 0.00/5.99k [00:00<?, ?B/s]100%|██████████| 5.99k/5.99k [00:00<00:00, 11.6MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/src/myna/fallback.py
+Downloading longctx.py to /tmp/c6_old/myna/src/myna
+  0%|          | 0.00/4.76k [00:00<?, ?B/s]100%|██████████| 4.76k/4.76k [00:00<00:00, 9.74MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/src/myna/longctx.py
+Downloading mlx_model.py to /tmp/c6_old/myna/src/myna
+  0%|          | 0.00/13.4k [00:00<?, ?B/s]100%|██████████| 13.4k/13.4k [00:00<00:00, 448kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/src/myna/mlx_model.py
+Downloading model.py to /tmp/c6_old/myna/src/myna
+  0%|          | 0.00/8.50k [00:00<?, ?B/s]100%|██████████| 8.50k/8.50k [00:00<00:00, 15.9MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/src/myna/model.py
+Downloading onnx_export.py to /tmp/c6_old/myna/src/myna
+  0%|          | 0.00/41.3k [00:00<?, ?B/s]100%|██████████| 41.3k/41.3k [00:00<00:00, 204kB/s]100%|██████████| 41.3k/41.3k [00:00<00:00, 204kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/src/myna/onnx_export.py
+Downloading paraphrase.py to /tmp/c6_old/myna/src/myna
+  0%|          | 0.00/20.0k [00:00<?, ?B/s]100%|██████████| 20.0k/20.0k [00:00<00:00, 264kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/src/myna/paraphrase.py
+Downloading py.typed to /tmp/c6_old/myna/src/myna
+0.00B [00:00, ?B/s]0.00B [00:00, ?B/s]
+
+Output file downloaded to /tmp/c6_old/myna/src/myna/py.typed
+Downloading real_data.py to /tmp/c6_old/myna/src/myna
+  0%|          | 0.00/12.7k [00:00<?, ?B/s]100%|██████████| 12.7k/12.7k [00:00<00:00, 437kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/src/myna/real_data.py
+Downloading report.py to /tmp/c6_old/myna/src/myna
+  0%|          | 0.00/29.5k [00:00<?, ?B/s]100%|██████████| 29.5k/29.5k [00:00<00:00, 221kB/s]100%|██████████| 29.5k/29.5k [00:00<00:00, 220kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/src/myna/report.py
+Downloading rlcd.py to /tmp/c6_old/myna/src/myna
+  0%|          | 0.00/6.04k [00:00<?, ?B/s]100%|██████████| 6.04k/6.04k [00:00<00:00, 10.0MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/src/myna/rlcd.py
+Downloading serve.py to /tmp/c6_old/myna/src/myna
+  0%|          | 0.00/5.29k [00:00<?, ?B/s]100%|██████████| 5.29k/5.29k [00:00<00:00, 11.2MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/src/myna/serve.py
+Downloading tokenizer.py to /tmp/c6_old/myna/src/myna
+  0%|          | 0.00/3.94k [00:00<?, ?B/s]100%|██████████| 3.94k/3.94k [00:00<00:00, 10.3MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/src/myna/tokenizer.py
+Downloading train.py to /tmp/c6_old/myna/src/myna
+  0%|          | 0.00/69.1k [00:00<?, ?B/s]100%|██████████| 69.1k/69.1k [00:00<00:00, 157kB/s]100%|██████████| 69.1k/69.1k [00:00<00:00, 157kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/src/myna/train.py
+Downloading trunk.py to /tmp/c6_old/myna/src/myna
+  0%|          | 0.00/11.7k [00:00<?, ?B/s]100%|██████████| 11.7k/11.7k [00:00<00:00, 551kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/src/myna/trunk.py
+Downloading v6_engine.py to /tmp/c6_old/myna/src/myna
+  0%|          | 0.00/29.7k [00:00<?, ?B/s]100%|██████████| 29.7k/29.7k [00:00<00:00, 227kB/s]100%|██████████| 29.7k/29.7k [00:00<00:00, 227kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/src/myna/v6_engine.py
+Downloading weights.py to /tmp/c6_old/myna/src/myna
+  0%|          | 0.00/9.28k [00:00<?, ?B/s]100%|██████████| 9.28k/9.28k [00:00<00:00, 1.73MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/src/myna/weights.py
+Downloading test_abstain.py to /tmp/c6_old/myna/tests
+  0%|          | 0.00/11.5k [00:00<?, ?B/s]100%|██████████| 11.5k/11.5k [00:00<00:00, 459kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/tests/test_abstain.py
+Downloading test_anti_prior.py to /tmp/c6_old/myna/tests
+  0%|          | 0.00/47.8k [00:00<?, ?B/s]100%|██████████| 47.8k/47.8k [00:00<00:00, 170kB/s]100%|██████████| 47.8k/47.8k [00:00<00:00, 169kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/tests/test_anti_prior.py
+Downloading test_cli_help.py to /tmp/c6_old/myna/tests
+  0%|          | 0.00/5.84k [00:00<?, ?B/s]100%|██████████| 5.84k/5.84k [00:00<00:00, 12.3MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/tests/test_cli_help.py
+Downloading test_consistency.py to /tmp/c6_old/myna/tests
+  0%|          | 0.00/1.66k [00:00<?, ?B/s]100%|██████████| 1.66k/1.66k [00:00<00:00, 4.50MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/tests/test_consistency.py
+Downloading test_data_invariants.py to /tmp/c6_old/myna/tests
+  0%|          | 0.00/2.90k [00:00<?, ?B/s]100%|██████████| 2.90k/2.90k [00:00<00:00, 6.81MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/tests/test_data_invariants.py
+Downloading test_device_and_calibration.py to /tmp/c6_old/myna/tests
+  0%|          | 0.00/4.45k [00:00<?, ?B/s]100%|██████████| 4.45k/4.45k [00:00<00:00, 10.9MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/tests/test_device_and_calibration.py
+Downloading test_diag_question_ablation.py to /tmp/c6_old/myna/tests
+  0%|          | 0.00/76.6k [00:00<?, ?B/s]100%|██████████| 76.6k/76.6k [00:00<00:00, 178kB/s]100%|██████████| 76.6k/76.6k [00:00<00:00, 178kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/tests/test_diag_question_ablation.py
+Downloading test_engine_parity.py to /tmp/c6_old/myna/tests
+  0%|          | 0.00/4.64k [00:00<?, ?B/s]100%|██████████| 4.64k/4.64k [00:00<00:00, 10.0MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/tests/test_engine_parity.py
+Downloading test_fallback.py to /tmp/c6_old/myna/tests
+  0%|          | 0.00/8.50k [00:00<?, ?B/s]100%|██████████| 8.50k/8.50k [00:00<00:00, 18.3MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/tests/test_fallback.py
+Downloading test_gates.py to /tmp/c6_old/myna/tests
+  0%|          | 0.00/14.7k [00:00<?, ?B/s]100%|██████████| 14.7k/14.7k [00:00<00:00, 364kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/tests/test_gates.py
+Downloading test_kaggle_bundle.py to /tmp/c6_old/myna/tests
+  0%|          | 0.00/40.7k [00:00<?, ?B/s]100%|██████████| 40.7k/40.7k [00:00<00:00, 207kB/s]100%|██████████| 40.7k/40.7k [00:00<00:00, 206kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/tests/test_kaggle_bundle.py
+Downloading test_latency_matched.py to /tmp/c6_old/myna/tests
+  0%|          | 0.00/14.8k [00:00<?, ?B/s]100%|██████████| 14.8k/14.8k [00:00<00:00, 419kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/tests/test_latency_matched.py
+Downloading test_longctx.py to /tmp/c6_old/myna/tests
+  0%|          | 0.00/13.7k [00:00<?, ?B/s]100%|██████████| 13.7k/13.7k [00:00<00:00, 344kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/tests/test_longctx.py
+Downloading test_memory_plan.py to /tmp/c6_old/myna/tests
+  0%|          | 0.00/31.0k [00:00<?, ?B/s]100%|██████████| 31.0k/31.0k [00:00<00:00, 211kB/s]100%|██████████| 31.0k/31.0k [00:00<00:00, 210kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/tests/test_memory_plan.py
+Downloading test_mlx_int8.py to /tmp/c6_old/myna/tests
+  0%|          | 0.00/10.8k [00:00<?, ?B/s]100%|██████████| 10.8k/10.8k [00:00<00:00, 787kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/tests/test_mlx_int8.py
+Downloading test_mlx_parity.py to /tmp/c6_old/myna/tests
+  0%|          | 0.00/4.37k [00:00<?, ?B/s]100%|██████████| 4.37k/4.37k [00:00<00:00, 8.64MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/tests/test_mlx_parity.py
+Downloading test_model_longctx.py to /tmp/c6_old/myna/tests
+  0%|          | 0.00/2.16k [00:00<?, ?B/s]100%|██████████| 2.16k/2.16k [00:00<00:00, 6.20MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/tests/test_model_longctx.py
+Downloading test_onnx_export.py to /tmp/c6_old/myna/tests
+  0%|          | 0.00/19.0k [00:00<?, ?B/s]100%|██████████| 19.0k/19.0k [00:00<00:00, 278kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/tests/test_onnx_export.py
+Downloading test_ordinal_loss.py to /tmp/c6_old/myna/tests
+  0%|          | 0.00/18.9k [00:00<?, ?B/s]100%|██████████| 18.9k/18.9k [00:00<00:00, 267kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/tests/test_ordinal_loss.py
+Downloading test_paraphrase.py to /tmp/c6_old/myna/tests
+  0%|          | 0.00/9.71k [00:00<?, ?B/s]100%|██████████| 9.71k/9.71k [00:00<00:00, 1.07MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/tests/test_paraphrase.py
+Downloading test_paraphrase_wiring.py to /tmp/c6_old/myna/tests
+  0%|          | 0.00/13.9k [00:00<?, ?B/s]100%|██████████| 13.9k/13.9k [00:00<00:00, 400kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/tests/test_paraphrase_wiring.py
+Downloading test_perrow_batch.py to /tmp/c6_old/myna/tests
+  0%|          | 0.00/9.93k [00:00<?, ?B/s]100%|██████████| 9.93k/9.93k [00:00<00:00, 2.58MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/tests/test_perrow_batch.py
+Downloading test_real_data.py to /tmp/c6_old/myna/tests
+  0%|          | 0.00/3.93k [00:00<?, ?B/s]100%|██████████| 3.93k/3.93k [00:00<00:00, 6.49MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/tests/test_real_data.py
+Downloading test_reference_trainer.py to /tmp/c6_old/myna/tests
+  0%|          | 0.00/2.20k [00:00<?, ?B/s]100%|██████████| 2.20k/2.20k [00:00<00:00, 5.10MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/tests/test_reference_trainer.py
+Downloading test_report.py to /tmp/c6_old/myna/tests
+  0%|          | 0.00/42.8k [00:00<?, ?B/s]100%|██████████| 42.8k/42.8k [00:00<00:00, 201kB/s]100%|██████████| 42.8k/42.8k [00:00<00:00, 200kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/tests/test_report.py
+Downloading test_reproduce.py to /tmp/c6_old/myna/tests
+  0%|          | 0.00/20.5k [00:00<?, ?B/s]100%|██████████| 20.5k/20.5k [00:00<00:00, 254kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/tests/test_reproduce.py
+Downloading test_risk_coverage.py to /tmp/c6_old/myna/tests
+  0%|          | 0.00/15.6k [00:00<?, ?B/s]100%|██████████| 15.6k/15.6k [00:00<00:00, 368kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/tests/test_risk_coverage.py
+Downloading test_rlcd.py to /tmp/c6_old/myna/tests
+  0%|          | 0.00/2.12k [00:00<?, ?B/s]100%|██████████| 2.12k/2.12k [00:00<00:00, 5.41MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/tests/test_rlcd.py
+Downloading test_row_outcomes.py to /tmp/c6_old/myna/tests
+  0%|          | 0.00/34.7k [00:00<?, ?B/s]100%|██████████| 34.7k/34.7k [00:00<00:00, 199kB/s]100%|██████████| 34.7k/34.7k [00:00<00:00, 199kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/tests/test_row_outcomes.py
+Downloading test_scan_secrets.py to /tmp/c6_old/myna/tests
+  0%|          | 0.00/4.07k [00:00<?, ?B/s]100%|██████████| 4.07k/4.07k [00:00<00:00, 10.9MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/tests/test_scan_secrets.py
+Downloading test_scope_pricing.py to /tmp/c6_old/myna/tests
+  0%|          | 0.00/13.3k [00:00<?, ?B/s]100%|██████████| 13.3k/13.3k [00:00<00:00, 388kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/tests/test_scope_pricing.py
+Downloading test_scratch.py to /tmp/c6_old/myna/tests
+  0%|          | 0.00/19.5k [00:00<?, ?B/s]100%|██████████| 19.5k/19.5k [00:00<00:00, 292kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/tests/test_scratch.py
+Downloading test_serve.py to /tmp/c6_old/myna/tests
+  0%|          | 0.00/7.61k [00:00<?, ?B/s]100%|██████████| 7.61k/7.61k [00:00<00:00, 13.2MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/tests/test_serve.py
+Downloading test_significance.py to /tmp/c6_old/myna/tests
+  0%|          | 0.00/42.0k [00:00<?, ?B/s]100%|██████████| 42.0k/42.0k [00:00<00:00, 192kB/s]100%|██████████| 42.0k/42.0k [00:00<00:00, 192kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/tests/test_significance.py
+Downloading test_train_logging.py to /tmp/c6_old/myna/tests
+  0%|          | 0.00/1.95k [00:00<?, ?B/s]100%|██████████| 1.95k/1.95k [00:00<00:00, 4.33MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/tests/test_train_logging.py
+Downloading test_train_longctx.py to /tmp/c6_old/myna/tests
+  0%|          | 0.00/14.8k [00:00<?, ?B/s]100%|██████████| 14.8k/14.8k [00:00<00:00, 348kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/tests/test_train_longctx.py
+Downloading test_trunk_numerics.py to /tmp/c6_old/myna/tests
+  0%|          | 0.00/4.15k [00:00<?, ?B/s]100%|██████████| 4.15k/4.15k [00:00<00:00, 7.92MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/tests/test_trunk_numerics.py
+Downloading test_upstream.py to /tmp/c6_old/myna/tests
+  0%|          | 0.00/6.44k [00:00<?, ?B/s]100%|██████████| 6.44k/6.44k [00:00<00:00, 12.8MB/s]
+
+Output file downloaded to /tmp/c6_old/myna/tests/test_upstream.py
+Downloading test_v6_engine.py to /tmp/c6_old/myna/tests
+  0%|          | 0.00/27.8k [00:00<?, ?B/s]100%|██████████| 27.8k/27.8k [00:00<00:00, 245kB/s]100%|██████████| 27.8k/27.8k [00:00<00:00, 244kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/tests/test_v6_engine.py
+Downloading test_vegaml_control.py to /tmp/c6_old/myna/tests
+  0%|          | 0.00/43.3k [00:00<?, ?B/s]100%|██████████| 43.3k/43.3k [00:00<00:00, 204kB/s]100%|██████████| 43.3k/43.3k [00:00<00:00, 204kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/tests/test_vegaml_control.py
+Downloading test_weights.py to /tmp/c6_old/myna/tests
+  0%|          | 0.00/15.7k [00:00<?, ?B/s]100%|██████████| 15.7k/15.7k [00:00<00:00, 630kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/tests/test_weights.py
+Downloading uv.lock to /tmp/c6_old/myna
+  0%|          | 0.00/279k [00:00<?, ?B/s]100%|██████████| 279k/279k [00:00<00:00, 309kB/s]100%|██████████| 279k/279k [00:00<00:00, 309kB/s]
+
+Output file downloaded to /tmp/c6_old/myna/uv.lock
+Downloading baseline_seed21.json to /tmp/c6_old/results
+  0%|          | 0.00/171k [00:00<?, ?B/s]100%|██████████| 171k/171k [00:00<00:00, 235kB/s]100%|██████████| 171k/171k [00:00<00:00, 234kB/s]
+
+Output file downloaded to /tmp/c6_old/results/baseline_seed21.json
+Kernel log downloaded to /tmp/c6_old/myna-baseline-6ep-s21.log 
+[02:32:20] wrote runs/baseline_seed21_6ep.json from old

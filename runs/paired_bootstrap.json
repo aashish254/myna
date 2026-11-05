@@ -2,16 +2,16 @@
  "cmd": "python -m bench.paired_bootstrap",
  "deberta_percell_seed42": {
   "macro_myna": 0.8632,
-  "macro_arm": 0.7514,
-  "delta_macro": 0.0875,
+  "macro_arm": 0.7708,
+  "delta_macro": 0.069,
   "ci95": [
-   0.0675,
-   0.108
+   0.0486,
+   0.0903
   ],
   "mcnemar": {
-   "myna_only": 215,
-   "arm_only": 54,
-   "p": "1.75e-22"
+   "myna_only": 197,
+   "arm_only": 64,
+   "p": "3.07e-16"
   }
  },
  "laya_0419": {

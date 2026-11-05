@@ -99,6 +99,8 @@ def main() -> None:
         }
     (REPO / "runs/paired_bootstrap.json").write_text(json.dumps(out, indent=1))
     for name, d in out.items():
+        if not isinstance(d, dict):
+            continue
         print(f"{name:24s} delta={d['delta_macro']:+.4f}  CI {d['ci95']}  "
               f"McNemar p={d['mcnemar']['p']}")
 
