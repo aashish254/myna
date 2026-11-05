@@ -32,6 +32,19 @@ the streaming engine is a compute result that does not learn the suite, and the 
 
 Everything is in `upload/` — see `SUBMISSION-GUIDE.md` for the form-by-form instructions.
 
+## Numbers to know at a glance
+
+| quantity | value |
+|---|---|
+| Myna-v6 macro / overall / bundle | 0.8620 / 0.8632 / 0.8393 |
+| Same-backbone baseline, 1 epoch (2 seeds) | 0.7126 |
+| Same-backbone baseline, 2 epochs (seed 42) | 0.7746 |
+| Readout gap | 8.7 points (paired CI [0.068, 0.108], McNemar p=1.8e-22) |
+| Routing ablation | 0.0345 -> 0.6724 on banking77, +0.0399 macro |
+| Consistency | 3/172 vs 10/172 (Laya), 29/172 (VegaML) |
+| Conformal, released / refit / Mondrian | 83.68 / 89.17 / 83.96 at 90% |
+| ECE | 0.0190 (0.0184–0.0223 across 5–20 bins) |
+
 ## What I could not fix overnight (and the paper says so)
 
 1. The in-domain baseline is trained for 2 epochs, not the 3–5 a reviewer asked for; 3 seeds are
