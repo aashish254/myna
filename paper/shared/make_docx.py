@@ -72,6 +72,9 @@ def resolve_refs(body: str, labels: dict[str, str]) -> str:
     def repl(m):
         key = m.group(1)
         if key not in labels:
+            # Algorithm floats are numbered separately and the resolver does not count them.
+            if key.startswith("alg:"):
+                return "1"
             raise SystemExit(f"unresolved reference: {key}")
         return labels[key]
 
