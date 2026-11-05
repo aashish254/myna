@@ -23,6 +23,7 @@ node_modules/
 # the latency harness's .lock file do not.
 runs/*
 !runs/*.json
+!runs/*.jsonl
 !runs/*.md
 !runs/*.log
 # ...except the pair driver's own stdout, which `!runs/*.log` above would otherwise pull in:
