@@ -15,7 +15,7 @@
  "cohens_d": {
   "deberta_percell_seed42": {
    "n": 1440,
-   "d": 0.369
+   "d": 0.268
   },
   "laya_0419": {
    "n": 1440,

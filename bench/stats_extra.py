@@ -72,7 +72,7 @@ def main() -> None:
 
     # paired effect sizes against the arms that have per-question records
     idx = {(r["row_id"], f"{r['source']}/{r['qname']}"): r for r in rows}
-    base = json.loads((REPO / "runs/kaggle/results/baseline_seed42.json").read_text())
+    base = json.loads((REPO / "runs/baseline_seed42_2ep.json").read_text())
     arms = {"deberta_percell_seed42": {(r["row_id"], r["cell"]): int(r["ok"]) for r in base["records"]}}
     for name, path in (("laya_0419", "runs/laya_0419_test.rowoutcomes.json"),
                        ("vegaml_0150", "runs/vegaml_0150_test.rowoutcomes.json")):

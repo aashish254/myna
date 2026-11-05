@@ -38,8 +38,9 @@ Rebuild with `tectonic -X compile myna_tmlr.tex`.
 
 ## Known gaps this draft still carries (draft-2 work)
 
-- The in-domain baseline is trained for 2 epochs (not the 3–5 a reviewer asked for), on seed 42
-  plus the earlier two-seed one-epoch runs; three-seed convergence is draft-2 work.
+- The in-domain baseline is trained for 2 epochs (0.7746), improving from 0.7126 at one epoch; it is
+  still short of the 3–5 epochs and three seeds a reviewer asked for, and the paper says the 8.7-point
+  gap is therefore an upper bound.
 - Myna-v6 has a single training seed.
 - Paired row-clustered intervals against the external engines are not yet in the paper.
 - Out-of-domain cell evaluation is absent.

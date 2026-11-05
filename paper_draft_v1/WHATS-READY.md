@@ -4,8 +4,8 @@
 
 A measurement study of a typed decision engine on a frozen 16-cell suite. The accuracy arm,
 Myna-v6, reaches 0.8620 macro. Its fair comparison is the same backbone fine-tuned on the same
-split with a conventional per-cell classifier (0.7126 over two seeds), which it leads by 14.9
-points, concentrated on multi-class choice cells. Cardinality routing is a budget repair worth
+split with a conventional per-cell classifier: 0.7746 after two epochs (0.7126 after one, over two
+seeds), so Myna leads by 8.7 points, concentrated on multi-class choice cells. Cardinality routing is a budget repair worth
 0.0399 macro on one cell; conformal sets are reported as a bounded result with three calibrations;
 the streaming engine is a compute result that does not learn the suite, and the paper says so.
 

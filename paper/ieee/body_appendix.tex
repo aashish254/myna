@@ -120,29 +120,29 @@ flat at the 0.167 floor.}
 \centering
 \footnotesize
 \caption{Per-cell accuracy on the 1{,}176 test bundles: \vsix{}, the same-backbone per-cell
-classifier (seed 42, one epoch) and the supervised TF-IDF reference. The last column is the
+classifier (seed 42, two epochs) and the supervised TF-IDF reference. The last column is the
 classifier minus \vsix{}.}
 \label{tab:percell_baselines}
 \begin{tabular}{lrrrr}
 \toprule
 Cell & \vsix{} & DeBERTa per-cell & TF-IDF & $\Delta$ (DeBERTa $-$ \vsix{}) \\
 \midrule
-agnews/is\_business & 0.9535 & 0.8837 & 0.8372 & -0.0698 \\
-agnews/is\_scitech & 0.9184 & 0.9388 & 0.8571 & +0.0204 \\
-agnews/is\_sports & 0.9787 & 0.8511 & 0.9362 & -0.1277 \\
+agnews/is\_business & 0.9535 & 0.9302 & 0.8372 & -0.0233 \\
+agnews/is\_scitech & 0.9184 & 0.9592 & 0.8571 & +0.0408 \\
+agnews/is\_sports & 0.9787 & 0.9787 & 0.9362 & +0.0000 \\
 agnews/is\_world & 1.0000 & 0.9556 & 0.9556 & -0.0444 \\
-agnews/topic & 0.9052 & 0.6983 & 0.7931 & -0.2069 \\
-amazon/stars & 0.6375 & 0.4625 & 0.5250 & -0.1750 \\
-banking77/intent & 0.6724 & 0.1724 & 0.8190 & -0.5000 \\
-boolq/answer & 0.8500 & 0.7625 & 0.6125 & -0.0875 \\
-contrastive/decision & 0.9847 & 0.8163 & 0.5663 & -0.1684 \\
-dbpedia14/category & 0.9569 & 0.6983 & 0.8448 & -0.2586 \\
+agnews/topic & 0.9052 & 0.6897 & 0.7931 & -0.2155 \\
+amazon/stars & 0.6375 & 0.5625 & 0.5250 & -0.0750 \\
+banking77/intent & 0.6724 & 0.5862 & 0.8190 & -0.0862 \\
+boolq/answer & 0.8500 & 0.8000 & 0.6125 & -0.0500 \\
+contrastive/decision & 0.9847 & 0.8622 & 0.5663 & -0.1224 \\
+dbpedia14/category & 0.9569 & 0.7155 & 0.8448 & -0.2414 \\
 imdb/positive & 0.9625 & 0.9500 & 0.8500 & -0.0125 \\
-mnli/relation & 0.8621 & 0.6466 & 0.4052 & -0.2155 \\
-sst5/sentiment & 0.6125 & 0.4375 & 0.3750 & -0.1750 \\
-trec/answer\_type & 0.9483 & 0.7241 & 0.7759 & -0.2241 \\
-yelp/rating & 0.6250 & 0.5625 & 0.4375 & -0.0625 \\
-yelp/recommend & 0.9250 & 0.9125 & 0.7875 & -0.0125 \\
+mnli/relation & 0.8621 & 0.6207 & 0.4052 & -0.2414 \\
+sst5/sentiment & 0.6125 & 0.6250 & 0.3750 & +0.0125 \\
+trec/answer\_type & 0.9483 & 0.7328 & 0.7759 & -0.2155 \\
+yelp/rating & 0.6250 & 0.5250 & 0.4375 & -0.1000 \\
+yelp/recommend & 0.9250 & 0.9000 & 0.7875 & -0.0250 \\
 \bottomrule
 \end{tabular}
 \end{widetable}

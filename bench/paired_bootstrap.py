@@ -73,7 +73,7 @@ def main() -> None:
     rng = random.Random(SEED)
 
     arms = {}
-    base = json.loads((REPO / "runs/kaggle/results/baseline_seed42.json").read_text())
+    base = json.loads((REPO / "runs/baseline_seed42_2ep.json").read_text())
     arms["deberta_percell_seed42"] = {(r["row_id"], r["cell"]): int(r["ok"])
                                       for r in base["records"]}
     for name, path in (("laya_0419", "runs/laya_0419_test.rowoutcomes.json"),

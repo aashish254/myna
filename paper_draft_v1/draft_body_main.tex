@@ -422,21 +422,24 @@ that supports a paired interval, so their columns are point estimates.
 
 The in-domain reference that matters is not TF-IDF but the same backbone. We fine-tuned
 \texttt{microsoft/deberta-v3-large} on the same train split with a conventional readout: one linear
-classifier per cell over the \texttt{[CLS]} of \texttt{state + question}. Two seeds reach 0.7170 and
-0.7082 macro (0.7126 mean), 14.9 points below \vsix{}, and the gap is not uniform. It is largest on
-multi-class choice cells — banking77 0.17 against 0.67, dbpedia14 0.64 against 0.96, trec 0.71
-against 0.95, agnews/topic 0.67 against 0.91 — where the classifier must separate many classes from
-one pooled vector, and smallest on boolean cells and on yelp/recommend, where the two are within a
-point. That pattern is the readout's contribution rather than a training-budget artefact, although
-the baseline is trained for one epoch and is visibly underfitted on the 77-way cell; a longer
-schedule would narrow that one gap and is the obvious next control.
+classifier per cell over the \texttt{[CLS]} of \texttt{state + question}. Trained for one epoch it
+reaches 0.7126 macro over two seeds (0.7170 and 0.7082); trained for two epochs on seed 42 it
+reaches 0.7746, and banking77 moves from 0.17 to 0.59. Most of the one-epoch result was therefore
+underfitting, exactly as a training-schedule confound would predict.
+
+\vsix{} leads the two-epoch control by 8.7 points, and the gap is now concentrated on multi-class
+choice cells: dbpedia14 0.72 against 0.96, mnli 0.62 against 0.86, agnews/topic 0.69 against 0.91,
+trec 0.73 against 0.95. On boolean cells and on yelp/recommend the two are within a few points.
+Because the control improves monotonically with training, 8.7 points is an upper bound on what the
+readout contributes, not a converged estimate; a longer schedule is the obvious next control and
+the paper does not have it.
 
 Pairing on the same rows makes the comparisons significant rather than descriptive. Resampling
-bundles gives \vsix{} minus the per-cell classifier at $+0.145$ macro (95\% CI $[0.122,0.168]$;
-McNemar on the 1{,}440 questions, $p=3.7\times10^{-39}$), minus Laya $+0.196$ $[0.169,0.222]$ and
+bundles gives \vsix{} minus the per-cell classifier at $+0.0875$ macro (95\% CI $[0.0675,0.108]$;
+McNemar on the 1{,}440 questions, $p=1.8\times10^{-22}$), minus Laya $+0.196$ $[0.169,0.222]$ and
 minus VegaML $+0.246$ $[0.218,0.275]$. The TF-IDF arm has no per-question record in the release, so
 its interval is not computed; that is a gap in the artifact, not in the test. The paired effect
-sizes are moderate rather than marginal: Cohen's $d$ is 0.37 against the per-cell classifier, 0.44
+sizes are moderate rather than marginal: Cohen's $d$ is 0.27 against the per-cell classifier, 0.44
 against Laya and 0.51 against VegaML on 1{,}440 paired questions.
 
 \vsix{} also leads the supervised TF-IDF classifier on 15 of the 16 cells and loses
@@ -458,7 +461,7 @@ Arm & macro & overall & bundle & footing \\
 Myna v6, routed & \textbf{0.8620} & 0.8632 & 0.8393 & in-domain \\
 Myna v6, packed everywhere & 0.8222 & 0.8118 & 0.7764 & in-domain \\
 TF-IDF + logistic regression & 0.7111 & 0.6840 & 0.6293 & in-domain, text only \\
-DeBERTa-v3-large, per-cell classifier & 0.7126 & 0.6799 & 0.6165 & in-domain, same backbone \\
+DeBERTa-v3-large, per-cell classifier & 0.7746 & 0.7514 & 0.7049 & in-domain, same backbone (2 epochs) \\
 Laya 0.4.19 (typed-decisions best) & 0.7050 & 0.6792 & 0.6182 & 6/16 in-domain \\
 Laya 0.4.19 (raised + tournament) & 0.6829 & 0.6597 & 0.5918 & 6/16 in-domain \\
 Laya 0.4.19 (English default) & 0.6624 & 0.6333 & 0.5595 & 6/16 in-domain \\
@@ -861,6 +864,6 @@ calibration error and risk--coverage instead of a coverage guarantee.
 
 What remains is scope. The suite is one frozen split, the accuracy arm is in-domain, and the
 external engines are not. The in-domain baseline is one epoch and visibly underfits the 77-way
-cell, so its 14.9-point gap is an upper bound on the readout's advantage. An out-of-domain cell set
+cell, so its 8.7-point gap is an upper bound on the readout's advantage. An out-of-domain cell set
 and a longer baseline schedule are the measurements that would extend these claims, and the paper
 says so rather than implying otherwise.
