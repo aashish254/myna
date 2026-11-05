@@ -831,6 +831,17 @@ reproduces the architecture and objective, loads into the engine, and matches it
 Bit-exact reproduction of the original optimisation trajectory is not claimed, because the run
 depends on hardware and library versions that the notebooks record but do not pin.
 
+\textbf{Reproducibility statement.}
+Every number in this paper is recomputed from committed per-question records by one aggregation
+script, and the repository's registry re-derives each quoted figure from its witness
+($49$ rows, $205$ figures, one gated for lack of a witness). The frozen suite, the rebuilt
+calibration split with its SHA-256, the four training notebooks with digests, the consistency
+predicates, the reference trainer, the routing-cost and conformal harnesses, and the figure
+generators are all released. A container recipe builds the environment and runs the aggregation
+with no GPU. What is not claimed is bit-exact reproduction of the original training trajectory,
+because the run depends on hardware and library versions that the notebooks record but do not pin;
+and one artifact the reviewers asked for, per-question TF-IDF outcomes, is not in the release.
+
 \textbf{Ethics.}
 Typed decisions are used in routing, moderation, and triage. An abstention flag is not a safety
 guarantee: the confidence scores are not certified, the suite is English and public, and the labels
