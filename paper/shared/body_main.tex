@@ -826,9 +826,12 @@ training record, while the cell aggregate matches at 78/116 against the recorded
 reported rather than reconstructed.
 
 \textbf{Data and code availability.}
-The frozen suite, the checkpoint, the per-question records for every \myna{} arm, both consistency
-predicates, the four training notebooks, the CAL-split builder, the reference training
-implementation, and every table and figure generator are released with the paper. The four
+The frozen suite, the per-question records for every \myna{} arm, both consistency predicates, the
+four training notebooks, the CAL-split builder, the reference training implementation, and every
+table and figure generator are released in the artifact that accompanies the submission. The
+trained checkpoint is larger than a code artifact should carry (a 1.6\,GB fine-tuned backbone plus
+48\,MB of readout heads), so it is hosted separately; for the blind review it is available from the
+artifact on request, and it will be linked in the camera-ready. The four
 training notebooks are in \texttt{release/notebooks/} with digests; the reference trainer
 reproduces the architecture and objective, loads into the engine, and matches it token-for-token.
 Bit-exact reproduction of the original optimisation trajectory is not claimed, because the run
