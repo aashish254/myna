@@ -17,7 +17,7 @@ small, fixed answer set, and the state on which it is asked grows with every tur
 Autoregressive language models answer such questions fluently but pay for generation on every
 call and can return text outside the option set. A non-autoregressive \emph{decision engine}
 instead returns a categorical distribution over predefined options
-[1, 2]. The design is attractive for high-frequency routing, but three
+\citep{li2026jev,duan2026gdm}. The design is attractive for high-frequency routing, but three
 properties determine whether it can be deployed: whether the option set fits the model's input
 budget, whether the confidence it reports can support abstention, and whether the answers to the
 questions of one bundle are mutually consistent.
@@ -80,13 +80,13 @@ measurements, and Section~10 states what the study does not establish.
 \section*{2. Related Work}
 \textbf{Typed and zero-shot decision models.}
 Cloze-style reformulation turns classification into scoring option strings
-[3], and prompt-based fine-tuning with demonstrations improves few-shot
-performance [4]. Entailment-based zero-shot classification scores labels as
-hypotheses [5]; SetFit shows that sentence-encoder fine-tuning is
-competitive with prompts at small label budgets [6]. The recent \emph{Jev}
+\citep{schick2021pet}, and prompt-based fine-tuning with demonstrations improves few-shot
+performance \citep{gao2021lmbff}. Entailment-based zero-shot classification scores labels as
+hypotheses \citep{yin2019benchmarking}; SetFit shows that sentence-encoder fine-tuning is
+competitive with prompts at small label budgets \citep{tunstall2022setfit}. The recent \emph{Jev}
 line makes the decision-model framing explicit: a model returns a categorical distribution over
-predefined options without generating text [1], and JEVal benchmarks that family
-across 36 datasets [2]. JEVal's findings motivate the calibration question:
+predefined options without generating text \citep{li2026jev}, and JEVal benchmarks that family
+across 36 datasets \citep{duan2026gdm}. JEVal's findings motivate the calibration question:
 decision models can identify the likely outcome while substantially overstating its probability.
 The suite studied here is smaller and the accuracy arm is in-domain, but the failure modes are
 the same.
@@ -95,36 +95,36 @@ the same.
 The comparison set spans two contemporary decision engines and three classical references. The
 classical references are a train-prior majority classifier, a TF-IDF unigram/bigram classifier
 with logistic regression, and a zero-shot NLI scorer applied in the entailment tradition of
-[5]. The two engines are evaluated by their own released harnesses on the
+\citep{yin2019benchmarking}. The two engines are evaluated by their own released harnesses on the
 same rows. None of the five is a like-for-like training-budget comparison with a fine-tuned
 encoder, and Section~5 treats the footing as part of each number.
 
 \textbf{Efficient sequence models.}
 Linear attention replaces the quadratic attention matrix with a recurrence whose state is fixed
-in size [7]; gated linear attention adds a data-dependent forget
-gate and hardware-efficient training [8]. State-space models such as Mamba
-[9] and RWKV [10] make the same trade, and IO-aware exact attention
-[11] and sparse attention [12] attack the cost
+in size \citep{katharopoulos2020transformers}; gated linear attention adds a data-dependent forget
+gate and hardware-efficient training \citep{yang2024gla}. State-space models such as Mamba
+\citep{gu2024mamba} and RWKV \citep{peng2023rwkv} make the same trade, and IO-aware exact attention
+\citep{dao2022flashattention} and sparse attention \citep{beltagy2020longformer} attack the cost
 from other directions. The streaming arm is a six-layer gated-linear-attention trunk; the
 citations are lineage and motive, not a claim of a new architecture.
 
 \textbf{Calibration, selective prediction, and conformal sets.}
 Temperature scaling and reliability diagrams are the standard calibration tools
-[13]; modern networks remain miscalibrated under dataset shift
-[14]. Selective classification trades coverage for risk
-[15, 16]. Split conformal prediction gives
+\citep{guo2017calibration}; modern networks remain miscalibrated under dataset shift
+\citep{ovadia2019uncertainty}. Selective classification trades coverage for risk
+\citep{geifman2017selective,geifman2019selectivenet}. Split conformal prediction gives
 distribution-free marginal coverage under exchangeability
-[17, 18], and conformalized quantile regression reports
-coverage and interval length together [19]. Empirical coverage below nominal is a
+\citep{lei2018distribution,angelopoulos2021gentle}, and conformalized quantile regression reports
+coverage and interval length together \citep{romano2019cqr}. Empirical coverage below nominal is a
 known consequence of violated exchangeability, and the diagnostic is to report coverage by
 subgroup rather than to withdraw the method silently; Section~7 follows that
 practice and concludes that the sets are not usable for abstention on this suite.
 
 \textbf{Cascades, edge deployment, and quantization.}
 Early-exit networks decide per input how much computation to spend
-[20, 21, 22]. Post-training quantization
+\citep{teerapittayanon2016branchynet,xin2020fastbert,zhou2020deebert}. Post-training quantization
 reduces bytes but can move probabilities
-[23, 24, 25]. The two-engine design is a coarse
+\citep{dettmers2022llmint8,frantar2023gptq,xiao2023smoothquant}. The two-engine design is a coarse
 cascade: the constant-state engine handles frequent decisions and the cross-encoder is the
 accuracy arm. The paper measures the two ends and the portability of the small end, not a joint
 deferral policy.
@@ -137,7 +137,7 @@ correctness flag disagrees with its own prediction and gold, so a table cannot d
 records it cites.
 
 The packed-versus-decoupled choice is the classical reranking trade-off. Poly-encoders
-[26] and late-interaction models such as ColBERT [27] encode
+\citep{humeau2020poly} and late-interaction models such as ColBERT \citep{khattab2020colbert} encode
 the context once and score many candidates cheaply, which is the $O(1)$-pass side; cross-encoders
 score each pair jointly, which is the $O(K)$ side our set-aware head occupies. Extreme
 multi-class classification addresses the same $K\gg16$ regime with label embeddings rather than
@@ -568,7 +568,7 @@ test questions. \emph{Released}: the per-primitive quantiles stored in the check
 568-question calibration split. \emph{Refit}: the same score refitted on the rebuilt
 2{,}548-question CAL split, either per primitive, pooled, or with the temperature and the quantile
 fitted on disjoint halves. \emph{Mondrian}: one quantile per cell on the same rebuilt split, the
-cell-conditional calibration of Vovk [28], which is the standard answer when
+cell-conditional calibration of Vovk \citep{vovk2012conditional}, which is the standard answer when
 exchangeability across heterogeneous questions is in doubt.
 
 \begin{center}
@@ -775,7 +775,7 @@ three measurements that would most strengthen the claims, and none is in this dr
 \textbf{The ordinal primitive.}
 The \texttt{score} cells are the engine's weakest group and its most ordinary: 0.6375 on
 amazon/stars, 0.6125 on sst5/sentiment, and 0.6250 on yelp/rating, against a 0.20 uniform floor and
-a 0.525 TF-IDF baseline on the first. The checkpoint also stores a CORAL [29] ordinal head that the
+a 0.525 TF-IDF baseline on the first. The checkpoint also stores a CORAL \citep{cao2020coral} ordinal head that the
 released configuration disables; it was trained with cross-entropy plus a cumulative-link term and
 an earth-mover term, and gated on development accuracy against the packed head's 0.6542. We decoded
 the stored head with the notebook's own forward pass and scored it on the same 240 questions
@@ -1016,61 +1016,5 @@ yelp/recommend & 0.9250 & 0.9375 & 0.7875 & +0.0125 \\
 
 \section*{References}
 
-[1] Yinheng Li and Justin Wagle. LLM-as-Jev: LLMs Are Already Jev-Style Decision Models -- When and How to Fine-Tune Them. 2026.
 
-[2] Feiyu Duan and Jiayu Lin and Jia Wang and Jun Xiang and Jialiang Wu and Xinnong Zhang and Hanqi Yan and Siyuan Wang and Zhongyu Wei. General Decision Models: Benchmarking and Insights Beyond Jev. 2026.
-
-[3] Timo Schick and Hinrich Schütze. Exploiting Cloze Questions for Few Shot Text Classification and Natural Language Inference. Proceedings of the 16th Conference of the European Chapter of the Association for Computational Linguistics (EACL), 2021. doi:10.18653/v1/2021.eacl-main.20.
-
-[4] Tianyu Gao and Adam Fisch and Danqi Chen. Making Pre-trained Language Models Better Few-shot Learners. Proceedings of the 59th Annual Meeting of the Association for Computational Linguistics (ACL-IJCNLP), 2021.
-
-[5] Wenpeng Yin and Jamaal Hay and Dan Roth. Benchmarking Zero-shot Text Classification: Datasets, Evaluation and Entailment Approach. Proceedings of the 2019 Conference on Empirical Methods in Natural Language Processing (EMNLP-IJCNLP), 2019.
-
-[6] Lewis Tunstall and Nils Reimers and Unso Eun Seo Jo and Luke Bates and Daniel Korat and Moshe Wasserblat and Oren Pereg. Efficient Few-Shot Learning Without Prompts. Proceedings of the 2022 Conference on Empirical Methods in Natural Language Processing (EMNLP), 2022.
-
-[7] Angelos Katharopoulos and Apoorv Vyas and Nikolaos Pappas and François Fleuret. Transformers are RNNs: Fast Autoregressive Transformers with Linear Attention. Proceedings of the 37th International Conference on Machine Learning (ICML), 2020.
-
-[8] Songlin Yang and Bailin Wang and Yikang Shen and Rameswar Panda and Yoon Kim. Gated Linear Attention Transformers with Hardware-Efficient Training. Proceedings of the 41st International Conference on Machine Learning (ICML), 2024.
-
-[9] Albert Gu and Tri Dao. Mamba: Linear-Time Sequence Modeling with Selective State Spaces. Conference on Language Modeling (COLM), 2024.
-
-[10] Bo Peng and Eric Alcaide and Quentin Anthony and Alon Albalak and Samuel Arcadinho and Stella Biderman and Huanqi Cao and Xin Cheng and Michael Chung and Matteo Grella and Kranthi Kiran GV and Xuzheng He and Haowen Hou and Jiaju Lin and Przemyslaw Kazienko and Jan Kocon and Jiaming Kong and Bartlomiej Koptyra and Hayden Lau and Krishna Sri Ipsit Mantri and Ferdinand Mom and Atsushi Saito and Guangyu Song and Xiangru Tang and Bolun Wang and Johan S. Wind and Stanislaw Wozniak and Ruichong Zhang and Zhenyuan Zhang and Qihang Zhao and Peng Zhou and Qinghua Zhou and Jian Zhu and Rui-Jie Zhu. RWKV: Reinventing RNNs for the Transformer Era. Findings of the Association for Computational Linguistics: ACL 2023, 2023.
-
-[11] Tri Dao and Daniel Y. Fu and Stefano Ermon and Atri Rudra and Christopher Ré. FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness. Advances in Neural Information Processing Systems (NeurIPS), 2022.
-
-[12] Iz Beltagy and Matthew E. Peters and Arman Cohan. Longformer: The Long-Document Transformer. Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics (ACL), 2020.
-
-[13] Chuan Guo and Geoff Pleiss and Yu Sun and Kilian Q. Weinberger. On Calibration of Modern Neural Networks. Proceedings of the 34th International Conference on Machine Learning (ICML), 2017.
-
-[14] Yaniv Ovadia and Emily Fertig and Jie Ren and Zachary Nado and D Sculley and Sebastian Nowozin and Joshua V. Dillon and Balaji Lakshminarayanan and Jasper Snoek. Can You Trust Your Model's Uncertainty? Evaluating Predictive Uncertainty Under Dataset Shift. Advances in Neural Information Processing Systems (NeurIPS), 2019.
-
-[15] Yonatan Geifman and Ran El-Yaniv. Selective Classification for Deep Neural Networks. Proceedings of the 34th International Conference on Machine Learning (ICML), 2017.
-
-[16] Yonatan Geifman and Ran El-Yaniv. SelectiveNet: A Deep Neural Network with an Integrated Reject Option. Proceedings of the 36th International Conference on Machine Learning (ICML), 2019.
-
-[17] Jing Lei and Max G'Sell and Alessandro Rinaldo and Ryan J. Tibshirani and Larry Wasserman. Distribution-Free Predictive Inference For Regression. Journal of the American Statistical Association, 2018. doi:10.1080/01621459.2017.1307116.
-
-[18] Anastasios N. Angelopoulos and Stephen Bates. A Gentle Introduction to Conformal Prediction and Distribution-Free Uncertainty Quantification. 2021.
-
-[19] Yaniv Romano and Evan Patterson and Emmanuel J. Candès. Conformalized Quantile Regression. Advances in Neural Information Processing Systems (NeurIPS), 2019.
-
-[20] Surat Teerapittayanon and Bradley McDanel and H. T. Kung. BranchyNet: Fast Inference via Early Exiting from Deep Neural Networks. International Conference on Pattern Recognition (ICPR), 2016.
-
-[21] Weijie Liu and Peng Zhou and Zhe Zhao and Zhiruo Wang and Haotang Deng and Qi Ju. FastBERT: a Self-distilling BERT with Adaptive Inference Time. Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics (ACL), 2020.
-
-[22] Ji Xin and Raphael Tang and Jaejun Lee and Yaoliang Yu and Jimmy Lin. DeeBERT: Dynamic Early Exiting for Accelerating BERT Inference. Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics (ACL), 2020.
-
-[23] Tim Dettmers and Mike Lewis and Younes Belkada and Luke Zettlemoyer. LLM.int8(): 8-bit Matrix Multiplication for Transformers at Scale. Advances in Neural Information Processing Systems (NeurIPS), 2022.
-
-[24] Elias Frantar and Saleh Ashkboos and Torsten Hoefler and Dan Alistarh. GPTQ: Accurate Post-Training Quantization for Generative Pre-trained Transformers. International Conference on Learning Representations (ICLR), 2023.
-
-[25] Guangxuan Xiao and Ji Lin and Mickael Seznec and Hao Wu and Julien Demouth and Song Han. SmoothQuant: Accurate and Efficient Post-Training Quantization for Large Language Models. Proceedings of the 40th International Conference on Machine Learning (ICML), 2023.
-
-[26] Humeau, Samuel and Shuster, Kurt and Lachaux, Marie-Anne and Weston, Jason. Poly-encoders: Transformer Architectures and Pre-training Strategies for Fast and Accurate Multi-sentence Scoring. International Conference on Learning Representations, 2020.
-
-[27] Khattab, Omar and Zaharia, Matei. ColBERT: Efficient and Effective Passage Search via Contextualized Late Interaction over BERT. Proceedings of the 43rd International ACM SIGIR Conference on Research and Development in Information Retrieval, 2020.
-
-[28] Vovk, Vladimir. Conditional Validity of Inductive Conformal Predictors. Asian Conference on Machine Learning, 2012.
-
-[29] Cao, Wenzhi and Mirjalili, Vahid and Raschka, Sebastian. Rank Consistent Ordinal Regression for Neural Networks with Application to Age Estimation. Pattern Recognition Letters, 2020.
 \end{document}
