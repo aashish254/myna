@@ -11,7 +11,15 @@ from pathlib import Path
 t = Path("myna_tmlr.tex").read_text()
 a = t.index("\\begin{abstract}") + len("\\begin{abstract}")
 b = t.index("\\end{abstract}")
-Path("upload/abstract.txt").write_text(" ".join(t[a:b].split()) + "\n")
+import re
+text = " ".join(t[a:b].split())
+text = text.replace("\\vsix{}", "Myna-v6").replace("\\stream{}", "Myna-Stream")
+text = text.replace("\\myna{}", "Myna").replace("\\,", " ").replace("\\%", "%")
+text = re.sub(r"\\texttt\{([^}]*)\}", r"\1", text)
+text = re.sub(r"\$([^$]*)\$", r"\1", text)
+text = re.sub(r"\\[a-zA-Z]+\{([^}]*)\}", r"\1", text)
+text = re.sub(r"[{}]", "", text)
+Path("upload/abstract.txt").write_text(text + "\n")
 PY
 
 rm -rf /tmp/myna_pkg && mkdir -p /tmp/myna_pkg
