@@ -39,7 +39,7 @@ train-prior majority classifier, a supervised TF-IDF classifier, and a zero-shot
 in-domain for \vsix{} and out-of-domain or zero-shot for the others, and
 Section~\ref{sec:baselines} states that footing with each number.
 \item \textbf{A cardinality-budget diagnosis and an isolated routing ablation.} The packed
-layout fits every cell with $K\le15$ options. The 77-way cell overflows on 50 of 116 rows,
+layout fits every cell, whose largest option count is 15, inside the 16-option cap. The 77-way cell overflows on 50 of 116 rows,
 consumes 490 option-span tokens (6.36 per option), and collapses. Forcing the packed scorer on
 every cell, with the weights held fixed, scores 0.0345 on that cell and 0.8222 macro; enabling
 the router on the same weights scores 0.6724 and 0.8620. No other cell changes. Routing is a
@@ -87,7 +87,7 @@ the same.
 The comparison set spans two contemporary decision engines and three classical references. The
 classical references are a train-prior majority classifier, a TF-IDF unigram/bigram classifier
 with logistic regression, and a zero-shot NLI scorer applied in the entailment tradition of
-\citep{yin2019benchmarking}. The two engines are evaluated by their own released harnesses on the
+\citet{yin2019benchmarking}. The two engines are evaluated by their own released harnesses on the
 same rows. None of the five is a like-for-like training-budget comparison with a fine-tuned
 encoder, and Section~\ref{sec:baselines} treats the footing as part of each number.
 
@@ -207,7 +207,10 @@ z_i = f_b\big(\operatorname{LN}(h_i)\big)
  + \beta\,\mathbf{1}[o_i=\textsc{none}], \label{eq:setscore}
 \end{multline}
 where $f_b,f_c$ are two-layer MLPs of width 512, $\gamma$ is a scalar, $\operatorname{LN}$ is layer
-normalisation, and the last term gates the injected \textsc{none}-of-these option. The deviation
+normalisation, and the last term gates the injected \textsc{none}-of-these option. The shipped
+checkpoint stores $\beta$ but does not call it: its configuration sets
+\texttt{b77\_none\_mode} to \texttt{T\_fallback} and accepts \textsc{none} by the threshold rule of
+Section~\ref{sec:limitations}. The deviation
 term $d_i$ is the mechanism: an option is scored against the bundle's own competition, so the scale
 of $z$ is set by the other candidates rather than by a global bias.
 
@@ -437,9 +440,23 @@ to 0.61--0.63 at three and six.
 cells: dbpedia14 0.72 against 0.96, mnli 0.72 against 0.86, agnews/topic 0.69 against 0.91, trec
 0.74 against 0.95. On boolean cells and on yelp/recommend the two are within a few points.
 
+Pairing on the same rows makes the comparisons descriptive rather than impressionistic. Resampling
+bundles --- rows, not questions, because the questions of a bundle share a state --- gives \vsix{}
+minus the six-epoch per-cell classifier at $+0.0690$ macro (95\% CI $[0.0486,0.0903]$); at three
+epochs $+0.0674$ for seed 21 $[0.0478,0.0868]$ and $+0.0752$ for seed 7 $[0.0564,0.0956]$; at two
+epochs $+0.0875$ $[0.0675,0.108]$, $+0.0808$ $[0.0587,0.102]$ and $+0.0737$ $[0.0544,0.0937]$ for
+seeds 42, 7 and 13; minus Laya's English-default configuration (0.6664) $+0.196$ $[0.169,0.222]$;
+minus VegaML $+0.246$ $[0.218,0.275]$. We report these intervals rather than question-level
+significance tests: with dependent questions inside a bundle, an unclustered test over 1{,}440
+questions would overstate its own evidence.
+
 \vsix{} also leads the supervised TF-IDF classifier on 15 of the 16 cells and loses
 \texttt{banking77/intent}, 0.6724 against 0.8190: a bag-of-words classifier that sees the whole
-option list beats the routed set-aware head on the 77-way question.
+option list beats the routed set-aware head on the 77-way question. The same pattern explains why the
+per-cell control trails TF-IDF on banking77 (0.6293 against 0.8190) and dbpedia14 (0.7155 against
+0.8448): a single pooled vector per question has to separate 77 or 14 classes that share a
+backbone and a training budget, while the bag-of-words model fits each class directly from the state
+text. The readout's advantage and the classifier's deficit are two faces of the same design choice.
 
 \begin{widetable}
 \centering
@@ -887,7 +904,8 @@ change any answer. Split-conformal sets cover 83.68\% at a 90\% target, so the p
 calibration error and risk--coverage instead of a coverage guarantee.
 
 What remains is scope. The suite is one frozen split, the accuracy arm is in-domain, and the
-external engines are not. The in-domain baseline is three epochs and still improving with schedule
-(0.7126 at one epoch, 0.7814 at two over three seeds, 0.7907 at three over two), so its 7.1-point gap is an upper bound on the readout's
-advantage. An out-of-domain cell set and a longer baseline schedule are the measurements that would
-extend these claims, and the paper says so rather than implying otherwise.
+external engines are not. The in-domain baseline plateaus at 0.7931 after six epochs, so its
+6.9-point gap to \vsix{} is a converged estimate on this suite rather than an upper bound from an
+under-trained schedule. What remains is one training seed for \vsix{} itself and an out-of-domain
+cell set; those are the measurements that would extend these claims, and the paper says so rather
+than implying otherwise.
