@@ -851,7 +851,7 @@ change any answer. Split-conformal sets cover 83.68\% at a 90\% target, so the p
 calibration error and risk--coverage instead of a coverage guarantee.
 
 What remains is scope. The suite is one frozen split, the accuracy arm is in-domain, and the
-external engines are not. The in-domain baseline is two epochs and still improving with schedule
+external engines are not. The in-domain baseline is three epochs and still improving with schedule
 (0.7126 at one epoch, 0.7814 at two over three seeds, 0.7907 at three over two), so its 7.1-point gap is an upper bound on the readout's
 advantage. An out-of-domain cell set and a longer baseline schedule are the measurements that would
 extend these claims, and the paper says so rather than implying otherwise.
@@ -983,28 +983,28 @@ flat at the 0.167 floor.}\end{figure}
 \centering
 \footnotesize
 \caption{Per-cell accuracy on the 1{,}176 test bundles: Myna-v6{}, the same-backbone per-cell
-classifier (seed 42, two epochs) and the supervised TF-IDF reference. The last column is the
+classifier (seed 21, three epochs) and the supervised TF-IDF reference. The last column is the
 classifier minus Myna-v6{}.}
 \begin{tabular}{lrrrr}
 \toprule
 Cell & Myna-v6{} & DeBERTa per-cell & TF-IDF & $\Delta$ (DeBERTa $-$ Myna-v6{}) \\
 \midrule
-agnews/is\_business & 0.9535 & 0.9302 & 0.8372 & -0.0233 \\
-agnews/is\_scitech & 0.9184 & 0.9592 & 0.8571 & +0.0408 \\
+agnews/is\_business & 0.9535 & 0.9070 & 0.8372 & -0.0465 \\
+agnews/is\_scitech & 0.9184 & 0.9796 & 0.8571 & +0.0612 \\
 agnews/is\_sports & 0.9787 & 0.9787 & 0.9362 & +0.0000 \\
-agnews/is\_world & 1.0000 & 0.9556 & 0.9556 & -0.0444 \\
-agnews/topic & 0.9052 & 0.6897 & 0.7931 & -0.2155 \\
-amazon/stars & 0.6375 & 0.5625 & 0.5250 & -0.0750 \\
-banking77/intent & 0.6724 & 0.5862 & 0.8190 & -0.0862 \\
-boolq/answer & 0.8500 & 0.8000 & 0.6125 & -0.0500 \\
-contrastive/decision & 0.9847 & 0.8622 & 0.5663 & -0.1224 \\
+agnews/is\_world & 1.0000 & 0.9778 & 0.9556 & -0.0222 \\
+agnews/topic & 0.9052 & 0.7069 & 0.7931 & -0.1983 \\
+amazon/stars & 0.6375 & 0.5750 & 0.5250 & -0.0625 \\
+banking77/intent & 0.6724 & 0.6121 & 0.8190 & -0.0603 \\
+boolq/answer & 0.8500 & 0.8375 & 0.6125 & -0.0125 \\
+contrastive/decision & 0.9847 & 0.8724 & 0.5663 & -0.1122 \\
 dbpedia14/category & 0.9569 & 0.7155 & 0.8448 & -0.2414 \\
 imdb/positive & 0.9625 & 0.9500 & 0.8500 & -0.0125 \\
-mnli/relation & 0.8621 & 0.6207 & 0.4052 & -0.2414 \\
-sst5/sentiment & 0.6125 & 0.6250 & 0.3750 & +0.0125 \\
-trec/answer\_type & 0.9483 & 0.7328 & 0.7759 & -0.2155 \\
-yelp/rating & 0.6250 & 0.5250 & 0.4375 & -0.1000 \\
-yelp/recommend & 0.9250 & 0.9000 & 0.7875 & -0.0250 \\
+mnli/relation & 0.8621 & 0.6983 & 0.4052 & -0.1638 \\
+sst5/sentiment & 0.6125 & 0.5875 & 0.3750 & -0.0250 \\
+trec/answer\_type & 0.9483 & 0.7414 & 0.7759 & -0.2069 \\
+yelp/rating & 0.6250 & 0.6375 & 0.4375 & +0.0125 \\
+yelp/recommend & 0.9250 & 0.9375 & 0.7875 & +0.0125 \\
 \bottomrule
 \end{tabular}
 \end{table}
