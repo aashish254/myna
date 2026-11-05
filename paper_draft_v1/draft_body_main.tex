@@ -448,8 +448,11 @@ $[0.0675,0.108]$ for seed 42, $+0.0808$ $[0.0587,0.102]$ for seed 7 and $+0.0737
 for seed 13; minus Laya's English-default configuration (0.6664) $+0.196$ $[0.169,0.222]$; minus
 VegaML $+0.246$ $[0.218,0.275]$. We report these intervals rather than question-level significance
 tests: with dependent questions inside a bundle, an unclustered test over 1{,}440 questions would
-overstate its own evidence. The TF-IDF arm has no per-question record in the release, so its
-interval is not computed; that is a gap in the artifact, not in the test.
+overstate its own evidence. The TF-IDF arm is the one reference we cannot pair this way. We rebuilt
+it from the description in this paper to obtain per-question records, and the reconstruction reaches
+0.663 macro against the 0.7111 the original harness reported; the gap is large enough that the
+reconstruction is not the published arm, so its column stays a point estimate and we do not report a
+paired interval against a different model.
 
 \vsix{} also leads the supervised TF-IDF classifier on 15 of the 16 cells and loses
 \texttt{banking77/intent}, 0.6724 against 0.8190: a bag-of-words classifier that sees the whole
@@ -702,8 +705,16 @@ both routes, and the int8 artifacts remain in the tree for byte-constrained uses
 speed.
 
 \subsection{Two engines, one API}
-The systems numbers are \stream{}'s, not \vsix{}'s. \vsix{} has no ONNX export and no browser
-build, and it re-encodes the state, so a latency number for it would be a different experiment.
+The streaming numbers above are \stream{}'s. \vsix{} has no ONNX export and no browser build, and
+it re-encodes the state on every question, so its cost is a different measurement with a different
+shape. On the same M5, in one process, with the checkpoint loaded and the model warmed, one packed
+question (four options) takes 0.14\,s end to end and scales with the question count: 0.62\,s for
+five, 1.26\,s for ten, 3.24\,s for twenty-five. A routed question costs two orders of magnitude
+more per option, because the decoupled path runs one encoder pass per option: a single 77-option
+banking77 request takes 2.8\,s, and twenty-five of them take 59\,s. These are per-request numbers
+for \vsix{} alone; the 11.4$\times$ packed-versus-routed ratio quoted in
+Section~\ref{sec:cardinality} is a same-cell comparison on six banking rows and is not the same
+measurement.
 The shared API is what makes the split usable: an application can run \stream{} for high-frequency
 decisions and defer to \vsix{} or another second-tier model on abstention, with the committing
 engine logged. No end-to-end cascade accuracy is claimed, because no joint deferral policy was
@@ -828,7 +839,13 @@ split, its CAL temperature and conformal fit, the CORAL gate, and the cell that 
 bundles and 2{,}548 questions; the model card's 2{,}000 is the rounding target, and the rebuild is
 a definition-level reproduction rather than a hash of the lost file. The suite's committed
 calibration split has 448 rows and 568 questions and is a different, earlier split. The banking77 \texttt{none\_absent} decomposition is 0/12 here against 7/12 in the
-training record, while the cell aggregate matches at 78/116 against the recorded 77/116.
+training record, while the cell aggregate matches at 78/116 against the recorded 77/116. The
+difference is the open-set path, and the checkpoint says which path ships:
+\texttt{b77\_none\_mode} is \texttt{T\_fallback} with \texttt{b77\_none\_param} $=0.45$, so the
+\textsc{none}-of-these option is accepted by a threshold rule rather than by the learned gate
+$\beta$ of Eq.~\eqref{eq:setscore}. The gate tensors are stored, like the graph head, but the
+inference path never calls them; that is why the training record's decomposition and this
+recomputation disagree on twelve rows.
 \vsix{}'s 512-token maximum also puts the long-context question out of its reach. These gaps are
 reported rather than reconstructed.
 

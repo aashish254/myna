@@ -141,10 +141,11 @@ def main() -> None:
     coral = summary(coral_ok)
     packed = summary(packed_ok)
     out = {
+        "cmd": "python -m bench.coral_eval",
         "head": "CoralOrdinalScoreHead (v6 notebook cell 4)",
         "ordinal_mix": round(mix, 4),
         "gate_threshold_recorded": 0.6542,
-        "gold": "corrected (1-based level -> 0-based option index)",
+        "gold": "0-based option index (score label as stored)",
         "n": len(per_row),
         "coral": coral,
         "packed": packed,

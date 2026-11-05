@@ -47,6 +47,7 @@ def main() -> None:
 
     specs = load_specs()
     out: dict[str, dict] = {"predicate": "myna.consistency.is_contradiction",
+                            "cmd": "python -m bench.consistency_audit",
                             "split": "test", "bundles_eligible": 172, "engines": {}}
     for name, rel in ENGINES:
         path = REPO / rel
