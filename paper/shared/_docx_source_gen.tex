@@ -795,13 +795,12 @@ reported rather than reconstructed.
 
 \textbf{Data and code availability.}
 The frozen suite, the per-question records for every Myna{} arm, both consistency predicates, the
-four training notebooks, the CAL-split builder, the reference training implementation, and every
-table and figure generator are released in the artifact that accompanies the submission. The
+four training notebooks, the calibration-split builder, the reference training implementation, and
+every table and figure generator are released in the artifact that accompanies the submission. The
 trained checkpoint is larger than a code artifact should carry (a 1.6\,GB fine-tuned backbone plus
-48\,MB of readout heads), so it is hosted separately; for the blind review it is available from the
-artifact on request, and it will be linked in the camera-ready. The four
-training notebooks are in \texttt{release/notebooks/} with digests; the reference trainer
-reproduces the architecture and objective, loads into the engine, and matches it token-for-token.
+48\,MB of readout heads), so it is hosted separately; it is available on request during the blind
+review and will be linked in the camera-ready. The reference trainer reproduces the architecture and
+objective, loads into the engine, and matches it token-for-token.
 Bit-exact reproduction of the original optimisation trajectory is not claimed, because the run
 depends on hardware and library versions that the notebooks record but do not pin.
 
