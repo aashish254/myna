@@ -192,31 +192,26 @@ def fig4():
 
 def fig6_diagnostics():
     """The small-engine diagnostics, with the v6 bar read from the current paper numbers."""
-    labels = ["v0\nsynth", "v1b\nsynth", "v1b\nreal", "AP\noff", "AP\non", "v6\nreal"]
+    labels = ["v0\nsynth", "v1b\nsynth", "v1b\nreal", "v6\nreal"]
     vals = [load("runs/g6_v0_synthetic_s0.json")["macro_test"],
             load("runs/g6_v1b_synthetic_s0.json")["macro_test"],
             load("runs/v1b_kaggle_3600b.report.json")["macro"]["acc"],
-            load("runs/antiprior_off_s0.report.json")["macro"]["acc"],
-            load("runs/antiprior_on_s0c.report.json")["macro"]["acc"],
             load("runs/paper_numbers.json")["arms"]["myna_v6"]["macro"]]
-    cols = [C["grey"], C["grey"], C["blue"], C["orange"], C["red"], C["green"]]
+    cols = [C["grey"], C["grey"], C["blue"], C["green"]]
     fig, (ax, bx) = plt.subplots(1, 2, figsize=(7.2, 2.9),
                                  gridspec_kw={"width_ratios": [1.45, 1.0], "wspace": 0.35})
-    bars = ax.bar(range(6), vals, color=cols, width=0.66, edgecolor="white", linewidth=0.5)
+    bars = ax.bar(range(len(vals)), vals, color=cols, width=0.66, edgecolor="white", linewidth=0.5)
     for b, v in zip(bars, vals):
         ax.text(b.get_x() + b.get_width() / 2, v + 0.012, f"{v:.3f}", ha="center",
                 va="bottom", fontsize=6.4)
     ax.axhline(0.94, color=C["black"], lw=0.7, ls="--", label="G6 gate 0.94 (synthetic)")
     ax.axhline(0.4331, color=C["red"], lw=0.7, ls=":", label="majority floor 0.433")
-    ax.set_xticks(range(6)); ax.set_xticklabels(labels, fontsize=6.6)
+    ax.set_xticks(range(len(vals))); ax.set_xticklabels(labels, fontsize=6.6)
     ax.set_ylim(0, 1.08); ax.set_ylabel("macro accuracy")
     ax.legend(loc="upper center", frameon=False, fontsize=6.2, handlelength=1.4,
               borderaxespad=0.2)
     ax.grid(axis="y", color=C["lightgrey"], lw=0.5, zorder=0)
     ax.set_title("(a) synthetic success, real-suite plateau", loc="left")
-    ax.annotate("4 to 0 emitters, -0.055 macro", xy=(4, 0.50), xytext=(1.55, 0.73),
-                fontsize=6.2, color=C["red"], ha="left",
-                arrowprops=dict(arrowstyle="->", color=C["red"], lw=0.5))
 
     d = load("runs/needle_lc1_stageC_final.json")
     L = [r["tokens"] for r in d["rows"]]
@@ -233,7 +228,7 @@ def fig6_diagnostics():
     bx.legend(frameon=False, loc="upper right", handletextpad=0.3, borderaxespad=0.2,
               fontsize=6.4)
     bx.set_title("(b) flat at chance, not decay", loc="left")
-    bx.text(150, 0.03, "harness prints readable: false", fontsize=6.3, color=C["grey"])
+    bx.text(150, 0.03, "at the uniform floor", fontsize=6.3, color=C["grey"])
     for ext in ("pdf", "png"):
         fig.savefig(FIG / f"fig6_diagnostics_journal.{ext}")
     plt.close(fig)

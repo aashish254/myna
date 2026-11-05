@@ -560,11 +560,12 @@ architecture family.
 
 \subsection{Conformal prediction: what fails, and why}
 
-We report three calibrations of the same nonconformity score, Eq.~\eqref{eq:conformal}, on the same
+We report five calibrations of the same nonconformity score, Eq.~\eqref{eq:conformal}, on the same
 test questions. \emph{Released}: the per-primitive quantiles stored in the checkpoint, fitted on the
-the 568-question calibration split. \emph{Refit}: one pooled quantile fitted on the rebuilt
-2{,}548-question CAL split. \emph{Mondrian}: one quantile per
-cell on the same rebuilt split, the cell-conditional calibration of Vovk [28], which is the standard answer when
+568-question calibration split. \emph{Refit}: the same score refitted on the rebuilt
+2{,}548-question CAL split, either per primitive, pooled, or with the temperature and the quantile
+fitted on disjoint halves. \emph{Mondrian}: one quantile per cell on the same rebuilt split, the
+cell-conditional calibration of Vovk [28], which is the standard answer when
 exchangeability across heterogeneous questions is in doubt.
 
 \begin{center}
@@ -974,10 +975,9 @@ does not use it as a coverage guarantee.}
 \begin{figure}
 \centering
 \includegraphics[width=0.9\linewidth]{paper/figures/fig6_diagnostics_journal.pdf}
-\caption{(a) Synthetic versus real-suite macro. The dashed line is the 0.94 synthetic gate; the
-dotted line is the 0.433 majority floor. The anti-prior arm removes four constant emitters and loses
-0.0554 macro; the off arm is VOID. (b) Needle accuracy against state length for the 4k-trained arm:
-flat at the 0.167 floor.}\end{figure}
+\caption{(a) Synthetic versus real-suite macro for the streaming arms. The dashed line is the 0.94
+synthetic gate; the dotted line is the 0.433 majority floor. (b) Needle accuracy against state
+length for the 4k-trained arm: flat at the 0.167 uniform floor.}\end{figure}
 
 \begin{table}
 \centering

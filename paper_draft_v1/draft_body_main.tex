@@ -582,11 +582,12 @@ architecture family.
 \subsection{Conformal prediction: what fails, and why}
 \label{sec:conformal}
 
-We report three calibrations of the same nonconformity score, Eq.~\eqref{eq:conformal}, on the same
+We report five calibrations of the same nonconformity score, Eq.~\eqref{eq:conformal}, on the same
 test questions. \emph{Released}: the per-primitive quantiles stored in the checkpoint, fitted on the
-the 568-question calibration split. \emph{Refit}: one pooled quantile fitted on the rebuilt
-2{,}548-question CAL split. \emph{Mondrian}: one quantile per
-cell on the same rebuilt split, the cell-conditional calibration of Vovk \cite{vovk2012conditional}, which is the standard answer when
+568-question calibration split. \emph{Refit}: the same score refitted on the rebuilt
+2{,}548-question CAL split, either per primitive, pooled, or with the temperature and the quantile
+fitted on disjoint halves. \emph{Mondrian}: one quantile per cell on the same rebuilt split, the
+cell-conditional calibration of Vovk \cite{vovk2012conditional}, which is the standard answer when
 exchangeability across heterogeneous questions is in doubt.
 
 \begin{center}
