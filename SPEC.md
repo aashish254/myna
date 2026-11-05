@@ -5084,7 +5084,7 @@ Kept permanently, because the value of this project's claims is that they surviv
       when one of the three S3 sockets finishes. Verification is the Hub's own tree API: all 10
       paths present, each size equal to the manifest line, summing to **1,799,177,588 B**, beside
       `README.md` (4,810 characters, 4,822 bytes — the card contains multi-byte `—` and `≤`) and
-      `.gitattributes`, 12 files in commit `ff38c0b2`. Repo `Aashish254/myna-v6`, `private: false`.
+      `.gitattributes`, 12 files in commit `ff38c0b2`. Repo the released checkpoint (hosted separately), `private: false`.
 
     Running the uploader is what found its five defects, and each is fixed rather than noted:
     `relative_to()` raised on the committed witnesses because they live outside the campaign
