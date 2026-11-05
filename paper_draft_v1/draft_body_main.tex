@@ -425,20 +425,22 @@ The in-domain reference that matters is not TF-IDF but the same backbone. We fin
 \texttt{microsoft/deberta-v3-large} on the same train split with a conventional readout: one linear
 classifier per cell over the \texttt{[CLS]} of \texttt{state + question}. Trained for one epoch it
 reaches 0.7126 macro over two seeds (0.7170 and 0.7082); trained for two epochs over three seeds it
-reaches 0.7814 (0.7746, 0.7813, 0.7884; standard deviation 0.7 points), and banking77 moves from
-0.17 to 0.50--0.59. Most of the one-epoch result was therefore underfitting, exactly as a
-training-schedule confound would predict.
+reaches 0.7814 (0.7746, 0.7813, 0.7884; standard deviation 0.7 points); trained for three epochs it
+reaches 0.7947. Each epoch adds about 1.3 points, and banking77 moves from 0.17 to 0.59. Most of
+the one-epoch result was therefore underfitting, exactly as a training-schedule confound would
+predict, and the control had not converged when we stopped.
 
-\vsix{} leads the two-epoch control by 8.1 points, and the gap is now concentrated on multi-class
+\vsix{} leads the three-epoch control by 6.7 points, and the gap is now concentrated on multi-class
 choice cells: dbpedia14 0.72 against 0.96, mnli 0.62 against 0.86, agnews/topic 0.69 against 0.91,
 trec 0.73 against 0.95. On boolean cells and on yelp/recommend the two are within a few points.
-Because the control improves monotonically with training, 8.1 points is an upper bound on what the
+Because the control improves with every epoch, 6.7 points is an upper bound on what the
 readout contributes, not a converged estimate; a longer schedule is the obvious next control and
 the paper does not have it.
 
 Pairing on the same rows makes the comparisons significant rather than descriptive. Resampling
-bundles gives \vsix{} minus the per-cell classifier at $+0.0875$ macro for seed 42
-(95\% CI $[0.0675,0.108]$; McNemar on the 1{,}440 questions, $p=1.8\times10^{-22}$), $+0.0808$
+bundles gives \vsix{} minus the three-epoch per-cell classifier at $+0.0674$ macro
+(95\% CI $[0.0478,0.0868]$; McNemar on the 1{,}440 questions, $p=2.0\times10^{-15}$); against the
+two-epoch runs the same test gives $+0.0875$ $[0.0675,0.108]$ for seed 42, $+0.0808$
 $[0.0587,0.102]$ for seed 7 and $+0.0737$ $[0.0544,0.0937]$ for seed 13, minus Laya $+0.196$ $[0.169,0.222]$ and
 minus VegaML $+0.246$ $[0.218,0.275]$. The TF-IDF arm has no per-question record in the release, so
 its interval is not computed; that is a gap in the artifact, not in the test. The paired effect
@@ -464,7 +466,7 @@ Arm & macro & overall & bundle & footing \\
 Myna v6, routed & \textbf{0.8620} & 0.8632 & 0.8393 & in-domain \\
 Myna v6, packed everywhere & 0.8222 & 0.8118 & 0.7764 & in-domain \\
 TF-IDF + logistic regression & 0.7111 & 0.6840 & 0.6293 & in-domain, text only \\
-DeBERTa-v3-large, per-cell classifier & 0.7814 & 0.7560 & 0.7089 & in-domain, same backbone (2 epochs, 3 seeds) \\
+DeBERTa-v3-large, per-cell classifier & 0.7947 & 0.7729 & 0.7296 & in-domain, same backbone (3 epochs) \\
 Laya 0.4.19 (typed-decisions best) & 0.7050 & 0.6792 & 0.6182 & 6/16 in-domain \\
 Laya 0.4.19 (raised + tournament) & 0.6829 & 0.6597 & 0.5918 & 6/16 in-domain \\
 Laya 0.4.19 (English default) & 0.6624 & 0.6333 & 0.5595 & 6/16 in-domain \\
@@ -881,6 +883,6 @@ calibration error and risk--coverage instead of a coverage guarantee.
 
 What remains is scope. The suite is one frozen split, the accuracy arm is in-domain, and the
 external engines are not. The in-domain baseline is two epochs and still improving with schedule
-(0.7126 at one epoch, 0.7814 at two over three seeds), so its 8.1-point gap is an upper bound on the readout's
+(0.7126 at one epoch, 0.7814 at two over three seeds, 0.7947 at three), so its 6.7-point gap is an upper bound on the readout's
 advantage. An out-of-domain cell set and a longer baseline schedule are the measurements that would
 extend these claims, and the paper says so rather than implying otherwise.
