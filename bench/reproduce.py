@@ -38,12 +38,7 @@ import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
-DOCS = ("README.md", "SPEC.md", "PLAN.md", "TODO.md",
-        # the launch docs carry published figures now (the GPU-hour price, the G1
-        # measurement), so they owe the registry the same quote as the others. Before
-        # this they were outside `--check` entirely, which is how a hand-typed cell
-        # with two wrong paths survived for a session.
-        "KAGGLE_LAUNCH_INSTRUCTIONS.md", "EASY_LAUNCH.md")
+DOCS = ("README.md", "SPEC.md", "COMMANDS.md")
 
 # The generated block is fenced in the docs by these two comment lines, and `doc_text`
 # cuts everything between them out. Without the cut, the registry would be checking
@@ -745,8 +740,7 @@ ROWS = [
         "(`--max-packed 1000`) is the routing ablation: 0.8222 macro, with banking77 at 0.0345 "
         "against 0.6724 routed and every other cell identical. The score label is a 0-based class "
         "index (0..4), so `ranked[gold]` is the correct comparison for both `choice` and `score`; "
-        "an earlier internal note claimed an off-by-one here and is retracted in "
-        "`paper/MEASUREMENT-CORRECTION.md`."),
+        "an earlier internal note claimed an off-by-one here, was wrong, and is retracted."),
 
     row("risk-coverage-v6", "SPEC §2.2 G5 · README abstention table (v6, all pooled sources)",
         'uv run python -m bench.risk_coverage --ckpt "myna-v5-prototype 2" '

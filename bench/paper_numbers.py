@@ -9,11 +9,11 @@ risk--coverage curve are all recomputed from the same 1,440 question records, so
 in the paper cannot drift from the records it cites.
 
 A note on the `score` primitive. The suite stores a star level 1--5 while the option vector
-is 0-based. The pre-2026-11-04 harness compared the two directly, which scored a prediction
-correct when it named the level above gold. Files produced before the fix are accepted with
-`--legacy-score` and corrected here; files produced after it (pred 1-based, `ok` already
-matching `pred == gold`) are read as they are. `paper/MEASUREMENT-CORRECTION.md` is the
-record of the correction.
+is 0-based, so `ranked[gold]` is the correct comparison for `choice` and `score` alike. An
+earlier internal note claimed an off-by-one here and briefly shifted the `score` predictions;
+that was wrong and is retracted (the labels are indices, not star levels). Records written
+during that episode carry a shifted `pred` and are repaired with `--legacy-score`; everything
+else is read as it is, `ok` already matching `pred == gold`.
 """
 
 from __future__ import annotations

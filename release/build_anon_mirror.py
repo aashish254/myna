@@ -46,6 +46,11 @@ A typed decision contract (`choice`, `score`, boolean `noul`) answered by two en
 446.63M-parameter fine-tuned DeBERTa-v3-large cross-encoder with a cardinality-routed readout.
 The suite is 16 cells over 11 public sources (1,176 test bundles, 1,440 questions).
 
+On that suite the cross-encoder reaches **0.8620** macro (0.8632 overall, 0.8393 joint bundle
+exact). Its fair control — the same backbone fine-tuned on the same split with a conventional
+per-cell classifier — reaches **0.7907** over two seeds at three epochs, so the readout accounts
+for **7.1 points**, concentrated on multi-class choice cells.
+
 ## Layout
 
 | path | contents |

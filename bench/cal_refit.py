@@ -7,9 +7,9 @@ the train pool, then stores them in the checkpoint. This harness rebuilds that s
 (`release/build_cal_split.py`), scores it through the released engine with temperature
 scaling disabled, and refits both under two gold conventions:
 
-* `corrected` — the suite's 1-based star level mapped to its 0-based option index;
-* `legacy`    — the notebook loader's own mapping (`gold = int(label)` against options
-  `0..4`), which is the off-by-one corrected in `paper/MEASUREMENT-CORRECTION.md`.
+* `gold_legacy` — the label as stored, which *is* the 0-based option index; this is the correct
+  target. An earlier note called it "legacy" while treating a shifted label as "corrected";
+  that mapping is retracted, and the refit uses `gold_legacy`.
 
 The comparison answers a question the paper can otherwise only assert: whether the stored
 values reproduce, and whether the mis-indexed score gold moved them.

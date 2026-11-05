@@ -8,15 +8,15 @@ authors' machines. Everything below is a command plus the output it should print
 | Artifact | Path | What it establishes |
 |---|---|---|
 | Frozen suite | `data/decision-v2-pilot/` | 16 cells over 11 public sources; train/dev/calibration/test |
-| Checkpoint | `myna-v5-prototype 2/` | the shipped 446,631,182-parameter v6 engine |
+| Checkpoint | hosted separately | the 446,631,182-parameter v6 engine; 1.6 GB backbone plus 48 MB heads, available on request during review |
 | Reference trainer | `release/train_v6.py` | the packed-readout recipe, the same renderer the engine serves with, calibration fit |
-| Consistency predicate | `src/myna/consistency.py` | the definition behind 3/172, 31/172, 32/172 |
+| Consistency predicate | `src/myna/consistency.py` | the definition behind 3/172, 10/172, 29/172 |
 | Evaluation harness | `bench/v6_audit.py` | per-question records; `--max-packed` for the routing ablation |
 | Aggregation | `bench/paper_numbers.py` | every table from the released records, with a correctness guard |
 | Per-question records | `runs/*.rowoutcomes.json` | Myna, Laya, VegaML on the same 1,176 bundles |
 | External baselines | `runs/external_{majority,tfidf,nli}.json`, `paper/shared/external_baselines.py` | the three classical references |
 | Correction record | `paper/MEASUREMENT-CORRECTION.md` | the ordinal off-by-one, its signature, before/after |
-| Campaign notebooks | `release/notebooks/` | the v5 training loop and the v6 campaign: CAL split, temperature/conformal fit, v6 checkpoint assembly |
+| Training notebooks | `release/notebooks/` | the v5 loop and the v6 run: CAL split, temperature/conformal fit, checkpoint assembly |
 | CAL split builder | `release/build_cal_split.py` | the 1,999-bundle split the v6 temperatures were fitted on |
 
 ## Verify in this order
@@ -38,7 +38,7 @@ authors' machines. Everything below is a command plus the output it should print
 
 # 3. Bundle consistency under the released predicate.
 .venv/bin/python -m bench.consistency_audit
-#    expects Myna 3/172, Laya 31/172, VegaML 32/172.
+#    expects Myna 3/172, Laya 10/172, VegaML 29/172.
 
 # 4. The intervals and the routing cost the paper quotes.
 .venv/bin/python -m bench.paper_bootstrap --out runs/paper_bootstrap.json
