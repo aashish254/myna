@@ -99,3 +99,12 @@ myna-v5-prototype 2/
 *.pt
 kaggle-dataset/
 runs/overnight.log
+
+# Submission-package files that carry author identities: kept on disk, never committed.
+paper_draft_v1/SUBMISSION-GUIDE.md
+paper_draft_v1/camera_body_main.tex
+paper_draft_v1/myna_tmlr_camera.tex
+paper_draft_v1/upload/authors.txt
+paper_draft_v1/upload/fields.md
+paper_draft_v1/WHATS-READY.md
+paper_draft_v1/OVERNIGHT.md
