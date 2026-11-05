@@ -177,13 +177,15 @@ at 32-bit precision (576\,KiB). \texttt{observe} runs Eqs.~\eqref{eq:gates}--\eq
 $x$ and returns $S_T$; \texttt{append} resumes from $S_T$ on a suffix; \texttt{ask} runs a question
 branch initialised at $S_T$.
 
-\emph{Typed readout.} Let $h_q$ be the question branch's final hidden state and $h_i$ the branch's
-hidden state at the last token of option $i$. Both engines use
+\emph{Typed readout.} Let $h_i$ be the hidden state at the last token of option $i$ in the question
+branch: for Myna-Stream{} the branch is initialised at $S_T$ and runs over the option's tokens, and for
+Myna-v6{} it is the encoder state at that position. The packed head reads out with
 \begin{equation}
 z_i = w_\tau^{\top} h_i + b_\tau, \end{equation}
 with $p_i=\operatorname{softmax}(z/T_\tau)_i$ and $T_\tau>0$ fitted per type on a calibration split
-(Section~7). The engines
-differ only in how $h_i$ is produced.
+(Section~7). Equation~\eqref{eq:readout} is the readout for Myna-Stream{} and for
+the packed head; the set-aware head replaces the single linear map with Eq.~\eqref{eq:setscore},
+whose first term is a learned base scorer and whose second is the bundle-competition term.
 
 \emph{Packed scorer} ($K_q\le16$). One sequence is built,
 \begin{equation}
@@ -419,21 +421,22 @@ the one-epoch result was therefore underfitting, exactly as a training-schedule 
 predict, and the control had not converged when we stopped.
 
 Myna-v6{} leads the three-epoch control by 7.1 points, and the gap is now concentrated on multi-class
-choice cells: dbpedia14 0.72 against 0.96, mnli 0.62 against 0.86, agnews/topic 0.69 against 0.91,
+choice cells: dbpedia14 0.72 against 0.96, mnli 0.70 against 0.86, agnews/topic 0.69 against 0.91,
 trec 0.73 against 0.95. On boolean cells and on yelp/recommend the two are within a few points.
 Because the control improves with every epoch, 7.1 points is an upper bound on what the
 readout contributes, not a converged estimate; a longer schedule is the obvious next control and
 the paper does not have it.
 
-Pairing on the same rows makes the comparisons significant rather than descriptive. Resampling
-bundles gives Myna-v6{} minus the three-epoch per-cell classifier at $+0.0674$ macro for seed 21
-(95\% CI $[0.0478,0.0868]$; McNemar on the 1{,}440 questions, $p=2.0\times10^{-15}$) and $+0.0752$
-$[0.0564,0.0956]$ for seed 7; against the two-epoch runs the same test gives $+0.0875$ $[0.0675,0.108]$ for seed 42, $+0.0808$
-$[0.0587,0.102]$ for seed 7 and $+0.0737$ $[0.0544,0.0937]$ for seed 13, minus Laya $+0.196$ $[0.169,0.222]$ and
-minus VegaML $+0.246$ $[0.218,0.275]$. The TF-IDF arm has no per-question record in the release, so
-its interval is not computed; that is a gap in the artifact, not in the test. The paired effect
-sizes are moderate rather than marginal: Cohen's $d$ is 0.27 against the per-cell classifier, 0.44
-against Laya and 0.51 against VegaML on 1{,}440 paired questions.
+Pairing on the same rows makes the comparisons descriptive rather than impressionistic. Resampling
+bundles --- rows, not questions, because the questions of a bundle share a state --- gives Myna-v6{}
+minus the three-epoch per-cell classifier at $+0.0674$ macro for seed 21 (95\% CI $[0.0478,0.0868]$)
+and $+0.0752$ $[0.0564,0.0956]$ for seed 7; against the two-epoch runs it gives $+0.0875$
+$[0.0675,0.108]$ for seed 42, $+0.0808$ $[0.0587,0.102]$ for seed 7 and $+0.0737$ $[0.0544,0.0937]$
+for seed 13; minus Laya's English-default configuration (0.6664) $+0.196$ $[0.169,0.222]$; minus
+VegaML $+0.246$ $[0.218,0.275]$. We report these intervals rather than question-level significance
+tests: with dependent questions inside a bundle, an unclustered test over 1{,}440 questions would
+overstate its own evidence. The TF-IDF arm has no per-question record in the release, so its
+interval is not computed; that is a gap in the artifact, not in the test.
 
 Myna-v6{} also leads the supervised TF-IDF classifier on 15 of the 16 cells and loses
 \texttt{banking77/intent}, 0.6724 against 0.8190: a bag-of-words classifier that sees the whole
@@ -590,7 +593,7 @@ scoring function is fixed independently of the calibration examples, moves cover
 at the 90\% target (86.94\% to 87.29\%) and 0.42 at 95\% (93.96\% to 93.54\%): the shared-split
 design is not what drives the shortfall.
 
-Two things follow, and neither is the story the earlier draft told. First, most of the 90\% shortfall
+Two things follow. First, most of the 90\% shortfall
 is calibration-sample size, not a violated guarantee: refitting the same score on 2{,}548 questions
 moves coverage from 83.68\% to 89.17\%, within a point of nominal. Second, cell-conditional
 calibration does not help — it is worse than pooled refitting at both levels (83.96\% and 92.15\%),
@@ -815,7 +818,7 @@ predicates, the reference trainer, the routing-cost and conformal harnesses, and
 generators are all released. A container recipe builds the environment and runs the aggregation
 with no GPU. What is not claimed is bit-exact reproduction of the original training trajectory,
 because the run depends on hardware and library versions that the notebooks record but do not pin;
-and one artifact the reviewers asked for, per-question TF-IDF outcomes, is not in the release.
+per-question TF-IDF outcomes are not in the release.
 
 \textbf{Ethics.}
 Typed decisions are used in routing, moderation, and triage. An abstention flag is not a safety
