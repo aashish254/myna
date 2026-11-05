@@ -155,6 +155,9 @@ def main() -> None:
     files = tracked_files()
     copy_tree(files, out)
     (out / "README.md").write_text(README)
+    for extra in ("SPEC.md", "COMMANDS.md"):
+        if (REPO / extra).exists():
+            shutil.copy2(REPO / extra, out / extra)
 
     changed = [p for p in out.rglob("*") if p.is_file() and redact(p)]
     print(f"copied {sum(1 for p in out.rglob('*') if p.is_file())} files; redacted {len(changed)}")
