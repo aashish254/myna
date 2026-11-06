@@ -411,7 +411,10 @@ VegaML 0.15.0 reaches 0.6160, the majority classifier 0.3726, and the zero-shot 
 The row-clustered 95\% interval on the Myna-v6{} macro is [0.8432, 0.8799]; the interval on joint
 bundle exact is [0.8180, 0.8597]. The per-question records of the DeBERTa control and of the two
 external engines are released, so their comparisons are paired and tested below; the TF-IDF arm's
-are not, so that column is a point estimate.
+are not, so that column is a point estimate. We rebuilt the TF-IDF arm from the description in this
+paper to obtain those records, and the reconstruction reaches 0.663 macro against the 0.7111 the
+original harness reported; the gap is large enough that the reconstruction is not the published arm,
+so we do not report a paired interval against a different model.
 
 The in-domain reference that matters is not TF-IDF but the same backbone. We fine-tuned
 \texttt{microsoft/deberta-v3-large} on the same train split with a conventional readout: one linear
