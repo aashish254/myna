@@ -1,0 +1,5 @@
+- One typed interface answers choice, rating and yes/no questions over fixed options.
+- A 14.4M streaming engine keeps a constant 576 KiB state for edge deployment.
+- A fine-tuned 446M engine reaches 0.8620 macro, 6.7 points over a converged control.
+- Routing above 16 options repairs one cell for +0.0399 macro at 11.4x the cost.
+- Conformal sets under-cover because calibration rows cluster within bundles.
