@@ -39,5 +39,5 @@ ORCID 0009-0007-8952-6357
 [email]
 
 Prakrist Dhakal
-Independent Researcher, North Carolina, USA
+Guilford Technical Community College, Greensboro, NC, USA
 ORCID 0009-0000-9463-0094
