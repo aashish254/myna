@@ -27,11 +27,11 @@
 | 1060 | 10 | 561.319 | 919 | 6798.717 | 6916.298 | 949.0 |  | 119.096 | 604.8 |
 
 ## Fitted cost, `t = fixed + per_state_token*L + per_question*Q`
-- `myna_observe`: fixed **-22.464 ms**, **548.53 µs** per state token, **0.0 ms** per question, R² 0.9996 (5 rows, terms fixed+L)  
+- `myna_observe`: fixed **-22.464 ms**, **548.53 µs** per state token, **0.0 ms** per question, R² 0.9996 (5 rows, terms fixed+L)
   _negative intercept: cost rises super-linearly with state length, so the linear fit understates short states and should not be extrapolated_
 - `myna_ask`: fixed **9.285 ms**, **-4.03 µs** per state token, **12.146 ms** per question, R² 0.9825 (10 rows, terms fixed+L+Q)
 - `myna_e2e`: fixed **1.888 ms**, **528.19 µs** per state token, **9.738 ms** per question, R² 0.9794 (10 rows, terms fixed+L+Q)
-- `laya_e2e`: fixed **-1333.168 ms**, **4048.2 µs** per state token, **247.717 ms** per question, R² 0.7297 (10 rows, terms fixed+L+Q)  
+- `laya_e2e`: fixed **-1333.168 ms**, **4048.2 µs** per state token, **247.717 ms** per question, R² 0.7297 (10 rows, terms fixed+L+Q)
   _negative intercept: cost rises super-linearly with state length, so the linear fit understates short states and should not be extrapolated_
 
 Fitted slopes are least-squares over the ladder above; every sample is in `latency_matched.json`. Accuracy is not measured here and G1 is not open to inference from this table.
