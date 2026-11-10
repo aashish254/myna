@@ -10,6 +10,6 @@
     "g3": "node bench/browser_g3.mjs --mode both --widths 1440x900,390x844"
   },
   "dependencies": {
-    "onnxruntime-web": "^1.30.0"
+    "onnxruntime-web": "^1.31.1"
   }
 }
