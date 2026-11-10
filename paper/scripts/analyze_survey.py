@@ -9,7 +9,7 @@ def top(heads):
         elif h.lower() in ("introduction","related work","method","methods","experiments","results","analysis","conclusion","conclusions","background","limitations","ethics statement","reproducibility statement"):
             out.append(h)
     # keep unique order
-    seen=[]; 
+    seen=[];
     for x in out:
         if x.lower() not in [s.lower() for s in seen]: seen.append(x)
     return seen

@@ -1,6 +1,6 @@
 # Myna v0.1.0 — Usability Release
 
-**Status:** Production-ready distribution package only.  
+**Status:** Production-ready distribution package only.
 **What this is not:** A feature-complete system that cleared all acceptance gates (G1 accuracy still not met).
 
 ## What shipped

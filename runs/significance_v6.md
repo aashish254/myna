@@ -56,4 +56,3 @@ The bootstrap says how far apart the engines are; McNemar says whether the direc
 - Cells under `min_rows = 30` were dropped before resampling, as in the published report, so the macro is over 16 cells and not over every question the split asks.
 - laya's confidence values are not usable here: its own loader warns that this checkpoint ships temperatures outside its [0.5, 5] clamp, which is recorded in `laya_warnings` in the JSON. Only correctness is compared.
 - The interval is a percentile interval from a multinomial row resample. It is not a statement about a population of checkpoints: a second training run of the same 3,600-update dose is a different sampling layer and would need its own checkpoint, which this box has not produced.
-

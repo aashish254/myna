@@ -12,10 +12,10 @@ class MynaConfigScaledT4:
     d_v: int = 64
     d_ff: int = 1536
     d_ptr: int = 256
-    
+
     def trunk(self):
         from myna.trunk import MynaTrunk
-        return MynaTrunk(self.vocab, self.d_model, self.n_layers, self.n_heads, 
+        return MynaTrunk(self.vocab, self.d_model, self.n_layers, self.n_heads,
                          self.d_k, self.d_v, self.d_ff)
 
 
