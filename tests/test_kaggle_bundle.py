@@ -763,4 +763,3 @@ def test_a_lossy_copy_fails_the_build_and_the_manifest_still_records_the_corpus(
         assert manifest["files"][name]["sha256"] == want, \
             f"{name}: the manifest recorded the staged bytes, not the corpus's"
         assert manifest["files"][name]["bytes"] == (PILOT / name).stat().st_size
-

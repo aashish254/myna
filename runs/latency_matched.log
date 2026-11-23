@@ -14,21 +14,21 @@ myna 14.45M params, weights torch.float32, device cpu
 == 2. cost ladder (4b): state length x question count ==
 state tok    q |  laya p50  tok/row |  myna obs     ask     e2e
 [transformers] Ignoring clean_up_tokenization_spaces=True for BPE tokenizer TokenizersBackend. The clean_up_tokenization post-processing step is designed for WordPiece tokenizers and is destructive for BPE (it strips spaces before punctuation). Set clean_up_tokenization_spaces=False to suppress this warning, or set clean_up_tokenization_spaces_for_bpe_even_though_it_will_corrupt_output=True to force cleanup anyway.
-       66    1 |    109.56     85.0 |     12.11   17.43   29.87  
-       66   10 |    536.71     87.0 |     12.11  127.86  142.68  
-      133    1 |    126.88    144.0 |     34.52   16.08   51.20  
-      133   10 |    719.27    146.0 |     34.52   93.08  124.64  
-      265    1 |    178.19    259.0 |     97.49   14.52  121.15  
-      265   10 |   1363.97    261.0 |     97.49   99.61  199.54  
-      530    1 |    289.24    489.0 |    188.49   14.59  205.42  
-      530   10 |   2562.57    491.0 |    188.49   94.33  289.78  
-     1060    1 |    605.29    947.0 |    370.99   14.70  417.79  
-     1060   10 |   5479.16    949.0 |    370.99   94.04  471.19  
-- `myna_observe`: fixed **-7.334 ms**, **360.4 µs** per state token, **0.0 ms** per question, R² 0.9979 (5 rows, terms fixed+L)  
+       66    1 |    109.56     85.0 |     12.11   17.43   29.87
+       66   10 |    536.71     87.0 |     12.11  127.86  142.68
+      133    1 |    126.88    144.0 |     34.52   16.08   51.20
+      133   10 |    719.27    146.0 |     34.52   93.08  124.64
+      265    1 |    178.19    259.0 |     97.49   14.52  121.15
+      265   10 |   1363.97    261.0 |     97.49   99.61  199.54
+      530    1 |    289.24    489.0 |    188.49   14.59  205.42
+      530   10 |   2562.57    491.0 |    188.49   94.33  289.78
+     1060    1 |    605.29    947.0 |    370.99   14.70  417.79
+     1060   10 |   5479.16    949.0 |    370.99   94.04  471.19
+- `myna_observe`: fixed **-7.334 ms**, **360.4 µs** per state token, **0.0 ms** per question, R² 0.9979 (5 rows, terms fixed+L)
   _negative intercept: cost rises super-linearly with state length, so the linear fit understates short states and should not be extrapolated_
 - `myna_ask`: fixed **10.115 ms**, **-10.32 µs** per state token, **9.591 ms** per question, R² 0.9619 (10 rows, terms fixed+L+Q)
 - `myna_e2e`: fixed **4.824 ms**, **368.35 µs** per state token, **8.942 ms** per question, R² 0.9915 (10 rows, terms fixed+L+Q)
-- `laya_e2e`: fixed **-1082.808 ms**, **3186.12 µs** per state token, **207.834 ms** per question, R² 0.7356 (10 rows, terms fixed+L+Q)  
+- `laya_e2e`: fixed **-1082.808 ms**, **3186.12 µs** per state token, **207.834 ms** per question, R² 0.7356 (10 rows, terms fixed+L+Q)
   _negative intercept: cost rises super-linearly with state length, so the linear fit understates short states and should not be extrapolated_
 
 == 3. the ratio, recomputed on equal footing ==
