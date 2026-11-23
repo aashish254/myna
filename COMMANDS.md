@@ -490,4 +490,3 @@ uv run python bench/significance.py --myna runs/myna_v6_test.rowoutcomes.json --
 ```
 
 Witness: `runs/significance_v6.md`, `runs/significance_v6.json`
-
