@@ -2522,5 +2522,5 @@ Downloading baseline_seed21.json to /tmp/c6_old/results
   0%|          | 0.00/171k [00:00<?, ?B/s]100%|██████████| 171k/171k [00:00<00:00, 235kB/s]100%|██████████| 171k/171k [00:00<00:00, 234kB/s]
 
 Output file downloaded to /tmp/c6_old/results/baseline_seed21.json
-Kernel log downloaded to /tmp/c6_old/myna-baseline-6ep-s21.log 
+Kernel log downloaded to /tmp/c6_old/myna-baseline-6ep-s21.log
 [02:32:20] wrote runs/baseline_seed21_6ep.json from old
