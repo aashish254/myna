@@ -9,7 +9,7 @@ jobs:
   tests:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: astral-sh/setup-uv@v4
       # `--extra browser` is onnx + onnxruntime + onnxscript, and it is here because the
       # registry asks `bench/quantize_int8.py --help` for its `int8-quantize` row: that
